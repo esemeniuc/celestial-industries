@@ -503,9 +503,6 @@
     <ClCompile Include="$(ProjectDir)..\src\a1.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\common.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\world.cpp" />
-    <ClCompile Include="$(ProjectDir)..\src\salmon.cpp" />
-    <ClCompile Include="$(ProjectDir)..\src\fish.cpp" />
-    <ClCompile Include="$(ProjectDir)..\src\turtle.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -54,21 +54,8 @@ private:
 	// Window hjandle
 	GLFWwindow* m_window;
 
-	// Number of fish eaten by the salmon, displayed in the window title
-	unsigned int m_points;
-
 	// Game entities
-	Salmon m_salmon;
-	std::vector<Turtle> m_turtles;
-	std::vector<Fish> m_fish;
 
-	float m_current_speed;
-	float m_next_turtle_spawn;
-	float m_next_fish_spawn;
-	
-	Mix_Music* m_background_music;
-	Mix_Chunk* m_salmon_dead_sound;
-	Mix_Chunk* m_salmon_eat_sound;
 
 	// C++ rng
 	std::default_random_engine m_rng;
