@@ -1,7 +1,9 @@
 #pragma once
+#include "objloader.hpp"
 
 // stlib
 #include <fstream> // stdout, stderr..
+#include <vector>
 
 // glfw
 #define NOMINMAX
@@ -84,6 +86,7 @@ struct Mesh
 	GLuint vbo;
 	GLuint ibo;
 	GLuint numIndices;
+	OBJMaterial material;
 };
 
 // Container for Vertex and Fragment shader, which are then put(linked) together in a
@@ -102,7 +105,7 @@ struct Effect
 // with its transform.
 struct Renderable
 {
-	Mesh mesh;
+	std::vector<Mesh> meshes;
 	Effect effect;
 	mat3 transform;
 

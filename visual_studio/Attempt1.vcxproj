@@ -508,6 +508,7 @@
     <ClCompile Include="..\src\tile.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\common.hpp" />
     <ClInclude Include="..\src\objloader.hpp" />
     <ClInclude Include="..\src\tile.hpp" />
   </ItemGroup>

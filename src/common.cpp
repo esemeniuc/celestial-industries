@@ -18,7 +18,6 @@ void criticalFailure(std::string msg) {
 	exit(-1);
 }
 
-
 void gl_flush_errors()
 {
 	while (glGetError() != GL_NO_ERROR);
