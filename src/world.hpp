@@ -2,10 +2,7 @@
 
 // internal
 #include "common.hpp"
-#include "salmon.hpp"
-#include "turtle.hpp"
-#include "fish.hpp"
-
+#include "tile.hpp"
 // stlib
 #include <vector>
 #include <random>
@@ -13,6 +10,10 @@
 #define SDL_MAIN_HANDLED
 #include <SDL/SDL.h>
 #include <SDL/SDL_mixer.h>
+
+// glm
+#include "glm\mat4x4.hpp"
+#include "glm\gtc\matrix_transform.hpp"
 
 // Container for all our entities and game logic. Individual rendering / update is 
 // deferred to the relative update() methods
@@ -51,11 +52,26 @@ private:
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
 private:
-	// Window hjandle
+	// Window handle
 	GLFWwindow* m_window;
+	bool escapePressed = false;
 
+	Tile m_tile;
+	vec2 m_screen;
+	glm::mat4 m_view;
+	float angleTowardsZ = M_PI;
+	float fieldOfView = 50.0f;
+	float cameraSpeed = 0.1f;
+	float mouseSpeed = 0.00005f;
+	vec2 mouseMovement = { 0, 0 };
+	vec2 cameraAngle = { 0,0 }; // horizontal (along x), vertical (along y).
+	glm::vec3 cameraDirection;
+	glm::vec3 cameraPosition;
+	glm::vec3 cameraVerticalVector; // Note: This is what is typically reffered to as "up" for the viewer
+	glm::vec3 cameraHorizontalVector;
+	bool key_up, key_down, key_right, key_left;
+	
 	// Game entities
-
 
 	// C++ rng
 	std::default_random_engine m_rng;

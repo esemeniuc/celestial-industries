@@ -8,6 +8,10 @@
 #include <gl3w.h>
 #include <GLFW/glfw3.h>
 
+// glm
+#include "glm\mat4x4.hpp"
+#include "glm\gtc\matrix_transform.hpp"
+
 // Simple utility macros to avoid mistyping directory name, name has to be a string literal
 // audio_path("audio.ogg") -> data/audio/audio.ogg
 #ifdef _MSC_VER
@@ -21,7 +25,7 @@
 #define audio_path(name) data_path "/audio/" name
 #define mesh_path(name) data_path "/meshes/" name
 
-// Not much math is needed and there are already way too many libraries linked (:
+// Not much math is needed and there are already way too many libraries linked (:    <--- That's not just evil, it's also silly
 // If you want to do some overloads..
 struct vec2 { float x, y; };
 struct vec3 { float x, y, z; };
@@ -99,12 +103,13 @@ struct Renderable
 
 	// projection contains the orthographic projection matrix. As every Renderable::draw()
 	// renders itself it needs it to correctly bind it to its shader.
-	virtual void draw(const mat3& projection) = 0;
+	virtual void draw(glm::mat4 mvp) = 0;
 
 	// gl Immediate mode equivalent, see the Rendering and Transformations section in the
-	// specification pdf
+	// specification pdf 
 	void transform_begin();
 	void transform_scale(vec2 scale);
+	bool transform_scale(vec3 scale);
 	void transform_rotate(float radians);
 	void transform_translate(vec2 pos);
 	void transform_end();

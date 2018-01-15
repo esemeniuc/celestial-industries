@@ -7,6 +7,13 @@
 #include <sstream>
 #include <cmath>
 
+// glm
+#include "glm\mat4x4.hpp"
+#include "glm\gtc\matrix_transform.hpp"
+
+// glfw
+#include "GLFW\glfw3.h"
+
 // Same as static in c, local to compilation unit
 namespace
 {
@@ -53,6 +60,7 @@ bool World::init(vec2 screen)
 #endif
 	glfwWindowHint(GLFW_RESIZABLE, 0);
 	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "A1 Assignment", nullptr, nullptr);
+	m_screen = screen;
 	if (m_window == nullptr)
 		return false;
 
@@ -84,6 +92,17 @@ bool World::init(vec2 screen)
 		fprintf(stderr, "Failed to open audio device");
 		return false;
 	}
+
+
+	// WHY WASNT THIS ENABLED BEFORE?!
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glEnable(GL_CULL_FACE);
+
+	Tile tile;
+	bool tileInit = tile.init();
+	m_tile = tile;
+	return tileInit;
 }
 
 // Releases all the associated resources
@@ -99,7 +118,20 @@ bool World::update(float elapsed_ms)
 	int w, h;
         glfwGetFramebufferSize(m_window, &w, &h);
 	vec2 screen = { (float)w, (float)h };
+	cameraAngle.x += mouseSpeed * mouseMovement.x * elapsed_ms;
+	cameraAngle.y += mouseSpeed * mouseMovement.y * elapsed_ms;
 
+	cameraDirection = glm::vec3(
+		cos(cameraAngle.y)*sin(cameraAngle.x),
+		sin(cameraAngle.y),
+		cos(cameraAngle.y)*cos(cameraAngle.x)
+	);
+	cameraHorizontalVector = glm::vec3(sin(cameraAngle.x - M_PI / 2.0f), 0, cos(cameraAngle.x - M_PI / 2.0f));
+	cameraVerticalVector = glm::cross(cameraHorizontalVector, cameraDirection);
+	if (key_up) cameraPosition += cameraDirection * elapsed_ms * cameraSpeed;
+	if (key_down) cameraPosition -= cameraDirection * elapsed_ms * cameraSpeed;
+	if (key_right) cameraPosition += cameraHorizontalVector * elapsed_ms * cameraSpeed;
+	if (key_left) cameraPosition += cameraHorizontalVector * elapsed_ms * cameraSpeed;
 	return true;
 }
 
@@ -111,8 +143,8 @@ void World::draw()
 
 	// Getting size of window
 	int w, h;
-        glfwGetFramebufferSize(m_window, &w, &h);
-
+    glfwGetFramebufferSize(m_window, &w, &h);
+	m_screen = { (float)w, (float)h }; // ITS CONVENIENT TO HAVE IN FLOAT OK
 
 	// Updating window title with points
 	std::stringstream title_ss;
@@ -122,23 +154,15 @@ void World::draw()
 	// Clearing backbuffer
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
-	const float clear_color[3] = { 0.3f, 0.3f, 0.8f };
+	const float clear_color[3] = { 47.0/256.0,61.0/256.0, 84.0/256.0 };
 	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Fake projection matrix, scales with respect to window coordinates
-	// PS: 1.f / w in [1][1] is correct.. do you know why ? (:
-	float left = 0.f;// *-0.5;
-	float top = 0.f;// (float)h * -0.5;
-	float right = (float)w;// *0.5;
-	float bottom = (float)h;// *0.5;
-
-	float sx = 2.f / (right - left);
-	float sy = 2.f / (top - bottom);
-	float tx = -(right + left) / (right - left);
-	float ty = -(top + bottom) / (top - bottom);
-	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
+	glm::mat4 projection = glm::perspective(glm::radians(fieldOfView), m_screen.x / m_screen.y, 0.1f, 100.0f);
+	glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraDirection, cameraVerticalVector);
+	glm::mat4 model = glm::mat4(1.0f); // Identity matrix | model is at origin and not scaled or rotated or anything else
+	m_tile.draw(projection*view*model);
 
 	// Presenting
 	glfwSwapBuffers(m_window);
@@ -147,7 +171,7 @@ void World::draw()
 // Should the game be over ?
 bool World::is_over()const
 {
-	return glfwWindowShouldClose(m_window);
+	return glfwWindowShouldClose(m_window) || escapePressed;
 }
 
 // On key callback
@@ -159,9 +183,45 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		int w, h;
 		glfwGetWindowSize(m_window, &w, &h);
 	}
+
+	if (action == GLFW_PRESS && key == GLFW_KEY_UP) {
+		key_up = true;
+	}
+	if (action == GLFW_RELEASE && key == GLFW_KEY_UP) {
+		key_up = false;
+	}
+
+	if (action == GLFW_PRESS && key == GLFW_KEY_DOWN) {
+		key_down = true;
+	}
+	if (action == GLFW_RELEASE && key == GLFW_KEY_DOWN) {
+		key_down = false;
+	}
+
+	if (action == GLFW_PRESS && key == GLFW_KEY_RIGHT) {
+		key_right = true;
+	}
+	if (action == GLFW_RELEASE && key == GLFW_KEY_RIGHT) {
+		key_right = false;
+	}
+
+	if (action == GLFW_PRESS && key == GLFW_KEY_LEFT) {
+		key_left = true;
+	}
+	if (action == GLFW_RELEASE && key == GLFW_KEY_LEFT) {
+		key_left = false;
+	}
+
+	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
+		escapePressed = true;
+	}
 }
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 {
-	//
+	// Stop the mouse from escaping
+	glfwSetCursorPos(window, m_screen.x / 2, m_screen.y / 2);
+	mouseMovement.x = m_screen.x/2 - xpos;
+	mouseMovement.y = m_screen.y/2 - ypos;
 }
+

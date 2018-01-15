@@ -6,6 +6,8 @@
 // stlib
 #include <vector>
 #include <sstream>
+#include <string>
+#include <vector>
 
 void gl_flush_errors()
 {
@@ -229,6 +231,13 @@ void Renderable::transform_scale(vec2 scale)
 {
 	mat3 S = { { scale.x, 0.f, 0.f },{ 0.f, scale.y, 0.f },{ 0.f, 0.f, 1.f } };
 	transform = mul(transform, S);
+}
+
+bool Renderable::transform_scale(vec3 scale)
+{
+	mat3 S = { { scale.x, 0.f, 0.f },{ 0.f, scale.y, 0.f },{ 0.f, 0.f, scale.z } };
+	transform = mul(transform, S);
+	return true;
 }
 
 void Renderable::transform_rotate(float radians)
