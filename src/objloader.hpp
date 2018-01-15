@@ -1,11 +1,34 @@
 #pragma once
 #include "common.hpp"
 
+#include <string>
 #include <vector>
 
-bool loadOBJ(
-	const char* path,
-	std::vector<vec3>& out_vertices,
-	std::vector<vec3>& out_uvs,
-	std::vector<vec3>& out_normals
-)
+enum ObjLineType {
+	Invalid,
+	Comment,
+	UseMaterial,
+	MaterialLib,
+	Vertex,
+	TextureCoordinate,
+	Normal,
+	Face,
+	SmoothShading,
+};
+
+struct OBJData {
+	std::vector<glm::vec3> vertices;
+	std::vector<unsigned int> vertexIndices;
+	std::vector<glm::vec2> textureCoordinates;
+	std::vector<unsigned int> textureCoordinateIndices;
+	std::vector<glm::vec3> normals;
+	std::vector<unsigned int> normalIndices;
+};
+
+class OBJLoader {
+public:
+	static bool loadOBJ(
+		std::string path, OBJData &result
+	);
+};
+

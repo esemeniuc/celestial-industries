@@ -25,6 +25,10 @@
 #define audio_path(name) data_path "/audio/" name
 #define mesh_path(name) data_path "/meshes/" name
 
+
+// Our stuff
+void criticalFailure(std::string msg);
+
 // Not much math is needed and there are already way too many libraries linked (:    <--- That's not just evil, it's also silly
 // If you want to do some overloads..
 struct vec2 { float x, y; };
@@ -79,6 +83,7 @@ struct Mesh
 	GLuint vao;
 	GLuint vbo;
 	GLuint ibo;
+	GLuint numIndices;
 };
 
 // Container for Vertex and Fragment shader, which are then put(linked) together in a

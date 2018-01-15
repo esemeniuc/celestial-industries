@@ -8,6 +8,16 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <iostream>
+
+// Our stuff
+void criticalFailure(std::string msg) {
+	std::cout << msg << std::endl;
+	std::cout << "This is unrecoverable (or at least we don't care to recover from it). Press enter to quit" << std::endl;
+	std::cin >> msg;
+	exit(-1);
+}
+
 
 void gl_flush_errors()
 {
