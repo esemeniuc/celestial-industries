@@ -11,12 +11,6 @@
 #include <iostream>
 
 // Our stuff
-void criticalFailure(std::string msg) {
-	std::cout << msg << std::endl;
-	std::cout << "This is unrecoverable (or at least we don't care to recover from it). Press enter to quit" << std::endl;
-	std::cin >> msg;
-	exit(-1);
-}
 
 void gl_flush_errors()
 {
@@ -56,43 +50,6 @@ bool gl_has_errors()
 	}
 
 	return true;
-}
-
-float dot(vec2 l, vec2 r)
-{
-	return l.x * r.x + l.y * r.y;
-}
-
-float dot(vec3 l, vec3 r)
-{
-	return l.x * r.x + l.y * r.y + l.z * r.z;
-}
-
-mat3 mul(const mat3 & l, const mat3 & r)
-{
-	mat3 l_t = { { l.c0.x, l.c1.x, l.c2.x},
-	{ l.c0.y, l.c1.y, l.c2.y } ,
-	{ l.c0.z, l.c1.z, l.c2.z } };
-
-	mat3 ret;
-	ret.c0.x = dot(l_t.c0, r.c0);
-	ret.c0.y = dot(l_t.c1, r.c0);
-	ret.c0.z = dot(l_t.c2, r.c0);
-
-	ret.c1.x = dot(l_t.c0, r.c1);
-	ret.c1.y = dot(l_t.c1, r.c1);
-	ret.c1.z = dot(l_t.c2, r.c1);
-
-	ret.c2.x = dot(l_t.c0, r.c2);
-	ret.c2.y = dot(l_t.c1, r.c2);
-	ret.c2.z = dot(l_t.c2, r.c2);
-	return ret;
-}
-
-vec2 normalize(vec2 v)
-{
-	float m = sqrtf(dot(v, v));
-	return { v.x / m, v.y / m };
 }
 
 Texture::Texture()
@@ -229,41 +186,4 @@ void Effect::release()
 	glDeleteProgram(program);
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
-}
-
-void Renderable::transform_begin()
-{
-	transform = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f}, { 0.f, 0.f, 1.f} };
-}
-
-void Renderable::transform_scale(vec2 scale)
-{
-	mat3 S = { { scale.x, 0.f, 0.f },{ 0.f, scale.y, 0.f },{ 0.f, 0.f, 1.f } };
-	transform = mul(transform, S);
-}
-
-bool Renderable::transform_scale(vec3 scale)
-{
-	mat3 S = { { scale.x, 0.f, 0.f },{ 0.f, scale.y, 0.f },{ 0.f, 0.f, scale.z } };
-	transform = mul(transform, S);
-	return true;
-}
-
-void Renderable::transform_rotate(float radians)
-{
-	float c = cosf(radians);
-	float s = sinf(radians);
-	mat3 R = { { c, s, 0.f },{ -s, c, 0.f },{ 0.f, 0.f, 1.f } };
-	transform = mul(transform, R);
-}
-
-void Renderable::transform_translate(vec2 offset)
-{
-	mat3 T = { { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ offset.x, offset.y, 1.f } };
-	transform = mul(transform, T);
-}
-
-void Renderable::transform_end()
-{
-	//
 }

@@ -107,18 +107,9 @@ struct Renderable
 {
 	std::vector<Mesh> meshes;
 	Effect effect;
-	mat3 transform;
+	glm::mat4 model = glm::mat4(1.0f);
 
 	// projection contains the orthographic projection matrix. As every Renderable::draw()
 	// renders itself it needs it to correctly bind it to its shader.
 	virtual void draw(glm::mat4 mvp) = 0;
-
-	// gl Immediate mode equivalent, see the Rendering and Transformations section in the
-	// specification pdf 
-	void transform_begin();
-	void transform_scale(vec2 scale);
-	bool transform_scale(vec3 scale);
-	void transform_rotate(float radians);
-	void transform_translate(vec2 pos);
-	void transform_end();
 };

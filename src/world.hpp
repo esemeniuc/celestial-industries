@@ -15,6 +15,11 @@
 #include "glm\mat4x4.hpp"
 #include "glm\gtc\matrix_transform.hpp"
 
+struct TimeTile {
+	OBJData present;
+	OBJData past;
+};
+
 // Container for all our entities and game logic. Individual rendering / update is 
 // deferred to the relative update() methods
 class World
@@ -40,13 +45,11 @@ public:
 	
 	bool advanced_mode = false;
 
+	std::vector<OBJData> tileTypes;
+
+	std::vector<std::vector<TimeTile>> level;
+
 private:
-	// Generates a new turtle
-	bool spawn_turtle();
-
-	// Generates a new fish
-	bool spawn_fish();
-
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
@@ -59,6 +62,8 @@ private:
 	Tile m_tile;
 	vec2 m_screen;
 	glm::mat4 m_view;
+
+	// Camera stuff
 	float angleTowardsZ = M_PI;
 	float fieldOfView = 50.0f;
 	float cameraSpeed = 0.1f;
@@ -69,6 +74,8 @@ private:
 	glm::vec3 cameraPosition;
 	glm::vec3 cameraVerticalVector; // Note: This is what is typically reffered to as "up" for the viewer
 	glm::vec3 cameraHorizontalVector;
+
+
 	bool key_up, key_down, key_right, key_left;
 	
 	// Game entities

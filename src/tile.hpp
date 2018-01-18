@@ -12,7 +12,7 @@ class Tile : public Renderable
 	// shared stuff will go here at some point
 
 public:
-	bool init();
+	bool init(OBJData Mesh);
 
 	void destroy();
 
@@ -20,11 +20,8 @@ public:
 
 	void draw(glm::mat4 mvp)override;
 
-	vec2 get_position()const;
-
-	void set_position(vec2 position);
-
 private:
+	// TODO: Remove the ones we don't use... so all of them?
 	vec2 m_position;
 	vec3 m_scale;
 	float m_z_rotation;

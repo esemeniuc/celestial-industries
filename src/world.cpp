@@ -161,8 +161,7 @@ void World::draw()
 
 	glm::mat4 projection = glm::perspective(glm::radians(fieldOfView), m_screen.x / m_screen.y, 0.1f, 100.0f);
 	glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraDirection, cameraVerticalVector);
-	glm::mat4 model = glm::mat4(1.0f); // Identity matrix | model is at origin and not scaled or rotated or anything else
-	m_tile.draw(projection*view*model);
+	m_tile.draw(projection*view);
 
 	// Presenting
 	glfwSwapBuffers(m_window);

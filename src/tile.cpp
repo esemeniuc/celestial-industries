@@ -13,9 +13,9 @@
 #include "glm\mat4x4.hpp"
 #include "glm\gtc\matrix_transform.hpp"
 
-bool Tile::init() {
+bool Tile::init(OBJData mesh) {
 
-	std::string path = "D:\\OneDrive\\UBC\\CPSC\\436D\\Models\\";
+	std::string path = "..\\..\\Models\\";
 	//std::string filename = "pineTree.obj";
 	std::string filename = "sketch2.obj";
 	OBJData obj;
@@ -68,16 +68,17 @@ void Tile::destroy()
 	glDeleteShader(effect.program);
 }
 
-void Tile::draw(glm::mat4 mvp)
+void Tile::update(float ms)
+{
+	// Do nothing, our buildings be static yo
+}
+
+void Tile::draw(glm::mat4 viewProjection)
 {
 	// Transformation code, see Rendering and Transformation in the template specification for more info
 	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
-	//transform_begin();
-	//transform_translate(m_position);
-	//transform_rotate(m_rotation);
-	//transform_scale(m_scale);/*
-	//transform_end();*/
 
+	glm::mat4 mvp = viewProjection * model;
 
 	// Setting shaders
 	glUseProgram(effect.program);
