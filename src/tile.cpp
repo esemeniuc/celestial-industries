@@ -10,12 +10,12 @@
 
 
 // glm
-#include "glm\mat4x4.hpp"
-#include "glm\gtc\matrix_transform.hpp"
+#include "glm/mat4x4.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
-bool Tile::init(OBJData mesh) {
+bool Tile::init() {
 
-	std::string path = "..\\..\\Models\\";
+	std::string path = "data/models/";
 	//std::string filename = "pineTree.obj";
 	std::string filename = "sketch2.obj";
 	OBJData obj;

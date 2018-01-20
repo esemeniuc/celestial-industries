@@ -12,8 +12,8 @@
 #include <SDL/SDL_mixer.h>
 
 // glm
-#include "glm\mat4x4.hpp"
-#include "glm\gtc\matrix_transform.hpp"
+#include "glm/mat4x4.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 struct TimeTile {
 	OBJData present;

@@ -8,11 +8,11 @@
 #include <cmath>
 
 // glm
-#include "glm\mat4x4.hpp"
-#include "glm\gtc\matrix_transform.hpp"
+#include "glm/mat4x4.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 // glfw
-#include "GLFW\glfw3.h"
+#include "GLFW/glfw3.h"
 
 // Same as static in c, local to compilation unit
 namespace
@@ -101,6 +101,7 @@ bool World::init(vec2 screen)
 
 	Tile tile;
 	bool tileInit = tile.init();
+//	bool tileInit = false; //FIXME hack because tile init not finished?
 	m_tile = tile;
 	return tileInit;
 }

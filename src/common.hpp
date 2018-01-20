@@ -11,8 +11,8 @@
 #include <GLFW/glfw3.h>
 
 // glm
-#include "glm\mat4x4.hpp"
-#include "glm\gtc\matrix_transform.hpp"
+#include "glm/mat4x4.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 // Simple utility macros to avoid mistyping directory name, name has to be a string literal
 // audio_path("audio.ogg") -> data/audio/audio.ogg

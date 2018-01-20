@@ -3,8 +3,8 @@
 #include "common.hpp"
 
 // glm
-#include "glm\mat4x4.hpp"
-#include "glm\gtc\matrix_transform.hpp"
+#include "glm/mat4x4.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 // The base class for every tile in the game
 class Tile : public Renderable
@@ -13,6 +13,7 @@ class Tile : public Renderable
 
 public:
 	bool init(OBJData Mesh);
+	bool init();
 
 	void destroy();
 
