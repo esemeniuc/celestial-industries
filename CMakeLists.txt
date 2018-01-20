@@ -3,7 +3,7 @@ project(proj)
 
 set(CMAKE_CXX_STANDARD 11)
 
-#add_subdirectory(ext/glm)  #option 2
+add_subdirectory(ext/glm)  #option 2
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/gl3w)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/glm) #option 1
