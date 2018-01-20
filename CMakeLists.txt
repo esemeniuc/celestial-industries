@@ -3,11 +3,11 @@ project(proj)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_subdirectory(ext/glm)  #option 2
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/gl3w)
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/glm) #option 1
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+find_package(OpenGL REQUIRED)
+find_package(SDL REQUIRED)
+find_package(SDL_mixer REQUIRED)
+find_package(glfw3 3.2 REQUIRED)
+add_subdirectory(ext/glm)
 
 add_executable(proj
         src/objloader.cpp
@@ -16,6 +16,17 @@ add_executable(proj
         src/tile.cpp
         src/world.cpp)
 
+target_include_directories(proj PUBLIC
+        ext/gl3w
+        ext/stb_image
+        ${SDL_INCLUDE_DIR}
+        ${SDL_MIXER_INCLUDE_DIRS}
+        )
 
-#target_link_libraries(proj glfw dl SDL2 SDL2_mixer) #option 1
-target_link_libraries(proj glm glfw dl SDL2 SDL2_mixer) #option 2
+target_link_libraries(proj
+        OpenGL::GL
+        glfw
+        glm
+        ${CMAKE_DL_LIBS}
+        ${SDL_LIBRARY}
+        ${SDL_MIXER_LIBRARIES})
