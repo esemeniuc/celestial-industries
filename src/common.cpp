@@ -11,6 +11,27 @@
 #include <iostream>
 
 // Our stuff
+inline char separator()
+{
+#ifdef _WIN32
+	return '\\';
+#else
+	return '/';
+#endif
+}
+
+std::string pathBuilder(std::vector<std::string> parts) {
+	std::stringstream path;
+
+	// Because the template has the vs files in their own folder the exe expects stuff to be relative to the INSIDE of that folder :)
+#ifdef _WIN32
+	path << "..\\";
+#endif
+	for (auto part : parts) {
+		path << part << separator();
+	}
+	return path.str();
+}
 
 void gl_flush_errors()
 {

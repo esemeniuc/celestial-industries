@@ -100,7 +100,16 @@ bool World::init(vec2 screen)
 	glEnable(GL_CULL_FACE);
 
 	Tile tile;
-	bool tileInit = tile.init();
+
+	std::vector<std::string> pathParts;
+	pathParts.push_back("data");
+	pathParts.push_back("models");
+	std::string path = pathBuilder(pathParts);
+	//std::string filename = "pineTree.obj";
+	std::string filename = "sketch2.obj";
+	OBJ::Data obj;
+	if (!OBJ::Loader::loadOBJ(path, filename, obj))return false;
+	bool tileInit = tile.init(obj);
 //	bool tileInit = false; //FIXME hack because tile init not finished?
 	m_tile = tile;
 	return tileInit;

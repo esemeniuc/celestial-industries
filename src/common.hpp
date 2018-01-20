@@ -4,6 +4,8 @@
 // stlib
 #include <fstream> // stdout, stderr..
 #include <vector>
+#include <string>
+#include <sstream>
 
 // glfw
 #define NOMINMAX
@@ -30,6 +32,11 @@
 
 // Our stuff
 void criticalFailure(std::string msg);
+
+inline char separator();
+
+std::string pathBuilder(std::vector<std::string> parts);
+
 
 // Not much math is needed and there are already way too many libraries linked (:    <--- That's not just evil, it's also silly
 // If you want to do some overloads..
@@ -86,7 +93,7 @@ struct Mesh
 	GLuint vbo;
 	GLuint ibo;
 	GLuint numIndices;
-	objloader::OBJMaterial material;
+	OBJ::Material material;
 };
 
 // Container for Vertex and Fragment shader, which are then put(linked) together in a

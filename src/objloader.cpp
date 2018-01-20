@@ -8,8 +8,8 @@
 #include <sstream>
 #include <regex>
 
-namespace objloader {
-	OBJLineType OBJLoader::wordToObjLineType(std::string word) {
+namespace OBJ {
+	LineType Loader::wordToObjLineType(std::string word) {
 		if (word == "#")return Comment;
 		if (word == "usemtl")return UseMaterial;
 		if (word == "usemap")return UseMap;
@@ -27,7 +27,7 @@ namespace objloader {
 		return Invalid;
 	}
 
-	bool OBJLoader::loadMaterialLibrary(std::string path, std::string filename, OBJMaterialLibrary &result) {
+	bool Loader::loadMaterialLibrary(std::string path, std::string filename, MaterialLibrary &result) {
 		std::stringstream fullPath;
 		fullPath << path << filename;
 		std::ifstream file;
@@ -48,7 +48,7 @@ namespace objloader {
 			std::istringstream lineStream(line);
 			std::string firstWord;
 			lineStream >> firstWord;
-			OBJLineType lineType = wordToObjLineType(firstWord);
+			LineType lineType = wordToObjLineType(firstWord);
 			switch (lineType) {
 				case NewMaterial:
 					if (doneWithFirst) {
@@ -85,7 +85,7 @@ namespace objloader {
 		return true;
 	}
 
-	bool OBJLoader::loadOBJ(std::string path, std::string filename, OBJData &result) {
+	bool Loader::loadOBJ(std::string path, std::string filename, Data &result) {
 		std::vector<glm::vec3> vertices;
 		std::vector<glm::vec2> textureCoordinates;
 		std::vector<glm::vec3> normals;
@@ -101,14 +101,14 @@ namespace objloader {
 			return false;
 		}
 		std::string line;
-		OBJMaterialGroup materialGroup;
-		OBJMaterialLibrary materialLibrary;
+		MaterialGroup materialGroup;
+		MaterialLibrary materialLibrary;
 		std::string materialName;
 		while (std::getline(file, line)) {
 			std::istringstream lineStream(line);
 			std::string firstWord;
 			lineStream >> firstWord;
-			OBJLineType lineType = wordToObjLineType(firstWord);
+			LineType lineType = wordToObjLineType(firstWord);
 			std::string materialLibRelativePath;
 			switch (lineType) {
 				case MaterialLib:

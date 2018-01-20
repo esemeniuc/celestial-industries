@@ -6,8 +6,8 @@
 #include <string>
 #include <vector>
 
-namespace objloader {
-	enum OBJLineType {
+namespace OBJ {
+	enum LineType {
 		Invalid,
 		Comment,
 		UseMaterial,
@@ -26,39 +26,39 @@ namespace objloader {
 		Specular,
 	};
 
-	struct OBJMaterial {
+	struct Material {
 		std::string name;
 		glm::vec3 ambient, diffuse, specular;
 	};
 
-	struct OBJMaterialLibrary {
-		std::vector<OBJMaterial> materials;
+	struct MaterialLibrary {
+		std::vector<Material> materials;
 	};
 
-	struct OBJMaterialGroup {
-		OBJMaterial material;
+	struct MaterialGroup {
+		Material material;
 		std::vector<unsigned int> vertexIndices;
 		std::vector<unsigned int> textureCoordinateIndices;
 		std::vector<unsigned int> normalIndices;
 	};
 
-	struct OBJData {
+	struct Data {
 		std::vector<glm::vec3> vertices;
 		std::vector<glm::vec2> textureCoordinates;
 		std::vector<glm::vec3> normals;
-		std::vector<OBJMaterialGroup> groups;
+		std::vector<MaterialGroup> groups;
 	};
 
-	class OBJLoader {
+	class Loader {
 	public:
 		static bool loadOBJ(
-				std::string path, std::string filename, OBJData &result
+				std::string path, std::string filename, Data &result
 		);
 
-		static OBJLineType wordToObjLineType(std::string word);
+		static LineType wordToObjLineType(std::string word);
 
 		static bool loadMaterialLibrary(
-				std::string path, std::string filename, OBJMaterialLibrary &result
+				std::string path, std::string filename, MaterialLibrary &result
 		);
 	};
 }
