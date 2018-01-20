@@ -18,8 +18,8 @@ bool Tile::init() {
 	std::string path = "data/models/";
 	//std::string filename = "pineTree.obj";
 	std::string filename = "sketch2.obj";
-	OBJData obj;
-	if (!OBJLoader::loadOBJ(path, filename, obj))return false;
+	objloader::OBJData obj;
+	if (!objloader::OBJLoader::loadOBJ(path, filename, obj))return false;
 
 	// Clearing errors
 	gl_flush_errors();

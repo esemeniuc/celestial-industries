@@ -86,7 +86,7 @@ struct Mesh
 	GLuint vbo;
 	GLuint ibo;
 	GLuint numIndices;
-	OBJMaterial material;
+	objloader::OBJMaterial material;
 };
 
 // Container for Vertex and Fragment shader, which are then put(linked) together in a

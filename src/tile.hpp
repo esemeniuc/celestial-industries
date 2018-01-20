@@ -12,7 +12,7 @@ class Tile : public Renderable
 	// shared stuff will go here at some point
 
 public:
-	bool init(OBJData Mesh);
+	bool init(objloader::OBJData Mesh);
 	bool init();
 
 	void destroy();
