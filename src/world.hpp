@@ -16,8 +16,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 struct TimeTile {
-	objloader::OBJData present;
-	objloader::OBJData past;
+	OBJ::Data present;
+	OBJ::Data past;
 };
 
 // Container for all our entities and game logic. Individual rendering / update is 
@@ -45,7 +45,7 @@ public:
 	
 	bool advanced_mode = false;
 
-	std::vector<objloader::OBJData> tileTypes;
+	std::vector<OBJ::Data> tileTypes;
 
 	std::vector<std::vector<TimeTile>> level;
 

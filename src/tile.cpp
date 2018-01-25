@@ -13,13 +13,7 @@
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-bool Tile::init() {
-
-	std::string path = "data/models/";
-	//std::string filename = "pineTree.obj";
-	std::string filename = "sketch2.obj";
-	objloader::OBJData obj;
-	if (!objloader::OBJLoader::loadOBJ(path, filename, obj))return false;
+bool Tile::init(OBJ::Data obj) {
 
 	// Clearing errors
 	gl_flush_errors();

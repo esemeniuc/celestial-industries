@@ -144,7 +144,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)/$(Configuration)/$(Platform)</OutDir>
     <IntDir>$(ProjectDir)/tmp/$(Configuration)/$(Platform)</IntDir>
-    <IncludePath>D:\OneDrive\UBC\CPSC\436D\Attempt 1\src;$(IncludePath)</IncludePath>
+    <IncludePath>"D:\OneDrive\UBC\CPSC\436D\Attempt 1\src";$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <OutDir>$(ProjectDir)/$(Configuration)/$(Platform)</OutDir>
@@ -203,7 +203,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\OneDrive\UBC\CPSC\436D\Attempt 1\src;$(ProjectDir)\..\ext\glfw\include;$(ProjectDir)\..\ext\gl3w;$(ProjectDir)\..\ext\stb_image;$(ProjectDir)\..\ext\sdl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>"D:\OneDrive\UBC\CPSC\436D\Attempt 1\ext\glm";D:\OneDrive\UBC\CPSC\436D\Attempt 1\src;$(ProjectDir)\..\ext\glfw\include;$(ProjectDir)\..\ext\gl3w;$(ProjectDir)\..\ext\stb_image;$(ProjectDir)\..\ext\sdl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -511,6 +511,7 @@
     <ClInclude Include="..\src\common.hpp" />
     <ClInclude Include="..\src\objloader.hpp" />
     <ClInclude Include="..\src\tile.hpp" />
+    <ClInclude Include="..\src\world.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\colored.fs.glsl" />
