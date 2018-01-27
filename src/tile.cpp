@@ -22,7 +22,7 @@ bool Tile::init(OBJ::Data obj) {
 	// Vertex Buffer creation
 	glGenBuffers(1, &vbo_id);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
-	glBufferData(GL_ARRAY_BUFFER, obj.vertices.size() * sizeof(vec3), obj.vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, obj.vertices.size() * sizeof(glm::vec3), obj.vertices.data(), GL_STATIC_DRAW);
 
 	for (auto group : obj.groups) {
 		Mesh mesh;
@@ -92,7 +92,7 @@ void Tile::draw(glm::mat4 viewProjection)
 		// Input data location as in the vertex buffer
 		GLuint in_position_loc = glGetAttribLocation(effect.program, "in_position");
 		glEnableVertexAttribArray(in_position_loc);
-		glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), (void*)0); // (void*)0 because we render the whole array
+		glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0); // (void*)0 because we render the whole array
 																						   // Setting uniform values to the currently bound program
 		glUniformMatrix4fv(mvp_uloc, 1, GL_FALSE, &mvp[0][0]);
 

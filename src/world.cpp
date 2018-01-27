@@ -6,6 +6,8 @@
 #include <cassert>
 #include <sstream>
 #include <cmath>
+#include <map>
+#include <tuple>
 
 // glm
 #include "glm/mat4x4.hpp"
@@ -39,7 +41,7 @@ World::~World()
 }
 
 // World initialization
-bool World::init(vec2 screen)
+bool World::init(glm::vec2 screen)
 {
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
@@ -76,8 +78,10 @@ bool World::init(vec2 screen)
 	glfwSetWindowUserPointer(m_window, this);
 	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((World*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
 	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((World*)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1); };
+	auto scroll_offset_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((World*)glfwGetWindowUserPointer(wnd))->on_mouse_scroll(wnd, _0, _1); };
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
+	glfwSetScrollCallback(m_window, scroll_offset_redirect);
 
 	//-------------------------------------------------------------------------
 	// Loading music and sounds
@@ -126,22 +130,10 @@ void World::destroy()
 bool World::update(float elapsed_ms)
 {
 	int w, h;
-        glfwGetFramebufferSize(m_window, &w, &h);
-	vec2 screen = { (float)w, (float)h };
-	cameraAngle.x += mouseSpeed * mouseMovement.x * elapsed_ms;
-	cameraAngle.y += mouseSpeed * mouseMovement.y * elapsed_ms;
-
-	cameraDirection = glm::vec3(
-		cos(cameraAngle.y)*sin(cameraAngle.x),
-		sin(cameraAngle.y),
-		cos(cameraAngle.y)*cos(cameraAngle.x)
-	);
-	cameraHorizontalVector = glm::vec3(sin(cameraAngle.x - M_PI / 2.0f), 0, cos(cameraAngle.x - M_PI / 2.0f));
-	cameraVerticalVector = glm::cross(cameraHorizontalVector, cameraDirection);
-	if (key_up) cameraPosition += cameraDirection * elapsed_ms * cameraSpeed;
-	if (key_down) cameraPosition -= cameraDirection * elapsed_ms * cameraSpeed;
-	if (key_right) cameraPosition += cameraHorizontalVector * elapsed_ms * cameraSpeed;
-	if (key_left) cameraPosition += cameraHorizontalVector * elapsed_ms * cameraSpeed;
+    
+	glfwGetFramebufferSize(m_window, &w, &h);
+	glm::vec2 screen = glm::vec2((float)w, (float)h);
+	camera.update(elapsed_ms);
 	return true;
 }
 
@@ -158,7 +150,7 @@ void World::draw()
 
 	// Updating window title with points
 	std::stringstream title_ss;
-	title_ss << "TEST";
+	title_ss << "Celestial Industries";
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
 	// Clearing backbuffer
@@ -169,8 +161,8 @@ void World::draw()
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glm::mat4 projection = glm::perspective(glm::radians(fieldOfView), m_screen.x / m_screen.y, 0.1f, 100.0f);
-	glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraDirection, cameraVerticalVector);
+	glm::mat4 projection = camera.getProjectionMatrix(m_screen.x, m_screen.y);
+	glm::mat4 view = camera.getViewMatrix();
 	m_tile.draw(projection*view);
 
 	// Presenting
@@ -183,54 +175,60 @@ bool World::is_over()const
 	return glfwWindowShouldClose(m_window) || escapePressed;
 }
 
+void World::updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<int> targetKeys)
+{
+	for (auto targetKey : targetKeys) {
+		if (key == targetKey) {
+			if (action == GLFW_PRESS) {
+				toUpdate = true;
+			}
+			if (action == GLFW_RELEASE) {
+				toUpdate = false;
+			}
+		}
+	}
+}
+
 // On key callback
 void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
-	// Resetting game
+	// Core controls
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
 	{
 		int w, h;
 		glfwGetWindowSize(m_window, &w, &h);
 	}
 
-	if (action == GLFW_PRESS && key == GLFW_KEY_UP) {
-		key_up = true;
-	}
-	if (action == GLFW_RELEASE && key == GLFW_KEY_UP) {
-		key_up = false;
-	}
-
-	if (action == GLFW_PRESS && key == GLFW_KEY_DOWN) {
-		key_down = true;
-	}
-	if (action == GLFW_RELEASE && key == GLFW_KEY_DOWN) {
-		key_down = false;
-	}
-
-	if (action == GLFW_PRESS && key == GLFW_KEY_RIGHT) {
-		key_right = true;
-	}
-	if (action == GLFW_RELEASE && key == GLFW_KEY_RIGHT) {
-		key_right = false;
-	}
-
-	if (action == GLFW_PRESS && key == GLFW_KEY_LEFT) {
-		key_left = true;
-	}
-	if (action == GLFW_RELEASE && key == GLFW_KEY_LEFT) {
-		key_left = false;
-	}
-
 	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
 		escapePressed = true;
+	}
+
+	// We do what we must because we can. Also we only can if we support C++11.
+	std::vector<std::tuple<bool&, std::vector<int>>> stickyKeys = {
+		// Format of this monstrosity:
+		// { Var to update, { Keys that will update it } }
+
+		// Camera controls:
+		{ camera.move_forward, { GLFW_KEY_W, GLFW_KEY_UP } },
+		{ camera.move_backward, { GLFW_KEY_S, GLFW_KEY_DOWN } },
+		{ camera.move_right, { GLFW_KEY_D, GLFW_KEY_RIGHT } },
+		{ camera.move_left, { GLFW_KEY_A, GLFW_KEY_LEFT } },
+		{ camera.rotate_right, { GLFW_KEY_E } },
+		{ camera.rotate_left, { GLFW_KEY_Q } },
+	};
+
+	for (auto stickyKey : stickyKeys) {
+		updateBoolFromKey(action, key, std::get<0>(stickyKey), std::get<1>(stickyKey));
 	}
 }
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 {
-	// Stop the mouse from escaping
-	glfwSetCursorPos(window, m_screen.x / 2, m_screen.y / 2);
-	mouseMovement.x = m_screen.x/2 - xpos;
-	mouseMovement.y = m_screen.y/2 - ypos;
+	// Handle the mouse movement here
+}
+
+void World::on_mouse_scroll(GLFWwindow * window, double xoffset, double yoffset)
+{
+	camera.mouseScroll = glm::vec2(xoffset, yoffset);
 }
 

@@ -37,7 +37,6 @@ inline char separator();
 
 std::string pathBuilder(std::vector<std::string> parts);
 
-
 // Not much math is needed and there are already way too many libraries linked (:    <--- That's not just evil, it's also silly
 // If you want to do some overloads..
 struct vec2 { float x, y; };
