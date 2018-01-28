@@ -99,7 +99,7 @@ bool World::init(vec2 screen)
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
 
-	Tile tile;
+	Tile tile;	
 
 	std::vector<std::string> pathParts;
 	pathParts.push_back("data");
@@ -112,7 +112,16 @@ bool World::init(vec2 screen)
 	bool tileInit = tile.init(obj);
 //	bool tileInit = false; //FIXME hack because tile init not finished?
 	m_tile = tile;
-	return tileInit;
+
+	// skybox
+	Skybox skybox;
+	std::string skyboxFilename = "skybox.obj";
+	OBJ::Data skyboxObj;
+	if (!OBJ::Loader::loadOBJ(path, skyboxFilename, skyboxObj)) return false;
+	bool skyboxInit = skybox.init(skyboxObj);
+	m_skybox = skybox;
+
+	return tileInit && skyboxInit;
 }
 
 // Releases all the associated resources
@@ -172,6 +181,7 @@ void World::draw()
 	glm::mat4 projection = glm::perspective(glm::radians(fieldOfView), m_screen.x / m_screen.y, 0.1f, 100.0f);
 	glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraDirection, cameraVerticalVector);
 	m_tile.draw(projection*view);
+	m_skybox.draw(projection * view * m_skybox.model);
 
 	// Presenting
 	glfwSwapBuffers(m_window);

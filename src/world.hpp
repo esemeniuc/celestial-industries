@@ -3,6 +3,8 @@
 // internal
 #include "common.hpp"
 #include "tile.hpp"
+#include "skybox.hpp"
+
 // stlib
 #include <vector>
 #include <random>
@@ -60,6 +62,7 @@ private:
 	bool escapePressed = false;
 
 	Tile m_tile;
+	Skybox m_skybox;
 	vec2 m_screen;
 	glm::mat4 m_view;
 
