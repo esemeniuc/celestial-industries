@@ -128,6 +128,8 @@ bool World::init(vec2 screen)
 void World::destroy()
 {
 	Mix_CloseAudio();
+	m_tile.destroy();
+	m_skybox.destroy();
 	glfwDestroyWindow(m_window);
 }
 
