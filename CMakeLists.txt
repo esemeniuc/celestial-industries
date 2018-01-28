@@ -13,7 +13,9 @@ add_executable(proj
         src/objloader.cpp
         src/common.cpp
         src/main.cpp
+		src/entity.cpp
         src/tile.cpp
+		src/skybox.cpp
         src/world.cpp)
 
 target_include_directories(proj PUBLIC
