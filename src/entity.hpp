@@ -50,7 +50,7 @@ enum collision_geometry_type
 {
 	cg_bounding_box,
 	cg_bounding_sphere,
-	cg_bonding_cylinder,
+	cg_bounding_cylinder,
 };
 
 class Entity : public Renderable 
