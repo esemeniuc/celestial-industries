@@ -149,10 +149,10 @@ bool World::update(float elapsed_ms)
 	);
 	cameraHorizontalVector = glm::vec3(sin(cameraAngle.x - M_PI / 2.0f), 0, cos(cameraAngle.x - M_PI / 2.0f));
 	cameraVerticalVector = glm::cross(cameraHorizontalVector, cameraDirection);
-	if (key_up) cameraPosition += cameraDirection * elapsed_ms * cameraSpeed;
-	if (key_down) cameraPosition -= cameraDirection * elapsed_ms * cameraSpeed;
-	if (key_right) cameraPosition += cameraHorizontalVector * elapsed_ms * cameraSpeed;
-	if (key_left) cameraPosition += cameraHorizontalVector * elapsed_ms * cameraSpeed;
+	if (key_up) cameraPosition += glm::vec3(0.0, 0.0, 1.0);
+	if (key_down) cameraPosition -= glm::vec3(1.0, 0.0, 1.0);
+	if (key_right) cameraPosition += glm::vec3(1.0, 0.0, 0.0);
+	if (key_left) cameraPosition -= glm::vec3(1.0, 0.0, 0.0);
 	return true;
 }
 
@@ -180,8 +180,8 @@ void World::draw()
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glm::mat4 projection = glm::perspective(glm::radians(fieldOfView), m_screen.x / m_screen.y, 0.1f, 100.0f);
-	glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraDirection, cameraVerticalVector);
+	glm::mat4 projection = glm::perspective(glm::radians(fieldOfView), m_screen.x / m_screen.y, 0.1f, 1000.0f);
+	glm::mat4 view = glm::lookAt(cameraPosition, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 	m_tile.draw(projection*view);
 	m_skybox.draw(projection * view * m_skybox.model);
 

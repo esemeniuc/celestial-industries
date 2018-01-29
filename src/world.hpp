@@ -72,9 +72,9 @@ private:
 	float cameraSpeed = 0.1f;
 	float mouseSpeed = 0.00005f;
 	vec2 mouseMovement = { 0, 0 };
-	vec2 cameraAngle = { 0,0 }; // horizontal (along x), vertical (along y).
+	vec2 cameraAngle = { 0.4f, 0.4f }; // horizontal (along x), vertical (along y).
 	glm::vec3 cameraDirection;
-	glm::vec3 cameraPosition;
+	glm::vec3 cameraPosition = glm::vec3(30.0, 30.0, 30.0);
 	glm::vec3 cameraVerticalVector; // Note: This is what is typically reffered to as "up" for the viewer
 	glm::vec3 cameraHorizontalVector;
 
