@@ -1,9 +1,10 @@
 #version 330 
-in vec3 position;
-
 uniform mat4 mvp;
+in vec3 position;
+out vec3 texture_coordinates;
 
 void main()
 {
-	gl_Position = mvp * vec4(position, 1);
+    texture_coordinates = position;
+    gl_Position = mvp * vec4(position, 1);
 }
