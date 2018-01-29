@@ -114,11 +114,17 @@ bool World::init(vec2 screen)
 	m_tile = tile;
 
 	// skybox
-	Skybox skybox;
+	Skybox skybox;	
 	std::string skyboxFilename = "skybox.obj";
 	OBJ::Data skyboxObj;
 	if (!OBJ::Loader::loadOBJ(path, skyboxFilename, skyboxObj)) return false;
 	bool skyboxInit = skybox.init(skyboxObj);
+	
+	// specify texture unit corresponding to texture sampler in fragment shader
+	GLuint cube_texture;
+	glUniform1i(glGetUniformLocation(skybox.effect.program, "cube_texture"), 0);	
+	skybox.set_cube_faces("../data/textures/skybox");
+	skybox.generate_cube_map(skybox.get_cube_faces(), &cube_texture);
 	m_skybox = skybox;
 
 	return tileInit && skyboxInit;
