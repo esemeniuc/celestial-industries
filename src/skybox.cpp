@@ -79,12 +79,27 @@ void Skybox::draw(glm::mat4 mvp)
 	}
 }
 
-bool Skybox::load_side_texture(GLuint texture, GLenum side, const char *texture_image_path)
+void Skybox::set_cube_faces(const std::string relative_path)
+{
+	faces.front = relative_path + "/front.png";
+	faces.back = relative_path + "/back.png";
+	faces.left = relative_path + "/left.png";
+	faces.right = relative_path + "/right.png";
+	faces.top = relative_path + "/up.png";
+	faces.bottom = relative_path + "/down.png";
+}
+
+cube_textures Skybox::get_cube_faces()
+{
+	return faces;
+}
+
+bool Skybox::load_side_texture(GLuint texture, GLenum side, const std::string texture_image_path)
 {
 	// load image data from file
-	if (texture_image_path == nullptr) return false;
+	if (texture_image_path.empty()) return false;
 	int width, height, num_of_channels = 4;
-	stbi_uc* texture_data = stbi_load(texture_image_path, &width, &height, NULL, num_of_channels);
+	stbi_uc* texture_data = stbi_load(texture_image_path.c_str(), &width, &height, NULL, num_of_channels);
 	if (texture_data == NULL) return false;
 
 	// bind texture to target
@@ -96,22 +111,23 @@ bool Skybox::load_side_texture(GLuint texture, GLenum side, const char *texture_
 
 	// free memory
 	free(texture_data);	
-	return true;
+	return !gl_has_errors();
 }
 
-void Skybox::generate_cube_map(const cube_faces * faces, GLuint *cube_texture)
+void Skybox::generate_cube_map(const cube_textures &faces, GLuint *cube_texture)
 {
-	// generate a texture that will hold all cube map sides
+	// assign texture to Texture unit 0
 	glActiveTexture(GL_TEXTURE0);
+	// generate texture name
 	glGenTextures(1, cube_texture);
 
 	// load textures for each side of the skybox cube
-	load_side_texture(*cube_texture, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, faces->front);
-	load_side_texture(*cube_texture, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, faces->back);
-	load_side_texture(*cube_texture, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, faces->top);
-	load_side_texture(*cube_texture, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, faces->bottom);
-	load_side_texture(*cube_texture, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, faces->left);
-	load_side_texture(*cube_texture, GL_TEXTURE_CUBE_MAP_POSITIVE_X, faces->right);
+	load_side_texture(*cube_texture, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, faces.front);
+	load_side_texture(*cube_texture, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, faces.back);
+	load_side_texture(*cube_texture, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, faces.top);
+	load_side_texture(*cube_texture, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, faces.bottom);
+	load_side_texture(*cube_texture, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, faces.left);
+	load_side_texture(*cube_texture, GL_TEXTURE_CUBE_MAP_POSITIVE_X, faces.right);
 
 	// cube map texture formatting (bilinear filtering, clamp to edge)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

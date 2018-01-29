@@ -2,13 +2,13 @@
 #include "entity.hpp"
 #include "stb_image.h"
 
-struct cube_faces {
-	char* front;
-	char* back;
-	char* top;
-	char* bottom;
-	char* left;
-	char* right;
+struct cube_textures {
+	std::string front;
+	std::string back;
+	std::string top;
+	std::string bottom;
+	std::string left;
+	std::string right;
 };
 
 
@@ -23,11 +23,15 @@ public:
 
 	void draw(glm::mat4 mvp)override;
 
-	bool load_side_texture(GLuint texture, GLenum side, const char *texture_image);
+	void set_cube_faces(const std::string path);
 
-	void generate_cube_map(const cube_faces* faces, GLuint *cube_texture);
+	cube_textures get_cube_faces();
+
+	bool load_side_texture(GLuint texture, GLenum side, const std::string texture_image);
+
+	void generate_cube_map(const cube_textures &faces, GLuint *cube_texture);
 
 private:
-		cube_faces faces;
+	cube_textures faces;
 };
 
