@@ -506,12 +506,14 @@
     <ClCompile Include="$(ProjectDir)..\src\common.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\world.cpp" />
     <ClCompile Include="..\src\objloader.cpp" />
+    <ClCompile Include="..\src\textureloader.cpp" />
     <ClCompile Include="..\src\tile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\camera.hpp" />
     <ClInclude Include="..\src\common.hpp" />
     <ClInclude Include="..\src\objloader.hpp" />
+    <ClInclude Include="..\src\textureloader.hpp" />
     <ClInclude Include="..\src\tile.hpp" />
     <ClInclude Include="..\src\world.hpp" />
   </ItemGroup>

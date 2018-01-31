@@ -13,9 +13,6 @@ void Camera::update(float ms)
 	glm::vec3 cameraVector2 = glm::vec3(sin(cameraAngle.x), 0, cos(cameraAngle.x));
 	cameraVerticalVector = glm::cross(cameraHorizontalVector, cameraDirection);
 
-	std::cout << "POS X " << cameraPosition.x << "Y " << cameraPosition.y << "Z " << cameraPosition.z << std::endl;
-	std::cout << "ANGLE X " << cameraAngle.x << "Y " << cameraAngle.y << "Z " << cameraAngle.z << std::endl;
-
 	if (mouseScroll.y > 0) {
 		cameraAngle.y = std::min((float)M_PI/2, cameraAngle.y + mouseScroll.y * cameraZoomSpeed);
 	}

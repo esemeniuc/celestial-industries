@@ -110,7 +110,7 @@ bool World::init(glm::vec2 screen)
 	pathParts.push_back("models");
 	std::string path = pathBuilder(pathParts);
 	//std::string filename = "pineTree.obj";
-	std::string filename = "sketch2.obj";
+	std::string filename = "camoLego.obj";
 	OBJ::Data obj;
 	if (!OBJ::Loader::loadOBJ(path, filename, obj))return false;
 	bool tileInit = tile.init(obj);

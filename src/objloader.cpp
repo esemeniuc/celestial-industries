@@ -1,5 +1,6 @@
 ﻿#include "objloader.hpp"
 #include "common.hpp"
+#include "textureloader.hpp"
 
 #include <cmath>
 #include <vector>
@@ -24,6 +25,8 @@ namespace OBJ {
 		if (word == "Ka")return Ambient;
 		if (word == "Kd")return Diffuse;
 		if (word == "Ks")return Specular;
+		if (word == "map_Ka")return AmbientMap;
+		if (word == "map_Kd")return DiffuseMap;
 		return Invalid;
 	}
 
@@ -43,18 +46,29 @@ namespace OBJ {
 		glm::vec3 ambient;
 		glm::vec3 diffuse;
 		glm::vec3 specular;
+		bool hasDiffuseMap = false;
+		std::shared_ptr<Texture> diffuseMap;
 		bool doneWithFirst = false;
+		std::string texturePath;
+		std::vector<std::string> texturePathParts; // Did I mention the tex files can be in arbitrary relative positions :)
 		while (std::getline(file, line)) {
 			std::istringstream lineStream(line);
 			std::string firstWord;
 			lineStream >> firstWord;
 			LineType lineType = wordToObjLineType(firstWord);
+			bool hasDiffuseMap = false;
 			switch (lineType) {
 				case NewMaterial:
 					if (doneWithFirst) {
 						result.materials.push_back({
-														   name, ambient, diffuse, specular
-												   });
+							name,
+							ambient,
+							diffuse,
+							specular,
+							hasDiffuseMap,
+							diffuseMap
+							});
+						hasDiffuseMap = false; // If we don't reset this EVERYTHING has it on true
 					} else {
 						doneWithFirst = true;
 					}
@@ -75,12 +89,36 @@ namespace OBJ {
 					lineStream >> specular.y;
 					lineStream >> specular.z;
 					break;
+				case DiffuseMap:
+					hasDiffuseMap = true;
+					texturePath = "";
+					std::getline(lineStream, texturePath);
+					texturePath.erase(0, 1); // We pick up a space at the start for no good reason
+					texturePathParts = splitString(texturePath, '/');
+					texturePath = pathAppender(path, texturePathParts);
+#ifdef _WIN32
+					// Hey should we make stdi_load accept windows paths on windows? nah thatd be silly
+					texturePath = winPathToNixPath(texturePath);
+#endif // _WIN32
+					diffuseMap = std::make_shared<Texture>();
+
+					bool loadSuccesfull = diffuseMap->load_from_file(texturePath.c_str());
+					if (!diffuseMap->is_valid()  || !loadSuccesfull) {
+						std::cout << "Failed to load diffuse map: \n" << texturePath << std::endl;
+						return false;
+					}
+					texturePath.clear();
 			}
 		}
 		// Push the last material to the stack
 		result.materials.push_back({
-										   name, ambient, diffuse, specular
-								   });
+			name,
+			ambient,
+			diffuse,
+			specular,
+			hasDiffuseMap,
+			diffuseMap,
+			});
 		file.close();
 		return true;
 	}
@@ -114,8 +152,10 @@ namespace OBJ {
 				case MaterialLib:
 					materialLibRelativePath = "";
 					lineStream >> materialLibRelativePath;
-					// Get rid of useless end of the path
-					loadMaterialLibrary(path, materialLibRelativePath, materialLibrary);
+					if (!loadMaterialLibrary(path, materialLibRelativePath, materialLibrary)) {
+						std::cout << "Failed to load material library " << materialLibRelativePath << std::endl;
+						return false;
+					}
 					materialLibRelativePath.clear();
 					break;
 				case UseMaterial:

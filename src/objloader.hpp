@@ -1,5 +1,9 @@
 #pragma once
 
+#include "textureloader.hpp"
+
+#include <memory>
+
 // glm
 #include "glm/glm.hpp"
 
@@ -24,11 +28,21 @@ namespace OBJ {
 		Ambient,
 		Diffuse,
 		Specular,
+		AmbientMap, // Not supported
+		DiffuseMap,
 	};
 
 	struct Material {
 		std::string name;
 		glm::vec3 ambient, diffuse, specular;
+
+		// We could avoid this bool since GLID is 0 if not initialized.
+		// It is however nice to know the difference between 
+		// "There is no texture, and there shouldn't be"
+		// and "Where the fuck is my texture"
+		bool hasDiffuseMap;
+		std::shared_ptr<Texture> diffuseMap;
+		//Texture diffuseMap;
 	};
 
 	struct MaterialLibrary {

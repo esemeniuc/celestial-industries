@@ -31,11 +31,12 @@
 
 
 // Our stuff
-void criticalFailure(std::string msg);
-
-inline char separator();
+std::vector<std::string> splitString(std::string input, const char seperator);
+char separator();
 
 std::string pathBuilder(std::vector<std::string> parts);
+std::string pathAppender(std::string base, std::vector<std::string> parts);
+std::string winPathToNixPath(std::string winPath);
 
 // Not much math is needed and there are already way too many libraries linked (:    <--- That's not just evil, it's also silly
 // If you want to do some overloads..
@@ -66,21 +67,6 @@ struct TexturedVertex
 {
 	vec3 position;
 	vec2 texcoord;
-};
-
-// Texture wrapper
-struct Texture
-{
-	Texture();
-	~Texture();
-
-	GLuint id;
-	int width;
-	int height;
-	
-	// Loads texture from file specified by path
-	bool load_from_file(const char* path);
-	bool is_valid()const; // True if texture is valid
 };
 
 // A Mesh is a collection of a VertexBuffer and an IndexBuffer. A VAO
