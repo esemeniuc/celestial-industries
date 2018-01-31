@@ -5,7 +5,11 @@
 #include <string.h>
 
 // glm
+#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/transform.hpp"
+#include "glm/gtx/quaternion.hpp"
 
 // custom helper headers
 #include "common.hpp";
@@ -70,6 +74,14 @@ public:
 
 	void set_geometryId(long);
 
+	void set_rotation (glm::vec3);
+
+	void set_translation (glm::vec3);
+
+	void set_scale(glm::vec3);
+
+	glm::mat4 model_matrix();
+
 	void set_collision_geometry_type(collision_geometry_type);
 
 	collision_geometry_type get_collision_geometry_type();
@@ -87,7 +99,7 @@ protected:
 	glm::vec3 velocity;
 	glm::vec3 gravity;
 	glm::vec3 applied_force;
-	glm::vec3 position;
+	glm::vec3 translation;
 	glm::vec3 scale;
 	glm::vec3 rotation;
 
