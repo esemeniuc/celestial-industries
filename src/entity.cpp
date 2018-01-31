@@ -1,4 +1,4 @@
-#include "entity.hpp";
+#include "entity.hpp"
 
 void Entity::set_velocity(glm::vec3 v) 
 {

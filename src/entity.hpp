@@ -2,7 +2,7 @@
 #include <cassert>
 #include <cmath>
 #include <sstream>
-#include <string.h>
+#include <cstring>
 
 // glm
 #define GLM_ENABLE_EXPERIMENTAL
@@ -12,7 +12,7 @@
 #include "glm/gtx/quaternion.hpp"
 
 // custom helper headers
-#include "common.hpp";
+#include "common.hpp"
 #include "objloader.hpp"
 
 // collision geometries

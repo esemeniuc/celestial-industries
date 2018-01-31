@@ -1,4 +1,4 @@
-#include "Skybox.hpp"
+#include "skybox.hpp"
 
 bool Skybox::init(OBJ::Data obj)
 {
