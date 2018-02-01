@@ -1,13 +1,16 @@
 #include "common.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
+//ignore warnings from stb_image
+#pragma GCC diagnostic push // save diagnostic state
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 #include "../ext/stb_image/stb_image.h"
+#pragma GCC diagnostic pop
 
 // stlib
 #include <vector>
 #include <sstream>
 #include <string>
-#include <vector>
 #include <iostream>
 
 // Our stuff
