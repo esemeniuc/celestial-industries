@@ -13,10 +13,21 @@ add_executable(proj
         src/objloader.cpp
         src/common.cpp
         src/main.cpp
-		src/entity.cpp
+        src/entity.cpp
         src/tile.cpp
-		src/skybox.cpp
+        src/skybox.cpp
         src/world.cpp)
+target_compile_options(proj PUBLIC
+    -Wall
+    -Wpedantic
+    -Wextra
+    -Wlogical-op
+    -Wnull-dereference
+    -Wshadow
+    -Wformat=2
+    -Wno-comment
+    -Wno-unused-parameter
+    -ggdb)
 
 target_include_directories(proj PUBLIC
         ext/gl3w
