@@ -38,3 +38,4 @@ visual_studio/tmp/
 #clion
 .idea/
 cmake-build-debug
+build/
