@@ -22,7 +22,7 @@ bool Tile::init(OBJ::Data obj) {
 	// Vertex Buffer creation
 	glGenBuffers(1, &vbo_id);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
-	glBufferData(GL_ARRAY_BUFFER, obj.vertices.size() * sizeof(glm::vec3), obj.vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, obj.data.size() * sizeof(OBJ::VertexData), obj.data.data(), GL_STATIC_DRAW);
 
 	for (auto group : obj.groups) {
 		Mesh mesh;
@@ -30,14 +30,14 @@ bool Tile::init(OBJ::Data obj) {
 		// Index Buffer creation
 		glGenBuffers(1, &mesh.ibo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, group.vertexIndices.size() * sizeof(unsigned int), group.vertexIndices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, group.indices.size() * sizeof(unsigned int), group.indices.data(), GL_STATIC_DRAW);
 
 		// Vertex Array (Container for Vertex + Index buffer)
 		glGenVertexArrays(1, &mesh.vao);
 		if (gl_has_errors())
 			return false;
 
-		mesh.numIndices = group.vertexIndices.size();
+		mesh.numIndices = group.indices.size();
 		mesh.material = group.material;
 		meshes.push_back(mesh);
 	}
@@ -64,14 +64,11 @@ void Tile::destroy()
 
 void Tile::update(float ms)
 {
-	// Do nothing, our buildings be static yo
+	// Do nothing, our buildings be static
 }
 
 void Tile::draw(glm::mat4 viewProjection)
 {
-	// Transformation code, see Rendering and Transformation in the template specification for more info
-	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
-
 	glm::mat4 mvp = viewProjection * model;
 
 	// Setting shaders
@@ -93,12 +90,17 @@ void Tile::draw(glm::mat4 viewProjection)
 		// Input data location as in the vertex buffer
 		GLuint in_position_loc = glGetAttribLocation(effect.program, "in_position");
 		glEnableVertexAttribArray(in_position_loc);
-		glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0); // (void*)0 because we render the whole array
+		glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(OBJ::VertexData), (void*)0); // (void*)0 because we render from the start of the stride
 	
 		// Diffuse map stuff
 		GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
 		glEnableVertexAttribArray(in_texcoord_loc); // Oddly enough we ALWAYS get texcoords, even for textureless stuff
-		glVertexAttribPointer(in_texcoord_loc, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+		glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(OBJ::VertexData), (void*)sizeof(glm::vec3));
+
+		GLuint in_normal_loc = glGetAttribLocation(effect.program, "in_normal");
+		glEnableVertexAttribArray(in_normal_loc);
+		glVertexAttribPointer(in_normal_loc, 3, GL_FLOAT, GL_FALSE, sizeof(OBJ::VertexData), (void*)(sizeof(glm::vec3)+sizeof(glm::vec2)));
+
 		if (mesh.material.hasDiffuseMap) {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, mesh.material.diffuseMap->id);
@@ -116,4 +118,9 @@ void Tile::draw(glm::mat4 viewProjection)
 		glDrawElements(GL_TRIANGLES, mesh.numIndices, GL_UNSIGNED_INT, nullptr);
 	}
 
+}
+
+void Tile::translate(glm::vec3 translation)
+{
+	model = glm::translate(model, translation);
 }

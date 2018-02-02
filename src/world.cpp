@@ -2,12 +2,13 @@
 #include "world.hpp"
 
 // stlib
-#include <string.h>
+#include <cstring>
 #include <cassert>
 #include <sstream>
 #include <cmath>
 #include <map>
 #include <tuple>
+#include <iostream>
 
 // glm
 #include "glm/mat4x4.hpp"
@@ -103,20 +104,67 @@ bool World::init(glm::vec2 screen)
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
 
-	Tile tile;
+	auto loadResult = loadTiles({
+		"sand1.obj", "sand2.obj", "sand3.obj", "wall.obj", "brickCube.obj", "miningTower.obj", "photonTower.obj"
+		});
+	if (!std::get<0>(loadResult)) {
+		return false;
+	}
+	tileTypes = std::get<1>(loadResult);
 
+
+
+	level = intArrayToLevel({
+		{ 3, 0, 0, 5 },
+		{ 3, 1, 2, 0 },
+		{ 3, 0, 1, 1 },
+		{ 3, 4, 0, 5 },
+	}, tileTypes);
+
+	return true;
+}
+
+std::tuple<bool, std::vector<OBJ::Data>> World::loadTiles(std::vector<std::string> filenames)
+{
+	std::vector<OBJ::Data> objs;
+	bool success = true;
 	std::vector<std::string> pathParts;
 	pathParts.push_back("data");
 	pathParts.push_back("models");
 	std::string path = pathBuilder(pathParts);
-	//std::string filename = "pineTree.obj";
-	std::string filename = "camoLego.obj";
-	OBJ::Data obj;
-	if (!OBJ::Loader::loadOBJ(path, filename, obj))return false;
-	bool tileInit = tile.init(obj);
-//	bool tileInit = false; //FIXME hack because tile init not finished?
-	m_tile = tile;
-	return tileInit;
+	for (auto filename : filenames) {
+		OBJ::Data obj;
+		success &= OBJ::Loader::loadOBJ(path, filename, obj);
+		objs.push_back(obj);
+		if (!success) {
+			std::cout << "FAILED TO LOAD OBJS! Specifically: " << filename << std::endl;
+			return { success, objs };
+		}
+	}
+	return { success, objs };
+}
+
+std::vector<std::vector<Tile>> World::intArrayToLevel(std::vector<std::vector<int>> intArray, std::vector<OBJ::Data> tileTypes)
+{
+	// TODO: turn into map?
+	std::vector<std::vector<Tile>> result;
+	for (size_t i = 0; i < intArray.size(); i++) {
+		std::vector<int> row = intArray[i];
+		std::vector<Tile> tileRow;
+		for (size_t j = 0; j < row.size(); j++) {
+			int cell = row[j];
+			Tile tile;
+			bool success = tile.init(tileTypes[cell]);
+			if (!success) {
+				std::cout << "FAILED TO INITIALIZE TILE OF TYPE " << cell << std::endl;
+			}
+			// TODO: Standardize tile size and resize the model to be the correct size
+			tile.translate({ j, 0, i });
+			tileRow.push_back(tile);
+		}
+		result.push_back(tileRow);
+	}
+	return result;
 }
 
 // Releases all the associated resources
@@ -163,7 +211,11 @@ void World::draw()
 
 	glm::mat4 projection = camera.getProjectionMatrix(m_screen.x, m_screen.y);
 	glm::mat4 view = camera.getViewMatrix();
-	m_tile.draw(projection*view);
+	for (auto tileRow : level) {
+		for (auto tile : tileRow) {
+			tile.draw(projection*view);
+		}
+	}
 
 	// Presenting
 	glfwSwapBuffers(m_window);
@@ -215,6 +267,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		{ camera.move_left, { GLFW_KEY_A, GLFW_KEY_LEFT } },
 		{ camera.rotate_right, { GLFW_KEY_E } },
 		{ camera.rotate_left, { GLFW_KEY_Q } },
+		{ camera.z_held, { GLFW_KEY_Z } },
 	};
 
 	for (auto stickyKey : stickyKeys) {

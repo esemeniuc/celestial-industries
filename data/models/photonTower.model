@@ -1,0 +1,39 @@
+# Made using Asset Forge (1.3)
+
+:models
+Primitives/block_default[(0, 0, 0);(0.0, 0.0, 0.0);(1.0, 1.0, 1.0);block_default_1;darkStone]
+Primitives/block_rounded[(0, 0.5, 0);(0.0, 0.0, 0.0);(1.0, 1.6, 1.0);block_rounded_2;darkStone]
+Primitives/block_rounded[(0, 2, 0);(0.0, 0.0, 0.0);(1.0, 0.3, 1.0);block_rounded_3;darkStone]
+Vehicles/detail_roofDoubleRails%[(0.5, 1.4, 0);(0.0, 180.0, 90.0);(1.0, 1.0, 1.0);detail_roofDoubleRails%_11;blueSteel]
+Vehicles/detail_bullbar[(0, 1.4, -0.4);(90.0, 180.0, 0.0);(1.0, 1.0, 1.0);detail_bullbar_16;tire]
+Vehicles/detail_bullbar[(0.4, 1.4, -7.45E-09);(90.0, 90.0, 0.0);(1.0, 1.0, 1.0);detail_bullbar_17;tire]
+Vehicles/detail_bullbar[(0, 1.4, 0.4);(90.0, 0.0, 0.0);(1.0, 1.0, 1.0);detail_bullbar_19;tire]
+Vehicles/detail_bullbar[(-0.4, 1.4, -7.45E-09);(90.0, 270.0, 0.0);(1.0, 1.0, 1.0);detail_bullbar_20;tire]
+Buildings/garage_wide[(0, 0, -1);(0.0, 270.0, 0.0);(1.0, 1.0, 1.0);garage_wide_25;element+glass]
+Primitives/sphere_vertex[(1.49E-08, 2.5, 0);(0.0, 270.0, 0.0);(0.2, 0.2, 0.2);sphere_vertex_42;hilt]
+Primitives/block_piramid[(-0.2, 2.2, 0.2);(0.0, 270.0, 0.0);(0.4, 0.3, 0.4);block_piramid_44;blueSteel]
+Primitives/block_piramid[(0.2, 2.2, 0.2);(0.0, 270.0, 0.0);(0.4, 0.3, 0.4);block_piramid_45;blueSteel]
+Primitives/block_piramid[(0.2, 2.2, -0.2);(0.0, 270.0, 0.0);(0.4, 0.3, 0.4);block_piramid_46;blueSteel]
+Primitives/block_piramid[(-0.2, 2.2, -0.2);(0.0, 270.0, 0.0);(0.4, 0.3, 0.4);block_piramid_47;blueSteel]
+Vehicles/detail_roofDoubleRails%[(-0.5, 1.4, 0);(0.0, 180.0, 270.0);(1.0, 1.0, 1.0);detail_roofDoubleRails%_48;blueSteel]
+
+:materials
+_defaultMat[RGBA(1.000, 1.000, 1.000, 1.000);]
+tire[RGBA(0.298, 0.314, 0.365, 1.000);]
+element[RGBA(0.945, 0.949, 0.965, 1.000);]
+glass[RGBA(0.298, 0.314, 0.365, 1.000);]
+blade[RGBA(0.875, 0.925, 0.949, 1.000);]
+bladeSecondary[RGBA(0.616, 0.651, 0.667, 1.000);]
+hilt[RGBA(1.000, 0.683, 0.059, 1.000);]
+handle[RGBA(0.847, 0.620, 0.392, 1.000);]
+lightRed[RGBA(0.949, 0.373, 0.335, 1.000);]
+blueSteel[RGBA(0.141, 0.565, 0.831, 1.000);]
+black[RGBA(0.267, 0.267, 0.267, 1.000);]
+darkStone[RGBA(0.431, 0.431, 0.478, 1.000);]
+roof[RGBA(0.886, 0.467, 0.341, 1.000);]
+wood[RGBA(0.882, 0.579, 0.402, 1.000);]
+lightStone[RGBA(0.812, 0.808, 0.855, 1.000);]
+
+:textures
+
+:extra

@@ -45,21 +45,24 @@ namespace OBJ {
 		//Texture diffuseMap;
 	};
 
+	struct VertexData {
+		// USed to group the data so it can all be fed into the GPU
+		glm::vec3 position;
+		glm::vec2 texcoord;
+		glm::vec3 normal;
+	};
+
 	struct MaterialLibrary {
 		std::vector<Material> materials;
 	};
 
 	struct MaterialGroup {
 		Material material;
-		std::vector<unsigned int> vertexIndices;
-		std::vector<unsigned int> textureCoordinateIndices;
-		std::vector<unsigned int> normalIndices;
+		std::vector<unsigned int> indices;
 	};
 
 	struct Data {
-		std::vector<glm::vec3> vertices;
-		std::vector<glm::vec2> textureCoordinates;
-		std::vector<glm::vec3> normals;
+		std::vector<VertexData> data;
 		std::vector<MaterialGroup> groups;
 	};
 

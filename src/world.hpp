@@ -49,7 +49,7 @@ public:
 
 	std::vector<OBJ::Data> tileTypes;
 
-	std::vector<std::vector<TimeTile>> level;
+	std::vector<std::vector<Tile>> level; // we can add the time dimension when we get there
 
 private:
 	void updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<int> targetKeys);
@@ -57,7 +57,8 @@ private:
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 	void on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
-
+	std::tuple<bool, std::vector<OBJ::Data>> loadTiles(std::vector<std::string> filenames);
+	std::vector<std::vector<Tile>> intArrayToLevel(std::vector<std::vector<int>> intArray, std::vector<OBJ::Data> tileTypes);
 
 private:
 	// Window handle

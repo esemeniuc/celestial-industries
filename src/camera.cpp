@@ -13,11 +13,15 @@ void Camera::update(float ms)
 	glm::vec3 cameraVector2 = glm::vec3(sin(cameraAngle.x), 0, cos(cameraAngle.x));
 	cameraVerticalVector = glm::cross(cameraHorizontalVector, cameraDirection);
 
-	if (mouseScroll.y > 0) {
-		cameraAngle.y = std::min((float)M_PI/2, cameraAngle.y + mouseScroll.y * cameraZoomSpeed);
-	}
-	if (mouseScroll.y < 0) {
-		cameraAngle.y = std::max((float)-M_PI, cameraAngle.y + mouseScroll.y * cameraZoomSpeed);
+	if (!z_held) {
+		if (mouseScroll.y > 0) {
+			cameraAngle.y = std::min((float)M_PI / 2, cameraAngle.y + mouseScroll.y * cameraZoomSpeed);
+		}
+		if (mouseScroll.y < 0) {
+			cameraAngle.y = std::max((float)-M_PI, cameraAngle.y + mouseScroll.y * cameraZoomSpeed);
+		}
+	} else {
+		cameraPosition += mouseScroll.y * cameraZoomSpeed * cameraDirection;
 	}
 
 	mouseScroll = { 0, 0 }; // Scroll needs to be reset, it won't do that on it's own

@@ -20,7 +20,7 @@ public:
 	float fieldOfView = 50.0f;
 	float cameraMoveSpeed = 0.05f;
 	float cameraRotateSpeed = 0.005f;
-	float cameraZoomSpeed = 0.05f;
+	float cameraZoomSpeed = 0.15f;
 
 	glm::vec2 mouseScroll;
 	glm::vec3 cameraDirection;
@@ -30,7 +30,7 @@ public:
 	glm::vec3 cameraHorizontalVector;
 	glm::mat4 m_view;
 
-	bool move_forward, move_backward, move_left, move_right, rotate_left, rotate_right;
+	bool move_forward, move_backward, move_left, move_right, rotate_left, rotate_right, z_held;
 
 	void update(float ms);
 

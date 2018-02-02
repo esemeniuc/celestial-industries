@@ -20,6 +20,8 @@ public:
 
 	void draw(glm::mat4 mvp)override;
 
+	void translate(glm::vec3 translation);
+
 private:
 	// TODO: Remove the ones we don't use... so all of them?
 	glm::vec2 m_position;
