@@ -99,7 +99,7 @@ bool World::init(vec2 screen)
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
 
-	Tile tile;	
+	Tile tile;
 
 	std::vector<std::string> pathParts;
 	pathParts.push_back("data");
@@ -110,7 +110,6 @@ bool World::init(vec2 screen)
 	OBJ::Data obj;
 	if (!OBJ::Loader::loadOBJ(path, filename, obj))return false;
 	bool tileInit = tile.init(obj);
-//	bool tileInit = false; //FIXME hack because tile init not finished?
 	m_tile = tile;
 
 	// skybox

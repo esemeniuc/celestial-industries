@@ -30,10 +30,7 @@ bool Skybox::init(OBJ::Data obj)
 	}
 
 	// Loading shaders
-	if (!effect.load_from_file(shader_path("skybox.vs.glsl"), shader_path("skybox.fs.glsl")))
-		return false;
-
-	return true;
+	return effect.load_from_file(shader_path("skybox.vs.glsl"), shader_path("skybox.fs.glsl"))
 }
 
 void Skybox::destroy()
@@ -99,8 +96,8 @@ bool Skybox::load_side_texture(GLuint texture, GLenum side, const std::string te
 	// load image data from file
 	if (texture_image_path.empty()) return false;
 	int width, height, num_of_channels = 4;
-	stbi_uc* texture_data = stbi_load(texture_image_path.c_str(), &width, &height, NULL, num_of_channels);
-	if (texture_data == NULL) return false;
+	stbi_uc* texture_data = stbi_load(texture_image_path.c_str(), &width, &height, nullptr, num_of_channels);
+	if (texture_data == nullptr) return false;
 
 	// bind texture to target
 	glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
