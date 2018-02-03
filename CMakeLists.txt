@@ -9,7 +9,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_HOME_DIRECTORY}/cmake_modules)
 find_package(OpenGL REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
-find_package(glfw3 3.2 REQUIRED)
+find_package(glfw3 REQUIRED)
 add_subdirectory(ext/glm)
 
 add_executable(proj
