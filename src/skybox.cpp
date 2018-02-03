@@ -30,7 +30,7 @@ bool Skybox::init(OBJ::Data obj)
 	}
 
 	// Loading shaders
-	return effect.load_from_file(shader_path("skybox.vs.glsl"), shader_path("skybox.fs.glsl"))
+	return effect.load_from_file(shader_path("skybox.vs.glsl"), shader_path("skybox.fs.glsl"));
 }
 
 void Skybox::destroy()
