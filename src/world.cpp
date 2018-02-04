@@ -105,7 +105,7 @@ bool World::init(glm::vec2 screen)
 	glEnable(GL_CULL_FACE);
 
 	auto loadResult = loadTiles({
-		"sand1.obj", "sand2.obj", "sand3.obj", "wall.obj", "brickCube.obj", "miningTower.obj", "photonTower.obj"
+		"sand1.obj", "sand2.obj", "sand3.obj", "wall.obj", "brickCube.obj"//, "miningTower.obj", "photonTower.obj"
 		});
 	if (!std::get<0>(loadResult)) {
 		return false;
@@ -115,10 +115,10 @@ bool World::init(glm::vec2 screen)
 
 
 	level = intArrayToLevel({
-		{ 3, 0, 0, 5 },
+		{ 3, 0, 0, 1 },
 		{ 3, 1, 2, 0 },
 		{ 3, 0, 1, 1 },
-		{ 3, 4, 0, 5 },
+		{ 3, 4, 0, 2 },
 	}, tileTypes);
 
 	return true;

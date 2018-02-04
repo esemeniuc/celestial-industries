@@ -95,10 +95,6 @@ namespace OBJ {
 					texturePath.erase(0, 1); // We pick up a space at the start for no good reason
 					texturePathParts = splitString(texturePath, '/');
 					texturePath = pathAppender(path, texturePathParts);
-#ifdef _WIN32
-					// Hey should we make stdi_load accept windows paths on windows? nah thatd be silly
-					texturePath = winPathToNixPath(texturePath);
-#endif // _WIN32
 					diffuseMap = std::make_shared<Texture>();
 
 					bool loadSuccesfull = diffuseMap->load_from_file(texturePath.c_str());

@@ -11,7 +11,7 @@ Texture::Texture()
 
 Texture::~Texture()
 {
-	//if (id != 0) glDeleteTextures(1, &id);
+	if (id != 0) glDeleteTextures(1, &id);
 }
 
 bool Texture::load_from_file(const char* path)

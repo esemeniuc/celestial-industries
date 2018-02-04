@@ -11,11 +11,7 @@
 
 char separator()
 {
-#ifdef _WIN32
-	return '\\';
-#else
 	return '/';
-#endif
 }
 
 std::vector<std::string> splitString(std::string input, const char seperator) {
@@ -34,7 +30,7 @@ std::string pathBuilder(std::vector<std::string> parts) {
 
 	// Because the template has the vs files in their own folder the exe expects stuff to be relative to the INSIDE of that folder :)
 #ifdef _WIN32
-		path << "..\\";
+		path << "../";
 #endif
 	for (auto part : parts) {
 		path << part << separator();
@@ -57,23 +53,6 @@ std::string pathAppender(std::string base, std::vector<std::string> parts)
 		path << part;
 	}
 	return path.str();
-}
-
-std::string winPathToNixPath(std::string winPath)
-{
-	std::vector<std::string> pathParts = splitString(winPath, '\\');
-	std::stringstream nixPath;
-	bool first = true;
-	for (auto pathPart : pathParts) {
-		if (first) {
-			nixPath << pathPart;
-			first = false;
-		}
-		else {
-			nixPath << "/" << pathPart;
-		}
-	}
-	return nixPath.str();
 }
 
 void gl_flush_errors()

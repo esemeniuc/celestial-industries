@@ -38,7 +38,7 @@ void Camera::update(float ms)
 
 glm::mat4 Camera::getProjectionMatrix(float screen_x, float screen_y)
 {
-	return glm::perspective(glm::radians(fieldOfView), screen_x / screen_y, 0.1f, 100.0f);
+	return glm::perspective(glm::radians(fieldOfView), screen_x / screen_y, 0.1f, 750.0f);
 }
 
 glm::mat4 Camera::getViewMatrix()

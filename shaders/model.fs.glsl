@@ -17,7 +17,7 @@ layout(location = 0) out  vec4 color;
 void main()
 {
 	vec4 lightColor = vec4(1.0,1.0,1.0, 1.0);
-	float angleToLight = clamp( dot(vs_normal,vs_lightVector), 0, 1);
+	float angleToLight = clamp( dot(normalize(vs_normal), normalize(vs_lightVector)), 0, 1);
 	vec4 diffuseColor;
 	if(hasDiffuseMap){
 		diffuseColor = texture(diffuseMapSampler, vs_texcoord);
