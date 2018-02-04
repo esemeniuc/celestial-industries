@@ -1,0 +1,19 @@
+# Made using Asset Forge (1.3)
+
+:models
+Primitives/block_default[(0, -0.1, 0);(0.0, 0.0, 0.0);(1.0, 0.1, 1.0);block_default_0;_defaultMat]
+Primitives/cylinder_full[(0.2, 0, -0.2);(0.0, 0.0, 0.0);(0.2, 0.3, 0.2);cylinder_full_7;customMaterial1]
+Primitives/block_piramid[(0.15, 0.2, -0.25);(90.0, 0.0, 0.0);(0.3, 0.1, 0.1);block_piramid_13;customMaterial1]
+Primitives/block_piramid[(0.2, 0.1, -0.15);(0.0, 90.0, 90.0);(0.3, 0.1, 0.1);block_piramid_14;customMaterial1]
+Swords/blade_dual[(0.25, 0.2, -0.2);(270.0, 270.0, 0.0);(0.2, 0.2, 0.5);blade_dual_15;customMaterial1+customMaterial1]
+
+:materials
+_defaultMat[RGBA(0.405, 0.374, 0.140, 1.000);]
+blade[RGBA(0.875, 0.925, 0.949, 1.000);]
+bladeSecondary[RGBA(0.616, 0.651, 0.667, 1.000);]
+customMaterial1[RGBA(0.230, 0.204, 0.165, 1.000);]
+customMaterial2[RGBA(0.405, 0.405, 0.112, 1.000);]
+
+:textures
+
+:extra

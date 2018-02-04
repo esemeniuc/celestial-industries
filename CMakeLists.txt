@@ -14,7 +14,9 @@ add_executable(proj
         src/common.cpp
         src/main.cpp
         src/tile.cpp
-        src/world.cpp)
+        src/world.cpp
+	src/camera.cpp
+	src/textureloader.cpp)
 
 target_include_directories(proj PUBLIC
         ext/gl3w

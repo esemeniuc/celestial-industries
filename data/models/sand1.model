@@ -1,0 +1,11 @@
+# Made using Asset Forge (1.3)
+
+:models
+Primitives/block_default[(0, -0.1, 0);(0.0, 0.0, 0.0);(1.0, 0.1, 1.0);block_default_16;_defaultMat]
+
+:materials
+_defaultMat[RGBA(0.790, 0.685, 0.369, 1.000);]
+
+:textures
+
+:extra
