@@ -32,8 +32,8 @@ void Camera::update(float ms)
 	if (move_right) cameraPosition += cameraHorizontalVector * ms * cameraMoveSpeed;
 	if (move_left) cameraPosition -= cameraHorizontalVector * ms * cameraMoveSpeed;
 
-	if (rotate_right)cameraAngle.x += cameraRotateSpeed * ms;
-	if (rotate_left)cameraAngle.x -= cameraRotateSpeed * ms;
+	if (rotate_right)cameraAngle.x -= cameraRotateSpeed * ms;
+	if (rotate_left)cameraAngle.x += cameraRotateSpeed * ms;
 }
 
 glm::mat4 Camera::getProjectionMatrix(float screen_x, float screen_y)
