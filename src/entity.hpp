@@ -11,7 +11,7 @@
 #include "glm/gtx/transform.hpp"
 #include "glm/gtx/quaternion.hpp"
 
-// custom helper headers
+// custom headers
 #include "common.hpp"
 #include "objloader.hpp"
 

@@ -1,19 +1,6 @@
 // Header
 #include "world.hpp"
 
-// stlib
-#include <string.h>
-#include <cassert>
-#include <sstream>
-#include <cmath>
-
-// glm
-#include "glm/mat4x4.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-
-// glfw
-#include "GLFW/glfw3.h"
-
 // Same as static in c, local to compilation unit
 namespace
 {
@@ -39,7 +26,7 @@ World::~World()
 }
 
 // World initialization
-bool World::init(vec2 screen)
+bool World::init(glm::vec2 screen)
 {
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
@@ -76,8 +63,10 @@ bool World::init(vec2 screen)
 	glfwSetWindowUserPointer(m_window, this);
 	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((World*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
 	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((World*)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1); };
+	auto scroll_offset_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((World*)glfwGetWindowUserPointer(wnd))->on_mouse_scroll(wnd, _0, _1); };
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
+	glfwSetScrollCallback(m_window, scroll_offset_redirect);
 
 	//-------------------------------------------------------------------------
 	// Loading music and sounds
@@ -93,40 +82,103 @@ bool World::init(vec2 screen)
 		return false;
 	}
 
+	// setup skybox
+	bool skyboxLoaded = loadSkybox("../data/models/", "skybox.obj", "../data/textures/skybox");
+	if (!skyboxLoaded) {
+		return false;
+	}
 
 	// WHY WASNT THIS ENABLED BEFORE?!
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
 
-	Tile tile;
+	auto loadResult = loadTiles({
+		"sand1.obj", "sand2.obj", "sand3.obj", "wall.obj", "brickCube.obj"//, "miningTower.obj", "photonTower.obj"
+		});
+	if (!std::get<0>(loadResult)) {
+		return false;
+	}
+	tileTypes = std::get<1>(loadResult);
+	
+	level = intArrayToLevel({
+		{ 3, 0, 0, 1 },
+		{ 3, 1, 2, 0 },
+		{ 3, 0, 1, 1 },
+		{ 3, 4, 0, 2 },
+	}, tileTypes);
 
+	return true;
+}
+
+std::tuple<bool, std::vector<OBJ::Data>> World::loadTiles(std::vector<std::string> filenames)
+{
+	std::vector<OBJ::Data> objs;
+	bool success = true;
 	std::vector<std::string> pathParts;
 	pathParts.push_back("data");
 	pathParts.push_back("models");
-	std::string path = pathBuilder(pathParts);
-	//std::string filename = "pineTree.obj";
-	std::string filename = "sketch2.obj";
-	OBJ::Data obj;
-	if (!OBJ::Loader::loadOBJ(path, filename, obj))return false;
-	bool tileInit = tile.init(obj);
-	m_tile = tile;
+	std::string path = pathBuilder(pathParts);	
 
-	// skybox
-	Skybox skybox;	
-	std::string skyboxFilename = "skybox.obj";
+	for (auto filename : filenames) {
+		OBJ::Data obj;
+		success &= OBJ::Loader::loadOBJ(path, filename, obj);
+		objs.push_back(obj);
+		if (!success) {
+			std::cout << "FAILED TO LOAD OBJS! Specifically: " << filename << std::endl;
+			return { success, objs };
+		}
+	}
+	return { success, objs };
+}
+
+// skybox
+bool World::loadSkybox (std::string path, std::string skyboxFilename, std::string texturePath) {
+	bool success = true;
 	OBJ::Data skyboxObj;
-	if (!OBJ::Loader::loadOBJ(path, skyboxFilename, skyboxObj)) return false;
-	bool skyboxInit = skybox.init(skyboxObj);
-	
-	// specify texture unit corresponding to texture sampler in fragment shader
-	GLuint cube_texture;
-	glUniform1i(glGetUniformLocation(skybox.effect.program, "cube_texture"), 0);	
-	skybox.set_cube_faces("../data/textures/skybox");
-	skybox.generate_cube_map(skybox.get_cube_faces(), &cube_texture);
-	m_skybox = skybox;
 
-	return tileInit && skyboxInit;
+	success &= OBJ::Loader::loadOBJ(path, skyboxFilename, skyboxObj);
+	if (!success) {
+		std::cout << "Failed to load skybox" << std::endl;
+		return false;
+	}
+	
+	success &= m_skybox.init(skyboxObj);
+	if (!success) {
+		std::cout << "Failed to initilize skybox" << std::endl;
+		return false;
+	}
+
+	// specify texture unit corresponding to texture sampler in fragment shader
+	Texture skyboxTexture;
+	GLuint cube_texture;
+	glUniform1i(glGetUniformLocation(m_skybox.effect.program, "cube_texture"), 0);
+	m_skybox.set_cube_faces(texturePath);
+	skyboxTexture.generate_cube_map(m_skybox.get_cube_faces(), &cube_texture);
+	return true;
+}
+
+std::vector<std::vector<Tile>> World::intArrayToLevel(std::vector<std::vector<int>> intArray, std::vector<OBJ::Data> tileTypes)
+{
+	// TODO: turn into map?
+	std::vector<std::vector<Tile>> result;
+	for (size_t i = 0; i < intArray.size(); i++) {
+		std::vector<int> row = intArray[i];
+		std::vector<Tile> tileRow;
+		for (size_t j = 0; j < row.size(); j++) {
+			int cell = row[j];
+			Tile tile;
+			bool success = tile.init(tileTypes[cell]);
+			if (!success) {
+				std::cout << "FAILED TO INITIALIZE TILE OF TYPE " << cell << std::endl;
+			}
+			// TODO: Standardize tile size and resize the model to be the correct size
+			tile.translate({ j, 0, i });
+			tileRow.push_back(tile);
+		}
+		result.push_back(tileRow);
+	}
+	return result;
 }
 
 // Releases all the associated resources
@@ -142,22 +194,9 @@ void World::destroy()
 bool World::update(float elapsed_ms)
 {
 	int w, h;
-        glfwGetFramebufferSize(m_window, &w, &h);
-	vec2 screen = { (float)w, (float)h };
-	cameraAngle.x += mouseSpeed * mouseMovement.x * elapsed_ms;
-	cameraAngle.y += mouseSpeed * mouseMovement.y * elapsed_ms;
-
-	cameraDirection = glm::vec3(
-		cos(cameraAngle.y)*sin(cameraAngle.x),
-		sin(cameraAngle.y),
-		cos(cameraAngle.y)*cos(cameraAngle.x)
-	);
-	cameraHorizontalVector = glm::vec3(sin(cameraAngle.x - M_PI / 2.0f), 0, cos(cameraAngle.x - M_PI / 2.0f));
-	cameraVerticalVector = glm::cross(cameraHorizontalVector, cameraDirection);
-	if (key_up) cameraPosition += glm::vec3(0.0, 0.0, 1.0);
-	if (key_down) cameraPosition -= glm::vec3(1.0, 0.0, 1.0);
-	if (key_right) cameraPosition += glm::vec3(1.0, 0.0, 0.0);
-	if (key_left) cameraPosition -= glm::vec3(1.0, 0.0, 0.0);
+	glfwGetFramebufferSize(m_window, &w, &h);
+	glm::vec2 screen = glm::vec2((float)w, (float)h);
+	camera.update(elapsed_ms);
 	return true;
 }
 
@@ -174,7 +213,7 @@ void World::draw()
 
 	// Updating window title with points
 	std::stringstream title_ss;
-	title_ss << "TEST";
+	title_ss << "Celestial Industries";
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
 	// Clearing backbuffer
@@ -185,9 +224,14 @@ void World::draw()
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glm::mat4 projection = glm::perspective(glm::radians(fieldOfView), m_screen.x / m_screen.y, 0.1f, 1000.0f);
-	glm::mat4 view = glm::lookAt(cameraPosition, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
-	m_tile.draw(projection*view);
+	glm::mat4 projection = camera.getProjectionMatrix(m_screen.x, m_screen.y);
+	glm::mat4 view = camera.getViewMatrix();
+	for (auto tileRow : level) {
+		for (auto tile : tileRow) {
+			tile.draw(projection*view);
+		}
+	}
+	
 	m_skybox.draw(projection * view * m_skybox.model);
 
 	// Presenting
@@ -200,54 +244,61 @@ bool World::is_over()const
 	return glfwWindowShouldClose(m_window) || escapePressed;
 }
 
+void World::updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<int> targetKeys)
+{
+	for (auto targetKey : targetKeys) {
+		if (key == targetKey) {
+			if (action == GLFW_PRESS) {
+				toUpdate = true;
+			}
+			if (action == GLFW_RELEASE) {
+				toUpdate = false;
+			}
+		}
+	}
+}
+
 // On key callback
 void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
-	// Resetting game
+	// Core controls
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
 	{
 		int w, h;
 		glfwGetWindowSize(m_window, &w, &h);
 	}
 
-	if (action == GLFW_PRESS && key == GLFW_KEY_UP) {
-		key_up = true;
-	}
-	if (action == GLFW_RELEASE && key == GLFW_KEY_UP) {
-		key_up = false;
-	}
-
-	if (action == GLFW_PRESS && key == GLFW_KEY_DOWN) {
-		key_down = true;
-	}
-	if (action == GLFW_RELEASE && key == GLFW_KEY_DOWN) {
-		key_down = false;
-	}
-
-	if (action == GLFW_PRESS && key == GLFW_KEY_RIGHT) {
-		key_right = true;
-	}
-	if (action == GLFW_RELEASE && key == GLFW_KEY_RIGHT) {
-		key_right = false;
-	}
-
-	if (action == GLFW_PRESS && key == GLFW_KEY_LEFT) {
-		key_left = true;
-	}
-	if (action == GLFW_RELEASE && key == GLFW_KEY_LEFT) {
-		key_left = false;
-	}
-
 	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
 		escapePressed = true;
+	}
+
+	// We do what we must because we can. Also we only can if we support C++11.
+	std::vector<std::tuple<bool&, std::vector<int>>> stickyKeys = {
+		// Format of this monstrosity:
+		// { Var to update, { Keys that will update it } }
+
+		// Camera controls:
+		{ camera.move_forward, { GLFW_KEY_W, GLFW_KEY_UP } },
+		{ camera.move_backward, { GLFW_KEY_S, GLFW_KEY_DOWN } },
+		{ camera.move_right, { GLFW_KEY_D, GLFW_KEY_RIGHT } },
+		{ camera.move_left, { GLFW_KEY_A, GLFW_KEY_LEFT } },
+		{ camera.rotate_right, { GLFW_KEY_E } },
+		{ camera.rotate_left, { GLFW_KEY_Q } },
+		{ camera.z_held, { GLFW_KEY_Z } },
+	};
+
+	for (auto stickyKey : stickyKeys) {
+		updateBoolFromKey(action, key, std::get<0>(stickyKey), std::get<1>(stickyKey));
 	}
 }
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 {
-	// Stop the mouse from escaping
-	glfwSetCursorPos(window, m_screen.x / 2, m_screen.y / 2);
-	mouseMovement.x = m_screen.x/2 - xpos;
-	mouseMovement.y = m_screen.y/2 - ypos;
+	// Handle the mouse movement here
+}
+
+void World::on_mouse_scroll(GLFWwindow * window, double xoffset, double yoffset)
+{
+	camera.mouseScroll = glm::vec2(xoffset, yoffset);
 }
 

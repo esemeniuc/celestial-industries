@@ -20,6 +20,9 @@ add_executable(proj
         src/tile.cpp
         src/skybox.cpp
         src/world.cpp)
+        src/world.cpp
+        src/camera.cpp
+        src/textureloader.cpp)
 
 target_compile_options(proj PUBLIC
         -Wall

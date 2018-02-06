@@ -4,10 +4,18 @@
 #include "common.hpp"
 #include "tile.hpp"
 #include "skybox.hpp"
+#include "camera.hpp"
 
 // stlib
 #include <vector>
 #include <random>
+#include <cstring>
+#include <cassert>
+#include <sstream>
+#include <cmath>
+#include <map>
+#include <tuple>
+#include <iostream>
 
 #define SDL_MAIN_HANDLED
 #include <SDL/SDL.h>
@@ -16,6 +24,9 @@
 // glm
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+
+// glfw
+#include "GLFW/glfw3.h"
 
 struct TimeTile {
 	OBJ::Data present;
@@ -31,7 +42,7 @@ public:
 	~World();
 
 	// Creates a window, sets up events and begins the game
-	bool init(vec2 screen);
+	bool init(glm::vec2 screen);
 
 	// Releases all associated resources
 	void destroy();
@@ -49,12 +60,17 @@ public:
 
 	std::vector<OBJ::Data> tileTypes;
 
-	std::vector<std::vector<TimeTile>> level;
+	std::vector<std::vector<Tile>> level; // we can add the time dimension when we get there
 
 private:
+	void updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<int> targetKeys);
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
+	void on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
+	std::tuple<bool, std::vector<OBJ::Data>> loadTiles(std::vector<std::string> filenames);
+	bool loadSkybox(std::string path, std::string skyboxFilename, std::string texturePath);
+	std::vector<std::vector<Tile>> intArrayToLevel(std::vector<std::vector<int>> intArray, std::vector<OBJ::Data> tileTypes);
 
 private:
 	// Window handle
@@ -63,21 +79,10 @@ private:
 
 	Tile m_tile;
 	Skybox m_skybox;
-	vec2 m_screen;
-	glm::mat4 m_view;
+	glm::vec2 m_screen;
 
 	// Camera stuff
-	float angleTowardsZ = M_PI;
-	float fieldOfView = 50.0f;
-	float cameraSpeed = 0.1f;
-	float mouseSpeed = 0.00005f;
-	vec2 mouseMovement = { 0, 0 };
-	vec2 cameraAngle = { 0.4f, 0.4f }; // horizontal (along x), vertical (along y).
-	glm::vec3 cameraDirection;
-	glm::vec3 cameraPosition = glm::vec3(30.0, 30.0, 30.0);
-	glm::vec3 cameraVerticalVector; // Note: This is what is typically reffered to as "up" for the viewer
-	glm::vec3 cameraHorizontalVector;
-
+	Camera camera;
 
 	bool key_up, key_down, key_right, key_left;
 	

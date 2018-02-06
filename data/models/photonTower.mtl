@@ -1,0 +1,32 @@
+# Made using Asset Forge (www.assetforge.io) version 1.3 
+
+newmtl darkStone (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.431 0.431 0.478 
+Ks 0.330000 0.330000 0.330000 
+
+newmtl blueSteel (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.141 0.565 0.831 
+Ks 0.330000 0.330000 0.330000 
+
+newmtl tire (Instance) (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.298 0.314 0.365 
+Ks 0.330000 0.330000 0.330000 
+
+newmtl element (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.945 0.949 0.965 
+Ks 0.330000 0.330000 0.330000 
+
+newmtl glass (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.298 0.314 0.365 
+Ks 0.330000 0.330000 0.330000 
+
+newmtl hilt (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 1 0.683 0.059 
+Ks 0.330000 0.330000 0.330000 
+

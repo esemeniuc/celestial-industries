@@ -20,10 +20,12 @@ public:
 
 	void draw(glm::mat4 mvp)override;
 
+	void translate(glm::vec3 translation);
+
 private:
 	// TODO: Remove the ones we don't use... so all of them?
-	vec2 m_position;
-	vec3 m_scale;
+	glm::vec2 m_position;
+	glm::vec3 m_scale;
 	float m_z_rotation;
 	size_t m_indices;
 };

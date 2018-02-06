@@ -40,6 +40,7 @@
     <Platform>Win32</Platform>
     <ProjectName>Attempt 1</ProjectName>
     <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -143,7 +144,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)/$(Configuration)/$(Platform)</OutDir>
     <IntDir>$(ProjectDir)/tmp/$(Configuration)/$(Platform)</IntDir>
-    <IncludePath>$(ProjectDir)\..\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <OutDir>$(ProjectDir)/$(Configuration)/$(Platform)</OutDir>
@@ -202,7 +203,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\ext\glm;$(ProjectDir)\..\src;$(ProjectDir)\..\ext\glfw\include;$(ProjectDir)\..\ext\gl3w;$(ProjectDir)\..\ext\stb_image;$(ProjectDir)\..\ext\sdl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\ext\glm;$(ProjectDir)..\src;$(ProjectDir)\..\ext\glfw\include;$(ProjectDir)\..\ext\gl3w;$(ProjectDir)\..\ext\stb_image;$(ProjectDir)\..\ext\sdl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -501,18 +502,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\entity.cpp" />
+    <ClCompile Include="..\src\camera.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\common.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\world.cpp" />
     <ClCompile Include="..\src\objloader.cpp" />
     <ClCompile Include="..\src\skybox.cpp" />
+    <ClCompile Include="..\src\textureloader.cpp" />
     <ClCompile Include="..\src\tile.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\camera.hpp" />
     <ClInclude Include="..\src\common.hpp" />
     <ClInclude Include="..\src\entity.hpp" />
     <ClInclude Include="..\src\objloader.hpp" />
     <ClInclude Include="..\src\skybox.hpp" />
+    <ClInclude Include="..\src\textureloader.hpp" />
     <ClInclude Include="..\src\tile.hpp" />
     <ClInclude Include="..\src\world.hpp" />
   </ItemGroup>
@@ -523,6 +528,9 @@
     <None Include="..\shaders\model.vs.glsl" />
     <None Include="..\shaders\textured.fs.glsl" />
     <None Include="..\shaders\textured.vs.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\CMakeLists.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

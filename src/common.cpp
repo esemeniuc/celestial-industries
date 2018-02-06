@@ -1,12 +1,5 @@
 #include "common.hpp"
 
-#define STB_IMAGE_IMPLEMENTATION
-//ignore warnings from stb_image
-#pragma GCC diagnostic push // save diagnostic state
-#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
-#include "../ext/stb_image/stb_image.h"
-#pragma GCC diagnostic pop
-
 // stlib
 #include <vector>
 #include <sstream>
@@ -14,13 +7,21 @@
 #include <iostream>
 
 // Our stuff
-inline char separator()
+
+char separator()
 {
-#ifdef _WIN32
-	return '\\';
-#else
 	return '/';
-#endif
+}
+
+std::vector<std::string> splitString(std::string input, const char seperator) {
+	std::vector<std::string> result;
+	std::string segment;
+	std::stringstream inputStream;
+	inputStream << input;
+	while (std::getline(inputStream, segment, seperator)) {
+		result.push_back(segment);
+	}
+	return result;
 }
 
 std::string pathBuilder(std::vector<std::string> parts) {
@@ -28,10 +29,27 @@ std::string pathBuilder(std::vector<std::string> parts) {
 
 	// Because the template has the vs files in their own folder the exe expects stuff to be relative to the INSIDE of that folder :)
 #ifdef _WIN32
-	path << "..\\";
+		path << "../";
 #endif
 	for (auto part : parts) {
 		path << part << separator();
+	}
+	return path.str();
+}
+
+std::string pathAppender(std::string base, std::vector<std::string> parts)
+{
+	std::stringstream path;
+	path << base;
+	bool first = true;
+	for (auto part : parts) {
+		if (!first) {
+			path << separator();
+		}
+		else {
+			first = false;
+		}
+		path << part;
 	}
 	return path.str();
 }
@@ -74,40 +92,6 @@ bool gl_has_errors()
 	}
 
 	return true;
-}
-
-Texture::Texture()
-{
-
-}
-
-Texture::~Texture()
-{
-	if (id != 0) glDeleteTextures(1, &id);
-}
-
-bool Texture::load_from_file(const char* path)
-{
-	if (path == nullptr) 
-		return false;
-	
-	stbi_uc* data = stbi_load(path, &width, &height, nullptr, 4);
-	if (data == nullptr)
-		return false;
-
-	gl_flush_errors();
-	glGenTextures(1, &id);
-	glBindTexture(GL_TEXTURE_2D, id);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	stbi_image_free(data);
-	return !gl_has_errors();
-}
-
-bool Texture::is_valid()const
-{
-	return id != 0;
 }
 
 namespace
