@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     g++ \    
     libsdl2-dev \
     libsdl2-mixer-dev \
-    libglfw3-dev
+    libglfw3-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 
