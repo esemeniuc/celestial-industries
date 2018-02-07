@@ -1,4 +1,3 @@
-# Base image for msbuild (uses Mono)
 FROM ubuntu:17.10
 
 WORKDIR /home/ci/
