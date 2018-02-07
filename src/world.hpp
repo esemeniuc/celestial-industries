@@ -18,8 +18,8 @@
 #include <iostream>
 
 #define SDL_MAIN_HANDLED
-#include <SDL/SDL.h>
-#include <SDL/SDL_mixer.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
 // glm
 #include "glm/mat4x4.hpp"

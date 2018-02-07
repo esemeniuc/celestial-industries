@@ -83,7 +83,7 @@ bool World::init(glm::vec2 screen)
 	}
 
 	// setup skybox
-	bool skyboxLoaded = loadSkybox("../data/models/", "skybox.obj", "../data/textures/skybox");
+	bool skyboxLoaded = loadSkybox("data/models/", "skybox.obj", "data/textures/skybox");
 	if (!skyboxLoaded) {
 		return false;
 	}
