@@ -196,12 +196,23 @@ namespace OBJ {
 						lineStream >> faceGroup;
 						unsigned int vertexIndex = 0, textureCoordinateIndex = 0, normalIndex = 0;
 						// Kindda hacky
-						sscanf(faceGroup.c_str(), "%d/%d/%d", &vertexIndex, &textureCoordinateIndex, &normalIndex);
-						vertexData.push_back({
-							vertices[vertexIndex-1],
-							textureCoordinates[textureCoordinateIndex-1],
-							normals[normalIndex-1]
-						});
+						if (textureCoordinates.size() != 0) {
+							sscanf(faceGroup.c_str(), "%d/%d/%d", &vertexIndex, &textureCoordinateIndex, &normalIndex);
+							vertexData.push_back({
+								vertices[vertexIndex - 1],
+								textureCoordinates[textureCoordinateIndex - 1],
+								normals[normalIndex - 1]
+							});
+						}
+						else {
+							sscanf(faceGroup.c_str(), "%d//%d", &vertexIndex, &normalIndex);
+							vertexData.push_back({
+								vertices[vertexIndex - 1],
+								glm::vec2(0.0f, 0.0f),
+								normals[normalIndex - 1]
+							});
+						}
+						
 						materialIndices.push_back(vertexData.size() - 1);
 					}
 					break;
