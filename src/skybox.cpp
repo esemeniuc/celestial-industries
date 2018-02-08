@@ -69,7 +69,7 @@ void Skybox::draw(glm::mat4 mvp)
 		// Input data location as in the vertex buffer
 		GLuint position_loc = glGetAttribLocation(effect.program, "position");
 		glEnableVertexAttribArray(position_loc);
-		glVertexAttribPointer(position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), (void*)0); 
+		glVertexAttribPointer(position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(OBJ::VertexData), (void*)0); 
 		glUniformMatrix4fv(mvp_uloc, 1, GL_FALSE, &mvp[0][0]);
 		
 		// Drawing!
