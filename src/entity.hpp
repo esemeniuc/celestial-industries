@@ -93,7 +93,7 @@ public:
 	bool is_textured();
 
 protected:
-	// phyisical properties
+	// physical properties
 	double density;
 	double volume;
 	glm::vec3 velocity;
