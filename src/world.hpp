@@ -18,8 +18,13 @@
 #include <iostream>
 
 #define SDL_MAIN_HANDLED
+#ifdef __linux__
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#elif _WIN32
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
+#endif
 
 // glm
 #include "glm/mat4x4.hpp"
