@@ -36,11 +36,11 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FECE120D-1285-32A0-BDFC-6FFF4B04D800}</ProjectGuid>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
     <Keyword>Win32Proj</Keyword>
     <Platform>Win32</Platform>
     <ProjectName>Attempt 1</ProjectName>
     <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -501,18 +501,22 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\entity.cpp" />
     <ClCompile Include="..\src\camera.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\common.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\world.cpp" />
     <ClCompile Include="..\src\objloader.cpp" />
+    <ClCompile Include="..\src\skybox.cpp" />
     <ClCompile Include="..\src\textureloader.cpp" />
     <ClCompile Include="..\src\tile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\camera.hpp" />
     <ClInclude Include="..\src\common.hpp" />
+    <ClInclude Include="..\src\entity.hpp" />
     <ClInclude Include="..\src\objloader.hpp" />
+    <ClInclude Include="..\src\skybox.hpp" />
     <ClInclude Include="..\src\textureloader.hpp" />
     <ClInclude Include="..\src\tile.hpp" />
     <ClInclude Include="..\src\world.hpp" />

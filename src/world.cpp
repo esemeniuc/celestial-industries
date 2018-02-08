@@ -1,22 +1,6 @@
 // Header
 #include "world.hpp"
 
-// stlib
-#include <cstring>
-#include <cassert>
-#include <sstream>
-#include <cmath>
-#include <map>
-#include <tuple>
-#include <iostream>
-
-// glm
-#include "glm/mat4x4.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-
-// glfw
-#include "GLFW/glfw3.h"
-
 // Same as static in c, local to compilation unit
 namespace
 {
@@ -98,6 +82,11 @@ bool World::init(glm::vec2 screen)
 		return false;
 	}
 
+	// setup skybox
+	bool skyboxLoaded = loadSkybox("skybox.obj", "skybox");
+	if (!skyboxLoaded) {
+		return false;
+	}
 
 	// WHY WASNT THIS ENABLED BEFORE?!
 	glEnable(GL_DEPTH_TEST);
@@ -111,9 +100,7 @@ bool World::init(glm::vec2 screen)
 		return false;
 	}
 	tileTypes = std::get<1>(loadResult);
-
-
-
+	
 	level = intArrayToLevel({
 		{ 3, 0, 0, 1 },
 		{ 3, 1, 2, 0 },
@@ -131,7 +118,8 @@ std::tuple<bool, std::vector<OBJ::Data>> World::loadTiles(std::vector<std::strin
 	std::vector<std::string> pathParts;
 	pathParts.push_back("data");
 	pathParts.push_back("models");
-	std::string path = pathBuilder(pathParts);
+	std::string path = pathBuilder(pathParts);	
+
 	for (auto filename : filenames) {
 		OBJ::Data obj;
 		success &= OBJ::Loader::loadOBJ(path, filename, obj);
@@ -142,6 +130,44 @@ std::tuple<bool, std::vector<OBJ::Data>> World::loadTiles(std::vector<std::strin
 		}
 	}
 	return { success, objs };
+}
+
+// skybox
+bool World::loadSkybox (std::string skyboxFilename, std::string skyboxTextureFolder) {
+	bool success = true;
+	OBJ::Data skyboxObj;
+
+	std::vector<std::string> modelPathParts;
+	modelPathParts.push_back("data");
+	modelPathParts.push_back("models");
+	std::string geometryPath = pathBuilder(modelPathParts);
+
+	std::vector<std::string> texturePathParts;
+	texturePathParts.push_back("data");
+	texturePathParts.push_back("textures");
+	texturePathParts.push_back(skyboxTextureFolder);  // skyboxTextureFolder is already a string, no need to add quotes
+	std::string texturePath = pathBuilder(texturePathParts);
+
+
+	success &= OBJ::Loader::loadOBJ(geometryPath, skyboxFilename, skyboxObj);
+	if (!success) {
+		std::cout << "Failed to load skybox" << std::endl;
+		return false;
+	}
+	
+	success &= m_skybox.init(skyboxObj);
+	if (!success) {
+		std::cout << "Failed to initilize skybox" << std::endl;
+		return false;
+	}
+
+	// specify texture unit corresponding to texture sampler in fragment shader
+	Texture skyboxTexture;
+	GLuint cube_texture;
+	glUniform1i(glGetUniformLocation(m_skybox.effect.program, "cube_texture"), 0);
+	m_skybox.set_cube_faces(texturePath);
+	skyboxTexture.generate_cube_map(m_skybox.get_cube_faces(), &cube_texture);
+	return true;
 }
 
 std::vector<std::vector<Tile>> World::intArrayToLevel(std::vector<std::vector<int>> intArray, std::vector<OBJ::Data> tileTypes)
@@ -171,6 +197,8 @@ std::vector<std::vector<Tile>> World::intArrayToLevel(std::vector<std::vector<in
 void World::destroy()
 {
 	Mix_CloseAudio();
+	m_tile.destroy();
+	m_skybox.destroy();
 	glfwDestroyWindow(m_window);
 }
 
@@ -178,7 +206,6 @@ void World::destroy()
 bool World::update(float elapsed_ms)
 {
 	int w, h;
-    
 	glfwGetFramebufferSize(m_window, &w, &h);
 	glm::vec2 screen = glm::vec2((float)w, (float)h);
 	camera.update(elapsed_ms);
@@ -216,6 +243,8 @@ void World::draw()
 			tile.draw(projection*view);
 		}
 	}
+	
+	m_skybox.draw(projection * view * m_skybox.model);
 
 	// Presenting
 	glfwSwapBuffers(m_window);

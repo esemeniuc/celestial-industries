@@ -3,26 +3,43 @@ project(proj)
 
 set(CMAKE_CXX_STANDARD 11)
 
+# where to look for cmake modules
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_HOME_DIRECTORY}/cmake_modules)
+
 find_package(OpenGL REQUIRED)
-find_package(SDL REQUIRED)
-find_package(SDL_mixer REQUIRED)
-find_package(glfw3 3.2 REQUIRED)
+find_package(SDL2 REQUIRED)
+find_package(SDL2_mixer REQUIRED)
+find_package(glfw3 REQUIRED)
 add_subdirectory(ext/glm)
 
 add_executable(proj
         src/objloader.cpp
         src/common.cpp
         src/main.cpp
+        src/entity.cpp
         src/tile.cpp
+        src/skybox.cpp
         src/world.cpp
-	src/camera.cpp
-	src/textureloader.cpp)
+        src/camera.cpp
+        src/textureloader.cpp)
+
+target_compile_options(proj PUBLIC
+        -Wall
+        -Wpedantic
+        -Wextra
+        -Wlogical-op
+        -Wnull-dereference
+        -Wshadow
+        -Wformat=2
+        -Wno-comment
+        -Wno-unused-parameter
+        -ggdb)
 
 target_include_directories(proj PUBLIC
         ext/gl3w
         ext/stb_image
-        ${SDL_INCLUDE_DIR}
-        ${SDL_MIXER_INCLUDE_DIRS}
+        ${SDL2_INCLUDE_DIRS}
+        ${SDL2_MIXER_INCLUDE_DIRS}
         )
 
 target_link_libraries(proj
@@ -30,5 +47,6 @@ target_link_libraries(proj
         glfw
         glm
         ${CMAKE_DL_LIBS}
-        ${SDL_LIBRARY}
-        ${SDL_MIXER_LIBRARIES})
+        ${SDL2_LIBRARIES}
+        ${SDL2_MIXER_LIBRARIES}
+        )

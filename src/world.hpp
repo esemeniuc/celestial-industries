@@ -3,19 +3,35 @@
 // internal
 #include "common.hpp"
 #include "tile.hpp"
+#include "skybox.hpp"
 #include "camera.hpp"
 
 // stlib
 #include <vector>
 #include <random>
+#include <cstring>
+#include <cassert>
+#include <sstream>
+#include <cmath>
+#include <map>
+#include <tuple>
+#include <iostream>
 
 #define SDL_MAIN_HANDLED
+#ifdef __linux__
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
+#elif _WIN32
 #include <SDL/SDL.h>
 #include <SDL/SDL_mixer.h>
+#endif
 
 // glm
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+
+// glfw
+#include "GLFW/glfw3.h"
 
 struct TimeTile {
 	OBJ::Data present;
@@ -58,6 +74,7 @@ private:
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 	void on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
 	std::tuple<bool, std::vector<OBJ::Data>> loadTiles(std::vector<std::string> filenames);
+	bool loadSkybox(std::string skyboxFilename, std::string skyboxTextureFolder);
 	std::vector<std::vector<Tile>> intArrayToLevel(std::vector<std::vector<int>> intArray, std::vector<OBJ::Data> tileTypes);
 
 private:
@@ -66,11 +83,11 @@ private:
 	bool escapePressed = false;
 
 	Tile m_tile;
+	Skybox m_skybox;
 	glm::vec2 m_screen;
 
 	// Camera stuff
 	Camera camera;
-
 
 	bool key_up, key_down, key_right, key_left;
 	

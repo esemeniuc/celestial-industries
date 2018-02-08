@@ -1,0 +1,12 @@
+sudo: false
+
+language: cpp
+
+services:
+  - docker
+
+before_install:
+- docker pull cwaffles/ci-build
+
+script:
+- docker run -it --volume `pwd`:/home/ci/ cwaffles/ci-build /bin/sh -c "mkdir build && cd build && cmake .. && make"

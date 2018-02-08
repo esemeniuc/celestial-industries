@@ -1,7 +1,6 @@
 #pragma once
 
 #include "textureloader.hpp"
-
 #include <memory>
 
 // glm
