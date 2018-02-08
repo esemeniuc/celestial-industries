@@ -83,7 +83,7 @@ bool World::init(glm::vec2 screen)
 	}
 
 	// setup skybox
-	bool skyboxLoaded = loadSkybox("data/models/", "skybox.obj", "data/textures/skybox");
+	bool skyboxLoaded = loadSkybox("skybox.obj", "skybox");
 	if (!skyboxLoaded) {
 		return false;
 	}
@@ -133,11 +133,23 @@ std::tuple<bool, std::vector<OBJ::Data>> World::loadTiles(std::vector<std::strin
 }
 
 // skybox
-bool World::loadSkybox (std::string path, std::string skyboxFilename, std::string texturePath) {
+bool World::loadSkybox (std::string skyboxFilename, std::string skyboxTextureFolder) {
 	bool success = true;
 	OBJ::Data skyboxObj;
 
-	success &= OBJ::Loader::loadOBJ(path, skyboxFilename, skyboxObj);
+	std::vector<std::string> modelPathParts;
+	modelPathParts.push_back("data");
+	modelPathParts.push_back("models");
+	std::string geometryPath = pathBuilder(modelPathParts);
+
+	std::vector<std::string> texturePathParts;
+	texturePathParts.push_back("data");
+	texturePathParts.push_back("textures");
+	texturePathParts.push_back(skyboxTextureFolder);  // skyboxTextureFolder is already a string, no need to add quotes
+	std::string texturePath = pathBuilder(texturePathParts);
+
+
+	success &= OBJ::Loader::loadOBJ(geometryPath, skyboxFilename, skyboxObj);
 	if (!success) {
 		std::cout << "Failed to load skybox" << std::endl;
 		return false;

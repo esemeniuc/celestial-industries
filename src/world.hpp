@@ -74,7 +74,7 @@ private:
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 	void on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
 	std::tuple<bool, std::vector<OBJ::Data>> loadTiles(std::vector<std::string> filenames);
-	bool loadSkybox(std::string path, std::string skyboxFilename, std::string texturePath);
+	bool loadSkybox(std::string skyboxFilename, std::string skyboxTextureFolder);
 	std::vector<std::vector<Tile>> intArrayToLevel(std::vector<std::vector<int>> intArray, std::vector<OBJ::Data> tileTypes);
 
 private:
