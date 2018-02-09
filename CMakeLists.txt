@@ -35,6 +35,11 @@ target_compile_options(proj PUBLIC
         -Wno-unused-parameter
         -ggdb)
 
+if(APPLE)
+    target_link_libraries(proj "-framework CoreFoundation")
+endif()
+
+
 target_include_directories(proj PUBLIC
         ext/gl3w
         ext/stb_image
