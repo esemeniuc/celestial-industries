@@ -1,0 +1,12 @@
+newmtl M2X
+Ns 100.000
+d 1.00000
+illum 2
+Kd 1.00000 1.00000 1.00000
+Ka 0.00000 0.00000 0.00000
+Ks 1.00000 1.00000 1.00000
+Ke 0.00000e+0 0.00000e+0 0.00000e+0
+map_Kd T02_BaseColor.tga
+map_Ks T02_Roughness.tga
+bump T02_Displacement.tga
+map_bump T02_Normal.tga
