@@ -1,0 +1,12 @@
+newmtl 01___Default
+Ns 100.000
+d 1.00000
+illum 2
+Kd 1.00000 1.00000 1.00000
+Ka 0.00000 0.00000 0.00000
+Ks 1.00000 1.00000 1.00000
+Ke 0.00000e+0 0.00000e+0 0.00000e+0
+map_Kd TR3_BaseColor.tga
+map_Ks TR3_Roughness.tga
+bump TR3_Displacement.tga
+map_bump TR3_Normal.tga
