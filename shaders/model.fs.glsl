@@ -6,7 +6,7 @@ in vec3 vs_position;
 in vec3 vs_lightVector;
 
 uniform sampler2D diffuseMapSampler;
-uniform int hasDiffuseMap;
+uniform bool hasDiffuseMap;
 uniform vec3 material_ambient;
 uniform vec3 material_diffuse;
 uniform vec3 material_specular;
