@@ -1,0 +1,28 @@
+# Made using Asset Forge (1.3)
+
+:models
+Aircraft/plane_cockpitBlock%[(0, 0, -0.4);(0.0, 0.0, 0.0);(1.0, 0.9, 1.2);plane_cockpitBlock%_13;_defaultMat+blueSteel+glass]
+Aircraft/plane_body[(0, 0, 0.85);(0.0, 0.0, 0.0);(1.0, 0.9, 1.3);plane_body_14;_defaultMat+blueSteel]
+Aircraft/plane_end[(0, 0, 2);(0.0, 0.0, 0.0);(1.0, 0.9, 1.0);plane_end_15;_defaultMat+blueSteel]
+Aircraft/plane_tailPoint%[(0, 0, 3);(0.0, 0.0, 0.0);(1.0, 0.9, 1.0);plane_tailPoint%_16;_defaultMat+blueSteel]
+Aircraft/detail_propeller[(-4.1E-08, 1.3, 3.9);(0.0, 270.0, 0.0);(0.6, 0.6, 1.2);detail_propeller_17;blueSteel+_defaultMat]
+Aircraft/detail_propellerThree%[(-3.73E-08, 1.1, 0.65);(90.0, 180.0, 0.0);(3.8, 3.3, 1.0);detail_propellerThree%_18;_defaultMat+blueSteel]
+Aircraft/engine_airplane%[(2.24E-08, 1.1, 0.8);(270.0, 0.0, 0.0);(0.4, 0.4, 0.3);engine_airplane%_19;black+blueSteel+_defaultMat]
+Aircraft/plane_rudderLarge[(2.24E-08, 0.6, 3.7);(0.0, 0.0, 0.0);(1.0, 0.9, 0.6);plane_rudderLarge_20;blueSteel+_defaultMat]
+Vehicles/detail_roofRails%[(0, 0.9, 0.75);(0.0, 0.0, 0.0);(1.0, 1.0, 1.9);detail_roofRails%_24;tire]
+Aircraft/gear_strut%[(-1.49E-08, -0.4, 0.6);(0.0, 0.0, 0.0);(1.0, 1.1, 1.2);gear_strut%_25;_defaultMat]
+Aircraft/air_vent[(-0.55, 0.4, 0.65);(0.0, 180.0, 90.0);(1.2, 1.1, 1.5);air_vent_26;black+tire]
+Aircraft/air_vent[(0.55, 0.4, 0.65);(0.0, 180.0, 270.0);(1.2, 1.1, 1.5);air_vent_27;black+tire]
+Aircraft/landing_float%[(-0.45, -0.4, 0.6);(0.0, 0.0, 0.0);(0.5, 0.4, 1.0);landing_float%_31;_defaultMat+blueSteel]
+Aircraft/landing_float%[(0.45, -0.4, 0.6);(0.0, 0.0, 0.0);(0.5, 0.4, 1.0);landing_float%_32;_defaultMat+blueSteel]
+
+:materials
+_defaultMat[RGBA(1.000, 1.000, 1.000, 1.000);]
+blueSteel[RGBA(0.141, 0.565, 0.831, 1.000);]
+glass[RGBA(0.298, 0.314, 0.365, 1.000);]
+black[RGBA(0.267, 0.267, 0.267, 1.000);]
+tire[RGBA(0.298, 0.314, 0.365, 1.000);]
+
+:textures
+
+:extra
