@@ -203,7 +203,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\ext\glm;$(ProjectDir)..\src;$(ProjectDir)\..\ext\glfw\include;$(ProjectDir)\..\ext\gl3w;$(ProjectDir)\..\ext\stb_image;$(ProjectDir)\..\ext\sdl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\ext\glm;$(ProjectDir)..\src;$(ProjectDir)\..\ext\glfw\include;$(ProjectDir)\..\ext\gl3w;$(ProjectDir)\..\ext\stb_image;$(ProjectDir)\..\ext\sdl\include\SDL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
