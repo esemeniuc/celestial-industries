@@ -29,6 +29,7 @@
 *.exe
 *.out
 *.app
+proj
 
 #vs
 visual_studio/.vs/
