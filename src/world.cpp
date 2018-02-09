@@ -1,5 +1,6 @@
 // Header
 #include "world.hpp"
+#include "basicentity.hpp"
 
 // Same as static in c, local to compilation unit
 namespace
@@ -45,7 +46,7 @@ bool World::init(glm::vec2 screen)
 #if __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-	glfwWindowHint(GLFW_RESIZABLE, 0);
+	glfwWindowHint(GLFW_RESIZABLE, 1);
 	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "A1 Assignment", nullptr, nullptr);
 	m_screen = screen;
 	if (m_window == nullptr)
@@ -92,44 +93,43 @@ bool World::init(glm::vec2 screen)
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
-
-	auto loadResult = loadTiles({
-		"sand1.obj", "sand2.obj", "sand3.obj", "wall.obj", "brickCube.obj"//, "miningTower.obj", "photonTower.obj"
-		});
-	if (!std::get<0>(loadResult)) {
-		return false;
-	}
-	tileTypes = std::get<1>(loadResult);
 	
-	level = intArrayToLevel({
-		{ 3, 0, 0, 1 },
-		{ 3, 1, 2, 0 },
-		{ 3, 0, 1, 1 },
-		{ 3, 4, 0, 2 },
-	}, tileTypes);
+	std::vector<std::tuple<TileType, std::string>> tiles = {
+		{ SAND_1, "sand1.obj" },
+		{ SAND_2, "sand2.obj" },
+		{ SAND_3, "sand3.obj" },
+		{ WALL, "wall.obj" },
+		{ BRICK_CUBE, "brickCube.obj" },
+		{ MINING_TOWER, "miningTower.obj" },
+		{ PHOTON_TOWER, "photonTower.obj" }
+	};
 
+    // TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isnt being shared
+    // thats a big enough change to merit its own ticket in milestone 2 though
+    std::vector<std::vector<int>> levelArray;
+    int mapSize = 50;
+    for (size_t i = 0; i < mapSize; i++) {
+        std::vector<int> row;
+        for (size_t j = 0; j < mapSize; j++) {
+            if (j == mapSize / 2)row.push_back(WALL);
+            else if (i % 3 == 0 && j % 3 == 0)row.push_back(PHOTON_TOWER);
+            else if (i % 5 == 0 && j % 2 == 0)row.push_back(BRICK_CUBE);
+            else row.push_back(SAND_1);
+        }
+        levelArray.push_back(row);
+    }
+    camera.position = { mapSize / 2, 10, mapSize / 2 };
+	level.init(levelArray, tiles);
+
+    BasicEntity ballEntity;
+    OBJ::Data ball;
+    if (!OBJ::Loader::loadOBJ(pathBuilder({ "data", "models" }), "ball.obj", ball)) {
+        std::cout << "No ball, no game" << std::endl;
+        return false;
+    }
+    ballEntity.init(ball);
+    level.basicEntities.push_back(ballEntity);
 	return true;
-}
-
-std::tuple<bool, std::vector<OBJ::Data>> World::loadTiles(std::vector<std::string> filenames)
-{
-	std::vector<OBJ::Data> objs;
-	bool success = true;
-	std::vector<std::string> pathParts;
-	pathParts.push_back("data");
-	pathParts.push_back("models");
-	std::string path = pathBuilder(pathParts);	
-
-	for (auto filename : filenames) {
-		OBJ::Data obj;
-		success &= OBJ::Loader::loadOBJ(path, filename, obj);
-		objs.push_back(obj);
-		if (!success) {
-			std::cout << "FAILED TO LOAD OBJS! Specifically: " << filename << std::endl;
-			return { success, objs };
-		}
-	}
-	return { success, objs };
 }
 
 // skybox
@@ -137,17 +137,8 @@ bool World::loadSkybox (std::string skyboxFilename, std::string skyboxTextureFol
 	bool success = true;
 	OBJ::Data skyboxObj;
 
-	std::vector<std::string> modelPathParts;
-	modelPathParts.push_back("data");
-	modelPathParts.push_back("models");
-	std::string geometryPath = pathBuilder(modelPathParts);
-
-	std::vector<std::string> texturePathParts;
-	texturePathParts.push_back("data");
-	texturePathParts.push_back("textures");
-	texturePathParts.push_back(skyboxTextureFolder);  // skyboxTextureFolder is already a string, no need to add quotes
-	std::string texturePath = pathBuilder(texturePathParts);
-
+	std::string geometryPath = pathBuilder({ "data", "models" });
+    std::string texturePath = pathBuilder({ "data", "textures", skyboxTextureFolder });
 
 	success &= OBJ::Loader::loadOBJ(geometryPath, skyboxFilename, skyboxObj);
 	if (!success) {
@@ -170,29 +161,6 @@ bool World::loadSkybox (std::string skyboxFilename, std::string skyboxTextureFol
 	return true;
 }
 
-std::vector<std::vector<Tile>> World::intArrayToLevel(std::vector<std::vector<int>> intArray, std::vector<OBJ::Data> tileTypes)
-{
-	// TODO: turn into map?
-	std::vector<std::vector<Tile>> result;
-	for (size_t i = 0; i < intArray.size(); i++) {
-		std::vector<int> row = intArray[i];
-		std::vector<Tile> tileRow;
-		for (size_t j = 0; j < row.size(); j++) {
-			int cell = row[j];
-			Tile tile;
-			bool success = tile.init(tileTypes[cell]);
-			if (!success) {
-				std::cout << "FAILED TO INITIALIZE TILE OF TYPE " << cell << std::endl;
-			}
-			// TODO: Standardize tile size and resize the model to be the correct size
-			tile.translate({ j, 0, i });
-			tileRow.push_back(tile);
-		}
-		result.push_back(tileRow);
-	}
-	return result;
-}
-
 // Releases all the associated resources
 void World::destroy()
 {
@@ -203,12 +171,24 @@ void World::destroy()
 }
 
 // Update our game world
+float total_time = 0.0f;
 bool World::update(float elapsed_ms)
 {
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
 	glm::vec2 screen = glm::vec2((float)w, (float)h);
 	camera.update(elapsed_ms);
+    for (size_t i = 0; i < level.basicEntities.size(); i++) {
+        if (level.basicEntities[i].position.x < 0) {
+            level.basicEntities[i].moveTo({ 50,3,20 });
+        }
+        if (level.basicEntities[i].position.x > 50) {
+            level.basicEntities[i].moveTo({ 0,3,20 });
+        }
+        level.basicEntities[i].update(elapsed_ms);
+        //level.basicEntities[i].translate();
+    }
+    total_time += elapsed_ms;
 	return true;
 }
 
@@ -238,11 +218,15 @@ void World::draw()
 
 	glm::mat4 projection = camera.getProjectionMatrix(m_screen.x, m_screen.y);
 	glm::mat4 view = camera.getViewMatrix();
-	for (auto tileRow : level) {
+	for (auto tileRow : level.tiles) {
 		for (auto tile : tileRow) {
 			tile.draw(projection*view);
 		}
 	}
+    
+    for (auto basicEntity : level.basicEntities) {
+        basicEntity.draw(projection*view);
+    }
 	
 	m_skybox.draw(projection * view * m_skybox.model);
 

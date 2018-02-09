@@ -5,6 +5,7 @@
 #include "tile.hpp"
 #include "skybox.hpp"
 #include "camera.hpp"
+#include "level.hpp"
 
 // stlib
 #include <vector>
@@ -28,10 +29,6 @@
 // glfw
 #include "GLFW/glfw3.h"
 
-struct TimeTile {
-	OBJ::Data present;
-	OBJ::Data past;
-};
 
 // Container for all our entities and game logic. Individual rendering / update is 
 // deferred to the relative update() methods
@@ -58,20 +55,17 @@ public:
 	
 	bool advanced_mode = false;
 
-	std::vector<OBJ::Data> tileTypes;
-
-	std::vector<std::vector<Tile>> level; // we can add the time dimension when we get there
-
 private:
 	void updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<int> targetKeys);
+
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 	void on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
-	std::tuple<bool, std::vector<OBJ::Data>> loadTiles(std::vector<std::string> filenames);
-	bool loadSkybox(std::string skyboxFilename, std::string skyboxTextureFolder);
-	std::vector<std::vector<Tile>> intArrayToLevel(std::vector<std::vector<int>> intArray, std::vector<OBJ::Data> tileTypes);
 
+	bool loadSkybox(std::string skyboxFilename, std::string skyboxTextureFolder);
+
+	Level level;
 private:
 	// Window handle
 	GLFWwindow* m_window;
@@ -83,8 +77,6 @@ private:
 
 	// Camera stuff
 	Camera camera;
-
-	bool key_up, key_down, key_right, key_left;
 	
 	// Game entities
 

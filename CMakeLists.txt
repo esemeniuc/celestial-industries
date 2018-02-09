@@ -21,7 +21,10 @@ add_executable(proj
         src/skybox.cpp
         src/world.cpp
         src/camera.cpp
-        src/textureloader.cpp)
+        src/textureloader.cpp
+	    src/level.cpp
+        src/objrenderable.cpp
+        src/basicentity.cpp)
 
 target_compile_options(proj PUBLIC
         -Wall

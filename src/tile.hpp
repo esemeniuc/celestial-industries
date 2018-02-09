@@ -1,13 +1,13 @@
 #pragma once
 
-#include "common.hpp"
+#include "objrenderable.hpp"
 
 // glm
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
 // The base class for every tile in the game
-class Tile : public Renderable
+class Tile : public OBJRenderable
 {
 	// shared stuff will go here at some point
 
@@ -18,14 +18,5 @@ public:
 
 	void update(float ms);
 
-	void draw(glm::mat4 mvp)override;
-
-	void translate(glm::vec3 translation);
-
 private:
-	// TODO: Remove the ones we don't use... so all of them?
-	glm::vec2 m_position;
-	glm::vec3 m_scale;
-	float m_z_rotation;
-	size_t m_indices;
 };

@@ -6,7 +6,7 @@ in vec3 vs_position;
 in vec3 vs_lightVector;
 
 uniform sampler2D diffuseMapSampler;
-uniform int hasDiffuseMap;
+uniform bool hasDiffuseMap;
 uniform vec3 material_ambient;
 uniform vec3 material_diffuse;
 uniform vec3 material_specular;
@@ -20,7 +20,7 @@ void main()
 	float angleToLight = clamp( dot(normalize(vs_normal), normalize(vs_lightVector)), 0, 1);
 	vec4 diffuseColor;
 	if(hasDiffuseMap){
-		diffuseColor = texture(diffuseMapSampler, vs_texcoord);
+		diffuseColor = vec4(material_diffuse, 1.0)*texture(diffuseMapSampler, vs_texcoord);
 	} else {
 		diffuseColor = vec4(material_diffuse, 1.0);
 	}
