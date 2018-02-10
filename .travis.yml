@@ -9,4 +9,4 @@ before_install:
 - docker pull cwaffles/ci-build
 
 script:
-- docker run -it --volume `pwd`:/home/ci/ cwaffles/ci-build /bin/sh -c "mkdir build && cd build && cmake .. && make"
+- docker run -it --volume `pwd`:/home/ci/ cwaffles/ci-build /bin/sh -c "mkdir build && cd build && cmake .. && make -j4"
