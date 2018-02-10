@@ -18,6 +18,8 @@ void main()
 	gl_Position = mvp * vec4(in_position, 1);
 	vs_texcoord = in_texcoord;
 	vs_normal = in_normal;
+	vs_position = gl_Position.xyz;
+
 
 	vec3 lightPosition = vec3( 0,10, -15 );
 	vs_lightVector = lightPosition-vs_position;
