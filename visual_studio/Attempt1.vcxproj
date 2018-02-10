@@ -501,21 +501,27 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\basicentity.cpp" />
     <ClCompile Include="..\src\entity.cpp" />
     <ClCompile Include="..\src\camera.cpp" />
+    <ClCompile Include="..\src\level.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\common.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\world.cpp" />
     <ClCompile Include="..\src\objloader.cpp" />
+    <ClCompile Include="..\src\objrenderable.cpp" />
     <ClCompile Include="..\src\skybox.cpp" />
     <ClCompile Include="..\src\textureloader.cpp" />
     <ClCompile Include="..\src\tile.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\basicentity.hpp" />
     <ClInclude Include="..\src\camera.hpp" />
     <ClInclude Include="..\src\common.hpp" />
     <ClInclude Include="..\src\entity.hpp" />
+    <ClInclude Include="..\src\level.hpp" />
     <ClInclude Include="..\src\objloader.hpp" />
+    <ClInclude Include="..\src\objrenderable.hpp" />
     <ClInclude Include="..\src\skybox.hpp" />
     <ClInclude Include="..\src\textureloader.hpp" />
     <ClInclude Include="..\src\tile.hpp" />
@@ -524,8 +530,8 @@
   <ItemGroup>
     <None Include="..\shaders\colored.fs.glsl" />
     <None Include="..\shaders\colored.vs.glsl" />
-    <None Include="..\shaders\model.fs.glsl" />
-    <None Include="..\shaders\model.vs.glsl" />
+    <None Include="..\shaders\objrenderable.fs.glsl" />
+    <None Include="..\shaders\objrenderable.vs.glsl" />
     <None Include="..\shaders\textured.fs.glsl" />
     <None Include="..\shaders\textured.vs.glsl" />
   </ItemGroup>

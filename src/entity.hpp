@@ -12,7 +12,7 @@
 #include "glm/gtx/quaternion.hpp"
 
 // custom headers
-#include "common.hpp"
+#include "objrenderable.hpp"
 #include "objloader.hpp"
 
 // collision geometries
@@ -57,13 +57,9 @@ enum collision_geometry_type
 	cg_bounding_cylinder,
 };
 
-class Entity : public Renderable 
+class Entity : public OBJRenderable 
 {
 public:
-	virtual bool init(OBJ::Data obj) = 0;
-
-	virtual void destroy() = 0;
-
 	virtual void update(float ms) = 0;
 
 	void set_velocity (glm::vec3);

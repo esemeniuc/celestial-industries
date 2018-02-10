@@ -18,17 +18,17 @@
 class Camera {
 public:
 	float fieldOfView = 50.0f;
-	float cameraMoveSpeed = 0.05f;
-	float cameraRotateSpeed = 0.005f;
-	float cameraZoomSpeed = 0.15f;
+	float moveSpeed = 0.05f;
+	float rotateSpeed = 0.005f;
+	float zoomSpeed = 1.0f;
 
 	glm::vec2 mouseScroll;
-	glm::vec3 cameraDirection;
-	glm::vec3 cameraPosition = { 0,10, -15 };
-	glm::vec3 cameraAngle = { 0, 0, 0 };
-	glm::vec3 cameraVerticalVector; // Note: This is what is typically reffered to as "up" for the viewer
-	glm::vec3 cameraHorizontalVector;
-	glm::mat4 m_view;
+	glm::vec3 direction;
+	glm::vec3 position = { 0,10, -15 };
+	glm::vec3 angle = { 0, 0, 0 };
+	glm::vec3 verticalVector; // Note: This is what is typically reffered to as "up" for the viewer
+	glm::vec3 horizontalVector;
+	glm::mat4 view;
 
 	bool move_forward, move_backward, move_left, move_right, rotate_left, rotate_right, z_held;
 

@@ -4,36 +4,36 @@
 
 void Camera::update(float ms)
 {
-	cameraDirection = glm::vec3(
-		cos(cameraAngle.y)*sin(cameraAngle.x),
-		sin(cameraAngle.y),
-		cos(cameraAngle.y)*cos(cameraAngle.x)
+	direction = glm::vec3(
+		cos(angle.y)*sin(angle.x),
+		sin(angle.y),
+		cos(angle.y)*cos(angle.x)
 	);
-	cameraHorizontalVector = glm::vec3(sin(cameraAngle.x - M_PI / 2.0f), 0, cos(cameraAngle.x - M_PI / 2.0f));
-	glm::vec3 cameraVector2 = glm::vec3(sin(cameraAngle.x), 0, cos(cameraAngle.x));
-	cameraVerticalVector = glm::cross(cameraHorizontalVector, cameraDirection);
+	horizontalVector = glm::vec3(sin(angle.x - M_PI / 2.0f), 0, cos(angle.x - M_PI / 2.0f));
+	glm::vec3 cameraVector2 = glm::vec3(sin(angle.x), 0, cos(angle.x));
+	verticalVector = glm::cross(horizontalVector, direction);
 
 	if (!z_held) {
 		if (mouseScroll.y > 0) {
-			cameraAngle.y = std::min((float)M_PI / 2, cameraAngle.y + mouseScroll.y * cameraZoomSpeed);
+			angle.y = std::min((float)M_PI / 2, angle.y + mouseScroll.y * zoomSpeed/15.0f);
 		}
 		if (mouseScroll.y < 0) {
-			cameraAngle.y = std::max((float)-M_PI, cameraAngle.y + mouseScroll.y * cameraZoomSpeed);
+			angle.y = std::max((float)-M_PI, angle.y + mouseScroll.y * zoomSpeed/15.0f);
 		}
 	} else {
-		cameraPosition += mouseScroll.y * cameraZoomSpeed * cameraDirection;
+		position += mouseScroll.y * zoomSpeed * direction;
 	}
 
 	mouseScroll = { 0, 0 }; // Scroll needs to be reset, it won't do that on it's own
 
-	if (move_forward)cameraPosition += cameraVector2 * ms * cameraMoveSpeed;
-	if (move_backward)cameraPosition -= cameraVector2 * ms * cameraMoveSpeed;
+	if (move_forward)position += cameraVector2 * ms * moveSpeed;
+	if (move_backward)position -= cameraVector2 * ms * moveSpeed;
 
-	if (move_right) cameraPosition += cameraHorizontalVector * ms * cameraMoveSpeed;
-	if (move_left) cameraPosition -= cameraHorizontalVector * ms * cameraMoveSpeed;
+	if (move_right) position += horizontalVector * ms * moveSpeed;
+	if (move_left) position -= horizontalVector * ms * moveSpeed;
 
-	if (rotate_right)cameraAngle.x += cameraRotateSpeed * ms;
-	if (rotate_left)cameraAngle.x -= cameraRotateSpeed * ms;
+    if (rotate_left)angle.x += rotateSpeed * ms;
+	if (rotate_right)angle.x -= rotateSpeed * ms;
 }
 
 glm::mat4 Camera::getProjectionMatrix(float screen_x, float screen_y)
@@ -43,5 +43,5 @@ glm::mat4 Camera::getProjectionMatrix(float screen_x, float screen_y)
 
 glm::mat4 Camera::getViewMatrix()
 {
-	return glm::lookAt(cameraPosition, cameraPosition + cameraDirection, cameraVerticalVector);
+	return glm::lookAt(position, position + direction, verticalVector);
 }

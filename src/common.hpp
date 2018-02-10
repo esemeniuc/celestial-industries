@@ -98,9 +98,9 @@ struct Renderable
 {
 	std::vector<Mesh> meshes;
 	Effect effect;
-	glm::mat4 model = glm::mat4(1.0f);
+	glm::mat4 model = glm::mat4(1.0f); // Identity matrix
 
 	// projection contains the orthographic projection matrix. As every Renderable::draw()
 	// renders itself it needs it to correctly bind it to its shader.
-	virtual void draw(glm::mat4 mvp) = 0;
+	virtual void draw(glm::mat4 viewProjection) = 0;
 };
