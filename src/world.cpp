@@ -122,15 +122,17 @@ bool World::init(glm::vec2 screen)
 	level.init(levelArray, tiles);
 
     selectedTile = {mapSize/2, mapSize/2};
-
-    BasicEntity ballEntity;
     OBJ::Data ball;
     if (!OBJ::Loader::loadOBJ(pathBuilder({ "data", "models" }), "ball.obj", ball)) {
         std::cout << "No ball, no game" << std::endl;
         return false;
     }
-    ballEntity.init(ball);
-    level.basicEntities.push_back(ballEntity);
+    for (size_t i = 0; i < mapSize / 3; i++) {
+        BasicEntity ballEntity;
+        ballEntity.init(ball);
+        ballEntity.translate({0, 2, 0});
+        level.basicEntities.push_back(ballEntity);
+    }
 	return true;
 }
 
@@ -181,14 +183,15 @@ bool World::update(float elapsed_ms)
 	glm::vec2 screen = glm::vec2((float)w, (float)h);
 	camera.update(elapsed_ms);
     for (size_t i = 0; i < level.basicEntities.size(); i++) {
-        if (level.basicEntities[i].position.x < 0) {
-            level.basicEntities[i].moveTo({ 50,3,20 });
+        // Yes we know its terribly inefficient as is, but this is more of a "it works" kindda demo rather than the final
+        // AI driven logic
+        if (level.basicEntities[i].position.x < 2) {
+            level.basicEntities[i].moveTo({ 50,2, i*3 });
         }
-        if (level.basicEntities[i].position.x > 50) {
-            level.basicEntities[i].moveTo({ 0,3,20 });
+        if (level.basicEntities[i].position.x > 48) {
+            level.basicEntities[i].moveTo({ 0,2, level.basicEntities[i].position.z });
         }
         level.basicEntities[i].update(elapsed_ms);
-        //level.basicEntities[i].translate();
     }
     total_time += elapsed_ms;
 	return true;
