@@ -34,7 +34,9 @@ cd build
 cmake ..
 make -j4
 ```
+#### Installation on Windows
 
+You should be able to simply open `visual_studio/Attempt 1.sln` and run it the same way you would any other Visual Studio project.
 
 ## Milestone 1
 
