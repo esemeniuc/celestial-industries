@@ -77,10 +77,18 @@ private:
 
 	// Camera stuff
 	Camera camera;
+
+	// Selection
+	std::vector<int> selectedTile;
 	
 	// Game entities
 
 	// C++ rng
 	std::default_random_engine m_rng;
 	std::uniform_real_distribution<float> m_dist; // default 0..1
+
+	void move_cursor_up();
+	void move_cursor_down();
+	void move_cursor_left();
+	void move_cursor_right();
 };

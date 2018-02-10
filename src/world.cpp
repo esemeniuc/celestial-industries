@@ -121,6 +121,8 @@ bool World::init(glm::vec2 screen)
     camera.position = { mapSize / 2, 10, mapSize / 2 };
 	level.init(levelArray, tiles);
 
+    selectedTile = {mapSize/2, mapSize/2};
+
     BasicEntity ballEntity;
     OBJ::Data ball;
     if (!OBJ::Loader::loadOBJ(pathBuilder({ "data", "models" }), "ball.obj", ball)) {
@@ -218,10 +220,19 @@ void World::draw()
 
 	glm::mat4 projection = camera.getProjectionMatrix(m_screen.x, m_screen.y);
 	glm::mat4 view = camera.getViewMatrix();
+
+    int i = 0, j = 0; // used for showing the selected tile
 	for (auto tileRow : level.tiles) {
 		for (auto tile : tileRow) {
-			tile.draw(projection*view);
+			if (i == selectedTile[0] && j == selectedTile[1]) {
+				// do nothing
+			} else {
+				tile.draw(projection*view);
+			}
+			j++;
 		}
+		j = 0;
+		i++;
 	}
     
     for (auto basicEntity : level.basicEntities) {
@@ -232,6 +243,23 @@ void World::draw()
 
 	// Presenting
 	glfwSwapBuffers(m_window);
+}
+
+void World::move_cursor_up() {
+	selectedTile[1]--;
+	printf("Selected tile: %d, %d\n", selectedTile[0], selectedTile[1]);
+}
+void World::move_cursor_down() {
+	selectedTile[1]++;
+	printf("Selected tile: %d, %d\n", selectedTile[0], selectedTile[1]);
+}
+void World::move_cursor_left() {
+	selectedTile[0]--;
+	printf("Selected tile: %d, %d\n", selectedTile[0], selectedTile[1]);
+}
+void World::move_cursor_right() {
+	selectedTile[0]++;
+	printf("Selected tile: %d, %d\n", selectedTile[0], selectedTile[1]);
 }
 
 // Should the game be over ?
@@ -266,6 +294,22 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
 		escapePressed = true;
+	}
+
+	// Tile selection controls:
+	if (action == GLFW_RELEASE) {
+		if (key == GLFW_KEY_I) {
+			move_cursor_up();
+		}
+		if (key == GLFW_KEY_K) {
+			move_cursor_down();
+		}
+		if (key == GLFW_KEY_L) {
+			move_cursor_left();
+		}
+		if (key == GLFW_KEY_J) {
+			move_cursor_right();
+		}
 	}
 
 	// We do what we must because we can. Also we only can if we support C++11.
