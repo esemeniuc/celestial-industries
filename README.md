@@ -16,6 +16,19 @@
 - SDL2_mixer
 - OpenGL 3.3
 
-### How to run:
+### How to run
 - Git clone
 - Pull in submodule dependencies: `git submodule update --init --recursive`
+
+#### Installation on Ubuntu
+```bash
+apt-get install -y cmake g++ libsdl2-dev libsdl2-mixer-dev libglfw3-dev
+```
+
+#### Compiling
+```bash
+mkdir build
+cd build 
+cmake ..
+make -j4
+```
