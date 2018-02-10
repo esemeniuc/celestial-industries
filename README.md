@@ -72,7 +72,7 @@ The balls move smoothly to a target location (they bounce because we then change
 
  - [x] *Add a skybox*
  
- We did, and it looks awesome! It even uses a cube texture
+ We did, and it looks awesome! It even uses a cube texture! Do note that right now the skybox position is not tied to the camera position so you can go out of the skybox. 
 
 - [x] *Have the ability to select a tile*
 
