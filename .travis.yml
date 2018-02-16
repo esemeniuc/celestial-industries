@@ -14,7 +14,7 @@ before_install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install sdl2 sdl2_mixer glfw; fi
 script:
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run -it --volume `pwd`:/home/ci/ cwaffles/ci-build /bin/sh -c "mkdir build && cd build && cmake .. && make -j4"; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir build && cd build && cmake .. && make -j4; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir build && cd build && cmake .. && make -j4 && cd ..; fi
 deploy:
   provider: releases
   api_key:
