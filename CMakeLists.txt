@@ -24,7 +24,9 @@ add_executable(proj
         src/textureloader.cpp
 	    src/level.cpp
         src/objrenderable.cpp
-        src/basicentity.cpp)
+        src/basicentity.cpp
+        src/log.cpp
+        src/config.hpp)
 
 target_compile_options(proj PUBLIC
         -Wall

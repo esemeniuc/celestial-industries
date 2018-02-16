@@ -1,6 +1,7 @@
 // internal
 #include "common.hpp"
 #include "world.hpp"
+#include "log.h"
 
 #define GL3W_IMPLEMENTATION
 #include <gl3w.h>
@@ -16,10 +17,17 @@ World world;
 const int width = 1000;
 const int height = 800;
 const char* title = "Your Title Here";
+Log logger;
+
 
 // Entry point
 int main(int argc, char* argv[])
 {
+	logger << 8;
+	logger << "Hello, " << "World!";
+	std::string msg("plop");
+	logger << msg;
+
 	// Initializing world (after renderer.init().. sorry)
 	if (!world.init({ (float)width, (float)height }))
 	{
