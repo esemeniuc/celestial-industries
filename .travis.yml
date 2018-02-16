@@ -21,6 +21,9 @@ before_deploy:
   - git config --local user.name "travis-bot"
   - git config --local user.email "travis@travis.com"
   #hack because $TRAVIS_OS_NAME doesnt show up for some reason
+  echo $TRAVIS_OS_NAME
+  echo $TRAVIS_BUILD_ID
+  echo $TRAVIS_COMMIT
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git tag "$(date +'%Y-%m-%d_%H-%M-%S')_build_$(TRAVIS_BUILD_ID)_linux" $TRAVIS_COMMIT; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then git tag "$(date +'%Y-%m-%d_%H-%M-%S')_build_$(TRAVIS_BUILD_ID)_osx" $TRAVIS_COMMIT; fi
 
