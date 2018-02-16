@@ -2,11 +2,18 @@ sudo: false
 
 language: cpp
 
+os:
+  - linux
+  - osx
+    osx_image: xcode9.2
+
 services:
   - docker
 
 before_install:
-- docker pull cwaffles/ci-build
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker pull cwaffles/ci-build; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install sdl2 glfw; fi
 
 script:
-- docker run -it --volume `pwd`:/home/ci/ cwaffles/ci-build /bin/sh -c "mkdir build && cd build && cmake .. && make -j4"
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then brew docker run -it --volume `pwd`:/home/ci/ cwaffles/ci-build /bin/sh -c "mkdir build && cd build && cmake .. && make -j4"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir build && cd build && cmake .. && make -j4; fi
