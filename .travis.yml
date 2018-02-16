@@ -20,8 +20,7 @@ before_deploy:
   # Set up git user name and tag this commit
   - git config --local user.name "travis-bot"
   - git config --local user.email "travis@travis.com"
-  #hack because $TRAVIS_OS_NAME doesnt show up for some reason
-  - git tag "$(date +'%Y-%m-%d_%H-%M-%S')_build_${TRAVIS_OS_NAME}_commit" ${TRAVIS_COMMIT}";
+  - git tag "$(date +'%Y-%m-%d_%H-%M-%S')_build_${TRAVIS_OS_NAME}" ${TRAVIS_COMMIT};
 
 deploy:
   provider: releases
