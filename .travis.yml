@@ -1,24 +1,24 @@
-
 language: cpp
-
 git:
   depth: 1
-
 matrix:
   include:
-    - os: linux
-      sudo: false
-
-    - os: osx
-      osx_image: xcode9.2
-
+  - os: linux
+    sudo: false
+  - os: osx
+    osx_image: xcode9.2
 services:
-  - docker
-
+- docker
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker pull cwaffles/ci-build; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install sdl2 sdl2_mixer glfw; fi
-
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker pull cwaffles/ci-build; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install sdl2 sdl2_mixer glfw; fi
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run -it --volume `pwd`:/home/ci/ cwaffles/ci-build /bin/sh -c "mkdir build && cd build && cmake .. && make -j4"; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir build && cd build && cmake .. && make -j4; fi
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run -it --volume `pwd`:/home/ci/ cwaffles/ci-build /bin/sh -c "mkdir build && cd build && cmake .. && make -j4"; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir build && cd build && cmake .. && make -j4; fi
+deploy:
+  provider: releases
+  api_key:
+    secure: CPf92omvEb14+rZf7JYhYV1BJBnMBb0XyGK5r5MXCO2aM32cG6MTCS5IB+4XwJz8NBicyCRbIBVGLeQIkyBqysjRnhzoFKMGhK+VEqo0DkNPLzdaqjsLzv0XfpU5OumWJU6iywra+YXr80qlWd8UYlQYDjGK6pwA7L2o2ADSusmsWsBDOxAyxsidJuNWq8h3UUlwALVU31kdAPKiyXkkbXEOj0xAQNFutArAj83GpLw/yxtdIEQ4JXbdP5kC+0vkkr3G/JOJzX6Spn3nF6BWDh5v2q3eeNTHkin8uu9PqZYsDcpvrlKRKkO4vSgOuCOrriqqKqyH+I4oGQWF4E9He1PBaYMcSKPoKFaRa9BDzv8V1KeUDwTLz+Exs9MrunYX3r9+JnAxGrS61lqxj//FWGTlSbJb/4Zn7voijoWWSsQdjVCNMc5jXIaKzetaUcqqCwy1TWiN/zQ8k8y/jVS3YdHoGuwo4SVSJ/rSXMsRhxzCscDSuxIBFTURA0iXMUMzWw33Ax5xHTFGwAy3It7zAIBK8xWugB8fYEdq9xAUIGLm9Z1VwLWxlFdDOMuCcaOqopvdE8+ThCCAfxZ2MWD6OcXJBqj2skLlRjPxsPGQ4YEhoFnMpTYRjmu/8Jauz33GkdIaOkHB+l5u6u8rPYk6BMuusOez+5JDXNrcW4plMGM=
+  file: build/proj
+  on:
+    repo: esemeniuc/celestial-industries
