@@ -15,6 +15,13 @@ before_install:
 script:
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run -it --volume `pwd`:/home/ci/ cwaffles/ci-build /bin/sh -c "mkdir build && cd build && cmake .. && make -j4"; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir build && cd build && cmake .. && make -j4 && cd ..; fi
+
+before_deploy:
+  # Set up git user name and tag this commit
+  - git config --local user.name "travis-bot"
+  - git config --local user.email "travis@travis.com"
+  - git tag "$(date +'%Y-%m-%d_%H:%M:%S') Build $TRAVIS_BUILD_ID - $TRAVIS_OS_NAME" -m "$TRAVIS_COMMIT"
+
 deploy:
   provider: releases
   api_key:
