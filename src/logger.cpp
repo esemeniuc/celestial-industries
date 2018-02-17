@@ -2,9 +2,9 @@
 // Created by eric on 2/15/18.
 //
 
-#include "log.h"
+#include "logger.hpp"
 
-Log::Log() {}
+Logger::Logger() {}
 //
 //Log& Log::operator()(Log::level inLogLevel) {
 //	logLevelOfLine = ijnLogLevel;

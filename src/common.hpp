@@ -29,6 +29,9 @@
 #define audio_path(name) data_path "/audio/" name
 #define mesh_path(name) data_path "/meshes/" name
 
+enum LogLevel {
+	disabled, error, warn, info, debug //higher numbers for more verbosity
+};
 
 // Our stuff
 std::vector<std::string> splitString(std::string input, const char seperator);
