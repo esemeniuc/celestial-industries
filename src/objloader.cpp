@@ -29,7 +29,7 @@ namespace OBJ {
 		return Invalid;
 	}
 
-	bool Loader::loadMaterialLibrary(std::string path, std::string filename, MaterialLibrary &result) {
+	bool Loader::loadMaterialLibrary(std::string path, std::string filename, MaterialLibrary& result) {
 		std::stringstream fullPath;
 		fullPath << path << filename;
 		std::ifstream file;
@@ -56,38 +56,40 @@ namespace OBJ {
 			lineStream >> firstWord;
 			LineType lineType = wordToObjLineType(firstWord);
 			switch (lineType) {
-				case NewMaterial:
+				case NewMaterial: {
 					if (doneWithFirst) {
-						result.materials.push_back({
-							name,
-							ambient,
-							diffuse,
-							specular,
-							hasDiffuseMap,
-							diffuseMap
-							});
+						result.materials.push_back({name,
+													ambient,
+													diffuse,
+													specular,
+													hasDiffuseMap,
+													diffuseMap
+												   });
 						hasDiffuseMap = false; // If we don't reset this EVERYTHING has it on true
 					} else {
 						doneWithFirst = true;
 					}
 					std::getline(lineStream, name); // Gets the remainder of the steam into name
 					break;
-				case Ambient:
+				}
+				case Ambient: {
 					lineStream >> ambient.x;
 					lineStream >> ambient.y;
 					lineStream >> ambient.z;
 					break;
-				case Diffuse:
+				}
+				case Diffuse: {
 					lineStream >> diffuse.x;
 					lineStream >> diffuse.y;
 					lineStream >> diffuse.z;
 					break;
+				}
 				case Specular:
 					lineStream >> specular.x;
 					lineStream >> specular.y;
 					lineStream >> specular.z;
 					break;
-				case DiffuseMap:
+				case DiffuseMap: {
 					hasDiffuseMap = true;
 					texturePath = "";
 					std::getline(lineStream, texturePath);
@@ -96,28 +98,32 @@ namespace OBJ {
 					texturePath = pathAppender(path, texturePathParts);
 					diffuseMap = std::make_shared<Texture>();
 
-					bool loadSuccesfull = diffuseMap->load_from_file(texturePath.c_str());
-					if (!diffuseMap->is_valid()  || !loadSuccesfull) {
+					bool loadSuccessful = diffuseMap->load_from_file(texturePath.c_str());
+					if (!diffuseMap->is_valid() || !loadSuccessful) {
 						std::cout << "Failed to load diffuse map: \n" << texturePath << std::endl;
 						return false;
 					}
 					texturePath.clear();
+					break;
+				}
+				default: {
+					break;
+				}
 			}
 		}
 		// Push the last material to the stack
-		result.materials.push_back({
-			name,
-			ambient,
-			diffuse,
-			specular,
-			hasDiffuseMap,
-			diffuseMap,
-			});
+		result.materials.push_back({name,
+									ambient,
+									diffuse,
+									specular,
+									hasDiffuseMap,
+									diffuseMap,
+								   });
 		file.close();
 		return true;
 	}
 
-	bool Loader::loadOBJ(std::string path, std::string filename, Data &result) {
+	bool Loader::loadOBJ(std::string path, std::string filename, Data& result) {
 		std::vector<glm::vec3> vertices;
 		std::vector<glm::vec2> textureCoordinates;
 		std::vector<glm::vec3> normals;
@@ -147,7 +153,7 @@ namespace OBJ {
 			LineType lineType = wordToObjLineType(firstWord);
 			std::string materialLibRelativePath;
 			switch (lineType) {
-				case MaterialLib:
+				case MaterialLib: {
 					materialLibRelativePath = "";
 					lineStream >> materialLibRelativePath;
 					if (!loadMaterialLibrary(path, materialLibRelativePath, materialLibrary)) {
@@ -156,7 +162,8 @@ namespace OBJ {
 					}
 					materialLibRelativePath.clear();
 					break;
-				case UseMaterial:
+				}
+				case UseMaterial: {
 					if (materialIndices.size() > 0) {
 						materialGroup.indices = materialIndices;
 						materialIndices.clear();
@@ -170,52 +177,59 @@ namespace OBJ {
 						}
 					}
 					break;
-				case Vertex:
+				}
+				case Vertex: {
 					glm::vec3 vertex;
 					lineStream >> vertex.x;
 					lineStream >> vertex.y;
 					lineStream >> vertex.z;
 					vertices.push_back(vertex);
 					break;
-				case TextureCoordinate:
+				}
+				case TextureCoordinate: {
 					glm::vec2 textureCoordinate;
 					lineStream >> textureCoordinate.x;
 					lineStream >> textureCoordinate.y;
 					textureCoordinates.push_back(textureCoordinate);
 					break;
-				case Normal:
+				}
+				case Normal: {
 					glm::vec3 normal;
 					lineStream >> normal.x;
 					lineStream >> normal.y;
 					lineStream >> normal.z;
 					normals.push_back(normal);
 					break;
-				case Face:
+				}
+				case Face: {
 					for (size_t i = 0; i < 3; i++) {
 						std::string faceGroup;
 						lineStream >> faceGroup;
 						unsigned int vertexIndex = 0, textureCoordinateIndex = 0, normalIndex = 0;
 						// Kindda hacky
 						if (textureCoordinates.size() != 0) {
-							sscanf(faceGroup.c_str(), "%d/%d/%d", &vertexIndex, &textureCoordinateIndex, &normalIndex);
+							sscanf(faceGroup.c_str(), "%u/%u/%u", &vertexIndex, &textureCoordinateIndex, &normalIndex);
 							vertexData.push_back({
-								vertices[vertexIndex - 1],
-								textureCoordinates[textureCoordinateIndex - 1],
-								normals[normalIndex - 1]
-							});
-						}
-						else {
-							sscanf(faceGroup.c_str(), "%d//%d", &vertexIndex, &normalIndex);
+														 vertices[vertexIndex - 1],
+														 textureCoordinates[textureCoordinateIndex - 1],
+														 normals[normalIndex - 1]
+												 });
+						} else {
+							sscanf(faceGroup.c_str(), "%u//%u", &vertexIndex, &normalIndex);
 							vertexData.push_back({
-								vertices[vertexIndex - 1],
-								glm::vec2(0.0f, 0.0f),
-								normals[normalIndex - 1]
-							});
+														 vertices[vertexIndex - 1],
+														 glm::vec2(0.0f, 0.0f),
+														 normals[normalIndex - 1]
+												 });
 						}
-						
+
 						materialIndices.push_back(vertexData.size() - 1);
 					}
 					break;
+				}
+				default: {
+					break;
+				}
 			}
 		}
 

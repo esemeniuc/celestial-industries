@@ -32,7 +32,6 @@ target_compile_options(proj PUBLIC
 		-Wall
 		-Wpedantic
 		-Wextra
-		-Wlogical-op
 		-Wnull-dereference
 		-Wshadow
 		-Wformat=2
