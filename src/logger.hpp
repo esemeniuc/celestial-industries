@@ -43,13 +43,6 @@ public:
 		return *this;
 	}
 
-	Logger& operator()(LogLevel logLevel) {
-		logLevelOfLine = logLevel;
-		std::time_t t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-		auto timeString = std::put_time(std::localtime(&t), "%F %T");
-		std::cout << '[' << timeString << "]\t";
-		outFile << '[' << timeString << "]\t";
-		return *this;
-	}
+	Logger& operator()(LogLevel logLevel);
 };
 
