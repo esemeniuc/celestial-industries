@@ -32,14 +32,14 @@ void Entity::set_rotation(glm::vec3 rotation_angles_degrees)
 	this->rotation = rotation_angles_degrees;	
 }
 
-void Entity::set_translation(glm::vec3 translation)
+void Entity::set_translation(glm::vec3 _translation)
 {
-	this->translation = translation;
+	this->translation = _translation;
 }
 
-void Entity::set_scale(glm::vec3 scale)
+void Entity::set_scale(glm::vec3 _scale)
 {
-	this->scale = scale;	
+	this->scale = _scale;
 }
 
 glm::mat4 Entity::model_matrix()

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <cassert>
 #include <cmath>
 #include <sstream>
@@ -6,6 +7,7 @@
 
 // glm
 #define GLM_ENABLE_EXPERIMENTAL
+
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/transform.hpp"
@@ -18,61 +20,57 @@
 // collision geometries
 struct bounding_box {
 
-//               	 @ + + + + + + + + @
-//               	 +\                +\
-//               	 + \               + \          
-//               	 +  \              +  \         y
-//           width   +   \             +   \        | 
-//               	 +    @ + + + + + +++ + @       |______ x
-//               	 +    +            +    +        \
-//               	 +    +            +    +         \
-//               	 +    +            +    +          z
-//  corner position  @ + +++ + + + + + @    +
-//               	  \   +             \   +
-//               	   \  +              \  +
-//               height \ +               \ +
-//               	     \+    length      \+
-//               	      @ + + + + + + + + @
+//               	 @ + + + + + + + + @						|
+//               	 +\                +\						|
+//               	 + \               + \						|
+//               	 +  \              +  \         y			|
+//           width   +   \             +   \        |			|
+//               	 +    @ + + + + + +++ + @       |______ x	|
+//               	 +    +            +    +        \			|
+//               	 +    +            +    +         \			|
+//               	 +    +            +    +          z		|
+//  corner position  @ + +++ + + + + + @    +					|
+//               	  \   +             \   +					|
+//               	   \  +              \  +					|
+//               height \ +               \ +					|
+//               	     \+    length      \+					|
+//               	      @ + + + + + + + + @					|
 
 	double length, width, height;
-	glm::vec3 corner_position; 
+	glm::vec3 corner_position;
 };
 
-struct bounding_sphere 
-{
+struct bounding_sphere {
 	double radius;
 	glm::vec3 center;
 };
 
-struct bounding_cylinder 
-{
+struct bounding_cylinder {
 	double radius, height;
 	glm::vec3 center;
 };
 
-enum collision_geometry_type
-{
+enum collision_geometry_type {
 	cg_bounding_box,
 	cg_bounding_sphere,
 	cg_bounding_cylinder,
 };
 
-class Entity : public OBJRenderable 
-{
+class Entity : public OBJRenderable {
 public:
 	virtual void update(float ms) = 0;
 
-	void set_velocity (glm::vec3);
-	
-	void set_gravity (glm::vec3);
+	void set_velocity(glm::vec3);
 
-	void set_force (glm::vec3);
+	void set_gravity(glm::vec3);
+
+	void set_force(glm::vec3);
 
 	void set_geometryId(long);
 
-	void set_rotation (glm::vec3);
+	void set_rotation(glm::vec3);
 
-	void set_translation (glm::vec3);
+	void set_translation(glm::vec3);
 
 	void set_scale(glm::vec3);
 

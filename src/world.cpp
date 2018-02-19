@@ -3,38 +3,32 @@
 #include "basicentity.hpp"
 
 // Same as static in c, local to compilation unit
-namespace
-{
+namespace {
 	const size_t TILE_WIDTH = 10;
 
-	namespace
-	{
-		void glfw_err_cb(int error, const char* desc)
-		{
+	namespace {
+		void glfw_err_cb(int error, const char* desc) {
 			fprintf(stderr, "%d: %s", error, desc);
 		}
 	}
 }
 
-World::World(){
+World::World() {
 	// Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
 }
 
-World::~World()
-{
+World::~World() {
 
 }
 
 // World initialization
-bool World::init(glm::vec2 screen)
-{
+bool World::init(glm::vec2 screen) {
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
 	glfwSetErrorCallback(glfw_err_cb);
-	if (!glfwInit())
-	{
+	if (!glfwInit()) {
 		fprintf(stderr, "Failed to initialize GLFW");
 		return false;
 	}
@@ -47,7 +41,7 @@ bool World::init(glm::vec2 screen)
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	glfwWindowHint(GLFW_RESIZABLE, 1);
-	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "A1 Assignment", nullptr, nullptr);
+	m_window = glfwCreateWindow((int) screen.x, (int) screen.y, "A1 Assignment", nullptr, nullptr);
 	m_screen = screen;
 	if (m_window == nullptr)
 		return false;
@@ -62,23 +56,27 @@ bool World::init(glm::vec2 screen)
 	// Input is handled using GLFW, for more info see
 	// http://www.glfw.org/docs/latest/input_guide.html
 	glfwSetWindowUserPointer(m_window, this);
-	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((World*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
-	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((World*)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1); };
-	auto scroll_offset_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((World*)glfwGetWindowUserPointer(wnd))->on_mouse_scroll(wnd, _0, _1); };
+	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) {
+		((World*) glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3);
+	};
+	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) {
+		((World*) glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1);
+	};
+	auto scroll_offset_redirect = [](GLFWwindow* wnd, double _0, double _1) {
+		((World*) glfwGetWindowUserPointer(wnd))->on_mouse_scroll(wnd, _0, _1);
+	};
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
 	glfwSetScrollCallback(m_window, scroll_offset_redirect);
 
 	//-------------------------------------------------------------------------
 	// Loading music and sounds
-	if (SDL_Init(SDL_INIT_AUDIO) < 0)
-	{
+	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
 		fprintf(stderr, "Failed to initialize SDL Audio");
 		return false;
 	}
 
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
-	{
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
 		fprintf(stderr, "Failed to open audio device");
 		return false;
 	}
@@ -93,63 +91,63 @@ bool World::init(glm::vec2 screen)
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
-	
+
 	std::vector<std::tuple<TileType, std::string>> tiles = {
-		{ SAND_1, "sand1.obj" },
-		{ SAND_2, "sand2.obj" },
-		{ SAND_3, "sand3.obj" },
-		{ WALL, "wall.obj" },
-		{ BRICK_CUBE, "brickCube.obj" },
-		{ MINING_TOWER, "miningTower.obj" },
-		{ PHOTON_TOWER, "photonTower.obj" }
+			{SAND_1,       "sand1.obj"},
+			{SAND_2,       "sand2.obj"},
+			{SAND_3,       "sand3.obj"},
+			{WALL,         "wall.obj"},
+			{BRICK_CUBE,   "brickCube.obj"},
+			{MINING_TOWER, "miningTower.obj"},
+			{PHOTON_TOWER, "photonTower.obj"}
 	};
 
-    // TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isnt being shared
-    // thats a big enough change to merit its own ticket in milestone 2 though
-    std::vector<std::vector<int>> levelArray;
-    int mapSize = 5;
-    for (size_t i = 0; i < mapSize; i++) {
-        std::vector<int> row;
-        for (size_t j = 0; j < mapSize; j++) {
-            if (j == mapSize / 2)row.push_back(WALL);
-            else if (i % 3 == 0 && j % 3 == 0)row.push_back(PHOTON_TOWER);
-            else if (i % 5 == 0 && j % 2 == 0)row.push_back(BRICK_CUBE);
-            else row.push_back(SAND_1);
-        }
-        levelArray.push_back(row);
-    }
-    camera.position = { mapSize / 2, 10, mapSize / 2 };
+	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isnt being shared
+	// thats a big enough change to merit its own ticket in milestone 2 though
+	std::vector<std::vector<int>> levelArray;
+	int mapSize = 5;
+	for (size_t i = 0; i < (size_t) mapSize; i++) {
+		std::vector<int> row;
+		for (size_t j = 0; j < (size_t) mapSize; j++) {
+			if (j == (size_t) mapSize / 2)row.push_back(WALL);
+			else if (i % 3 == 0 && j % 3 == 0)row.push_back(PHOTON_TOWER);
+			else if (i % 5 == 0 && j % 2 == 0)row.push_back(BRICK_CUBE);
+			else row.push_back(SAND_1);
+		}
+		levelArray.push_back(row);
+	}
+	camera.position = {mapSize / 2, 10, mapSize / 2};
 	level.init(levelArray, tiles);
 
-    selectedTile = {mapSize/2, mapSize/2};
-    OBJ::Data ball;
-    if (!OBJ::Loader::loadOBJ(pathBuilder({ "data", "models" }), "ball.obj", ball)) {
-        std::cout << "No ball, no game" << std::endl;
-        return false;
-    }
-    for (size_t i = 0; i < mapSize / 3; i++) {
-        BasicEntity ballEntity;
-        ballEntity.init(ball);
-        ballEntity.translate({0, 2, 0});
-        level.basicEntities.push_back(ballEntity);
-    }
+	selectedTile = {mapSize / 2, mapSize / 2};
+	OBJ::Data ball;
+	if (!OBJ::Loader::loadOBJ(pathBuilder({"data", "models"}), "ball.obj", ball)) {
+		std::cout << "No ball, no game" << std::endl;
+		return false;
+	}
+	for (size_t i = 0; i < (size_t) mapSize / 3; i++) {
+		BasicEntity ballEntity;
+		ballEntity.init(ball);
+		ballEntity.translate({0, 2, 0});
+		level.basicEntities.push_back(ballEntity);
+	}
 	return true;
 }
 
 // skybox
-bool World::loadSkybox (std::string skyboxFilename, std::string skyboxTextureFolder) {
+bool World::loadSkybox(std::string skyboxFilename, std::string skyboxTextureFolder) {
 	bool success = true;
 	OBJ::Data skyboxObj;
 
-	std::string geometryPath = pathBuilder({ "data", "models" });
-    std::string texturePath = pathBuilder({ "data", "textures", skyboxTextureFolder });
+	std::string geometryPath = pathBuilder({"data", "models"});
+	std::string texturePath = pathBuilder({"data", "textures", skyboxTextureFolder});
 
 	success &= OBJ::Loader::loadOBJ(geometryPath, skyboxFilename, skyboxObj);
 	if (!success) {
 		std::cout << "Failed to load skybox" << std::endl;
 		return false;
 	}
-	
+
 	success &= m_skybox.init(skyboxObj);
 	if (!success) {
 		std::cout << "Failed to initilize skybox" << std::endl;
@@ -166,8 +164,7 @@ bool World::loadSkybox (std::string skyboxFilename, std::string skyboxTextureFol
 }
 
 // Releases all the associated resources
-void World::destroy()
-{
+void World::destroy() {
 	Mix_CloseAudio();
 	m_tile.destroy();
 	m_skybox.destroy();
@@ -176,37 +173,36 @@ void World::destroy()
 
 // Update our game world
 float total_time = 0.0f;
-bool World::update(float elapsed_ms)
-{
+
+bool World::update(float elapsed_ms) {
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
-	glm::vec2 screen = glm::vec2((float)w, (float)h);
+//	glm::vec2 screen = glm::vec2((float)w, (float)h);
 	camera.update(elapsed_ms);
-    for (size_t i = 0; i < level.basicEntities.size(); i++) {
-        // Yes we know its terribly inefficient as is, but this is more of a "it works" kindda demo rather than the final
-        // AI driven logic
-        if (level.basicEntities[i].position.x < 2) {
-            level.basicEntities[i].moveTo({ 50,2, i*3 });
-        }
-        if (level.basicEntities[i].position.x > 48) {
-            level.basicEntities[i].moveTo({ 0,2, level.basicEntities[i].position.z });
-        }
-        level.basicEntities[i].update(elapsed_ms);
-    }
-    total_time += elapsed_ms;
+	for (size_t i = 0; i < level.basicEntities.size(); i++) {
+		// Yes we know its terribly inefficient as is, but this is more of a "it works" kindda demo rather than the final
+		// AI driven logic
+		if (level.basicEntities[i].position.x < 2) {
+			level.basicEntities[i].moveTo({50, 2, i * 3});
+		}
+		if (level.basicEntities[i].position.x > 48) {
+			level.basicEntities[i].moveTo({0, 2, level.basicEntities[i].position.z});
+		}
+		level.basicEntities[i].update(elapsed_ms);
+	}
+	total_time += elapsed_ms;
 	return true;
 }
 
 // Render our game world
-void World::draw()
-{
+void World::draw() {
 	// Clearing error buffer
 	gl_flush_errors();
 
 	// Getting size of window
 	int w, h;
-    glfwGetFramebufferSize(m_window, &w, &h);
-	m_screen = { (float)w, (float)h }; // ITS CONVENIENT TO HAVE IN FLOAT OK
+	glfwGetFramebufferSize(m_window, &w, &h);
+	m_screen = {(float) w, (float) h}; // ITS CONVENIENT TO HAVE IN FLOAT OK
 
 	// Updating window title with points
 	std::stringstream title_ss;
@@ -216,7 +212,7 @@ void World::draw()
 	// Clearing backbuffer
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
-	const float clear_color[3] = { 47.0/256.0,61.0/256.0, 84.0/256.0 };
+	const float clear_color[3] = {47.0 / 256.0, 61.0 / 256.0, 84.0 / 256.0};
 	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -224,24 +220,24 @@ void World::draw()
 	glm::mat4 projection = camera.getProjectionMatrix(m_screen.x, m_screen.y);
 	glm::mat4 view = camera.getViewMatrix();
 
-    int i = 0, j = 0; // used for showing the selected tile
+	int i = 0, j = 0; // used for showing the selected tile
 	for (auto tileRow : level.tiles) {
 		for (auto tile : tileRow) {
 			if (i == selectedTile[0] && j == selectedTile[1]) {
 				// do nothing
 			} else {
-				tile.draw(projection*view);
+				tile.draw(projection * view);
 			}
 			j++;
 		}
 		j = 0;
 		i++;
 	}
-    
-    for (auto basicEntity : level.basicEntities) {
-        basicEntity.draw(projection*view);
-    }
-	
+
+	for (auto basicEntity : level.basicEntities) {
+		basicEntity.draw(projection * view);
+	}
+
 	m_skybox.draw(projection * view * m_skybox.model);
 
 	// Presenting
@@ -252,27 +248,28 @@ void World::move_cursor_up() {
 	selectedTile[1]--;
 	printf("Selected tile: %d, %d\n", selectedTile[0], selectedTile[1]);
 }
+
 void World::move_cursor_down() {
 	selectedTile[1]++;
 	printf("Selected tile: %d, %d\n", selectedTile[0], selectedTile[1]);
 }
+
 void World::move_cursor_left() {
 	selectedTile[0]--;
 	printf("Selected tile: %d, %d\n", selectedTile[0], selectedTile[1]);
 }
+
 void World::move_cursor_right() {
 	selectedTile[0]++;
 	printf("Selected tile: %d, %d\n", selectedTile[0], selectedTile[1]);
 }
 
 // Should the game be over ?
-bool World::is_over()const
-{
+bool World::is_over() const {
 	return glfwWindowShouldClose(m_window) || escapePressed;
 }
 
-void World::updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<int> targetKeys)
-{
+void World::updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<int> targetKeys) {
 	for (auto targetKey : targetKeys) {
 		if (key == targetKey) {
 			if (action == GLFW_PRESS) {
@@ -286,11 +283,9 @@ void World::updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<i
 }
 
 // On key callback
-void World::on_key(GLFWwindow*, int key, int, int action, int mod)
-{
+void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 	// Core controls
-	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
-	{
+	if (action == GLFW_RELEASE && key == GLFW_KEY_R) {
 		int w, h;
 		glfwGetWindowSize(m_window, &w, &h);
 	}
@@ -317,17 +312,17 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 	// We do what we must because we can. Also we only can if we support C++11.
 	std::vector<std::tuple<bool&, std::vector<int>>> stickyKeys = {
-		// Format of this monstrosity:
-		// { Var to update, { Keys that will update it } }
+			// Format of this monstrosity:
+			// { Var to update, { Keys that will update it } }
 
-		// Camera controls:
-		{ camera.move_forward, { GLFW_KEY_W, GLFW_KEY_UP } },
-		{ camera.move_backward, { GLFW_KEY_S, GLFW_KEY_DOWN } },
-		{ camera.move_right, { GLFW_KEY_D, GLFW_KEY_RIGHT } },
-		{ camera.move_left, { GLFW_KEY_A, GLFW_KEY_LEFT } },
-		{ camera.rotate_right, { GLFW_KEY_E } },
-		{ camera.rotate_left, { GLFW_KEY_Q } },
-		{ camera.z_held, { GLFW_KEY_Z } },
+			// Camera controls:
+			{camera.move_forward,  {GLFW_KEY_W, GLFW_KEY_UP}},
+			{camera.move_backward, {GLFW_KEY_S, GLFW_KEY_DOWN}},
+			{camera.move_right,    {GLFW_KEY_D, GLFW_KEY_RIGHT}},
+			{camera.move_left,     {GLFW_KEY_A, GLFW_KEY_LEFT}},
+			{camera.rotate_right,  {GLFW_KEY_E}},
+			{camera.rotate_left,   {GLFW_KEY_Q}},
+			{camera.z_held,        {GLFW_KEY_Z}},
 	};
 
 	for (auto stickyKey : stickyKeys) {
@@ -335,13 +330,11 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 	}
 }
 
-void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
-{
+void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 	// Handle the mouse movement here
 }
 
-void World::on_mouse_scroll(GLFWwindow * window, double xoffset, double yoffset)
-{
+void World::on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset) {
 	camera.mouseScroll = glm::vec2(xoffset, yoffset);
 }
 
