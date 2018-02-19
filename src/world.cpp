@@ -107,7 +107,7 @@ bool World::init(glm::vec2 screen)
     // TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isnt being shared
     // thats a big enough change to merit its own ticket in milestone 2 though
     std::vector<std::vector<int>> levelArray;
-    int mapSize = 50;
+    int mapSize = 5;
     for (size_t i = 0; i < mapSize; i++) {
         std::vector<int> row;
         for (size_t j = 0; j < mapSize; j++) {

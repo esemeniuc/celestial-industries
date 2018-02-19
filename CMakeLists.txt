@@ -13,48 +13,50 @@ find_package(glfw3 REQUIRED)
 add_subdirectory(ext/glm)
 
 add_executable(proj
-        src/objloader.cpp
-        src/common.cpp
-        src/main.cpp
-        src/entity.cpp
-        src/tile.cpp
-        src/skybox.cpp
-        src/world.cpp
-        src/camera.cpp
-        src/textureloader.cpp
-	    src/level.cpp
-        src/objrenderable.cpp
-        src/basicentity.cpp)
+		src/objloader.cpp
+		src/common.cpp
+		src/main.cpp
+		src/entity.cpp
+		src/tile.cpp
+		src/skybox.cpp
+		src/world.cpp
+		src/camera.cpp
+		src/textureloader.cpp
+		src/level.cpp
+		src/objrenderable.cpp
+		src/basicentity.cpp
+		src/config.hpp
+		src/logger.cpp)
 
 target_compile_options(proj PUBLIC
-        -Wall
-        -Wpedantic
-        -Wextra
-        -Wlogical-op
-        -Wnull-dereference
-        -Wshadow
-        -Wformat=2
-        -Wno-comment
-        -Wno-unused-parameter
-        -ggdb)
+		-Wall
+		-Wpedantic
+		-Wextra
+		-Wlogical-op
+		-Wnull-dereference
+		-Wshadow
+		-Wformat=2
+		-Wno-comment
+		-Wno-unused-parameter
+		-ggdb)
 
-if(APPLE)
-    target_link_libraries(proj "-framework CoreFoundation")
-endif()
+if (APPLE)
+	target_link_libraries(proj "-framework CoreFoundation")
+endif ()
 
 
 target_include_directories(proj PUBLIC
-        ext/gl3w
-        ext/stb_image
-        ${SDL2_INCLUDE_DIRS}
-        ${SDL2_MIXER_INCLUDE_DIRS}
-        )
+		ext/gl3w
+		ext/stb_image
+		${SDL2_INCLUDE_DIRS}
+		${SDL2_MIXER_INCLUDE_DIRS}
+		)
 
 target_link_libraries(proj
-        OpenGL::GL
-        glfw
-        glm
-        ${CMAKE_DL_LIBS}
-        ${SDL2_LIBRARIES}
-        ${SDL2_MIXER_LIBRARIES}
-        )
+		OpenGL::GL
+		glfw
+		glm
+		${CMAKE_DL_LIBS}
+		${SDL2_LIBRARIES}
+		${SDL2_MIXER_LIBRARIES}
+		)
