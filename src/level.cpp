@@ -59,6 +59,7 @@ std::vector<std::vector<int>> Level::levelLoader(std::string levelTextFile)
 					}
 					default:
 					{
+						row.push_back(SAND_2);
 						break;
 					}
 				}
