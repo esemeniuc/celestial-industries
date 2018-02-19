@@ -8,7 +8,7 @@ Logger::Logger() {
 	if (Config::SYSTEM_LOG_TO_FILE) {
 		std::cout << "Logging to file '" << Config::SYSTEM_LOG_FILE_PATH
 				  << "' with verbosity level " << static_cast<int>(Config::SYSTEM_LOGGING_LEVEL)
-				  << "\n";
+				  << '\n';
 		this->outFile.open(Config::SYSTEM_LOG_FILE_PATH, std::ofstream::app);
 	}
 }
