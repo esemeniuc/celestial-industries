@@ -4,18 +4,11 @@
 
 #include "logger.hpp"
 
-Logger::Logger() {}
-//
-//Log& Log::operator()(Log::level inLogLevel) {
-//	logLevelOfLine = ijnLogLevel;
-//	return *this;
-//}
-//
-//template<class T>
-//Log& Log::operator<<(const T& msg) {
-//#ifdef NDEBUG
-//	std::cout << msg;
-//#endif
-//
-//	return *this;
-//}
+Logger::Logger() {
+	if (Config::SYSTEM_LOG_TO_FILE) {
+		std::cout << "Logging to file '" << Config::SYSTEM_LOG_FILE_PATH
+				  << "' with verbosity level " << Config::SYSTEM_LOGGING_LEVEL
+				  << "\n";
+		this->outFile.open(Config::SYSTEM_LOG_FILE_PATH, std::ofstream::app);
+	}
+}

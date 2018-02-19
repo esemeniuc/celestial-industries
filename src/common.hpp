@@ -1,4 +1,6 @@
 #pragma once
+#include "config.hpp"
+#include "logger.hpp"
 #include "objloader.hpp"
 
 // stlib
@@ -15,6 +17,7 @@
 // glm
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "logger.hpp"
 
 // Simple utility macros to avoid mistyping directory name, name has to be a string literal
 // audio_path("audio.ogg") -> data/audio/audio.ogg
@@ -29,11 +32,10 @@
 #define audio_path(name) data_path "/audio/" name
 #define mesh_path(name) data_path "/meshes/" name
 
-enum LogLevel {
-	disabled, error, warn, info, debug //higher numbers for more verbosity
-};
 
 // Our stuff
+extern Logger logger; //use extern so we share the logger in main.cpp with all other cpp files
+
 std::vector<std::string> splitString(std::string input, const char seperator);
 char separator();
 

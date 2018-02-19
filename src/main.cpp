@@ -22,15 +22,7 @@ Logger logger;
 // Entry point
 int main(int argc, char* argv[])
 {
-	//logging test
-	logger(debug) << 8;
-	logger << "Hello, " << "World!";
-	std::string msg("plop");
-	logger << msg << '\n';
-
-	logger(error) << "error stuff" << 42;
-	logger << "more secrets\n";
-
+	logger(debug) << "Started game\n";
 	// Initializing world (after renderer.init().. sorry)
 	if (!world.init({ (float)width, (float)height }))
 	{
