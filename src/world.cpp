@@ -107,17 +107,8 @@ bool World::init(glm::vec2 screen)
     // TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isnt being shared
     // thats a big enough change to merit its own ticket in milestone 2 though
     std::vector<std::vector<int>> levelArray;
-    int mapSize = 50;
-    for (size_t i = 0; i < mapSize; i++) {
-        std::vector<int> row;
-        for (size_t j = 0; j < mapSize; j++) {
-            if (j == mapSize / 2)row.push_back(WALL);
-            else if (i % 3 == 0 && j % 3 == 0)row.push_back(PHOTON_TOWER);
-            else if (i % 5 == 0 && j % 2 == 0)row.push_back(BRICK_CUBE);
-            else row.push_back(SAND_1);
-        }
-        levelArray.push_back(row);
-    }
+	levelArray = level.levelLoader("../data/levels/level1.txt");
+	int mapSize = 50;
     camera.position = { mapSize / 2, 10, mapSize / 2 };
 	level.init(levelArray, tiles);
 

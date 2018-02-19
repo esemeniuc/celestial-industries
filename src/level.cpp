@@ -31,6 +31,46 @@ bool Level::init(std::vector<std::vector<int>> intArray, std::vector<std::tuple<
 	return true;
 }
 
+std::vector<std::vector<int>> Level::levelLoader(std::string levelTextFile)
+{
+	std::ifstream level (levelTextFile);
+	std::string line;
+	std::vector<std::vector<int>> levelData;
+
+	if (level.is_open())
+	{
+		while (getline(level, line))
+		{
+			std::vector <int> row;
+			for (char& tile : line) 
+			{
+				switch (tile)
+				{
+					case '#':
+					{
+						row.push_back(BRICK_CUBE);
+						break;
+					}
+
+					case ' ':
+					{
+						row.push_back(SAND_1);
+						break;
+					}
+					default:
+					{
+						break;
+					}
+				}
+			}
+			levelData.push_back(row);
+		}
+		level.close();
+	}
+	else fprintf(stderr, "Failed to open level data file");
+	return levelData;
+}
+
 bool Level::initTileTypes(std::vector<std::tuple<TileType, std::string>> sources)
 {
 	// All the models come from the same place

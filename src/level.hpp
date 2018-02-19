@@ -1,5 +1,6 @@
 #pragma once
 
+#include <fstream>
 #include "tile.hpp"
 #include "basicentity.hpp"
 #include <map>
@@ -25,6 +26,7 @@ class Level
 {
 public:
 	bool init(std::vector<std::vector<int>> intArray, std::vector<std::tuple<TileType, std::string>> sources);
+	std::vector<std::vector<int>> levelLoader(std::string levelTextFile);
 
 	std::vector<std::vector<Tile>> tiles; // we can add the time dimension when we get there
 	std::vector<BasicEntity> basicEntities;
