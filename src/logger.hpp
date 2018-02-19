@@ -7,7 +7,9 @@
 #include <iostream>
 #include <iomanip>
 #include <chrono>
+
 #include "config.hpp"
+#include "loglevel.hpp"
 
 
 /*	Example of usage
@@ -25,7 +27,7 @@ class Logger {
 
 	std::ofstream outFile;
 	const LogLevel systemLogLevel = Config::SYSTEM_LOGGING_LEVEL;
-	LogLevel logLevelOfLine = disabled; //gets overwritten every time a custom level is requested
+	LogLevel logLevelOfLine = LogLevel::disabled; //gets overwritten every time a custom level is requested
 
 public:
 	Logger();

@@ -22,7 +22,7 @@ Logger logger;
 // Entry point
 int main(int argc, char* argv[])
 {
-	logger(debug) << "Started game\n";
+	logger(LogLevel::debug) << "Started game\n";
 	// Initializing world (after renderer.init().. sorry)
 	if (!world.init({ (float)width, (float)height }))
 	{

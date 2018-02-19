@@ -3,13 +3,11 @@
 //
 #pragma once
 
-enum LogLevel {
-	disabled, error, warn, info, debug //higher numbers for more verbosity
-};
+#include "loglevel.hpp"
 
 namespace Config {
 
-	const LogLevel SYSTEM_LOGGING_LEVEL = debug;
+	const LogLevel SYSTEM_LOGGING_LEVEL = LogLevel::debug;
 	const bool SYSTEM_LOG_TO_FILE = true;
 	constexpr const char* SYSTEM_LOG_FILE_PATH = "debug.log";
 };
