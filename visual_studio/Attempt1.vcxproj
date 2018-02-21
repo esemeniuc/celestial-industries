@@ -512,6 +512,7 @@
     <ClCompile Include="..\src\skybox.cpp" />
     <ClCompile Include="..\src\textureloader.cpp" />
     <ClCompile Include="..\src\tile.cpp" />
+    <ClCompile Include="pathfinder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\camera.hpp" />
@@ -524,6 +525,7 @@
     <ClInclude Include="..\src\textureloader.hpp" />
     <ClInclude Include="..\src\tile.hpp" />
     <ClInclude Include="..\src\world.hpp" />
+    <ClInclude Include="pathfinder.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\colored.fs.glsl" />
