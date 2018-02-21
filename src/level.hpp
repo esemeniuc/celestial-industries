@@ -2,7 +2,6 @@
 
 #include <fstream>
 #include "tile.hpp"
-#include "basicentity.hpp"
 #include <map>
 #include <tuple>
 
@@ -29,7 +28,6 @@ public:
 	std::vector<std::vector<int>> levelLoader(std::string levelTextFile);
 
 	std::vector<std::vector<Tile>> tiles; // we can add the time dimension when we get there
-	std::vector<BasicEntity> basicEntities;
 	std::map<TileType, OBJ::Data> tileTypes;
 private:
 	bool initTileTypes(std::vector<std::tuple<TileType, std::string>> sources);

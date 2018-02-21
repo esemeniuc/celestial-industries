@@ -1,6 +1,5 @@
 // Header
 #include "world.hpp"
-#include "basicentity.hpp"
 
 // Same as static in c, local to compilation unit
 namespace
@@ -113,18 +112,7 @@ bool World::init(glm::vec2 screen)
 	level.init(levelArray, tiles);
 
     selectedTile = {mapSize/2, mapSize/2};
-    OBJ::Data ball;
-    if (!OBJ::Loader::loadOBJ(pathBuilder({ "data", "models" }), "ball.obj", ball)) {
-        std::cout << "No ball, no game" << std::endl;
-        return false;
-    }
-    for (size_t i = 0; i < mapSize / 3; i++) {
-        BasicEntity ballEntity;
-        ballEntity.init(ball);
-        ballEntity.translate({0, 2, 0});
-        level.basicEntities.push_back(ballEntity);
-    }
-	return true;
+    return true;
 }
 
 // skybox
@@ -172,18 +160,7 @@ bool World::update(float elapsed_ms)
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
 	glm::vec2 screen = glm::vec2((float)w, (float)h);
-	camera.update(elapsed_ms);
-    for (size_t i = 0; i < level.basicEntities.size(); i++) {
-        // Yes we know its terribly inefficient as is, but this is more of a "it works" kindda demo rather than the final
-        // AI driven logic
-        if (level.basicEntities[i].position.x < 2) {
-            level.basicEntities[i].moveTo({ 50,2, i*3 });
-        }
-        if (level.basicEntities[i].position.x > 48) {
-            level.basicEntities[i].moveTo({ 0,2, level.basicEntities[i].position.z });
-        }
-        level.basicEntities[i].update(elapsed_ms);
-    }
+	camera.update(elapsed_ms);    
     total_time += elapsed_ms;
 	return true;
 }
@@ -228,12 +205,14 @@ void World::draw()
 		j = 0;
 		i++;
 	}
-    
-    for (auto basicEntity : level.basicEntities) {
-        basicEntity.draw(projection*view);
-    }
 	
-	m_skybox.draw(projection * view * m_skybox.model);
+	// make skybox rotate by 0.001 * pi/4 radians around y axis, every frame
+	//float y_rotation = 0.005 * glm::quarter_pi<float>();
+	//m_skybox.setRotation(glm::vec3(0.0, y_rotation, 0.0));
+	//m_skybox.applyTransformations();
+	m_skybox.setCameraPosition(camera.position);
+	m_skybox.draw(projection * view * m_skybox.getModelMatrix());
+
 
 	// Presenting
 	glfwSwapBuffers(m_window);
