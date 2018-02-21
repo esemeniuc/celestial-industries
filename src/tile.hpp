@@ -13,10 +13,12 @@ class Tile : public OBJRenderable
 
 public:
 	bool init(OBJ::Data obj);
-
 	void destroy();
-
 	void update(float ms);
+	void setCost(float);
+	float getCost();
 
 private:
+	// cost to traverse a tile, used by AI for path finding
+	float cost;
 };
