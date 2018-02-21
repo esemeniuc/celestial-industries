@@ -3,5 +3,5 @@
 //
 #pragma once
 enum class LogLevel {
-	DISABLED, ERROR, WARN, INFO, DEBUG //higher numbers for more verbosity
+	DISABLED, ERR, WARN, INFO, DEBUG //higher numbers for more verbosity
 };
