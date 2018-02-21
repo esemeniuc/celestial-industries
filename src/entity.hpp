@@ -61,32 +61,23 @@ class Entity : public OBJRenderable
 {
 public:
 	virtual void update(float ms) = 0;
-
-	void set_velocity (glm::vec3);
-	
-	void set_gravity (glm::vec3);
-
-	void set_force (glm::vec3);
-
-	void set_geometryId(long);
-
-	void set_rotation (glm::vec3);
-
-	void set_translation (glm::vec3);
-
-	void set_scale(glm::vec3);
-
-	glm::mat4 model_matrix();
-
-	void set_collision_geometry_type(collision_geometry_type);
-
-	collision_geometry_type get_collision_geometry_type();
-
-	glm::vec3 get_velocity();
-
-	long get_geometryId();
-
-	bool is_textured();
+	void setvelocity (glm::vec3);	
+	void setGravity (glm::vec3);
+	void setForce (glm::vec3);
+	void setGeometryId(long);
+	void setRotation (glm::vec3);
+	void setTranslation (glm::vec3);
+	void setScale(glm::vec3);
+	void setPosition(glm::vec3);
+	void setCameraPosition(glm::vec3);
+	glm::vec3 getPosition();
+	void applyTransformations();
+	void setCollisionGeometryType(collision_geometry_type);
+	glm::mat4 getModelMatrix();
+	collision_geometry_type getCollisionGeometryType();
+	glm::vec3 getVelocity();
+	long getGeometryId();
+	bool isTextured();
 
 protected:
 	// physical properties
@@ -95,10 +86,13 @@ protected:
 	glm::vec3 velocity;
 	glm::vec3 gravity;
 	glm::vec3 applied_force;
-	glm::vec3 translation;
-	glm::vec3 scale;
-	glm::vec3 rotation;
-
+	glm::vec3 translation = glm::vec3(0.0, 0.0, 0.0);
+	glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0);
+	glm::vec3 rotation = glm::vec3(0.0, 0.0,0.0);
+	glm::vec3 position;
+	glm::vec3 cameraPosition;
+	glm::mat4 model = glm::mat4(1.0);
+	
 	// collision geometry type
 	collision_geometry_type cg_type;
 
