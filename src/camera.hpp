@@ -1,18 +1,16 @@
 #pragma once
 
 #include "common.hpp"
-
 #include <vector>
 #include <random>
 
 // glm
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/constants.hpp"
 
-// You might ask: Shouldn't this just work from cmath/math.h? That would make sense right?
-// I have the same question. And yes I tried using the weird MS define thing, that did nothing.
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+#define M_PI glm::pi<float>()
 #endif
 
 class Camera {
