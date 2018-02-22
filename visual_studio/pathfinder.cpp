@@ -94,11 +94,13 @@ void AI::a_star(std::vector<std::vector<tileNode>>& graph, int tileSize,
 			// that has a lower cost
 			if (cost_so_far.find(AI::getTileNodeHashKey(next)) == cost_so_far.end() || 
 				newCost < cost_so_far[AI::getTileNodeHashKey(next)]) {
-				// update path cost and estimated f value path costs
 				cost_so_far[AI::getTileNodeHashKey(next)] = newCost;
+				// calculate f-score based on g-score and heuristic
 				float priority = newCost + l1_norm(next, goal);
-				std::get<2>(next) = priority;
+				std::get<3>(next) = priority;
+				// add neighbor to open list of nodes to explore
 				frontier.push(next);
+				// update predecessor of next node to our current node
 				came_from[AI::getTileNodeHashKey(next)] = current;
 			}
 		}		
