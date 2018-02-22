@@ -6,6 +6,7 @@
 #include "skybox.hpp"
 #include "camera.hpp"
 #include "level.hpp"
+#include "pathfinder.hpp"
 
 // stlib
 #include <vector>

@@ -110,7 +110,7 @@ bool World::init(glm::vec2 screen)
 	int mapSize = levelArray.size();
     camera.position = { mapSize / 2, 20, mapSize / 2 };
 	level.init(levelArray, tiles);
-
+	AI::aStar::a_star(level.getLevelTraversalCostMap(), 1, 1, 1, 11, 25);
     selectedTile = {mapSize/2, mapSize/2};
     return true;
 }
