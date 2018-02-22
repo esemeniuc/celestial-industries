@@ -70,7 +70,7 @@ void AI::a_star(std::vector<std::vector<tileNode>>& graph, int tileSize,
 	long goalCol = std::floor(startz/tileSize);
 
 	const float INF = std::numeric_limits<float>::infinity();
-	tileNode start = std::make_tuple(startRow, startCol, 0.0, INF);
+	tileNode start = std::make_tuple(startRow, startCol, 0.0, 0.0);
 	tileNode goal = std::make_tuple(goalRow, goalCol, 0.0, INF);
 
 	frontier.push(start);
@@ -101,8 +101,6 @@ void AI::a_star(std::vector<std::vector<tileNode>>& graph, int tileSize,
 				frontier.push(next);
 				came_from[AI::getTileNodeHashKey(next)] = current;
 			}
-		}
-
-		
+		}		
 	}
 }
