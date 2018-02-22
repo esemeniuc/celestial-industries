@@ -22,8 +22,8 @@ namespace AI {
 	// cost associated with a path up to a certain node
 	std::unordered_map<std::string, double> cost_so_far;
 
-	/*the hash key is a string of this format row + "," + col which is unique
-	for each tile*/
+	/* generate hash key as a string of this format row + "," + col 
+	which is unique	for each tile*/
 	std::string getTileNodeHashKey(tileNode &a);
 	
 	// L1 norm (manhattan distance), will be used as a hueristic for A*
@@ -31,7 +31,7 @@ namespace AI {
 	
 	/* find list of adjacent tile nodes which constitute possible moves
 	from the position we're currently at*/
-	std::vector<tileNode> getNeighbors(tileNode &a);
+	std::vector<tileNode> getNeighbors(std::vector<std::vector<tileNode>> &graph, tileNode &current, tileNode &goal);
 
 
 	void a_star(std::vector<std::vector<tileNode>> &graph, int tileSize, int startx, int startz, int goalx, int goalz);
