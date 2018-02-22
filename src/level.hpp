@@ -22,7 +22,7 @@ enum TileType {
 
 // used to build a graph of nodes for the AI pathfinder to traverse
 // each tile node defines a tile row, column and cost in the grid
-typedef std::tuple<long, long, float> tileNode;
+typedef std::tuple<long, long, float, float> tileNode;
 
 class Level
 {

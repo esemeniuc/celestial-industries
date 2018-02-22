@@ -1,4 +1,5 @@
 #include "pathfinder.hpp"
+#include <limits>
 
 
 std::string AI::getTileNodeHashKey(tileNode &a){
@@ -8,13 +9,10 @@ std::string AI::getTileNodeHashKey(tileNode &a){
 }
 
 /* using L1 Norm (Manhattan norm) for stairstep like movement, for diagonal movement 
-   we can consider either LInfinity or L2 norm, leaving it for later
-   we can boost performance by pre-computing those norms since the size
-   of the map and location of the tiles do not change*/
-
-float AI::l1_norm(tileNode &startNode, tileNode &nextNode){
-	float rowDiff = std::abs(std::get<0>(startNode) - std::get<0>(nextNode));
-	float colDiff = std::abs(std::get<1>(startNode) - std::get<1>(nextNode));
+   we can consider either L-Infinity or L2 norm, leaving it for later*/   
+float AI::l1_norm(tileNode &startNode, tileNode &goal){
+	float rowDiff = std::abs(std::get<0>(startNode) - std::get<0>(goal));
+	float colDiff = std::abs(std::get<1>(startNode) - std::get<1>(goal));
 	return  rowDiff + colDiff;
 }
 
@@ -71,12 +69,11 @@ void AI::a_star(std::vector<std::vector<tileNode>>& graph, int tileSize,
 	long goalRow = std::floor(startx/tileSize);
 	long goalCol = std::floor(startz/tileSize);
 
-	tileNode start = std::make_tuple(startRow, startCol, 0.0);
-	tileNode goal = std::make_tuple(goalRow, goalCol, 0.0);
+	const float INF = std::numeric_limits<float>::infinity();
+	tileNode start = std::make_tuple(startRow, startCol, 0.0, INF);
+	tileNode goal = std::make_tuple(goalRow, goalCol, 0.0, INF);
 
 	frontier.push(start);
-	tileNodesVisited.insert({"startingPoint", start});
-
 	came_from[getTileNodeHashKey(start)] = start;
 	cost_so_far[getTileNodeHashKey(start)] = 0;
 
@@ -92,14 +89,17 @@ void AI::a_star(std::vector<std::vector<tileNode>>& graph, int tileSize,
 		std::vector<tileNode> neighbors = AI::getNeighbors(graph, current, goal);
 		for (auto &next : neighbors) {
 			// movement cost
-			float gValue = cost_so_far[AI::getTileNodeHashKey(current)] + std::get<2>(next);
-			if (gValue < cost_so_far[getTileNodeHashKey(next)]) {
-				cost_so_far[next] = gValue;
-				
-				/*The estimate of the total cost for a path from the
-				start node through this next node and onto the goal*/
-				float fValue = gValue + l1_norm(next, goal);
-				
+			float newCost = cost_so_far[AI::getTileNodeHashKey(current)] + std::get<2>(next);
+			// if a neighbor node was not explored before, or we found a new path to
+			// that has a lower cost
+			if (cost_so_far.find(AI::getTileNodeHashKey(next)) == cost_so_far.end() || 
+				newCost < cost_so_far[AI::getTileNodeHashKey(next)]) {
+				// update path cost and estimated f value path costs
+				cost_so_far[AI::getTileNodeHashKey(next)] = newCost;
+				float priority = newCost + l1_norm(next, goal);
+				std::get<2>(next) = priority;
+				frontier.push(next);
+				came_from[AI::getTileNodeHashKey(next)] = current;
 			}
 		}
 

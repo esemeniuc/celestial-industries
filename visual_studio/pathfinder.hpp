@@ -11,10 +11,6 @@ namespace AI {
 	 will use it to fetch the tile node with the smallest traversal cost*/
 	std::priority_queue<tileNode, std::vector<tileNode>, std::greater<int>> frontier;
 
-	/* hash table used to check if a node was previously explored
-	 so that the search algorithm does not get stuck in an infinite loop*/
-	std::unordered_map<std::string, tileNode> tileNodesVisited;
-
 	/* hash table that helps us keep track of how we reached a tileNode
 	using a key of its predecessor node in the path*/
 	std::unordered_map<std::string, tileNode> came_from;
