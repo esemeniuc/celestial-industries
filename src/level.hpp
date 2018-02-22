@@ -4,6 +4,8 @@
 #include "tile.hpp"
 #include <map>
 #include <tuple>
+#include <limits>
+#define INF std::numeric_limits<float>::infinity()
 
 struct TimeTile {
 	OBJ::Data present;
@@ -21,8 +23,8 @@ enum TileType {
 };
 
 // used to build a graph of nodes for the AI pathfinder to traverse
-// each tile node defines a tile row, column and cost in the grid
-typedef std::tuple<long, long, float, float> tileNode;
+// each tile node.
+typedef std::tuple<long /*row*/, long /*col*/, float /*edge weight*/, float /*f-score*/> tileNode;
 
 class Level
 {

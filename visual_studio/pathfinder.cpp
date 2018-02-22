@@ -1,6 +1,4 @@
 #include "pathfinder.hpp"
-#include <limits>
-
 
 std::string AI::getTileNodeHashKey(tileNode &a){
 	std::ostringstream result;
@@ -69,7 +67,6 @@ void AI::a_star(std::vector<std::vector<tileNode>>& graph, int tileSize,
 	long goalRow = std::floor(startx/tileSize);
 	long goalCol = std::floor(startz/tileSize);
 
-	const float INF = std::numeric_limits<float>::infinity();
 	tileNode start = std::make_tuple(startRow, startCol, 0.0, 0.0);
 	tileNode goal = std::make_tuple(goalRow, goalCol, 0.0, INF);
 
@@ -88,12 +85,15 @@ void AI::a_star(std::vector<std::vector<tileNode>>& graph, int tileSize,
 
 		std::vector<tileNode> neighbors = AI::getNeighbors(graph, current, goal);
 		for (auto &next : neighbors) {
-			// movement cost
+			// total movement cost to next node: path cost of current node + cost of taking 
+			// a step from current to next node
 			float newCost = cost_so_far[AI::getTileNodeHashKey(current)] + std::get<2>(next);
-			// if a neighbor node was not explored before, or we found a new path to
+			// if a neighbor node was not explored before, or we found a new path to it
 			// that has a lower cost
 			if (cost_so_far.find(AI::getTileNodeHashKey(next)) == cost_so_far.end() || 
 				newCost < cost_so_far[AI::getTileNodeHashKey(next)]) {
+				// if neighbor node was found in the table update it
+				// if not, the [] operator will insert a new entry
 				cost_so_far[AI::getTileNodeHashKey(next)] = newCost;
 				// calculate f-score based on g-score and heuristic
 				float priority = newCost + l1_norm(next, goal);

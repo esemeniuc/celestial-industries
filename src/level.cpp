@@ -52,20 +52,20 @@ std::vector<std::vector<int>> Level::levelLoader(std::string levelTextFile)
 					case '#':
 					{
 						row.push_back(BRICK_CUBE);
-						tileData.push_back(std::make_tuple(rowNumber, colNumber, 1000.0));
+						tileData.push_back(std::make_tuple(rowNumber, colNumber, 1000.0, INF));
 						break;
 					}
 
 					case ' ':
 					{
 						row.push_back(SAND_1);
-						tileData.push_back(std::make_tuple(rowNumber, colNumber, 1.0));
+						tileData.push_back(std::make_tuple(rowNumber, colNumber, 1.0, INF));
 						break;
 					}
 					default:
 					{
 						row.push_back(SAND_2);
-						tileData.push_back(std::make_tuple(rowNumber, colNumber, 1.0));
+						tileData.push_back(std::make_tuple(rowNumber, colNumber, 1.0, INF));
 						break;
 					}
 				}
