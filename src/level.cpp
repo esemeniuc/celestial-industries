@@ -39,10 +39,12 @@ std::vector<std::vector<int>> Level::levelLoader(std::string levelTextFile)
 
 	if (level.is_open())
 	{
+		int rowNumber = 0;
 		while (getline(level, line))
 		{
 			std::vector <int> row;
-			std::vector<float> costs;
+			std::vector<tileNode> tileData;
+			int colNumber = 0;
 			for (char& tile : line) 
 			{
 				switch (tile)
@@ -50,26 +52,28 @@ std::vector<std::vector<int>> Level::levelLoader(std::string levelTextFile)
 					case '#':
 					{
 						row.push_back(BRICK_CUBE);
-						costs.push_back(1000.0);
+						tileData.push_back(std::make_tuple(rowNumber, colNumber, 1000.0));
 						break;
 					}
 
 					case ' ':
 					{
 						row.push_back(SAND_1);
-						costs.push_back(1.0);
+						tileData.push_back(std::make_tuple(rowNumber, colNumber, 1.0));
 						break;
 					}
 					default:
 					{
 						row.push_back(SAND_2);
-						costs.push_back(1.0);
+						tileData.push_back(std::make_tuple(rowNumber, colNumber, 1.0));
 						break;
 					}
 				}
+				colNumber++;
 			}
 			levelData.push_back(row);
-			levelTraversalCostMap.push_back(costs);
+			levelTraversalCostMap.push_back(tileData);
+			rowNumber++;
 		}
 		level.close();
 	}
@@ -77,7 +81,7 @@ std::vector<std::vector<int>> Level::levelLoader(std::string levelTextFile)
 	return levelData;
 }
 
-std::vector<std::vector<float>> Level::getLevelTraversalCostMap()
+std::vector<std::vector<tileNode>> Level::getLevelTraversalCostMap()
 {
 	return this->levelTraversalCostMap;
 }
