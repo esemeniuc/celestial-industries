@@ -2,6 +2,7 @@
 #include <queue>
 #include <unordered_map>
 #include <sstream>
+#include <algorithm> 
 #include "level.hpp"
 
 namespace AI {
