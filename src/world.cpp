@@ -97,7 +97,7 @@ bool World::init(glm::vec2 screen) {
 			{TileType::WALL,         "wall.obj"},
 			{TileType::BRICK_CUBE,   "brickCube.obj"},
 			{TileType::MINING_TOWER, "miningTower.obj"},
-			{TileType::TREE,         "treeTile1.obj" },
+			{TileType::TREE,         "treeTile1.obj"},
 			{TileType::PHOTON_TOWER, "photonTower.obj"}
 	};
 
@@ -121,6 +121,9 @@ bool World::init(glm::vec2 screen) {
 	//display a path
 	std::pair<bool, std::vector<aStarPathState> > path =
 			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
+	std::cout << costMap.size() << '\n';
+	std::cout << "pathfound: " << path.first << '\n';
+	std::cout << "path length: " << path.second.size() << '\n';
 	level.displayPath(path.second);
 	selectedTile = {(int) mapSize / 2, (int) mapSize / 2};
 	return true;

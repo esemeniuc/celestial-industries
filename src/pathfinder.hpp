@@ -22,8 +22,6 @@ namespace AI {
 			std::size_t operator()(const aStarPathState& in) const noexcept {
 				size_t result = std::hash<int>{}(in.rowCoord);
 				result = 31 * result + std::hash<int>{}(in.colCoord);
-				result = 31 * result + std::hash<int>{}(in.currentPathCost);
-				result = 31 * result + std::hash<float>{}(in.fScore);
 				return result; // or use boost::hash_combine
 			}
 		};

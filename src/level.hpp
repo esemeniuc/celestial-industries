@@ -3,6 +3,7 @@
 #include <fstream>
 #include <map>
 #include <limits>
+#include <ostream>
 #include "tile.hpp"
 
 #define INF std::numeric_limits<float>::infinity()
@@ -38,13 +39,17 @@ struct aStarPathState
 
 	bool operator==(const aStarPathState& rhs) const {
 		return rowCoord == rhs.rowCoord &&
-			   colCoord == rhs.colCoord &&
-			   currentPathCost == rhs.currentPathCost &&
-			   fScore == rhs.fScore;
+			   colCoord == rhs.colCoord;
 	}
 
 	bool operator!=(const aStarPathState& rhs) const {
 		return !(rhs == *this);
+	}
+
+	friend std::ostream& operator<<(std::ostream& os, const aStarPathState& state) {
+		os << "rowCoord: " << state.rowCoord << " colCoord: " << state.colCoord << " currentPathCost: "
+		   << state.currentPathCost << " fScore: " << state.fScore;
+		return os;
 	}
 };
 
