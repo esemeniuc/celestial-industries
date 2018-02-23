@@ -70,8 +70,10 @@ namespace AI {
 		return neighbors;
 	}
 
-	void AI::aStar::a_star(std::vector<std::vector<tileNode>>& graph, int tileSize,
+	bool AI::aStar::a_star(std::vector<std::vector<tileNode>>& graph, int tileSize,
 		int startx, int startz, int goalx, int goalz) {
+
+		bool pathFound = false;
 
 		/* a min heap that will store nodes we have not explored yet in the level map
 		will use it to fetch the tile node with the smallest f-score*/
@@ -104,6 +106,7 @@ namespace AI {
 			frontier.pop();
 
 			if (getTileNodeHashKey(current) == getTileNodeHashKey(goal)) {
+				pathFound = true;
 				break;
 			}
 
@@ -111,17 +114,17 @@ namespace AI {
 			for (auto &next : neighbors) {
 				// total movement cost to next node: path cost of current node + cost of taking 
 				// a step from current to next node
-				float newCost = cost_so_far[getTileNodeHashKey(current)] + std::get<2>(next);
+				float gScore = cost_so_far[getTileNodeHashKey(current)] + std::get<2>(next);
 				// if a neighbor node was not explored before, or we found a new path to it
 				// that has a lower cost
 				if (cost_so_far.find(getTileNodeHashKey(next)) == cost_so_far.end() ||
-					newCost < cost_so_far[getTileNodeHashKey(next)]) {
+					gScore < cost_so_far[getTileNodeHashKey(next)]) {
 					// if neighbor node was found in the table update it
 					// if not, the [] operator will insert a new entry
-					cost_so_far[getTileNodeHashKey(next)] = newCost;
+					cost_so_far[getTileNodeHashKey(next)] = gScore;
 					// calculate f-score based on g-score and heuristic
-					float priority = newCost + l1_norm(next, goal);
-					std::get<3>(next) = priority;
+					float fScore = gScore + l1_norm(next, goal);
+					std::get<3>(next) = fScore;
 					// add neighbor to open list of nodes to explore
 					frontier.push(next);
 					// update predecessor of next node to our current node
@@ -130,5 +133,6 @@ namespace AI {
 			}
 		}
 		std::vector<tileNode> result = reconstruct_path(came_from, start, goal);
+		return pathFound;
 	}
 }

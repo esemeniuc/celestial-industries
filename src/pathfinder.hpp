@@ -27,7 +27,7 @@ namespace AI {
 		from the position we're currently at*/
 		static std::vector<tileNode> getNeighbors(std::vector<std::vector<tileNode>> &graph, tileNode &current, tileNode &goal);
 
-		static void a_star(std::vector<std::vector<tileNode>> &graph, int tileSize, int startx, int startz, int goalx, int goalz);
+		static bool a_star(std::vector<std::vector<tileNode>> &graph, int tileSize, int startx, int startz, int goalx, int goalz);
 
 		static std::vector<tileNode> reconstruct_path(std::unordered_map<std::string, tileNode> &came_from, tileNode &start, tileNode &goal);
 	};	
