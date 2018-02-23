@@ -121,9 +121,6 @@ bool World::init(glm::vec2 screen) {
 	//display a path
 	std::pair<bool, std::vector<aStarPathState> > path =
 			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
-	std::cout << costMap.size() << '\n';
-	std::cout << "pathfound: " << path.first << '\n';
-	std::cout << "path length: " << path.second.size() << '\n';
 	level.displayPath(path.second);
 	selectedTile = {(int) mapSize / 2, (int) mapSize / 2};
 	return true;

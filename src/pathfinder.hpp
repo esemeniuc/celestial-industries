@@ -29,15 +29,18 @@ namespace AI {
 		// L1 norm (manhattan distance), will be used as a heuristic for A*
 		static float l1_norm(const aStarPathState& a, const aStarPathState& b);
 
-		/* find list of adjacent tile nodes which constitute possible moves
-		from the position we're currently at*/
+		static float l2_norm(const aStarPathState& startNode, const aStarPathState& goal);
+
+
+		// find list of adjacent tile nodes which constitute possible moves from the position we're currently at
 		static std::vector<aStarPathState>
-		getNeighbors(const std::vector<std::vector<aStarPathState>>& graph, aStarPathState& current,
+		getNeighbors(const std::vector<std::vector<aStarPathState>>& graph, aStarPathState& currentPos,
 					 aStarPathState& goal);
 
+		//main pathfinding algorithm
 		static std::pair<bool, std::vector<aStarPathState>>
 		a_star(const std::vector<std::vector<aStarPathState>>& graph, int tileSize,
-			   int startx, int startz, int goalx, int goalz);
+			   int startX, int startZ, int goalX, int goalZ);
 
 		static std::vector<aStarPathState>
 		reconstruct_path(const std::unordered_map<aStarPathState, aStarPathState, aStarPathHasher>& came_from,

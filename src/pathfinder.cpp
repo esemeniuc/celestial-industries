@@ -24,15 +24,21 @@ namespace AI {
 		return rowDiff + colDiff;
 	}
 
+	float aStar::l2_norm(const aStarPathState& startNode, const aStarPathState& goal) {
+		float rowDiff = startNode.rowCoord - goal.rowCoord;
+		float colDiff = startNode.colCoord - goal.colCoord;
+		return (rowDiff * rowDiff) + (colDiff * colDiff);
+	}
+
 	std::vector<aStarPathState>
-	aStar::getNeighbors(const std::vector<std::vector<aStarPathState>>& graph, aStarPathState& tile,
+	aStar::getNeighbors(const std::vector<std::vector<aStarPathState>>& graph, aStarPathState& currentPos,
 						aStarPathState& goal) {
-		size_t numOfRows = graph.size();
-		size_t numOfColumns = graph[0].size();
-		long row = tile.rowCoord;
-		long col = tile.colCoord;
-		long goalRow = goal.rowCoord;
-		long goalCol = goal.colCoord;
+		int numOfRows = (int) graph.size();
+		int numOfColumns = (int) graph[0].size();
+		int row = currentPos.rowCoord;
+		int col = currentPos.colCoord;
+		int goalRow = goal.rowCoord;
+		int goalCol = goal.colCoord;
 
 		std::vector<aStarPathState> neighbors;
 
@@ -42,40 +48,39 @@ namespace AI {
 
 		// check if we can move forward a column
 		const float OBSTACLE_COST = 1000.0;
-		if ((col != (long) numOfColumns - 1) && (((row == goalRow) && (col + 1 == goalCol)) ||
-			graph[row][col + 1].currentPathCost < OBSTACLE_COST)) {
+		if ((col != numOfColumns - 1) && (((row == goalRow) && (col + 1 == goalCol)) ||
+										  graph[row][col + 1].currentPathCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row][col + 1]);
 		}
 
 		// check if we can move backward a column
 		// costOfBackwardMove = std::get<2>(graph[row][col - 1]);
 		if ((col != 0) && (((row == goalRow) && (col - 1 == goalCol)) ||
-			graph[row][col - 1].currentPathCost < OBSTACLE_COST)) {
+						   graph[row][col - 1].currentPathCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row][col - 1]);
 		}
 
 		// check if we can move up a row
 		// costOfUpMove = std::get<2>(graph[row][col + 1]);
 		if ((row != 0) && (((row - 1 == goalRow) && (col == goalCol)) ||
-			graph[row - 1][col].currentPathCost < OBSTACLE_COST)) {
+						   graph[row - 1][col].currentPathCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row - 1][col]);
 		}
 
 		// check if we can move down a row
 		// costOfDownMove = std::get<2>(graph[row][col + 1]);
-		if ((row != (long) numOfRows - 1) && (((row + 1 == goalRow) && (col == goalCol)) ||
-			graph[row + 1][col].currentPathCost < OBSTACLE_COST)) {
+		if ((row != numOfRows - 1) && (((row + 1 == goalRow) && (col == goalCol)) ||
+									   graph[row + 1][col].currentPathCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row + 1][col]);
 		}
 
 		return neighbors;
 	}
 
+	//returns a pair indicating whether the path was found, and the path itself
 	std::pair<bool, std::vector<aStarPathState>>
 	AI::aStar::a_star(const std::vector<std::vector<aStarPathState>>& graph,
-					  int tileSize, int startx, int startz, int goalx, int goalz) {
-
-		bool pathFound = false;
+					  int tileSize, int startX, int startZ, int goalX, int goalZ) {
 
 		/* a min heap that will store nodes we have not explored yet in the level map
 		will use it to fetch the tile node with the smallest f-score*/
@@ -92,10 +97,10 @@ namespace AI {
 
 		// check which tiles the given positions lie in
 		// TODO: check coordinate signs ( -Z as opposed to +Z for tile positions)
-		int startRow = startx / tileSize; //floating point numbers get floored when stored in ints
-		int startCol = startz / tileSize;
-		int goalRow = goalx / tileSize;
-		int goalCol = goalz / tileSize;
+		int startRow = startX / tileSize; //floating point numbers get floored when stored in ints
+		int startCol = startZ / tileSize;
+		int goalRow = goalX / tileSize;
+		int goalCol = goalZ / tileSize;
 
 		aStarPathState start = aStarPathState(startRow, startCol, 10, 0.0);
 		aStarPathState goal = aStarPathState(goalRow, goalCol, 10, INF);
@@ -110,15 +115,16 @@ namespace AI {
 			frontier.pop();
 
 			if (current == goal) {
-				pathFound = true;
-				return {pathFound, reconstruct_path(came_from, start, goal)};
+				auto path = reconstruct_path(came_from, start, goal);
+				logger(LogLevel::INFO) << "Found path with length " << path.size() << " \n";
+				return {true, path}; //true for bool because we found a path
 			}
 
 			std::vector<aStarPathState> neighbors = aStar::getNeighbors(graph, current, goal);
 			for (auto& next : neighbors) {
 				// total movement cost to next node: path cost of current node + cost of taking 
 				// a step from current to next node
-				float gScore = cost_so_far[current] + next.currentPathCost;
+				float gScore = (float) cost_so_far[current] + next.currentPathCost;
 				// if a neighbor node was not explored before, or we found a new path to it
 				// that has a lower cost
 				if (cost_so_far.count(next) == 0 || gScore < cost_so_far[next]) {
@@ -126,7 +132,7 @@ namespace AI {
 					// if not, the [] operator will insert a new entry
 					cost_so_far[next] = gScore;
 					// calculate f-score based on g-score and heuristic
-					next.fScore = gScore + l1_norm(next, goal);
+					next.fScore = gScore + l2_norm(next, goal);
 					// add neighbor to open list of nodes to explore
 					frontier.push(next);
 					// update predecessor of next node to our current node
@@ -135,6 +141,6 @@ namespace AI {
 			}
 		}
 
-		return {pathFound, {}};
+		return {false, {}}; //false for bool because we didn't find a path
 	}
 }
