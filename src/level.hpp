@@ -26,15 +26,26 @@ enum class TileType {
 // used to build a graph of nodes for the AI pathfinder to traverse each tile node.
 struct aStarPathState
 {
-	long rowCoord, colCoord, currentPathCost;
+	int rowCoord, colCoord, currentPathCost;
 	float fScore;
 
 	aStarPathState() = default;
 
-	aStarPathState(long _rowCoord, long _colCoord, long _currentPathCost, float _fScore) : rowCoord(_rowCoord),
+	aStarPathState(int _rowCoord, int _colCoord, int _currentPathCost, float _fScore) : rowCoord(_rowCoord),
 																					   colCoord(_colCoord),
 																					   currentPathCost(_currentPathCost),
 																					   fScore(_fScore) {}
+
+	bool operator==(const aStarPathState& rhs) const {
+		return rowCoord == rhs.rowCoord &&
+			   colCoord == rhs.colCoord &&
+			   currentPathCost == rhs.currentPathCost &&
+			   fScore == rhs.fScore;
+	}
+
+	bool operator!=(const aStarPathState& rhs) const {
+		return !(rhs == *this);
+	}
 };
 
 class Level {

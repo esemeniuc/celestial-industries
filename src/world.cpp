@@ -1,5 +1,6 @@
 // Header
 #include "world.hpp"
+#include <chrono>  // for high_resolution_clock
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -17,9 +18,7 @@ World::World() {
 	m_rng = std::default_random_engine(std::random_device()());
 }
 
-World::~World() {
-
-}
+World::~World() = default;
 
 // World initialization
 bool World::init(glm::vec2 screen) {
@@ -110,9 +109,16 @@ bool World::init(glm::vec2 screen) {
 	level.init(levelArray, tiles);
 	// test different starting points for the AI
 	std::vector<std::vector<aStarPathState>> costMap = level.getLevelTraversalCostMap();
-//	AI::aStar::a_star(costMap, 1, 19, 1, 11, 25);
-//	AI::aStar::a_star(costMap, 1, 1, 1, 11, 25);
-//	AI::aStar::a_star(costMap, 1, 1, 39, 11, 25);
+	auto start = std::chrono::high_resolution_clock::now();
+	AI::aStar::a_star(costMap, 1, 19, 1, 11, 25);
+	AI::aStar::a_star(costMap, 1, 1, 1, 11, 25);
+	AI::aStar::a_star(costMap, 1, 1, 39, 11, 25);
+	auto finish = std::chrono::high_resolution_clock::now();
+
+	std::chrono::duration<double> elapsed = finish - start;
+	std::cout << "Elapsed time: " << elapsed.count() << " s\n";
+
+	//display a path
 	std::pair<bool, std::vector<aStarPathState> > path =
 			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
 	level.displayPath(path.second);

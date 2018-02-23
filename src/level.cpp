@@ -78,7 +78,7 @@ std::vector<std::vector<aStarPathState>> Level::getLevelTraversalCostMap() {
 bool Level::initTileTypes(const std::vector<std::pair<TileType, std::string>>& sources) {
 	// All the models come from the same place
 	std::string path = pathBuilder({"data", "models"});
-	for (auto source : sources) {
+	for (const auto& source : sources) {
 		TileType tileType = source.first;
 		std::string filename = source.second;
 		OBJ::Data obj;
