@@ -12,25 +12,25 @@ namespace AI {
 		// based on f-score
 		struct Compare {
 			// lambda expression
-			bool operator()(tileNode &a, tileNode &b) {
-				return std::get<3>(a) > std::get<3>(b);
+			bool operator()(const aStarPathState &a, const aStarPathState &b) {
+				return a.fScore > b.fScore;
 			}
 		};
 
 		/* generate hash key as a string of this format row + "," + col
 		which is unique	for each tile*/
-		static std::string getTileNodeHashKey(tileNode &a);
+		static std::string getTileNodeHashKey(const aStarPathState &a);
 				
-		// L1 norm (manhattan distance), will be used as a hueristic for A*
-		static float l1_norm(tileNode &a, tileNode &b);
+		// L1 norm (manhattan distance), will be used as a heuristic for A*
+		static float l1_norm(aStarPathState &a, aStarPathState &b);
 
 		/* find list of adjacent tile nodes which constitute possible moves
 		from the position we're currently at*/
-		static std::vector<tileNode> getNeighbors(std::vector<std::vector<tileNode>> &graph, tileNode &current, tileNode &goal);
+		static std::vector<aStarPathState> getNeighbors(std::vector<std::vector<aStarPathState>> &graph, aStarPathState &current, aStarPathState &goal);
 
-		static std::pair<bool, std::vector<tileNode>> a_star(std::vector<std::vector<tileNode>> graph, int tileSize,
+		static std::pair<bool, std::vector<aStarPathState>> a_star(std::vector<std::vector<aStarPathState>> graph, int tileSize,
 															 int startx, int startz, int goalx, int goalz);
 
-		static std::vector<tileNode> reconstruct_path(std::unordered_map<std::string, tileNode> &came_from, tileNode &start, tileNode &goal);
+		static std::vector<aStarPathState> reconstruct_path(std::unordered_map<std::string, aStarPathState> &came_from, const aStarPathState &start, const aStarPathState &goal);
 	};	
 }

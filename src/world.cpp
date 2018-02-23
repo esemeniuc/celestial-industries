@@ -3,7 +3,7 @@
 
 // Same as static in c, local to compilation unit
 namespace {
-	const size_t TILE_WIDTH = 10;
+//	const size_t TILE_WIDTH = 10;
 
 	namespace {
 		void glfw_err_cb(int error, const char* desc) {
@@ -91,7 +91,7 @@ bool World::init(glm::vec2 screen) {
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
 
-	std::vector<std::tuple<TileType, std::string>> tiles = {
+	std::vector<std::pair<TileType, std::string>> tiles = {
 			{TileType::SAND_1,       "sand1.obj"},
 			{TileType::SAND_2,       "sand2.obj"},
 			{TileType::SAND_3,       "sand3.obj"},
@@ -108,11 +108,11 @@ bool World::init(glm::vec2 screen) {
 	camera.position = {mapSize / 2, 20, mapSize / 2};
 	level.init(levelArray, tiles);
 	// test different starting points for the AI
-	std::vector<std::vector<tileNode>> costMap = level.getLevelTraversalCostMap();
+	std::vector<std::vector<aStarPathState>> costMap = level.getLevelTraversalCostMap();
 //	AI::aStar::a_star(costMap, 1, 19, 1, 11, 25);
 //	AI::aStar::a_star(costMap, 1, 1, 1, 11, 25);
 //	AI::aStar::a_star(costMap, 1, 1, 39, 11, 25);
-	std::pair<bool, std::vector<tileNode> > path =
+	std::pair<bool, std::vector<aStarPathState> > path =
 			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
 	level.displayPath(path.second);
 	selectedTile = {(int) mapSize / 2, (int) mapSize / 2};

@@ -2,7 +2,7 @@
 #include <iostream>
 
 bool Level::init(const std::vector<std::vector<TileType>>& levelArray,
-				 const std::vector<std::tuple<TileType, std::string>>& sources) {
+				 const std::vector<std::pair<TileType, std::string>>& sources) {
 	if (!initTileTypes(sources)) {
 		std::cout << "Failed to init tile types!" << std::endl;
 		return false;
@@ -39,7 +39,7 @@ std::vector<std::vector<TileType>> Level::levelLoader(const std::string& levelTe
 		int rowNumber = 0;
 		while (getline(level, line)) {
 			std::vector<TileType> row;
-			std::vector<tileNode> tileData;
+			std::vector<aStarPathState> tileData;
 			int colNumber = 0;
 			for (const char tile : line) {
 				switch (tile) {
@@ -71,16 +71,16 @@ std::vector<std::vector<TileType>> Level::levelLoader(const std::string& levelTe
 	return levelData;
 }
 
-std::vector<std::vector<tileNode>> Level::getLevelTraversalCostMap() {
+std::vector<std::vector<aStarPathState>> Level::getLevelTraversalCostMap() {
 	return this->levelTraversalCostMap;
 }
 
-bool Level::initTileTypes(const std::vector<std::tuple<TileType, std::string>>& sources) {
+bool Level::initTileTypes(const std::vector<std::pair<TileType, std::string>>& sources) {
 	// All the models come from the same place
 	std::string path = pathBuilder({"data", "models"});
 	for (auto source : sources) {
-		TileType tileType = std::get<0>(source);
-		std::string filename = std::get<1>(source);
+		TileType tileType = source.first;
+		std::string filename = source.second;
 		OBJ::Data obj;
 		if (!OBJ::Loader::loadOBJ(path, filename, obj)) {
 			// Failure message should already be handled by loadOBJ
@@ -92,11 +92,9 @@ bool Level::initTileTypes(const std::vector<std::tuple<TileType, std::string>>& 
 }
 
 
-bool Level::displayPath(const std::vector<tileNode>& path) {
+bool Level::displayPath(const std::vector<aStarPathState>& path) {
 
 	for (auto component : path) {
-		long x = std::get<0>(component);
-		long y = std::get<1>(component);
 		std::vector<Tile> tileRow;
 
 		Tile tile;
@@ -105,7 +103,7 @@ bool Level::displayPath(const std::vector<tileNode>& path) {
 			std::cout << "FAILED TO INITIALIZE TILE OF TYPE " << static_cast<int>(TileType::SAND_2) << std::endl;
 		}
 		// TODO: Standardize tile size and resize the model to be the correct size
-		tile.translate({y, 0, x});
+		tile.translate({component.colCoord, 0, component.rowCoord});
 		tileRow.push_back(tile);
 		tiles.push_back(tileRow);
 	}

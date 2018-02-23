@@ -16,7 +16,6 @@
 #include <sstream>
 #include <cmath>
 #include <map>
-#include <tuple>
 #include <iostream>
 
 #define SDL_MAIN_HANDLED
