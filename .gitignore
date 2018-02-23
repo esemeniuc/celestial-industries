@@ -39,4 +39,8 @@ visual_studio/tmp/
 #clion
 .idea/
 cmake-build-debug
+cmake-build-release
+
+#housekeeping
 build/
+debug.log

@@ -26,14 +26,14 @@ void Entity::setRotation(glm::vec3 rotation_angles_radians)
 	this->rotation = rotation_angles_radians;
 }
 
-void Entity::setTranslation(glm::vec3 translation)
+void Entity::setTranslation(glm::vec3 _translation)
 {
-	this->translation = translation;
+	this->translation = _translation;
 }
 
-void Entity::setScale(glm::vec3 scale)
+void Entity::setScale(glm::vec3 _scale)
 {
-	this->scale = scale;	
+	this->scale = _scale;
 }
 
 void Entity::setPosition(glm::vec3 pos)

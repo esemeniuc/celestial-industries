@@ -504,6 +504,7 @@
     <ClCompile Include="..\src\entity.cpp" />
     <ClCompile Include="..\src\camera.cpp" />
     <ClCompile Include="..\src\level.cpp" />
+    <ClCompile Include="..\src\logger.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\common.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\world.cpp" />
@@ -517,8 +518,11 @@
   <ItemGroup>
     <ClInclude Include="..\src\camera.hpp" />
     <ClInclude Include="..\src\common.hpp" />
+    <ClInclude Include="..\src\config.hpp" />
     <ClInclude Include="..\src\entity.hpp" />
     <ClInclude Include="..\src\level.hpp" />
+    <ClInclude Include="..\src\logger.hpp" />
+    <ClInclude Include="..\src\loglevel.hpp" />
     <ClInclude Include="..\src\objloader.hpp" />
     <ClInclude Include="..\src\objrenderable.hpp" />
     <ClInclude Include="..\src\pathfinder.hpp" />

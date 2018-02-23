@@ -47,8 +47,8 @@ bool Texture::load_side_texture(GLuint texture, GLenum side, const std::string t
 {
 	// load image data from file
 	if (texture_image_path.empty()) return false;
-	int width, height, num_of_channels = 4;
-	stbi_uc* texture_data = stbi_load(texture_image_path.c_str(), &width, &height, nullptr, num_of_channels);
+	int textureWidth, textureHeight, num_of_channels = 4;
+	stbi_uc* texture_data = stbi_load(texture_image_path.c_str(), &textureWidth, &textureHeight, nullptr, num_of_channels);
 	if (texture_data == nullptr) return false;
 
 	// bind texture to target
@@ -56,7 +56,7 @@ bool Texture::load_side_texture(GLuint texture, GLenum side, const std::string t
 
 	// assign image data to a target texture
 	gl_flush_errors();
-	glTexImage2D(side, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
+	glTexImage2D(side, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
 
 	// free memory
 	free(texture_data);
