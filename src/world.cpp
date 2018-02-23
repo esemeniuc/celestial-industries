@@ -92,29 +92,29 @@ bool World::init(glm::vec2 screen) {
 	glEnable(GL_CULL_FACE);
 
 	std::vector<std::tuple<TileType, std::string>> tiles = {
-			{SAND_1,       "sand1.obj"},
-			{SAND_2,       "sand2.obj"},
-			{SAND_3,       "sand3.obj"},
-			{WALL,         "wall.obj"},
-			{BRICK_CUBE,   "brickCube.obj"},
-			{MINING_TOWER, "miningTower.obj"},
-			{PHOTON_TOWER, "photonTower.obj"}
+			{ TileType::SAND_1, "sand1.obj" },
+			{ TileType::SAND_2, "sand2.obj" },
+			{ TileType::SAND_3, "sand3.obj" },
+			{ TileType::WALL, "wall.obj" },
+			{ TileType::BRICK_CUBE, "brickCube.obj" },
+			{ TileType::MINING_TOWER, "miningTower.obj" },
+			{ TileType::PHOTON_TOWER, "photonTower.obj" }
 	};
 
-    // TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isnt being shared
-    // thats a big enough change to merit its own ticket in milestone 2 though
-    std::vector<std::vector<int>> levelArray;
-	levelArray = level.levelLoader(pathBuilder({ "data", "levels" }) + "level1.txt");
-	int mapSize = levelArray.size();
-    camera.position = { mapSize / 2, 20, mapSize / 2 };
+	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isnt being shared
+	// thats a big enough change to merit its own ticket in milestone 2 though
+	std::vector<std::vector<TileType>> levelArray = level.levelLoader(pathBuilder({ "data", "levels" }) + "level1.txt");
+	size_t mapSize = levelArray.size();
+	camera.position = { mapSize / 2, 20, mapSize / 2 };
 	level.init(levelArray, tiles);
 	// test different starting points for the AI
 	std::vector<std::vector<tileNode>> costMap = level.getLevelTraversalCostMap();
 	AI::aStar::a_star(costMap, 1, 19, 1, 11, 25);
 	AI::aStar::a_star(costMap, 1, 1, 1, 11, 25);
 	AI::aStar::a_star(costMap, 1, 1, 39, 11, 25);
-    selectedTile = {mapSize/2, mapSize/2};
-    return true;
+	AI::aStar::a_star(costMap, 1, 1, 39, (int)mapSize/2, (int)mapSize/2);
+	selectedTile = {(int)mapSize/2, (int)mapSize/2};
+	return true;
 }
 
 // skybox

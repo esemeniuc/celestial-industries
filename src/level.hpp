@@ -12,7 +12,7 @@ struct TimeTile {
 	OBJ::Data past;
 };
 
-enum TileType {
+enum class TileType {
 	SAND_1,
 	SAND_2,
 	SAND_3,
@@ -29,13 +29,13 @@ typedef std::tuple<long /*row*/, long /*col*/, float /*edge weight*/, float /*f-
 class Level
 {
 public:
-	bool init(std::vector<std::vector<int>> intArray, std::vector<std::tuple<TileType, std::string>> sources);
-	std::vector<std::vector<int>> levelLoader(std::string levelTextFile);
+	bool init(const std::vector<std::vector<TileType>>& intArray, const std::vector<std::tuple<TileType, std::string>>& sources);
+	std::vector<std::vector<TileType>> levelLoader(const std::string& levelTextFile);
 	std::vector<std::vector<Tile>> tiles; // we can add the time dimension when we get there
 	std::map<TileType, OBJ::Data> tileTypes;
 	std::vector < std::vector<tileNode>> getLevelTraversalCostMap();
 
 private:
-	bool initTileTypes(std::vector<std::tuple<TileType, std::string>> sources);
+	bool initTileTypes(const std::vector<std::tuple<TileType, std::string>>& sources);
 	std::vector<std::vector<tileNode>> levelTraversalCostMap;
 };

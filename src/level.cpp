@@ -1,8 +1,7 @@
 #include "level.hpp"
 #include <iostream>
-#include <map>
 
-bool Level::init(std::vector<std::vector<int>> intArray, std::vector<std::tuple<TileType, std::string>> sources)
+bool Level::init(const std::vector<std::vector<TileType>>& intArray, const std::vector<std::tuple<TileType, std::string>>& sources)
 {
 	if (!initTileTypes(sources)) {
 		std::cout << "Failed to init tile types!" << std::endl;
@@ -13,14 +12,14 @@ bool Level::init(std::vector<std::vector<int>> intArray, std::vector<std::tuple<
 	tiles.clear();
 
 	for (size_t i = 0; i < intArray.size(); i++) {
-		std::vector<int> row = intArray[i];
+		std::vector<TileType> row = intArray[i];
 		std::vector<Tile> tileRow;
 		for (size_t j = 0; j < row.size(); j++) {
-			int cell = row[j];
+			TileType cell = row[j];
 			Tile tile;
-			bool success = tile.init(tileTypes[static_cast<TileType>(cell)]);
+			bool success = tile.init(tileTypes[cell]);
 			if (!success) {
-				std::cout << "FAILED TO INITIALIZE TILE OF TYPE " << cell << std::endl;
+				std::cout << "FAILED TO INITIALIZE TILE OF TYPE " << static_cast<int>(cell) << std::endl;
 			}
 			// TODO: Standardize tile size and resize the model to be the correct size
 			tile.translate({ j, 0, i });
@@ -31,41 +30,41 @@ bool Level::init(std::vector<std::vector<int>> intArray, std::vector<std::tuple<
 	return true;
 }
 
-std::vector<std::vector<int>> Level::levelLoader(std::string levelTextFile)
+std::vector<std::vector<TileType>> Level::levelLoader(const std::string& levelTextFile)
 {
 	std::ifstream level (levelTextFile);
 	std::string line;
-	std::vector<std::vector<int>> levelData;	
+	std::vector<std::vector<TileType>> levelData;
 
 	if (level.is_open())
 	{
 		int rowNumber = 0;
 		while (getline(level, line))
 		{
-			std::vector <int> row;
+			std::vector<TileType> row;
 			std::vector<tileNode> tileData;
 			int colNumber = 0;
-			for (char& tile : line) 
+			for (const char tile : line)
 			{
 				switch (tile)
 				{
 					case '#':
 					{
-						row.push_back(BRICK_CUBE);
-						tileData.push_back(std::make_tuple(rowNumber, colNumber, 1000.0, INF));
+						row.push_back(TileType::BRICK_CUBE);
+						tileData.emplace_back(rowNumber, colNumber, 1000.0, INF);
 						break;
 					}
 
 					case ' ':
 					{
-						row.push_back(SAND_1);
-						tileData.push_back(std::make_tuple(rowNumber, colNumber, 10.0, INF));
+						row.push_back(TileType::SAND_1);
+						tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
 						break;
 					}
 					default:
 					{
-						row.push_back(SAND_2);
-						tileData.push_back(std::make_tuple(rowNumber, colNumber, 10.0, INF));
+						row.push_back(TileType::SAND_2);
+						tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
 						break;
 					}
 				}
@@ -86,7 +85,7 @@ std::vector<std::vector<tileNode>> Level::getLevelTraversalCostMap()
 	return this->levelTraversalCostMap;
 }
 
-bool Level::initTileTypes(std::vector<std::tuple<TileType, std::string>> sources)
+bool Level::initTileTypes(const std::vector<std::tuple<TileType, std::string>>& sources)
 {
 	// All the models come from the same place
     std::string path = pathBuilder({ "data", "models" });
