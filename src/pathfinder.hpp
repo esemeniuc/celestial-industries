@@ -21,7 +21,7 @@ namespace AI {
 		struct aStarPathHasher {
 			std::size_t operator()(const aStarPathState& in) const noexcept {
 				size_t result = std::hash<int>{}(in.rowCoord);
-				result = 31 * result + std::hash<int>{}(in.colCoord);
+				result = 1021 * result + std::hash<int>{}(in.colCoord);
 				return result; // or use boost::hash_combine
 			}
 		};
