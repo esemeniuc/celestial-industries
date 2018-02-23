@@ -5,6 +5,7 @@
 #include <map>
 #include <tuple>
 #include <limits>
+
 #define INF std::numeric_limits<float>::infinity()
 
 struct TimeTile {
@@ -26,16 +27,26 @@ enum class TileType {
 // each tile node.
 typedef std::tuple<long /*row*/, long /*col*/, float /*edge weight*/, float /*f-score*/> tileNode;
 
-class Level
-{
+class Level {
 public:
-	bool init(const std::vector<std::vector<TileType>>& intArray, const std::vector<std::tuple<TileType, std::string>>& sources);
-	std::vector<std::vector<TileType>> levelLoader(const std::string& levelTextFile);
+	//members
 	std::vector<std::vector<Tile>> tiles; // we can add the time dimension when we get there
 	std::map<TileType, OBJ::Data> tileTypes;
-	std::vector < std::vector<tileNode>> getLevelTraversalCostMap();
+
+	//funcs
+	bool init(const std::vector<std::vector<TileType>>& intArray,
+			  const std::vector<std::tuple<TileType, std::string>>& sources);
+
+	bool displayPath(const std::vector<tileNode>& levelArray);
+
+	std::vector<std::vector<TileType>> levelLoader(const std::string& levelTextFile);
+
+	std::vector<std::vector<tileNode>> getLevelTraversalCostMap();
 
 private:
-	bool initTileTypes(const std::vector<std::tuple<TileType, std::string>>& sources);
+	//members
 	std::vector<std::vector<tileNode>> levelTraversalCostMap;
+
+	//funcs
+	bool initTileTypes(const std::vector<std::tuple<TileType, std::string>>& sources);
 };

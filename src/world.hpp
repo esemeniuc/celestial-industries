@@ -65,7 +65,7 @@ private:
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 	void on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
 
-	bool loadSkybox(std::string skyboxFilename, std::string skyboxTextureFolder);
+	bool loadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder);
 
 	Level level;
 private:

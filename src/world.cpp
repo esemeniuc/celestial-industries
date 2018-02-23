@@ -92,33 +92,35 @@ bool World::init(glm::vec2 screen) {
 	glEnable(GL_CULL_FACE);
 
 	std::vector<std::tuple<TileType, std::string>> tiles = {
-			{ TileType::SAND_1, "sand1.obj" },
-			{ TileType::SAND_2, "sand2.obj" },
-			{ TileType::SAND_3, "sand3.obj" },
-			{ TileType::WALL, "wall.obj" },
-			{ TileType::BRICK_CUBE, "brickCube.obj" },
-			{ TileType::MINING_TOWER, "miningTower.obj" },
-			{ TileType::PHOTON_TOWER, "photonTower.obj" }
+			{TileType::SAND_1,       "sand1.obj"},
+			{TileType::SAND_2,       "sand2.obj"},
+			{TileType::SAND_3,       "sand3.obj"},
+			{TileType::WALL,         "wall.obj"},
+			{TileType::BRICK_CUBE,   "brickCube.obj"},
+			{TileType::MINING_TOWER, "miningTower.obj"},
+			{TileType::PHOTON_TOWER, "photonTower.obj"}
 	};
 
 	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isnt being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
-	std::vector<std::vector<TileType>> levelArray = level.levelLoader(pathBuilder({ "data", "levels" }) + "level1.txt");
+	std::vector<std::vector<TileType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
 	size_t mapSize = levelArray.size();
-	camera.position = { mapSize / 2, 20, mapSize / 2 };
+	camera.position = {mapSize / 2, 20, mapSize / 2};
 	level.init(levelArray, tiles);
 	// test different starting points for the AI
 	std::vector<std::vector<tileNode>> costMap = level.getLevelTraversalCostMap();
-	AI::aStar::a_star(costMap, 1, 19, 1, 11, 25);
-	AI::aStar::a_star(costMap, 1, 1, 1, 11, 25);
-	AI::aStar::a_star(costMap, 1, 1, 39, 11, 25);
-	AI::aStar::a_star(costMap, 1, 1, 39, (int)mapSize/2, (int)mapSize/2);
-	selectedTile = {(int)mapSize/2, (int)mapSize/2};
+//	AI::aStar::a_star(costMap, 1, 19, 1, 11, 25);
+//	AI::aStar::a_star(costMap, 1, 1, 1, 11, 25);
+//	AI::aStar::a_star(costMap, 1, 1, 39, 11, 25);
+	std::pair<bool, std::vector<tileNode> > path =
+			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
+	level.displayPath(path.second);
+	selectedTile = {(int) mapSize / 2, (int) mapSize / 2};
 	return true;
 }
 
 // skybox
-bool World::loadSkybox(std::string skyboxFilename, std::string skyboxTextureFolder) {
+bool World::loadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder) {
 	bool success = true;
 	OBJ::Data skyboxObj;
 
@@ -160,9 +162,9 @@ float total_time = 0.0f;
 bool World::update(float elapsed_ms) {
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
-	glm::vec2 screen = glm::vec2((float)w, (float)h);
-	camera.update(elapsed_ms);    
-    total_time += elapsed_ms;
+//	glm::vec2 screen = glm::vec2((float) w, (float) h);
+	camera.update(elapsed_ms);
+	total_time += elapsed_ms;
 	return true;
 }
 
@@ -205,7 +207,7 @@ void World::draw() {
 		j = 0;
 		i++;
 	}
-	
+
 	// make skybox rotate by 0.001 * pi/4 radians around y axis, every frame
 	//float y_rotation = 0.005 * glm::quarter_pi<float>();
 	//m_skybox.setRotation(glm::vec3(0.0, y_rotation, 0.0));

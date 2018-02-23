@@ -70,8 +70,8 @@ namespace AI {
 		return neighbors;
 	}
 
-	bool AI::aStar::a_star(std::vector<std::vector<tileNode>> graph, int tileSize,
-		int startx, int startz, int goalx, int goalz) {
+	std::pair<bool, std::vector<tileNode>> AI::aStar::a_star(std::vector<std::vector<tileNode>> graph, int tileSize,
+															 int startx, int startz, int goalx, int goalz) {
 
 		bool pathFound = false;
 
@@ -133,6 +133,6 @@ namespace AI {
 			}
 		}
 		std::vector<tileNode> result = reconstruct_path(came_from, start, goal);
-		return pathFound;
+		return {pathFound, result};
 	}
 }

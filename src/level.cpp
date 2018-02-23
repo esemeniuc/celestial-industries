@@ -1,18 +1,18 @@
 #include "level.hpp"
 #include <iostream>
 
-bool Level::init(const std::vector<std::vector<TileType>>& intArray, const std::vector<std::tuple<TileType, std::string>>& sources)
-{
+bool Level::init(const std::vector<std::vector<TileType>>& levelArray,
+				 const std::vector<std::tuple<TileType, std::string>>& sources) {
 	if (!initTileTypes(sources)) {
 		std::cout << "Failed to init tile types!" << std::endl;
 		return false;
 	}
-	
+
 	// So that re initializing will be the same as first initialization
 	tiles.clear();
 
-	for (size_t i = 0; i < intArray.size(); i++) {
-		std::vector<TileType> row = intArray[i];
+	for (size_t i = 0; i < levelArray.size(); i++) {
+		std::vector<TileType> row = levelArray[i];
 		std::vector<Tile> tileRow;
 		for (size_t j = 0; j < row.size(); j++) {
 			TileType cell = row[j];
@@ -22,7 +22,7 @@ bool Level::init(const std::vector<std::vector<TileType>>& intArray, const std::
 				std::cout << "FAILED TO INITIALIZE TILE OF TYPE " << static_cast<int>(cell) << std::endl;
 			}
 			// TODO: Standardize tile size and resize the model to be the correct size
-			tile.translate({ j, 0, i });
+			tile.translate({j, 0, i});
 			tileRow.push_back(tile);
 		}
 		tiles.push_back(tileRow);
@@ -30,39 +30,31 @@ bool Level::init(const std::vector<std::vector<TileType>>& intArray, const std::
 	return true;
 }
 
-std::vector<std::vector<TileType>> Level::levelLoader(const std::string& levelTextFile)
-{
-	std::ifstream level (levelTextFile);
+std::vector<std::vector<TileType>> Level::levelLoader(const std::string& levelTextFile) {
+	std::ifstream level(levelTextFile);
 	std::string line;
 	std::vector<std::vector<TileType>> levelData;
 
-	if (level.is_open())
-	{
+	if (level.is_open()) {
 		int rowNumber = 0;
-		while (getline(level, line))
-		{
+		while (getline(level, line)) {
 			std::vector<TileType> row;
 			std::vector<tileNode> tileData;
 			int colNumber = 0;
-			for (const char tile : line)
-			{
-				switch (tile)
-				{
-					case '#':
-					{
+			for (const char tile : line) {
+				switch (tile) {
+					case '#': {
 						row.push_back(TileType::BRICK_CUBE);
 						tileData.emplace_back(rowNumber, colNumber, 1000.0, INF);
 						break;
 					}
 
-					case ' ':
-					{
+					case ' ': {
 						row.push_back(TileType::SAND_1);
 						tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
 						break;
 					}
-					default:
-					{
+					default: {
 						row.push_back(TileType::SAND_2);
 						tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
 						break;
@@ -75,20 +67,17 @@ std::vector<std::vector<TileType>> Level::levelLoader(const std::string& levelTe
 			rowNumber++;
 		}
 		level.close();
-	}
-	else fprintf(stderr, "Failed to open level data file");
+	} else fprintf(stderr, "Failed to open level data file");
 	return levelData;
 }
 
-std::vector<std::vector<tileNode>> Level::getLevelTraversalCostMap()
-{
+std::vector<std::vector<tileNode>> Level::getLevelTraversalCostMap() {
 	return this->levelTraversalCostMap;
 }
 
-bool Level::initTileTypes(const std::vector<std::tuple<TileType, std::string>>& sources)
-{
+bool Level::initTileTypes(const std::vector<std::tuple<TileType, std::string>>& sources) {
 	// All the models come from the same place
-    std::string path = pathBuilder({ "data", "models" });
+	std::string path = pathBuilder({"data", "models"});
 	for (auto source : sources) {
 		TileType tileType = std::get<0>(source);
 		std::string filename = std::get<1>(source);
@@ -99,5 +88,27 @@ bool Level::initTileTypes(const std::vector<std::tuple<TileType, std::string>>& 
 		}
 		tileTypes[tileType] = obj;
 	}
+	return true;
+}
+
+
+bool Level::displayPath(const std::vector<tileNode>& path) {
+
+	for (auto component : path) {
+		long x = std::get<0>(component);
+		long y = std::get<1>(component);
+		std::vector<Tile> tileRow;
+
+		Tile tile;
+		bool success = tile.init(tileTypes[TileType::SAND_2]);
+		if (!success) {
+			std::cout << "FAILED TO INITIALIZE TILE OF TYPE " << static_cast<int>(TileType::SAND_2) << std::endl;
+		}
+		// TODO: Standardize tile size and resize the model to be the correct size
+		tile.translate({y, 0, x});
+		tileRow.push_back(tile);
+		tiles.push_back(tileRow);
+	}
+
 	return true;
 }
