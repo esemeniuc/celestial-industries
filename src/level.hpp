@@ -25,17 +25,16 @@ enum class TileType {
 };
 
 // used to build a graph of nodes for the AI pathfinder to traverse each tile node.
-struct aStarPathState
-{
+struct aStarPathState {
 	int rowCoord, colCoord, currentPathCost;
 	float fScore;
 
 	aStarPathState() = default;
 
 	aStarPathState(int _rowCoord, int _colCoord, int _currentPathCost, float _fScore) : rowCoord(_rowCoord),
-																					   colCoord(_colCoord),
-																					   currentPathCost(_currentPathCost),
-																					   fScore(_fScore) {}
+																						colCoord(_colCoord),
+																						currentPathCost(_currentPathCost),
+																						fScore(_fScore) {}
 
 	bool operator==(const aStarPathState& rhs) const {
 		return rowCoord == rhs.rowCoord &&
@@ -53,6 +52,16 @@ struct aStarPathState
 	}
 };
 
+struct Coord {
+	int rowCoord, colCoord;
+
+	Coord() = default;
+
+	Coord(aStarPathState a) : rowCoord(a.rowCoord), colCoord(a.colCoord) {}
+
+	Coord(int _rowCoord, int _colCoord) : rowCoord(_rowCoord), colCoord(_colCoord) {}
+};
+
 class Level {
 public:
 	//members
@@ -63,7 +72,7 @@ public:
 	bool init(const std::vector<std::vector<TileType>>& intArray,
 			  const std::vector<std::pair<TileType, std::string>>& sources);
 
-	bool displayPath(const std::vector<aStarPathState>& levelArray);
+	bool displayPath(const std::vector<Coord>& levelArray);
 
 	std::vector<std::vector<TileType>> levelLoader(const std::string& levelTextFile);
 

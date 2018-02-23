@@ -31,18 +31,17 @@ namespace AI {
 
 		static float l2_norm(const aStarPathState& startNode, const aStarPathState& goal);
 
-
 		// find list of adjacent tile nodes which constitute possible moves from the position we're currently at
 		static std::vector<aStarPathState>
 		getNeighbors(const std::vector<std::vector<aStarPathState>>& graph, aStarPathState& currentPos,
 					 aStarPathState& goal);
 
 		//main pathfinding algorithm
-		static std::pair<bool, std::vector<aStarPathState>>
+		static std::pair<bool, std::vector<Coord>>
 		a_star(const std::vector<std::vector<aStarPathState>>& graph, int tileSize,
 			   int startX, int startZ, int goalX, int goalZ);
 
-		static std::vector<aStarPathState>
+		static std::vector<Coord>
 		reconstruct_path(const std::unordered_map<aStarPathState, aStarPathState, aStarPathHasher>& came_from,
 						 const aStarPathState& start, const aStarPathState& goal);
 	};

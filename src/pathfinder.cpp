@@ -1,15 +1,16 @@
 #include "pathfinder.hpp"
+#include <cmath>
 
 namespace AI {
-	std::vector<aStarPathState>
+	std::vector<Coord>
 	aStar::reconstruct_path(const std::unordered_map<aStarPathState, aStarPathState, aStarPathHasher>& came_from,
 							const aStarPathState& start,
 							const aStarPathState& goal) {
 
 		aStarPathState current = goal;
-		std::vector<aStarPathState> path;
+		std::vector<Coord> path;
 		while (current != start) {
-			path.push_back(current);
+			path.emplace_back(current);
 			current = came_from.at(current); //use at() to satisfy const constraint
 		}
 		std::reverse(path.begin(), path.end());
@@ -19,15 +20,15 @@ namespace AI {
 	/* using L1 Norm (Manhattan norm) for stairstep like movement, for diagonal movement
 	we can consider either L-Infinity or L2 norm, leaving it for later*/
 	float aStar::l1_norm(const aStarPathState& startNode, const aStarPathState& goal) {
-		float rowDiff = std::abs(startNode.rowCoord - goal.rowCoord);
-		float colDiff = std::abs(startNode.colCoord - goal.colCoord);
+		int rowDiff = std::abs(startNode.rowCoord - goal.rowCoord);
+		int colDiff = std::abs(startNode.colCoord - goal.colCoord);
 		return rowDiff + colDiff;
 	}
 
 	float aStar::l2_norm(const aStarPathState& startNode, const aStarPathState& goal) {
-		float rowDiff = startNode.rowCoord - goal.rowCoord;
-		float colDiff = startNode.colCoord - goal.colCoord;
-		return (rowDiff * rowDiff) + (colDiff * colDiff);
+		int rowDiff = startNode.rowCoord - goal.rowCoord;
+		int colDiff = startNode.colCoord - goal.colCoord;
+		return (float)std::sqrt((rowDiff * rowDiff) + (colDiff * colDiff));
 	}
 
 	std::vector<aStarPathState>
@@ -78,7 +79,7 @@ namespace AI {
 	}
 
 	//returns a pair indicating whether the path was found, and the path itself
-	std::pair<bool, std::vector<aStarPathState>>
+	std::pair<bool, std::vector<Coord>>
 	AI::aStar::a_star(const std::vector<std::vector<aStarPathState>>& graph,
 					  int tileSize, int startX, int startZ, int goalX, int goalZ) {
 
@@ -132,7 +133,7 @@ namespace AI {
 					// if not, the [] operator will insert a new entry
 					cost_so_far[next] = gScore;
 					// calculate f-score based on g-score and heuristic
-					next.fScore = gScore + l2_norm(next, goal);
+					next.fScore = gScore + l1_norm(next, goal);
 					// add neighbor to open list of nodes to explore
 					frontier.push(next);
 					// update predecessor of next node to our current node

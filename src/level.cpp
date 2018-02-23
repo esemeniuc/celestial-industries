@@ -4,7 +4,7 @@
 bool Level::init(const std::vector<std::vector<TileType>>& levelArray,
 				 const std::vector<std::pair<TileType, std::string>>& sources) {
 	if (!initTileTypes(sources)) {
-		std::cout << "Failed to init tile types!" << std::endl;
+		logger(LogLevel::ERR) << "Failed to init tile types!" << '\n';
 		return false;
 	}
 
@@ -19,7 +19,7 @@ bool Level::init(const std::vector<std::vector<TileType>>& levelArray,
 			Tile tile;
 			bool success = tile.init(tileTypes[cell]);
 			if (!success) {
-				std::cout << "FAILED TO INITIALIZE TILE OF TYPE " << static_cast<int>(cell) << std::endl;
+				logger(LogLevel::ERR) << "FAILED TO INITIALIZE TILE OF TYPE " << static_cast<int>(cell) << '\n';
 			}
 			// TODO: Standardize tile size and resize the model to be the correct size
 			tile.translate({j, 0, i});
@@ -67,7 +67,7 @@ std::vector<std::vector<TileType>> Level::levelLoader(const std::string& levelTe
 			rowNumber++;
 		}
 		level.close();
-	} else fprintf(stderr, "Failed to open level data file");
+	} else logger(LogLevel::ERR) << "Failed to open level data file '" << levelTextFile << "'\n";
 	return levelData;
 }
 
@@ -92,7 +92,7 @@ bool Level::initTileTypes(const std::vector<std::pair<TileType, std::string>>& s
 }
 
 
-bool Level::displayPath(const std::vector<aStarPathState>& path) {
+bool Level::displayPath(const std::vector<Coord>& path) {
 
 	for (auto component : path) {
 		std::vector<Tile> tileRow;
@@ -100,7 +100,7 @@ bool Level::displayPath(const std::vector<aStarPathState>& path) {
 		Tile tile;
 		bool success = tile.init(tileTypes[TileType::SAND_2]);
 		if (!success) {
-			std::cout << "FAILED TO INITIALIZE TILE OF TYPE " << static_cast<int>(TileType::SAND_2) << std::endl;
+			logger(LogLevel::ERR) << "FAILED TO INITIALIZE TILE OF TYPE " << static_cast<int>(TileType::SAND_2) << '\n';
 		}
 		// TODO: Standardize tile size and resize the model to be the correct size
 		tile.translate({component.colCoord, 0, component.rowCoord});

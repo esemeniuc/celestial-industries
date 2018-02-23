@@ -119,7 +119,7 @@ bool World::init(glm::vec2 screen) {
 	std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 
 	//display a path
-	std::pair<bool, std::vector<aStarPathState> > path =
+	std::pair<bool, std::vector<Coord> > path =
 			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
 	level.displayPath(path.second);
 	selectedTile = {(int) mapSize / 2, (int) mapSize / 2};
