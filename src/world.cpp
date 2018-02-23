@@ -98,6 +98,7 @@ bool World::init(glm::vec2 screen) {
 			{TileType::WALL,         "wall.obj"},
 			{TileType::BRICK_CUBE,   "brickCube.obj"},
 			{TileType::MINING_TOWER, "miningTower.obj"},
+			{TileType::TREE,         "treeTile1.obj" },
 			{TileType::PHOTON_TOWER, "photonTower.obj"}
 	};
 

@@ -20,6 +20,7 @@ enum class TileType {
 	BRICK_CUBE,
 	MINING_TOWER,
 	PHOTON_TOWER,
+	TREE,
 };
 
 // used to build a graph of nodes for the AI pathfinder to traverse each tile node.

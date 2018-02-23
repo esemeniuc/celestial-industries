@@ -44,7 +44,7 @@ std::vector<std::vector<TileType>> Level::levelLoader(const std::string& levelTe
 			for (const char tile : line) {
 				switch (tile) {
 					case '#': {
-						row.push_back(TileType::BRICK_CUBE);
+						row.push_back(TileType::TREE);
 						tileData.emplace_back(rowNumber, colNumber, 1000.0, INF);
 						break;
 					}
