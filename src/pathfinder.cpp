@@ -58,14 +58,14 @@ namespace AI {
 
 		// check if we can move up a row
 		// costOfUpMove = std::get<2>(graph[row][col + 1]);
-		if ((col != 0) && (((row - 1 == goalRow) && (col == goalCol)) ||
+		if ((row != 0) && (((row - 1 == goalRow) && (col == goalCol)) ||
 			graph[row - 1][col].currentPathCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row - 1][col]);
 		}
 
 		// check if we can move down a row
 		// costOfDownMove = std::get<2>(graph[row][col + 1]);
-		if ((col != (long)numOfRows - 1) && (((row + 1 == goalRow) && (col == goalCol)) ||
+		if ((row != (long)numOfRows - 1) && (((row + 1 == goalRow) && (col == goalCol)) ||
 			graph[row + 1][col].currentPathCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row + 1][col]);
 		}
