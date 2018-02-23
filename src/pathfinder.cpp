@@ -1,5 +1,4 @@
 #include "pathfinder.hpp"
-#include <cmath>
 
 namespace AI {
 	std::vector<Coord>

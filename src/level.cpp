@@ -34,40 +34,43 @@ std::vector<std::vector<TileType>> Level::levelLoader(const std::string& levelTe
 	std::ifstream level(levelTextFile);
 	std::string line;
 	std::vector<std::vector<TileType>> levelData;
+	std::vector<TileType> row;
+	std::vector<aStarPathState> tileData;
 
-	if (level.is_open()) {
-		int rowNumber = 0;
-		while (getline(level, line)) {
-			std::vector<TileType> row;
-			std::vector<aStarPathState> tileData;
-			int colNumber = 0;
-			for (const char tile : line) {
-				switch (tile) {
-					case '#': {
-						row.push_back(TileType::TREE);
-						tileData.emplace_back(rowNumber, colNumber, 1000.0, INF);
-						break;
-					}
+	if (!level.is_open()) {
+		logger(LogLevel::ERR) << "Failed to open level data file '" << levelTextFile << "'\n";
+		return {};
+	}
 
-					case ' ': {
-						row.push_back(TileType::SAND_1);
-						tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
-						break;
-					}
-					default: {
-						row.push_back(TileType::SAND_2);
-						tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
-						break;
-					}
+	for (int rowNumber = 0; getline(level, line); rowNumber++) {
+		row.clear();
+		tileData.clear();
+		int colNumber = 0;
+		for (const char tile : line) {
+			switch (tile) {
+				case '#': {
+					row.push_back(TileType::TREE);
+					tileData.emplace_back(rowNumber, colNumber, 1000.0, INF);
+					break;
 				}
-				colNumber++;
+				case ' ': {
+					row.push_back(TileType::SAND_1);
+					tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
+					break;
+				}
+				default: {
+					row.push_back(TileType::SAND_2);
+					tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
+					break;
+				}
 			}
-			levelData.push_back(row);
-			levelTraversalCostMap.push_back(tileData);
-			rowNumber++;
+			colNumber++;
 		}
-		level.close();
-	} else logger(LogLevel::ERR) << "Failed to open level data file '" << levelTextFile << "'\n";
+		levelData.push_back(row);
+		levelTraversalCostMap.push_back(tileData);
+	}
+	level.close();
+
 	return levelData;
 }
 
