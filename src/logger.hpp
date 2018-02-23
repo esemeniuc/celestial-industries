@@ -32,6 +32,8 @@ class Logger {
 public:
 	Logger();
 
+    static constexpr char endl = '\n';
+
 	Logger& operator()(LogLevel logLevel);
 
 	//need this function in header otherwise compiler can't link, see https://isocpp.org/wiki/faq/templates#templates-defn-vs-decl

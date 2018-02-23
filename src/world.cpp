@@ -102,10 +102,17 @@ bool World::init(glm::vec2 screen) {
 			{PHOTON_TOWER, "photonTower.obj"}
 	};
 
+    // Load shader for default tiles
+    objShader = std::make_shared<Shader>();
+    if (!objShader->load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl"))) {
+        logger(LogLevel::ERR) << "Failed to load obj shader!" << Logger::endl;
+        return false;
+    }
+
 	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isnt being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
 	std::vector<std::vector<int>> levelArray;
-	int mapSize = 5;
+	int mapSize = 150;
 	for (size_t i = 0; i < (size_t) mapSize; i++) {
 		std::vector<int> row;
 		for (size_t j = 0; j < (size_t) mapSize; j++) {
@@ -113,21 +120,31 @@ bool World::init(glm::vec2 screen) {
 			else if (i % 3 == 0 && j % 3 == 0)row.push_back(PHOTON_TOWER);
 			else if (i % 5 == 0 && j % 2 == 0)row.push_back(BRICK_CUBE);
 			else row.push_back(SAND_1);
+            
+            //row.push_back(SAND_1);
 		}
 		levelArray.push_back(row);
 	}
 	camera.position = {mapSize / 2, 10, mapSize / 2};
-	level.init(levelArray, tiles);
+    logger(LogLevel::DEBUG) << "Loading level... " << Logger::endl;
+	level.init(levelArray, tiles, objShader);
+    logger(LogLevel::DEBUG) << "Level loading complete." << Logger::endl;
 
 	selectedTile = {mapSize / 2, mapSize / 2};
 	OBJ::Data ball;
 	if (!OBJ::Loader::loadOBJ(pathBuilder({"data", "models"}), "ball.obj", ball)) {
-		std::cout << "No ball, no game" << std::endl;
+        logger(LogLevel::ERR) << "No ball, no game" << Logger::endl;
 		return false;
 	}
+    auto ballMeshResult = objToMesh(ball);
+    if (!ballMeshResult.first) {
+        logger(LogLevel::ERR) << "Failed to convert ball to mesh" << Logger::endl;
+        return false;
+    }
+    auto ballMeshes = ballMeshResult.second;
 	for (size_t i = 0; i < (size_t) mapSize / 3; i++) {
 		BasicEntity ballEntity;
-		ballEntity.init(ball);
+		ballEntity.init(ballMeshes, objShader);
 		ballEntity.translate({0, 2, 0});
 		level.basicEntities.push_back(ballEntity);
 	}
@@ -144,20 +161,20 @@ bool World::loadSkybox(std::string skyboxFilename, std::string skyboxTextureFold
 
 	success &= OBJ::Loader::loadOBJ(geometryPath, skyboxFilename, skyboxObj);
 	if (!success) {
-		std::cout << "Failed to load skybox" << std::endl;
+        logger(LogLevel::ERR) << "Failed to load skybox" << Logger::endl;
 		return false;
 	}
 
 	success &= m_skybox.init(skyboxObj);
 	if (!success) {
-		std::cout << "Failed to initilize skybox" << std::endl;
+        logger(LogLevel::ERR) << "Failed to initilize skybox" << Logger::endl;
 		return false;
 	}
 
 	// specify texture unit corresponding to texture sampler in fragment shader
 	Texture skyboxTexture;
 	GLuint cube_texture;
-	glUniform1i(glGetUniformLocation(m_skybox.effect.program, "cube_texture"), 0);
+	glUniform1i(glGetUniformLocation(m_skybox.shader->program, "cube_texture"), 0);
 	m_skybox.set_cube_faces(texturePath);
 	skyboxTexture.generate_cube_map(m_skybox.get_cube_faces(), &cube_texture);
 	return true;
@@ -166,7 +183,6 @@ bool World::loadSkybox(std::string skyboxFilename, std::string skyboxTextureFold
 // Releases all the associated resources
 void World::destroy() {
 	Mix_CloseAudio();
-	m_tile.destroy();
 	m_skybox.destroy();
 	glfwDestroyWindow(m_window);
 }
@@ -219,23 +235,14 @@ void World::draw() {
 
 	glm::mat4 projection = camera.getProjectionMatrix(m_screen.x, m_screen.y);
 	glm::mat4 view = camera.getViewMatrix();
+    glm::mat4 projectionView = projection * view;
 
-	int i = 0, j = 0; // used for showing the selected tile
-	for (auto tileRow : level.tiles) {
-		for (auto tile : tileRow) {
-			if (i == selectedTile[0] && j == selectedTile[1]) {
-				// do nothing
-			} else {
-				tile.draw(projection * view);
-			}
-			j++;
-		}
-		j = 0;
-		i++;
-	}
+    for (auto tileRenderer : level.tileRenderers) {
+        tileRenderer.second->render(projectionView);
+    }
 
 	for (auto basicEntity : level.basicEntities) {
-		basicEntity.draw(projection * view);
+		basicEntity.draw(projectionView);
 	}
 
 	m_skybox.draw(projection * view * m_skybox.model);

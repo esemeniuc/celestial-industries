@@ -65,13 +65,14 @@ private:
 
 	bool loadSkybox(std::string skyboxFilename, std::string skyboxTextureFolder);
 
+    std::shared_ptr<Shader> objShader;
+
 	Level level;
 private:
 	// Window handle
 	GLFWwindow* m_window;
 	bool escapePressed = false;
 
-	Tile m_tile;
 	Skybox m_skybox;
 	glm::vec2 m_screen;
 

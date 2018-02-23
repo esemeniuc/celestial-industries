@@ -11,7 +11,7 @@ class BasicEntity : public Entity {
 public:
     void update(float ms);
     glm::vec3 position = { 0,0,0 };
-    float speed = 0.001;
+    float speed = 0.001f;
     void moveTo(glm::vec3 target);
     glm::vec3 targetPosition;
 };

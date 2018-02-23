@@ -7,12 +7,10 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 // The base class for every tile in the game
-class Tile : public OBJRenderable
+class Tile : public OBJBulkRenderable
 {
-	// shared stuff will go here at some point
-
 public:
-	bool init(OBJ::Data obj);
+    Tile(std::shared_ptr<OBJBulkRenderer> parent) : OBJBulkRenderable::OBJBulkRenderable(parent) {};
 
 	void destroy();
 

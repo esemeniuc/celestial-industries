@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 	if (!world.init({ (float)width, (float)height }))
 	{
 		// Time to read the error message
-		std::cout << "Press any key to exit" << std::endl;
+        logger(LogLevel::ERR) << "Press any key to exit" << Logger::endl;
 		std::cin.get();
 		return EXIT_FAILURE;
 	}
