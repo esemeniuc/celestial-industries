@@ -7,6 +7,17 @@ namespace AI {
 		return result.str();
 	}
 
+	std::vector<tileNode> aStar::reconstruct_path(std::unordered_map<std::string, tileNode> &came_from, tileNode &start, tileNode &goal) {
+		tileNode current = goal;
+		std::vector<tileNode> path;
+		while (getTileNodeHashKey(current) != getTileNodeHashKey(start)) {
+			path.push_back(current);
+			current = came_from[getTileNodeHashKey(current)];
+		}
+		std::reverse(path.begin(), path.end());
+		return path;
+	}
+
 	/* using L1 Norm (Manhattan norm) for stairstep like movement, for diagonal movement
 	we can consider either L-Infinity or L2 norm, leaving it for later*/
 	float aStar::l1_norm(tileNode &startNode, tileNode &goal) {
@@ -80,12 +91,12 @@ namespace AI {
 		long goalRow = std::floor(goalx / tileSize);
 		long goalCol = std::floor(goalz / tileSize);
 
-		tileNode start = std::make_tuple(startRow, startCol, 0.0, 0.0);
-		tileNode goal = std::make_tuple(goalRow, goalCol, 0.0, INF);
+		tileNode start = std::make_tuple(startRow, startCol, 10.0, 0.0);
+		tileNode goal = std::make_tuple(goalRow, goalCol, 10.0, INF);
 
 		frontier.push(start);
 		came_from[getTileNodeHashKey(start)] = start;
-		cost_so_far[getTileNodeHashKey(start)] = 0;
+		cost_so_far[getTileNodeHashKey(start)] = 0.0;
 
 		while (!frontier.empty()) {
 			// top() does not remove the node, so call pop() after it
@@ -118,5 +129,6 @@ namespace AI {
 				}
 			}
 		}
+		std::vector<tileNode> result = reconstruct_path(came_from, start, goal);
 	}
 }

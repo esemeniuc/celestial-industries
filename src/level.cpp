@@ -59,13 +59,13 @@ std::vector<std::vector<int>> Level::levelLoader(std::string levelTextFile)
 					case ' ':
 					{
 						row.push_back(SAND_1);
-						tileData.push_back(std::make_tuple(rowNumber, colNumber, 1.0, INF));
+						tileData.push_back(std::make_tuple(rowNumber, colNumber, 10.0, INF));
 						break;
 					}
 					default:
 					{
 						row.push_back(SAND_2);
-						tileData.push_back(std::make_tuple(rowNumber, colNumber, 1.0, INF));
+						tileData.push_back(std::make_tuple(rowNumber, colNumber, 10.0, INF));
 						break;
 					}
 				}
