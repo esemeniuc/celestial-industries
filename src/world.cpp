@@ -111,9 +111,10 @@ bool World::init(glm::vec2 screen)
     camera.position = { mapSize / 2, 20, mapSize / 2 };
 	level.init(levelArray, tiles);
 	// test different starting points for the AI
-	AI::aStar::a_star(level.getLevelTraversalCostMap(), 1, 19, 1, 11, 25);
-	AI::aStar::a_star(level.getLevelTraversalCostMap(), 1, 1, 1, 11, 25);
-	AI::aStar::a_star(level.getLevelTraversalCostMap(), 1, 1, 39, 11, 25);
+	std::vector<std::vector<tileNode>> costMap = level.getLevelTraversalCostMap();
+	AI::aStar::a_star(costMap, 1, 19, 1, 11, 25);
+	AI::aStar::a_star(costMap, 1, 1, 1, 11, 25);
+	AI::aStar::a_star(costMap, 1, 1, 39, 11, 25);
     selectedTile = {mapSize/2, mapSize/2};
     return true;
 }

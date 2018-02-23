@@ -70,7 +70,7 @@ namespace AI {
 		return neighbors;
 	}
 
-	bool AI::aStar::a_star(std::vector<std::vector<tileNode>>& graph, int tileSize,
+	bool AI::aStar::a_star(std::vector<std::vector<tileNode>> graph, int tileSize,
 		int startx, int startz, int goalx, int goalz) {
 
 		bool pathFound = false;
