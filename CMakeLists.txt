@@ -22,7 +22,8 @@ add_executable(proj
         src/world.cpp
         src/camera.cpp
         src/textureloader.cpp
-	    src/level.cpp
+        src/level.cpp
+        src/pathfinder.cpp
         src/objrenderable.cpp)
 
 target_compile_options(proj PUBLIC
