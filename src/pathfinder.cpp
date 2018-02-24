@@ -2,11 +2,11 @@
 
 namespace AI {
 	std::vector<Coord>
-	aStar::reconstruct_path(const std::unordered_map<aStarPathState, aStarPathState, aStarPathHasher>& came_from,
-							const aStarPathState& start,
-							const aStarPathState& goal) {
+	aStar::reconstruct_path(const std::unordered_map<aStarNode, aStarNode, aStarHasher>& came_from,
+							const aStarNode& start,
+							const aStarNode& goal) {
 
-		aStarPathState current = goal;
+		aStarNode current = goal;
 		std::vector<Coord> path;
 		while (current != start) {
 			path.emplace_back(current);
@@ -18,21 +18,21 @@ namespace AI {
 
 	/* using L1 Norm (Manhattan norm) for stairstep like movement, for diagonal movement
 	we can consider either L-Infinity or L2 norm, leaving it for later*/
-	float aStar::l1_norm(const aStarPathState& startNode, const aStarPathState& goal) {
+	float aStar::l1_norm(const aStarNode& startNode, const aStarNode& goal) {
 		int rowDiff = std::abs(startNode.rowCoord - goal.rowCoord);
 		int colDiff = std::abs(startNode.colCoord - goal.colCoord);
 		return rowDiff + colDiff;
 	}
 
-	float aStar::l2_norm(const aStarPathState& startNode, const aStarPathState& goal) {
+	float aStar::l2_norm(const aStarNode& startNode, const aStarNode& goal) {
 		int rowDiff = startNode.rowCoord - goal.rowCoord;
 		int colDiff = startNode.colCoord - goal.colCoord;
 		return (float)std::sqrt((rowDiff * rowDiff) + (colDiff * colDiff));
 	}
 
-	std::vector<aStarPathState>
-	aStar::getNeighbors(const std::vector<std::vector<aStarPathState>>& graph, aStarPathState& currentPos,
-						aStarPathState& goal) {
+	std::vector<aStarNode>
+	aStar::getNeighbors(const std::vector<std::vector<aStarNode>>& graph, aStarNode& currentPos,
+						aStarNode& goal) {
 		int numOfRows = (int) graph.size();
 		int numOfColumns = (int) graph[0].size();
 		int row = currentPos.rowCoord;
@@ -40,7 +40,7 @@ namespace AI {
 		int goalRow = goal.rowCoord;
 		int goalCol = goal.colCoord;
 
-		std::vector<aStarPathState> neighbors;
+		std::vector<aStarNode> neighbors;
 
 		/* costOfForwardMove = std::get<2>(graph[row][col + 1]);
 		a cost value of 1000 or larger is considered an obstacle
@@ -79,20 +79,20 @@ namespace AI {
 
 	//returns a pair indicating whether the path was found, and the path itself
 	std::pair<bool, std::vector<Coord>>
-	AI::aStar::a_star(const std::vector<std::vector<aStarPathState>>& graph,
+	AI::aStar::a_star(const std::vector<std::vector<aStarNode>>& graph,
 					  int tileSize, int startX, int startZ, int goalX, int goalZ) {
 
 		/* a min heap that will store nodes we have not explored yet in the level map
 		will use it to fetch the tile node with the smallest f-score*/
-		std::priority_queue<aStarPathState, std::vector<aStarPathState>, Compare> frontier;
+		std::priority_queue<aStarNode, std::vector<aStarNode>, Compare> frontier;
 
 		/* hash table that helps us keep track of how we reached a tile node
 		using a key of its predecessor node in the path*/
-		std::unordered_map<aStarPathState, aStarPathState, aStarPathHasher> came_from;
+		std::unordered_map<aStarNode, aStarNode, aStarHasher> came_from;
 		came_from.reserve(graph.size() * graph[0].size());
 
 		// cost associated with a path up to a certain node
-		std::unordered_map<aStarPathState, double, aStarPathHasher> cost_so_far;
+		std::unordered_map<aStarNode, double, aStarHasher> cost_so_far;
 		cost_so_far.reserve(graph.size() * graph[0].size());
 
 		// check which tiles the given positions lie in
@@ -102,8 +102,8 @@ namespace AI {
 		int goalRow = goalX / tileSize;
 		int goalCol = goalZ / tileSize;
 
-		aStarPathState start = aStarPathState(startRow, startCol, 10, 0.0);
-		aStarPathState goal = aStarPathState(goalRow, goalCol, 10, INF);
+		aStarNode start = aStarNode(startRow, startCol, 10, 0.0);
+		aStarNode goal = aStarNode(goalRow, goalCol, 10, INF);
 
 		frontier.push(start);
 		came_from[start] = start;
@@ -111,7 +111,7 @@ namespace AI {
 
 		while (!frontier.empty()) {
 			// top() does not remove the node, so call pop() after it
-			aStarPathState current = frontier.top();
+			aStarNode current = frontier.top();
 			frontier.pop();
 
 			if (current == goal) {
@@ -120,7 +120,7 @@ namespace AI {
 				return {true, path}; //true for bool because we found a path
 			}
 
-			std::vector<aStarPathState> neighbors = aStar::getNeighbors(graph, current, goal);
+			std::vector<aStarNode> neighbors = aStar::getNeighbors(graph, current, goal);
 			for (auto& next : neighbors) {
 				// total movement cost to next node: path cost of current node + cost of taking 
 				// a step from current to next node

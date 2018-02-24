@@ -36,7 +36,7 @@ std::vector<std::vector<TileType>> Level::levelLoader(const std::string& levelTe
 	std::string line;
 	std::vector<std::vector<TileType>> levelData;
 	std::vector<TileType> row;
-	std::vector<aStarPathState> tileData;
+	std::vector<aStarNode> tileData;
 
 	if (!level.is_open()) {
 		logger(LogLevel::ERR) << "Failed to open level data file '" << levelTextFile << "'\n";
@@ -75,7 +75,7 @@ std::vector<std::vector<TileType>> Level::levelLoader(const std::string& levelTe
 	return levelData;
 }
 
-std::vector<std::vector<aStarPathState>> Level::getLevelTraversalCostMap() {
+std::vector<std::vector<aStarNode>> Level::getLevelTraversalCostMap() {
 	return this->levelTraversalCostMap;
 }
 

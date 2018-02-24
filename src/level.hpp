@@ -25,27 +25,27 @@ enum class TileType {
 };
 
 // used to build a graph of nodes for the AI pathfinder to traverse each tile node.
-struct aStarPathState {
+struct aStarNode {
 	int rowCoord, colCoord, currentPathCost;
 	float fScore;
 
-	aStarPathState() = default;
+	aStarNode() = default;
 
-	aStarPathState(int _rowCoord, int _colCoord, int _currentPathCost, float _fScore) : rowCoord(_rowCoord),
+	aStarNode(int _rowCoord, int _colCoord, int _currentPathCost, float _fScore) : rowCoord(_rowCoord),
 																						colCoord(_colCoord),
 																						currentPathCost(_currentPathCost),
 																						fScore(_fScore) {}
 
-	bool operator==(const aStarPathState& rhs) const {
+	bool operator==(const aStarNode& rhs) const {
 		return rowCoord == rhs.rowCoord &&
 			   colCoord == rhs.colCoord;
 	}
 
-	bool operator!=(const aStarPathState& rhs) const {
+	bool operator!=(const aStarNode& rhs) const {
 		return !(rhs == *this);
 	}
 
-	friend std::ostream& operator<<(std::ostream& os, const aStarPathState& state) {
+	friend std::ostream& operator<<(std::ostream& os, const aStarNode& state) {
 		os << "rowCoord: " << state.rowCoord << " colCoord: " << state.colCoord << " currentPathCost: "
 		   << state.currentPathCost << " fScore: " << state.fScore;
 		return os;
@@ -57,7 +57,7 @@ struct Coord {
 
 	Coord() = default;
 
-	Coord(aStarPathState a) : rowCoord(a.rowCoord), colCoord(a.colCoord) {}
+	Coord(aStarNode a) : rowCoord(a.rowCoord), colCoord(a.colCoord) {}
 
 	Coord(int _rowCoord, int _colCoord) : rowCoord(_rowCoord), colCoord(_colCoord) {}
 };
@@ -76,11 +76,11 @@ public:
 
 	std::vector<std::vector<TileType>> levelLoader(const std::string& levelTextFile);
 
-	std::vector<std::vector<aStarPathState>> getLevelTraversalCostMap();
+	std::vector<std::vector<aStarNode>> getLevelTraversalCostMap();
 
 private:
 	//members
-	std::vector<std::vector<aStarPathState>> levelTraversalCostMap;
+	std::vector<std::vector<aStarNode>> levelTraversalCostMap;
 
 	//funcs
 	bool initTileTypes(const std::vector<std::pair<TileType, std::string>>& sources);
