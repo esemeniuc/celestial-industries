@@ -20,6 +20,7 @@ bool Level::init(const std::vector<std::vector<TileType>>& levelArray,
 			bool success = tile.init(tileTypes[cell]);
 			if (!success) {
 				logger(LogLevel::ERR) << "FAILED TO INITIALIZE TILE OF TYPE " << static_cast<int>(cell) << '\n';
+				return false;
 			}
 			// TODO: Standardize tile size and resize the model to be the correct size
 			tile.translate({j, 0, i});
@@ -97,13 +98,14 @@ bool Level::initTileTypes(const std::vector<std::pair<TileType, std::string>>& s
 
 bool Level::displayPath(const std::vector<Coord>& path) {
 
-	for (auto component : path) {
+	for (const Coord& component : path) {
 		std::vector<Tile> tileRow;
 
 		Tile tile;
 		bool success = tile.init(tileTypes[TileType::SAND_2]);
 		if (!success) {
 			logger(LogLevel::ERR) << "FAILED TO INITIALIZE TILE OF TYPE " << static_cast<int>(TileType::SAND_2) << '\n';
+			return false;
 		}
 		// TODO: Standardize tile size and resize the model to be the correct size
 		tile.translate({component.colCoord, 0, component.rowCoord});

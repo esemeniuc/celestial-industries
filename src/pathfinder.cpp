@@ -49,28 +49,28 @@ namespace AI {
 		// check if we can move forward a column
 		const float OBSTACLE_COST = 1000.0;
 		if ((col != numOfColumns - 1) && (((row == goalRow) && (col + 1 == goalCol)) ||
-										  graph[row][col + 1].currentPathCost < OBSTACLE_COST)) {
+			graph[row][col + 1].currentPathCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row][col + 1]);
 		}
 
 		// check if we can move backward a column
 		// costOfBackwardMove = std::get<2>(graph[row][col - 1]);
 		if ((col != 0) && (((row == goalRow) && (col - 1 == goalCol)) ||
-						   graph[row][col - 1].currentPathCost < OBSTACLE_COST)) {
+			graph[row][col - 1].currentPathCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row][col - 1]);
 		}
 
 		// check if we can move up a row
 		// costOfUpMove = std::get<2>(graph[row][col + 1]);
 		if ((row != 0) && (((row - 1 == goalRow) && (col == goalCol)) ||
-						   graph[row - 1][col].currentPathCost < OBSTACLE_COST)) {
+			graph[row - 1][col].currentPathCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row - 1][col]);
 		}
 
 		// check if we can move down a row
 		// costOfDownMove = std::get<2>(graph[row][col + 1]);
 		if ((row != numOfRows - 1) && (((row + 1 == goalRow) && (col == goalCol)) ||
-									   graph[row + 1][col].currentPathCost < OBSTACLE_COST)) {
+			graph[row + 1][col].currentPathCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row + 1][col]);
 		}
 
