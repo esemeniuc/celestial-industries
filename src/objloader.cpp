@@ -130,7 +130,7 @@ namespace OBJ {
 
 		std::stringstream fullPath;
 		fullPath << path << filename;
-        logger(LogLevel::DEBUG) << "Loading obj at " << fullPath.str() << Logger::endl;
+        logger(LogLevel::DEBUG) << "Loading obj at " << fullPath.str() << '\n';
 		std::ifstream file;
 		file.open(fullPath.str(), std::ios::in);
 
@@ -158,7 +158,7 @@ namespace OBJ {
 					materialLibRelativePath = "";
 					lineStream >> materialLibRelativePath;
 					if (!loadMaterialLibrary(path, materialLibRelativePath, materialLibrary)) {
-                        logger(LogLevel::ERR) << "Failed to load material library " << materialLibRelativePath << Logger::endl;
+                        logger(LogLevel::ERR) << "Failed to load material library " << materialLibRelativePath << '\n';
 						return false;
 					}
 					materialLibRelativePath.clear();

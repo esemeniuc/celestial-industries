@@ -199,7 +199,7 @@ void Shader::release()
 
 std::pair<bool, std::shared_ptr<std::vector<Mesh>>> objToMesh(OBJ::Data obj)
 {
-    logger(LogLevel::DEBUG) << "Converting to meshes... " << Logger::endl;
+    logger(LogLevel::DEBUG) << "Converting to meshes... " << '\n';
     // Clearing errors
     gl_flush_errors();
 

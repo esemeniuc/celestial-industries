@@ -111,7 +111,7 @@ bool World::init(glm::vec2 screen) {
     // Load shader for default tiles
     objShader = std::make_shared<Shader>();
     if (!objShader->load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl"))) {
-        logger(LogLevel::ERR) << "Failed to load obj shader!" << Logger::endl;
+        logger(LogLevel::ERR) << "Failed to load obj shader!" << '\n';
         return false;
     }
 
@@ -132,9 +132,9 @@ bool World::init(glm::vec2 screen) {
 		levelArray.push_back(row);
 	}
 	camera.position = {mapSize / 2, 10, mapSize / 2};
-    logger(LogLevel::DEBUG) << "Loading level... " << Logger::endl;
+    logger(LogLevel::DEBUG) << "Loading level... " << '\n';
 	level.init(levelArray, tiles, objShader);
-    logger(LogLevel::DEBUG) << "Level loading complete." << Logger::endl;
+    logger(LogLevel::DEBUG) << "Level loading complete." << '\n';
 
 	selectedTile = {mapSize / 2, mapSize / 2};
 
@@ -143,12 +143,12 @@ bool World::init(glm::vec2 screen) {
 
 	OBJ::Data ball;
 	if (!OBJ::Loader::loadOBJ(pathBuilder({"data", "models"}), "ball.obj", ball)) {
-        logger(LogLevel::ERR) << "No ball, no game" << Logger::endl;
+        logger(LogLevel::ERR) << "No ball, no game" << '\n';
 		return false;
 	}
     auto ballMeshResult = objToMesh(ball);
     if (!ballMeshResult.first) {
-        logger(LogLevel::ERR) << "Failed to convert ball to meshes" << Logger::endl;
+        logger(LogLevel::ERR) << "Failed to convert ball to meshes" << '\n';
         return false;
     }
     auto ballMeshes = ballMeshResult.second;
@@ -171,13 +171,13 @@ bool World::loadSkybox(std::string skyboxFilename, std::string skyboxTextureFold
 
 	success &= OBJ::Loader::loadOBJ(geometryPath, skyboxFilename, skyboxObj);
 	if (!success) {
-        logger(LogLevel::ERR) << "Failed to load skybox" << Logger::endl;
+        logger(LogLevel::ERR) << "Failed to load skybox" << '\n';
 		return false;
 	}
 
 	success &= m_skybox.init(skyboxObj);
 	if (!success) {
-        logger(LogLevel::ERR) << "Failed to initilize skybox" << Logger::endl;
+        logger(LogLevel::ERR) << "Failed to initilize skybox" << '\n';
 		return false;
 	}
 

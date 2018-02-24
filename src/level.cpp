@@ -1,6 +1,7 @@
 #include "level.hpp"
 #include <iostream>
 #include <map>
+#include "logger.hpp"
 
 bool Level::init(
     std::vector<std::vector<int>> intArray,
@@ -10,7 +11,7 @@ bool Level::init(
 {
     // Initialize the tile type -> obj map
     if (!initTileTypes(sources)) {
-        logger(LogLevel::ERR) << "Failed to init complex tile types!" << Logger::endl;
+        logger(LogLevel::ERR) << "Failed to init complex tile types!" << '\n';
         return false;
     }
 	
@@ -73,7 +74,7 @@ bool Level::initTileTypes(std::vector<std::pair<TileType, std::vector<SubObjectS
             }
             auto meshResult = objToMesh(obj);
             if (!meshResult.first) {
-                logger(LogLevel::ERR) << "Failed to turn tile obj to meshes for tile " << objSource.filename << Logger::endl;
+                logger(LogLevel::ERR) << "Failed to turn tile obj to meshes for tile " << objSource.filename << '\n';
             }
             subObjects.push_back({
                 meshResult.second,
