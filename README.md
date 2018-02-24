@@ -38,6 +38,17 @@ make -j4
 
 You should be able to simply open `visual_studio/Attempt 1.sln` and run it the same way you would any other Visual Studio project.
 
+#### Running tests
+Catch (from the git root)
+```bash
+build/test_suite
+```
+
+CMake (from within the build folder)
+```bash
+ctest
+```
+
 ## Milestone 1
 
 ### Requirements
@@ -78,7 +89,7 @@ The balls move smoothly to a target location (they bounce because we then change
 
 We can (you can change the selected tile using IJKL). Admittedly we're going to change this to use the mouse in the future but thatsa surprisingly difficult (yay 3D!)
 
-### Non Requirement Stuff thats worth mentioning
+### Non Requirement Stuff that's worth mentioning
 
  - [x] We added a pipeline to test our builds!
  - [x] We made and found a bunch more assets

@@ -13,21 +13,20 @@ find_package(glfw3 REQUIRED)
 add_subdirectory(ext/glm)
 
 add_executable(proj
-
-                src/objloader.cpp
-                src/common.cpp
-                src/main.cpp
-                src/entity.cpp
-                src/tile.cpp
-                src/skybox.cpp
-                src/world.cpp
-                src/camera.cpp
-                src/textureloader.cpp
-                src/level.cpp
-                src/objrenderable.cpp
-                src/config.hpp
-                src/logger.cpp
-                src/pathfinder.cpp)
+		src/objloader.cpp
+		src/common.cpp
+		src/main.cpp
+		src/entity.cpp
+		src/tile.cpp
+		src/skybox.cpp
+		src/world.cpp
+		src/camera.cpp
+		src/textureloader.cpp
+		src/level.cpp
+		src/objrenderable.cpp
+		src/config.hpp
+		src/logger.cpp
+		src/pathfinder.cpp)
 
 target_compile_options(proj PUBLIC
 		-Wall
@@ -60,3 +59,21 @@ target_link_libraries(proj
 		${SDL2_LIBRARIES}
 		${SDL2_MIXER_LIBRARIES}
 		)
+
+
+# Prepare "Catch" library for other executables
+set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/catch2/single_include)
+add_library(Catch INTERFACE)
+target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
+
+# Make test executable
+set(TEST_SOURCES
+		test/example.cpp
+		)
+
+add_executable(test_suite ${TEST_SOURCES})
+target_link_libraries(test_suite Catch) #can run the "test_suite" binary from the build folder
+
+# for ctest, you can run "ctest" in the build folder
+enable_testing(true)
+add_test(NAME CI_Test_Suite COMMAND test_suite)
