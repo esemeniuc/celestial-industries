@@ -26,14 +26,14 @@ enum class TileType {
 
 // used to build a graph of nodes for the AI pathfinder to traverse each tile node.
 struct aStarNode {
-	int rowCoord, colCoord, currentPathCost;
+	int rowCoord, colCoord, movementCost;
 	float fScore;
 
 	aStarNode() = default;
 
-	aStarNode(int _rowCoord, int _colCoord, int _currentPathCost, float _fScore) : rowCoord(_rowCoord),
+	aStarNode(int _rowCoord, int _colCoord, int _movementCost, float _fScore) : rowCoord(_rowCoord),
 																						colCoord(_colCoord),
-																						currentPathCost(_currentPathCost),
+																						movementCost(_movementCost),
 																						fScore(_fScore) {}
 
 	bool operator==(const aStarNode& rhs) const {
@@ -46,8 +46,8 @@ struct aStarNode {
 	}
 
 	friend std::ostream& operator<<(std::ostream& os, const aStarNode& state) {
-		os << "rowCoord: " << state.rowCoord << " colCoord: " << state.colCoord << " currentPathCost: "
-		   << state.currentPathCost << " fScore: " << state.fScore;
+		os << "rowCoord: " << state.rowCoord << " colCoord: " << state.colCoord << " movementCost: "
+		   << state.movementCost << " fScore: " << state.fScore;
 		return os;
 	}
 };
