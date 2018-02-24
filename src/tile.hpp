@@ -12,11 +12,13 @@ class Tile : public OBJRenderable
 	// shared stuff will go here at some point
 
 public:
-	bool init(OBJ::Data obj);
-
+	bool init(const OBJ::Data& obj);
 	void destroy();
-
 	void update(float ms);
+	void setCost(float);
+	float getCost();
 
 private:
+	// cost to traverse a tile, used by AI for path finding
+	float cost;
 };

@@ -1,89 +1,94 @@
 #include "entity.hpp"
 
-void Entity::set_velocity(glm::vec3 v) 
+void Entity::setVelocity(glm::vec3 v)
 {
-	this->velocity.x = v.x;
-	this->velocity.y = v.y;
-	this->velocity.z = v.z;
+	this->velocity = v;
 }
 
-void Entity::set_gravity(glm::vec3 g) 
+void Entity::setGravity(glm::vec3 g) 
 {
-	this->gravity.x = g.x;
-	this->gravity.y = g.y;
-	this->gravity.z = g.z;
+	this->gravity = g;
 }
 
-void Entity::set_force(glm::vec3 f) 
+void Entity::setForce(glm::vec3 f) 
 {
-	this->applied_force.x = f.x;
-	this->applied_force.y = f.y;
-	this->applied_force.z = f.z;
+	this->applied_force = f;
 }
 
-void Entity::set_geometryId(long id) 
+void Entity::setGeometryId(long id) 
 {
 	this->geometry_id = id;
 }
 
-// specify angles in degrees
-void Entity::set_rotation(glm::vec3 rotation_angles_degrees)
+// specify angles in radians
+void Entity::setRotation(glm::vec3 rotation_angles_radians)
 {
-	this->rotation = rotation_angles_degrees;	
+	this->rotation = rotation_angles_radians;
 }
 
-void Entity::set_translation(glm::vec3 _translation)
+void Entity::setTranslation(glm::vec3 _translation)
 {
 	this->translation = _translation;
 }
 
-void Entity::set_scale(glm::vec3 _scale)
+void Entity::setScale(glm::vec3 _scale)
 {
 	this->scale = _scale;
 }
 
-glm::mat4 Entity::model_matrix()
-{	
-	// build rotation matrix using euler angles and quaternions
-	glm::mat4 rotation_matrix;
-	glm::quat rotation_quaternion(this->rotation);
-	rotation_matrix = glm::toMat4(rotation_quaternion);
-
-	// build translation matrix
-	glm::mat4 translation_matrix = glm::translate(glm::mat4(),this->translation);
-
-	//build scaling matrix
-	glm::mat4 scaling_matrix = glm::scale(this->scale);
-
-	// order of transformations is important: from right to left
-	// scale first, then rotate and translate
-	glm::mat4 model_matrix = glm::mat4(1.f);
-	model_matrix = translation_matrix * rotation_matrix * scaling_matrix;
-	
-	return model_matrix;
+void Entity::setPosition(glm::vec3 pos)
+{
+	this->position = pos;
 }
 
-void Entity::set_collision_geometry_type(collision_geometry_type cgtype) 
+void Entity::setCameraPosition(glm::vec3 cameraPos)
+{
+	this->cameraPosition = cameraPos;
+}
+
+glm::vec3 Entity::getPosition()
+{
+	return this->position;
+}
+
+void Entity::applyTransformations()
+{	
+	// apply scaling
+	this->model = glm::scale(this->model, this->scale);
+	// apply rotations
+	this->model = glm::rotate(this->model, rotation.x, glm::vec3(1.0, 0.0, 0.0));
+	this->model = glm::rotate(this->model, rotation.y, glm::vec3(0.0, 1.0, 0.0));
+	this->model = glm::rotate(this->model, rotation.z, glm::vec3(0.0, 0.0, 1.0));
+	// apply translations
+	this->model = glm::translate(this->model, this->translation);	
+}
+
+void Entity::setCollisionGeometryType(collision_geometry_type cgtype) 
 {
 	this->cg_type = cgtype;
 }
 
-collision_geometry_type Entity::get_collision_geometry_type() 
+glm::mat4 Entity::getModelMatrix()
+{
+	return this->model;
+}
+
+collision_geometry_type Entity::getCollisionGeometryType() 
 {
 	return this->cg_type;
 }
 
-glm::vec3 Entity::get_velocity() 
+glm::vec3 Entity::getVelocity() 
 {
 	return this->velocity;
 }
 
-long Entity::get_geometryId() 
+long Entity::getGeometryId() 
 {
 	return this->geometry_id;
 }
 
-bool Entity::is_textured() 
+bool Entity::isTextured() 
 {
 	return this->texture_flag;
 }

@@ -6,6 +6,7 @@
 #include "skybox.hpp"
 #include "camera.hpp"
 #include "level.hpp"
+#include "pathfinder.hpp"
 
 // stlib
 #include <vector>
@@ -15,7 +16,6 @@
 #include <sstream>
 #include <cmath>
 #include <map>
-#include <tuple>
 #include <iostream>
 
 #define SDL_MAIN_HANDLED
@@ -25,6 +25,7 @@
 // glm
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/constants.hpp"
 
 // glfw
 #include "GLFW/glfw3.h"
@@ -63,7 +64,7 @@ private:
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 	void on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
 
-	bool loadSkybox(std::string skyboxFilename, std::string skyboxTextureFolder);
+	bool loadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder);
 
 	Level level;
 private:
@@ -77,6 +78,7 @@ private:
 
 	// Camera stuff
 	Camera camera;
+	int prevMouseX = 0, prevMouseY = 0;
 
 	// Selection
 	std::vector<int> selectedTile;

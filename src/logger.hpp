@@ -18,7 +18,7 @@
 	std::string msg("plop");
 	logger << msg << '\n'; //everything up to here will be logged as debug
 
-	logger(LogLevel::ERROR) << "error stuff" << 42;
+	logger(LogLevel::ERR) << "error stuff" << 42;
 	logger << "more secrets\n"; //everything in this line and the previous will be logged as error
  */
 
