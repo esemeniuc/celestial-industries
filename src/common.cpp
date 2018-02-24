@@ -1,5 +1,4 @@
 #include "common.hpp"
-#include "logger.hpp"
 
 // stlib
 #include <vector>
