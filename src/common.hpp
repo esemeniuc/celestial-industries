@@ -108,3 +108,15 @@ struct Renderable
 	// renders itself it needs it to correctly bind it to its shader.
 	virtual void draw(glm::mat4 viewProjection) = 0;
 };
+
+template<class T>
+T clamp(T value, T lower, T upper) {
+	if (value > upper) {
+		value = upper;
+	}
+
+	if (value < lower) {
+		value = lower;
+	}
+	return value;
+}

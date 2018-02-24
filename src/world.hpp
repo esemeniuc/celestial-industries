@@ -78,6 +78,7 @@ private:
 
 	// Camera stuff
 	Camera camera;
+	int prevMouseX = 0, prevMouseY = 0;
 
 	// Selection
 	std::vector<int> selectedTile;
