@@ -105,7 +105,8 @@ bool World::init(glm::vec2 screen) {
 	// thats a big enough change to merit its own ticket in milestone 2 though
 	std::vector<std::vector<TileType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
 	size_t mapSize = levelArray.size();
-	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y, Config::CAMERA_START_POSITION_Z};
+	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
+					   Config::CAMERA_START_POSITION_Z};
 	level.init(levelArray, tiles);
 	// test different starting points for the AI
 	std::vector<std::vector<aStarNode>> costMap = level.getLevelTraversalCostMap();
@@ -315,12 +316,10 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 	// Handle the mouse movement here
-	int x = (int)xpos, y = (int)ypos;
+	int x = (int) xpos, y = (int) ypos;
 //	logger(LogLevel::DEBUG) << "X-pos: " << xpos << ", Y-pos: " << ypos << '\n';
-	camera.moveLeftRight(x - prevMouseX);
-	camera.moveUpDown(prevMouseY - y);
-	prevMouseX = x;
-	prevMouseY = y;
+
+	camera.pan(x, y);
 }
 
 void World::on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset) {
