@@ -1,6 +1,7 @@
 // Header
 #include "world.hpp"
 #include "basicentity.hpp"
+#include "logger.hpp"
 
 // Same as static in c, local to compilation unit
 namespace {

@@ -10,7 +10,7 @@
 class Tile : public CompositeObjectBulkRenderable
 {
 public:
-    Tile(std::shared_ptr<CompositeObjectBulkRenderer> parent) : CompositeObjectBulkRenderable(parent) {};
+    Tile(std::shared_ptr<CompositeObjectBulkRenderer> _parent) : CompositeObjectBulkRenderable(_parent) {};
 	virtual void update(float ms);
 private:
 };
@@ -19,6 +19,6 @@ class GunTowerTile : public Tile {
 private:
     float timeCounter = 0.0f;
 public:
-    GunTowerTile(std::shared_ptr<CompositeObjectBulkRenderer> parent) : Tile(parent) {};
+    GunTowerTile(std::shared_ptr<CompositeObjectBulkRenderer> _parent) : Tile(_parent) {};
     void update(float ms) override;
 };
