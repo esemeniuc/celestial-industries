@@ -44,9 +44,6 @@ void Camera::update(float ms) {
 	//pan up down update
 	position += cameraVector2 * ms * (float) deltaY * mousePanSensitivity;
 
-	//reset for the next move so we don't get camera drift
-	deltaX = 0;
-	deltaY = 0;
 }
 
 glm::mat4 Camera::getProjectionMatrix(float screen_x, float screen_y) {
@@ -57,10 +54,38 @@ glm::mat4 Camera::getViewMatrix() {
 	return glm::lookAt(position, position + direction, verticalVector);
 }
 
-void Camera::moveLeftRight(int x) {
-	deltaX = clamp(x, -deltaXLimit, deltaXLimit);
-}
-
-void Camera::moveUpDown(int y) {
-	deltaY = clamp(y, -deltaYLimit, deltaYLimit);
+//delta get set to 0 on every update() call
+void Camera::pan(int x, int y) {
+	int leftBound = panDetectionWidth;
+	int rightBound = Config::WINDOW_WIDTH - panDetectionWidth;
+	int topBound = panDetectionWidth; //top border
+	int botBound = Config::WINDOW_HEIGHT - panDetectionWidth; //bottom border
+	if (x <= leftBound) { //handles NW, SW, and W cases
+		if (y <= topBound) {
+			deltaY = 1;
+		} else if (y >= botBound) {
+			deltaY = -1;
+		} else {
+			deltaY = 0;
+		}
+		deltaX = -1;
+	} else if (x >= rightBound) { //handles NE, SE, and E cases
+		if (y <= topBound) {
+			deltaY = 1;
+		} else if (y >= botBound) {
+			deltaY = -1;
+		} else {
+			deltaY = 0;
+		}
+		deltaX = 1;
+	} else if (y <= topBound) { //N case
+		deltaY = 1;
+		deltaX = 0;
+	} else if (y >= botBound) { //S case
+		deltaY = -1;
+		deltaX = 0;
+	} else { //not along edges
+		deltaX = 0;
+		deltaY = 0;
+	}
 }
