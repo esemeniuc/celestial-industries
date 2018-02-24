@@ -1,5 +1,6 @@
 #include "objrenderable.hpp"
 
+
 bool OBJRenderable::init(std::shared_ptr<std::vector<Mesh>> initMeshes, std::shared_ptr<Shader> initShader)
 {
     meshes = initMeshes;

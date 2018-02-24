@@ -19,8 +19,5 @@ void main()
 	vs_texcoord = in_texcoord;
 	vs_normal = in_normal;
 	vs_position = gl_Position.xyz;
-
-
-	vec3 lightPosition = vec3( 0,10, -15 );
-	vs_lightVector = lightPosition-vs_position;
+	vs_lightVector = vec3(0.49, 0.79, 0.49);
 }

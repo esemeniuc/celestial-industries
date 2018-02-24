@@ -1,10 +1,11 @@
 #pragma once
 
 #include <fstream>
-#include "tile.hpp"
 #include <map>
-#include <tuple>
 #include <limits>
+#include <ostream>
+#include "tile.hpp"
+
 #define INF std::numeric_limits<float>::infinity()
 
 struct TimeTile {
@@ -12,7 +13,7 @@ struct TimeTile {
 	OBJ::Data past;
 };
 
-enum TileType {
+enum class TileType {
 	SAND_1,
 	SAND_2,
 	SAND_3,
@@ -20,18 +21,52 @@ enum TileType {
 	BRICK_CUBE,
 	MINING_TOWER,
 	PHOTON_TOWER,
+	TREE,
     GUN_TURRET,
 };
 
-// used to build a graph of nodes for the AI pathfinder to traverse
-// each tile node.
-typedef std::tuple<long /*row*/, long /*col*/, float /*edge weight*/, float /*f-score*/> tileNode;
+// used to build a graph of nodes for the AI pathfinder to traverse each tile node.
+struct AStarNode {
+	int rowCoord, colCoord, movementCost;
+	float fScore;
 
-class Level
-{
+	AStarNode() = default;
+
+	AStarNode(int _rowCoord, int _colCoord, int _movementCost, float _fScore) : rowCoord(_rowCoord),
+																						colCoord(_colCoord),
+																						movementCost(_movementCost),
+																						fScore(_fScore) {}
+
+	bool operator==(const AStarNode& rhs) const {
+		return rowCoord == rhs.rowCoord &&
+			   colCoord == rhs.colCoord;
+	}
+
+	bool operator!=(const AStarNode& rhs) const {
+		return !(rhs == *this);
+	}
+
+	friend std::ostream& operator<<(std::ostream& os, const AStarNode& state) {
+		os << "rowCoord: " << state.rowCoord << " colCoord: " << state.colCoord << " movementCost: "
+		   << state.movementCost << " fScore: " << state.fScore;
+		return os;
+	}
+};
+
+struct Coord {
+	int rowCoord, colCoord;
+
+	Coord() = default;
+
+	Coord(AStarNode a) : rowCoord(a.rowCoord), colCoord(a.colCoord) {}
+
+	Coord(int _rowCoord, int _colCoord) : rowCoord(_rowCoord), colCoord(_colCoord) {}
+};
+
+class Level {
 public:
 	bool init(
-        std::vector<std::vector<int>> intArray,
+        std::vector<std::vector<TileType>> intArray,
         std::vector<std::pair<TileType, std::vector<SubObjectSource>>> sources,
         std::shared_ptr<Shader> shader
     );
@@ -42,9 +77,10 @@ public:
 	std::vector<std::vector<std::shared_ptr<Tile>>> tiles; // we can add the time dimension when we get there
 	std::map<TileType, std::vector<SubObject>> tileTypes;
     std::map<TileType, std::shared_ptr<CompositeObjectBulkRenderer>> tileRenderers;
-    std::vector<std::vector<int>> levelLoader(std::string levelTextFile);
-    std::vector < std::vector<tileNode>> getLevelTraversalCostMap();
+    std::vector<std::vector<TileType>> levelLoader(const std::string& levelTextFile);
+    bool displayPath(const std::vector<Coord>& levelArray);
+    std::vector<std::vector<AStarNode>> getLevelTraversalCostMap();
 private:
     bool initTileTypes(std::vector<std::pair<TileType, std::vector<SubObjectSource>>> sources);
-    std::vector<std::vector<tileNode>> levelTraversalCostMap;
+	std::vector<std::vector<AStarNode>> levelTraversalCostMap;
 };

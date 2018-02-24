@@ -4,7 +4,7 @@
 #include "logger.hpp"
 
 bool Level::init(
-    std::vector<std::vector<int>> intArray,
+    std::vector<std::vector<TileType>> intArray,
     std::vector<std::pair<TileType, std::vector<SubObjectSource>>> sources,
     std::shared_ptr<Shader> shader
 )
@@ -25,15 +25,14 @@ bool Level::init(
 	tiles.clear();
 
 	for (size_t i = 0; i < intArray.size(); i++) {
-		std::vector<int> row = intArray[i];
+		std::vector<TileType> row = intArray[i];
 		std::vector<std::shared_ptr<Tile>> tileRow;
 		for (size_t j = 0; j < row.size(); j++) {
-			int cell = row[j];
-            TileType type = static_cast<TileType>(cell);
+            TileType type = row[j];
             auto renderer = tileRenderers[type];
             std::shared_ptr<Tile> tilePointer;
             switch (type) {
-            case GUN_TURRET:
+            case TileType::GUN_TURRET:
                 tilePointer = std::make_shared<GunTowerTile>(renderer);
                 break;
             default:
@@ -57,58 +56,51 @@ void Level::update(float ms)
     }
 }
 
-std::vector<std::vector<int>> Level::levelLoader(std::string levelTextFile)
-{
-	std::ifstream level (levelTextFile);
+std::vector<std::vector<TileType>> Level::levelLoader(const std::string& levelTextFile) {
+	std::ifstream level(levelTextFile);
 	std::string line;
-	std::vector<std::vector<int>> levelData;	
+	std::vector<std::vector<TileType>> levelData;
+	std::vector<TileType> row;
+	std::vector<AStarNode> tileData;
 
-	if (level.is_open())
-	{
-		int rowNumber = 0;
-		while (getline(level, line))
-		{
-			std::vector <int> row;
-			std::vector<tileNode> tileData;
-			int colNumber = 0;
-			for (char& tile : line) 
-			{
-				switch (tile)
-				{
-					case '#':
-					{
-						row.push_back(BRICK_CUBE);
-						tileData.push_back(std::make_tuple(rowNumber, colNumber, 1000.0f, INF));
-						break;
-					}
-
-					case ' ':
-					{
-						row.push_back(SAND_1);
-						tileData.push_back(std::make_tuple(rowNumber, colNumber, 10.0f, INF));
-						break;
-					}
-					default:
-					{
-						row.push_back(SAND_2);
-						tileData.push_back(std::make_tuple(rowNumber, colNumber, 10.0f, INF));
-						break;
-					}
-				}
-				colNumber++;
-			}
-			levelData.push_back(row);
-			levelTraversalCostMap.push_back(tileData);
-			rowNumber++;
-		}
-		level.close();
+	if (!level.is_open()) {
+		logger(LogLevel::ERR) << "Failed to open level data file '" << levelTextFile << "'\n";
+		return {};
 	}
-	else fprintf(stderr, "Failed to open level data file");
+
+	for (int rowNumber = 0; getline(level, line); rowNumber++) {
+		row.clear();
+		tileData.clear();
+		int colNumber = 0;
+		for (const char tile : line) {
+			switch (tile) {
+				case '#': {
+					row.push_back(TileType::TREE);
+					tileData.emplace_back(rowNumber, colNumber, 1000.0, INF);
+					break;
+				}
+				case ' ': {
+					row.push_back(TileType::SAND_1);
+					tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
+					break;
+				}
+				default: {
+					row.push_back(TileType::SAND_2);
+					tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
+					break;
+				}
+			}
+			colNumber++;
+		}
+		levelData.push_back(row);
+		levelTraversalCostMap.push_back(tileData);
+	}
+	level.close();
+
 	return levelData;
 }
 
-std::vector<std::vector<tileNode>> Level::getLevelTraversalCostMap()
-{
+std::vector<std::vector<AStarNode>> Level::getLevelTraversalCostMap() {
 	return this->levelTraversalCostMap;
 }
 
@@ -141,3 +133,18 @@ bool Level::initTileTypes(std::vector<std::pair<TileType, std::vector<SubObjectS
     return true;
 }
 
+
+bool Level::displayPath(const std::vector<Coord>& path) {
+
+	for (const Coord& component : path) {
+		std::vector<std::shared_ptr<Tile>> tileRow;
+        auto renderer = tileRenderers[TileType::SAND_2];
+        std::shared_ptr<Tile> tile = std::make_shared<Tile>(renderer);
+
+		tile->translate({component.colCoord, 0, component.rowCoord});
+		tileRow.push_back(tile);
+		tiles.push_back(tileRow);
+	}
+
+	return true;
+}
