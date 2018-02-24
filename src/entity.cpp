@@ -1,6 +1,6 @@
 #include "entity.hpp"
 
-void Entity::setvelocity(glm::vec3 v) 
+void Entity::setVelocity(glm::vec3 v)
 {
 	this->velocity = v;
 }
