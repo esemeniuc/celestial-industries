@@ -35,3 +35,13 @@ void GunTowerTile::update(float ms)
 
     rotate(1, ms/1000, { 0,1,0 });
 }
+
+void Tile::setCost(float value)
+{
+	this->cost = value;
+}
+
+float Tile::getCost()
+{
+	return this->cost;
+}

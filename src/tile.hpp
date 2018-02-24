@@ -13,6 +13,10 @@ public:
     Tile(std::shared_ptr<CompositeObjectBulkRenderer> _parent) : CompositeObjectBulkRenderable(_parent) {};
 	virtual void update(float ms);
 private:
+	void setCost(float);
+	float getCost();
+    // cost to traverse a tile, used by AI for path finding
+    float cost;
 };
 
 class GunTowerTile : public Tile {
