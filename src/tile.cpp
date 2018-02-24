@@ -26,3 +26,13 @@ void Tile::update(float ms)
 {
 	// Do nothing, our buildings be static
 }
+
+void Tile::setCost(float value)
+{
+	this->cost = value;
+}
+
+float Tile::getCost()
+{
+	return this->cost;
+}

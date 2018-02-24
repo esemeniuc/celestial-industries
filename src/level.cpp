@@ -31,6 +31,61 @@ bool Level::init(std::vector<std::vector<int>> intArray, std::vector<std::tuple<
 	return true;
 }
 
+std::vector<std::vector<int>> Level::levelLoader(std::string levelTextFile)
+{
+	std::ifstream level (levelTextFile);
+	std::string line;
+	std::vector<std::vector<int>> levelData;	
+
+	if (level.is_open())
+	{
+		int rowNumber = 0;
+		while (getline(level, line))
+		{
+			std::vector <int> row;
+			std::vector<tileNode> tileData;
+			int colNumber = 0;
+			for (char& tile : line) 
+			{
+				switch (tile)
+				{
+					case '#':
+					{
+						row.push_back(BRICK_CUBE);
+						tileData.push_back(std::make_tuple(rowNumber, colNumber, 1000.0, INF));
+						break;
+					}
+
+					case ' ':
+					{
+						row.push_back(SAND_1);
+						tileData.push_back(std::make_tuple(rowNumber, colNumber, 10.0, INF));
+						break;
+					}
+					default:
+					{
+						row.push_back(SAND_2);
+						tileData.push_back(std::make_tuple(rowNumber, colNumber, 10.0, INF));
+						break;
+					}
+				}
+				colNumber++;
+			}
+			levelData.push_back(row);
+			levelTraversalCostMap.push_back(tileData);
+			rowNumber++;
+		}
+		level.close();
+	}
+	else fprintf(stderr, "Failed to open level data file");
+	return levelData;
+}
+
+std::vector<std::vector<tileNode>> Level::getLevelTraversalCostMap()
+{
+	return this->levelTraversalCostMap;
+}
+
 bool Level::initTileTypes(std::vector<std::tuple<TileType, std::string>> sources)
 {
 	// All the models come from the same place

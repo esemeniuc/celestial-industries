@@ -52,14 +52,17 @@ void Skybox::update(float ms)
 	// try to animate skybox later, i.e. make it rotate
 }
 
-void Skybox::draw(glm::mat4 mvp)
+void Skybox::draw(glm::mat4 viewProjection)
 {
 	// Setting shaders
 	glUseProgram(effect.program);
 
 	// Getting uniform locations for glUniform* calls
-	GLuint mvp_uloc = glGetUniformLocation(effect.program, "mvp");
-	
+	GLuint vp_uloc = glGetUniformLocation(effect.program, "viewProjection");
+	GLuint model_uloc = glGetUniformLocation(effect.program, "model");
+	GLuint camera_uloc = glGetUniformLocation(effect.program, "cameraPosition");
+
+		
 	for (auto mesh : meshes) {
 		// Setting vertices and indices
 		glBindVertexArray(mesh.vao);
@@ -70,7 +73,9 @@ void Skybox::draw(glm::mat4 mvp)
 		GLuint position_loc = glGetAttribLocation(effect.program, "position");
 		glEnableVertexAttribArray(position_loc);
 		glVertexAttribPointer(position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(OBJ::VertexData), (void*)0); 
-		glUniformMatrix4fv(mvp_uloc, 1, GL_FALSE, &mvp[0][0]);
+		glUniformMatrix4fv(vp_uloc, 1, GL_FALSE, &viewProjection[0][0]);
+		glUniformMatrix4fv(model_uloc, 1, GL_FALSE, &this->model[0][0]);
+		glUniform3fv(camera_uloc, 1, &(this->cameraPosition[0]));
 		
 		// Drawing!
 		glDrawElements(GL_TRIANGLES, mesh.numIndices, GL_UNSIGNED_INT, nullptr);
