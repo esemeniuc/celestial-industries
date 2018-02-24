@@ -12,7 +12,7 @@ class Tile : public OBJRenderable
 	// shared stuff will go here at some point
 
 public:
-	bool init(OBJ::Data obj);
+	bool init(const OBJ::Data& obj);
 	void destroy();
 	void update(float ms);
 	void setCost(float);

@@ -1,9 +1,10 @@
 // Header
 #include "world.hpp"
+#include <chrono>  // for high_resolution_clock
 
 // Same as static in c, local to compilation unit
 namespace {
-	const size_t TILE_WIDTH = 10;
+//	const size_t TILE_WIDTH = 10;
 
 	namespace {
 		void glfw_err_cb(int error, const char* desc) {
@@ -17,9 +18,7 @@ World::World() {
 	m_rng = std::default_random_engine(std::random_device()());
 }
 
-World::~World() {
-
-}
+World::~World() = default;
 
 // World initialization
 bool World::init(glm::vec2 screen) {
@@ -91,34 +90,44 @@ bool World::init(glm::vec2 screen) {
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
 
-	std::vector<std::tuple<TileType, std::string>> tiles = {
-			{SAND_1,       "sand1.obj"},
-			{SAND_2,       "sand2.obj"},
-			{SAND_3,       "sand3.obj"},
-			{WALL,         "wall.obj"},
-			{BRICK_CUBE,   "brickCube.obj"},
-			{MINING_TOWER, "miningTower.obj"},
-			{PHOTON_TOWER, "photonTower.obj"}
+	std::vector<std::pair<TileType, std::string>> tiles = {
+			{TileType::SAND_1,       "sand1.obj"},
+			{TileType::SAND_2,       "sand2.obj"},
+			{TileType::SAND_3,       "sand3.obj"},
+			{TileType::WALL,         "wall.obj"},
+			{TileType::BRICK_CUBE,   "brickCube.obj"},
+			{TileType::MINING_TOWER, "miningTower.obj"},
+			{TileType::TREE,         "treeTile1.obj"},
+			{TileType::PHOTON_TOWER, "photonTower.obj"}
 	};
 
-    // TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isnt being shared
-    // thats a big enough change to merit its own ticket in milestone 2 though
-    std::vector<std::vector<int>> levelArray;
-	levelArray = level.levelLoader(pathBuilder({ "data", "levels" }) + "level1.txt");
-	int mapSize = levelArray.size();
-    camera.position = { mapSize / 2, 20, mapSize / 2 };
+	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isnt being shared
+	// thats a big enough change to merit its own ticket in milestone 2 though
+	std::vector<std::vector<TileType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
+	size_t mapSize = levelArray.size();
+	camera.position = {mapSize / 2, 20, mapSize / 2};
 	level.init(levelArray, tiles);
 	// test different starting points for the AI
-	std::vector<std::vector<tileNode>> costMap = level.getLevelTraversalCostMap();
+	std::vector<std::vector<aStarNode>> costMap = level.getLevelTraversalCostMap();
+	auto start = std::chrono::high_resolution_clock::now();
 	AI::aStar::a_star(costMap, 1, 19, 1, 11, 25);
 	AI::aStar::a_star(costMap, 1, 1, 1, 11, 25);
 	AI::aStar::a_star(costMap, 1, 1, 39, 11, 25);
-    selectedTile = {mapSize/2, mapSize/2};
-    return true;
+	auto finish = std::chrono::high_resolution_clock::now();
+
+	std::chrono::duration<double> elapsed = finish - start;
+	std::cout << "Elapsed time: " << elapsed.count() << " s\n";
+
+	//display a path
+	std::pair<bool, std::vector<Coord> > path =
+			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
+	level.displayPath(path.second);
+	selectedTile = {(int) mapSize / 2, (int) mapSize / 2};
+	return true;
 }
 
 // skybox
-bool World::loadSkybox(std::string skyboxFilename, std::string skyboxTextureFolder) {
+bool World::loadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder) {
 	bool success = true;
 	OBJ::Data skyboxObj;
 
@@ -160,9 +169,9 @@ float total_time = 0.0f;
 bool World::update(float elapsed_ms) {
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
-	glm::vec2 screen = glm::vec2((float)w, (float)h);
-	camera.update(elapsed_ms);    
-    total_time += elapsed_ms;
+//	glm::vec2 screen = glm::vec2((float) w, (float) h);
+	camera.update(elapsed_ms);
+	total_time += elapsed_ms;
 	return true;
 }
 
@@ -205,7 +214,7 @@ void World::draw() {
 		j = 0;
 		i++;
 	}
-	
+
 	// make skybox rotate by 0.001 * pi/4 radians around y axis, every frame
 	//float y_rotation = 0.005 * glm::quarter_pi<float>();
 	//m_skybox.setRotation(glm::vec3(0.0, y_rotation, 0.0));

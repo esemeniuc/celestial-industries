@@ -1,6 +1,6 @@
 #include "objrenderable.hpp"
 
-bool OBJRenderable::init(OBJ::Data obj)
+bool OBJRenderable::init(const OBJ::Data& obj)
 {
     // Clearing errors
     gl_flush_errors();
@@ -30,10 +30,7 @@ bool OBJRenderable::init(OBJ::Data obj)
     }
 
     // Loading shaders
-    if (!effect.load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl")))
-        return false;
-
-    return true;
+	return effect.load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl"));
 }
 
 void OBJRenderable::draw(glm::mat4 viewProjection)
