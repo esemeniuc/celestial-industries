@@ -92,14 +92,19 @@ bool World::init(glm::vec2 screen) {
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
 
-	std::vector<std::tuple<TileType, std::string>> tiles = {
-			{SAND_1,       "sand1.obj"},
-			{SAND_2,       "sand2.obj"},
-			{SAND_3,       "sand3.obj"},
-			{WALL,         "wall.obj"},
-			{BRICK_CUBE,   "brickCube.obj"},
-			{MINING_TOWER, "miningTower.obj"},
-			{PHOTON_TOWER, "photonTower.obj"}
+    /*
+    In the context of SubObjects the number to the left of the filename indicates which of the other objs the obj is dependent on. If it's -1 then that
+    means none. This is used to figure out what the transformation tree is for animating
+    */
+	std::vector<std::pair<TileType, std::vector<SubObjectSource>>> tiles = {
+            {SAND_1,       {{"sand1.obj", -1}} },
+            {SAND_2,       { {"sand2.obj", -1}} },
+            {SAND_3,       {{"sand3.obj", -1}} },
+            {WALL,         {{"wall.obj", -1}} },
+            {BRICK_CUBE,   {{"brickCube.obj", -1}} },
+            {MINING_TOWER, {{"miningTower.obj", -1}} },
+            {PHOTON_TOWER, {{"photonTower.obj", -1}} },
+            {GUN_TURRET,   {{"TurretBase.obj", -1}, {"TurretTop.obj", 0}, {"TurretGunsLeft.obj", 1}, {"TurretGunsRight.obj", 1}} },
 	};
 
     // Load shader for default tiles
@@ -112,13 +117,13 @@ bool World::init(glm::vec2 screen) {
 	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isnt being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
 	std::vector<std::vector<int>> levelArray;
-	int mapSize = 150;
+	int mapSize = 10;
 	for (size_t i = 0; i < (size_t) mapSize; i++) {
 		std::vector<int> row;
 		for (size_t j = 0; j < (size_t) mapSize; j++) {
-			if (j == (size_t) mapSize / 2)row.push_back(WALL);
-			else if (i % 3 == 0 && j % 3 == 0)row.push_back(PHOTON_TOWER);
-			else if (i % 5 == 0 && j % 2 == 0)row.push_back(BRICK_CUBE);
+			if (j == 2 && i == 2)row.push_back(GUN_TURRET);
+			/*else if (i % 3 == 0 && j % 3 == 0)row.push_back(PHOTON_TOWER);
+			else if (i % 5 == 0 && j % 2 == 0)row.push_back(BRICK_CUBE);*/
 			else row.push_back(SAND_1);
             
             //row.push_back(SAND_1);
@@ -131,6 +136,10 @@ bool World::init(glm::vec2 screen) {
     logger(LogLevel::DEBUG) << "Level loading complete." << Logger::endl;
 
 	selectedTile = {mapSize / 2, mapSize / 2};
+
+
+
+
 	OBJ::Data ball;
 	if (!OBJ::Loader::loadOBJ(pathBuilder({"data", "models"}), "ball.obj", ball)) {
         logger(LogLevel::ERR) << "No ball, no game" << Logger::endl;
@@ -138,7 +147,7 @@ bool World::init(glm::vec2 screen) {
 	}
     auto ballMeshResult = objToMesh(ball);
     if (!ballMeshResult.first) {
-        logger(LogLevel::ERR) << "Failed to convert ball to mesh" << Logger::endl;
+        logger(LogLevel::ERR) << "Failed to convert ball to meshes" << Logger::endl;
         return false;
     }
     auto ballMeshes = ballMeshResult.second;
@@ -195,6 +204,7 @@ bool World::update(float elapsed_ms) {
 	glfwGetFramebufferSize(m_window, &w, &h);
 //	glm::vec2 screen = glm::vec2((float)w, (float)h);
 	camera.update(elapsed_ms);
+    level.update(elapsed_ms);
 	for (size_t i = 0; i < level.basicEntities.size(); i++) {
 		// Yes we know its terribly inefficient as is, but this is more of a "it works" kindda demo rather than the final
 		// AI driven logic

@@ -26,7 +26,8 @@ add_executable(proj
 		src/objrenderable.cpp
 		src/basicentity.cpp
 		src/config.hpp
-		src/logger.cpp)
+		src/logger.cpp
+        src/objbulkrenderer.cpp)
 
 target_compile_options(proj PUBLIC
 		-Wall

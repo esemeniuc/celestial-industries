@@ -15,5 +15,22 @@
 
 void Tile::update(float ms)
 {
-	// Do nothing, our buildings be static
+    // Do nothing
+}
+
+void GunTowerTile::update(float ms)
+{
+    timeCounter += ms;
+    float period = 50;
+    glm::vec3 gunDisplacement = { 0, 0, 0.1 };
+    setModelMatrix(
+        2,
+        gunDisplacement*sin(timeCounter / period) + glm::vec3({0,0,0.1})
+    );
+    setModelMatrix(
+        3,
+        -gunDisplacement*sin(timeCounter / period) + glm::vec3({ 0,0,0.1 })
+    );
+
+    rotate(1, ms/1000, { 0,1,0 });
 }

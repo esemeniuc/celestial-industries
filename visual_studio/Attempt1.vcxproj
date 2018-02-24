@@ -142,8 +142,8 @@
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(ProjectDir)/$(Configuration)/$(Platform)</OutDir>
-    <IntDir>$(ProjectDir)/tmp/$(Configuration)/$(Platform)</IntDir>
+    <OutDir>$(ProjectDir)/$(Configuration)/$(Platform)/</OutDir>
+    <IntDir>$(ProjectDir)/tmp/$(Configuration)/$(Platform)/</IntDir>
     <IncludePath>$(ProjectDir)..\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
@@ -501,6 +501,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\animators.cpp" />
     <ClCompile Include="..\src\basicentity.cpp" />
     <ClCompile Include="..\src\entity.cpp" />
     <ClCompile Include="..\src\camera.cpp" />
@@ -509,6 +510,7 @@
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\common.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\world.cpp" />
+    <ClCompile Include="..\src\objbulkrenderer.cpp" />
     <ClCompile Include="..\src\objloader.cpp" />
     <ClCompile Include="..\src\objrenderable.cpp" />
     <ClCompile Include="..\src\skybox.cpp" />
@@ -516,6 +518,7 @@
     <ClCompile Include="..\src\tile.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\animators.hpp" />
     <ClInclude Include="..\src\basicentity.hpp" />
     <ClInclude Include="..\src\camera.hpp" />
     <ClInclude Include="..\src\common.hpp" />
@@ -524,6 +527,7 @@
     <ClInclude Include="..\src\level.hpp" />
     <ClInclude Include="..\src\logger.hpp" />
     <ClInclude Include="..\src\loglevel.hpp" />
+    <ClInclude Include="..\src\objbulkrenderer.hpp" />
     <ClInclude Include="..\src\objloader.hpp" />
     <ClInclude Include="..\src\objrenderable.hpp" />
     <ClInclude Include="..\src\skybox.hpp" />
