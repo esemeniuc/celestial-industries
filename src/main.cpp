@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 	if (!world.init({ (float)Config::WINDOW_WIDTH, (float)Config::WINDOW_HEIGHT }))
 	{
 		// Time to read the error message
-		std::cout << "Press any key to exit" << std::endl;
+        logger(LogLevel::ERR) << "Press any key to exit" << '\n';
 		std::cin.get();
 		return EXIT_FAILURE;
 	}

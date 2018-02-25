@@ -13,7 +13,6 @@ find_package(glfw3 REQUIRED)
 add_subdirectory(ext/glm)
 
 add_executable(proj
-
                 src/objloader.cpp
                 src/common.cpp
                 src/main.cpp
@@ -27,7 +26,8 @@ add_executable(proj
                 src/objrenderable.cpp
                 src/config.hpp
                 src/logger.cpp
-                src/pathfinder.cpp)
+                src/pathfinder.cpp
+                src/objbulkrenderer.cpp)
 
 target_compile_options(proj PUBLIC
 		-Wall

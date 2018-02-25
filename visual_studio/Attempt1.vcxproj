@@ -142,8 +142,8 @@
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(ProjectDir)/$(Configuration)/$(Platform)</OutDir>
-    <IntDir>$(ProjectDir)/tmp/$(Configuration)/$(Platform)</IntDir>
+    <OutDir>$(ProjectDir)/$(Configuration)/$(Platform)/</OutDir>
+    <IntDir>$(ProjectDir)/tmp/$(Configuration)/$(Platform)/</IntDir>
     <IncludePath>$(ProjectDir)..\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
@@ -508,6 +508,7 @@
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\common.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\world.cpp" />
+    <ClCompile Include="..\src\objbulkrenderer.cpp" />
     <ClCompile Include="..\src\objloader.cpp" />
     <ClCompile Include="..\src\objrenderable.cpp" />
     <ClCompile Include="..\src\pathfinder.cpp" />
@@ -523,6 +524,7 @@
     <ClInclude Include="..\src\level.hpp" />
     <ClInclude Include="..\src\logger.hpp" />
     <ClInclude Include="..\src\loglevel.hpp" />
+    <ClInclude Include="..\src\objbulkrenderer.hpp" />
     <ClInclude Include="..\src\objloader.hpp" />
     <ClInclude Include="..\src\objrenderable.hpp" />
     <ClInclude Include="..\src\pathfinder.hpp" />

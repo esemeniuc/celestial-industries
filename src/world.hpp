@@ -64,20 +64,19 @@ private:
 	// Window handle
 	GLFWwindow* m_window;
 	bool escapePressed = false;
-
-	Level level;
-	Tile m_tile;
-	Skybox m_skybox;
 	glm::vec2 m_screen;
 
 	// Camera stuff
 	Camera camera;
 
-
 	// Selection
-	std::vector<int> selectedTile;
+	std::vector<int> selectedTileCoordinates;
+    std::shared_ptr<Tile> selectedTile;
 
 	// Game entities
+	std::shared_ptr<Shader> objShader;
+	Level level;
+	Skybox m_skybox;
 
 	// C++ rng
 	std::default_random_engine m_rng;

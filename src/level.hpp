@@ -22,30 +22,31 @@ enum class TileType {
 	MINING_TOWER,
 	PHOTON_TOWER,
 	TREE,
+    GUN_TURRET,
 };
 
 // used to build a graph of nodes for the AI pathfinder to traverse each tile node.
-struct aStarNode {
+struct AStarNode {
 	int rowCoord, colCoord, movementCost;
 	float fScore;
 
-	aStarNode() = default;
+	AStarNode() = default;
 
-	aStarNode(int _rowCoord, int _colCoord, int _movementCost, float _fScore) : rowCoord(_rowCoord),
+	AStarNode(int _rowCoord, int _colCoord, int _movementCost, float _fScore) : rowCoord(_rowCoord),
 																						colCoord(_colCoord),
 																						movementCost(_movementCost),
 																						fScore(_fScore) {}
 
-	bool operator==(const aStarNode& rhs) const {
+	bool operator==(const AStarNode& rhs) const {
 		return rowCoord == rhs.rowCoord &&
 			   colCoord == rhs.colCoord;
 	}
 
-	bool operator!=(const aStarNode& rhs) const {
+	bool operator!=(const AStarNode& rhs) const {
 		return !(rhs == *this);
 	}
 
-	friend std::ostream& operator<<(std::ostream& os, const aStarNode& state) {
+	friend std::ostream& operator<<(std::ostream& os, const AStarNode& state) {
 		os << "rowCoord: " << state.rowCoord << " colCoord: " << state.colCoord << " movementCost: "
 		   << state.movementCost << " fScore: " << state.fScore;
 		return os;
@@ -57,31 +58,29 @@ struct Coord {
 
 	Coord() = default;
 
-	Coord(aStarNode a) : rowCoord(a.rowCoord), colCoord(a.colCoord) {}
+	Coord(AStarNode a) : rowCoord(a.rowCoord), colCoord(a.colCoord) {}
 
 	Coord(int _rowCoord, int _colCoord) : rowCoord(_rowCoord), colCoord(_colCoord) {}
 };
 
 class Level {
 public:
-	//members
-	std::vector<std::vector<Tile>> tiles; // we can add the time dimension when we get there
-	std::map<TileType, OBJ::Data> tileTypes;
+	bool init(
+        std::vector<std::vector<TileType>> intArray,
+        std::vector<std::pair<TileType, std::vector<SubObjectSource>>> sources,
+        std::shared_ptr<Shader> shader
+    );
 
-	//funcs
-	bool init(const std::vector<std::vector<TileType>>& intArray,
-			  const std::vector<std::pair<TileType, std::string>>& sources);
+    void update(float ms);
 
-	bool displayPath(const std::vector<Coord>& levelArray);
-
-	std::vector<std::vector<TileType>> levelLoader(const std::string& levelTextFile);
-
-	std::vector<std::vector<aStarNode>> getLevelTraversalCostMap();
-
+    // Using a shared pointer to a tile allows us to actually have derived classes in there as well.
+	std::vector<std::vector<std::shared_ptr<Tile>>> tiles; // we can add the time dimension when we get there
+	std::map<TileType, std::vector<SubObject>> tileTypes;
+    std::map<TileType, std::shared_ptr<CompositeObjectBulkRenderer>> tileRenderers;
+    std::vector<std::vector<TileType>> levelLoader(const std::string& levelTextFile);
+    bool displayPath(const std::vector<Coord>& levelArray);
+    std::vector<std::vector<AStarNode>> getLevelTraversalCostMap();
 private:
-	//members
-	std::vector<std::vector<aStarNode>> levelTraversalCostMap;
-
-	//funcs
-	bool initTileTypes(const std::vector<std::pair<TileType, std::string>>& sources);
+    bool initTileTypes(std::vector<std::pair<TileType, std::vector<SubObjectSource>>> sources);
+	std::vector<std::vector<AStarNode>> levelTraversalCostMap;
 };

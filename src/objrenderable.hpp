@@ -3,7 +3,7 @@
 
 class OBJRenderable : public Renderable {
 public:
-    bool init(const OBJ::Data& obj);
+    bool init(std::shared_ptr<std::vector<Mesh>> initMeshes, std::shared_ptr<Shader> shader);
     void draw(glm::mat4 viewProjection)override;
     void destroy();
     void translate(glm::vec3 translation);

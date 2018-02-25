@@ -2,6 +2,7 @@
 
 #include "textureloader.hpp"
 #include <memory>
+#include "logger.hpp"
 
 // glm
 #include "glm/glm.hpp"
