@@ -4,3 +4,6 @@
 [submodule "ext/sdl2_mixer"]
 	path = ext/sdl2_mixer
 	url = https://github.com/bminor/SDL_mixer.git
+[submodule "ext/catch2"]
+	path = ext/catch2
+	url = https://github.com/catchorg/Catch2.git
