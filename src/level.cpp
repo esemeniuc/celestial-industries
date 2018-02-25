@@ -1,34 +1,58 @@
 #include "level.hpp"
 #include <iostream>
+#include "logger.hpp"
 
-bool Level::init(const std::vector<std::vector<TileType>>& levelArray,
-				 const std::vector<std::pair<TileType, std::string>>& sources) {
-	if (!initTileTypes(sources)) {
-		logger(LogLevel::ERR) << "Failed to init tile types!" << '\n';
-		return false;
-	}
+bool Level::init(
+    std::vector<std::vector<TileType>> levelArray,
+    std::vector<std::pair<TileType, std::vector<SubObjectSource>>> sources,
+    std::shared_ptr<Shader> shader
+)
+{
+    // Initialize the tile type -> obj map
+    if (!initTileTypes(sources)) {
+        logger(LogLevel::ERR) << "Failed to init complex tile types!" << '\n';
+        return false;
+    }
+	
+    // Initialize the tile type -> bulk renderer map
+    for (auto tileType : tileTypes) {
+        // TODO: I think this obsoletes the previous map, but maybe not?
+        tileRenderers[tileType.first] = std::make_shared<CompositeObjectBulkRenderer>(shader, tileType.second);
+    }
 
 	// So that re initializing will be the same as first initialization
 	tiles.clear();
 
 	for (size_t i = 0; i < levelArray.size(); i++) {
 		std::vector<TileType> row = levelArray[i];
-		std::vector<Tile> tileRow;
+		std::vector<std::shared_ptr<Tile>> tileRow;
 		for (size_t j = 0; j < row.size(); j++) {
-			TileType cell = row[j];
-			Tile tile;
-			bool success = tile.init(tileTypes[cell]);
-			if (!success) {
-				logger(LogLevel::ERR) << "FAILED TO INITIALIZE TILE OF TYPE " << static_cast<int>(cell) << '\n';
-				return false;
-			}
+            TileType type = row[j];
+            auto renderer = tileRenderers[type];
+            std::shared_ptr<Tile> tilePointer;
+            switch (type) {
+            case TileType::GUN_TURRET:
+                tilePointer = std::make_shared<GunTowerTile>(renderer);
+                break;
+            default:
+                tilePointer = std::make_shared<Tile>(renderer);
+            }
 			// TODO: Standardize tile size and resize the model to be the correct size
-			tile.translate({j, 0, i});
-			tileRow.push_back(tile);
+            tilePointer->translate({ j, 0, i });
+            tileRow.push_back(tilePointer);
 		}
-		tiles.push_back(tileRow);
+        tiles.push_back(tileRow);
 	}
 	return true;
+}
+
+void Level::update(float ms)
+{
+    for (auto& row : tiles) {
+        for (auto& tile : row) {
+            tile->update(ms);
+        }
+    }
 }
 
 std::vector<std::vector<TileType>> Level::levelLoader(const std::string& levelTextFile) {
@@ -36,7 +60,7 @@ std::vector<std::vector<TileType>> Level::levelLoader(const std::string& levelTe
 	std::string line;
 	std::vector<std::vector<TileType>> levelData;
 	std::vector<TileType> row;
-	std::vector<aStarNode> tileData;
+	std::vector<AStarNode> tileData;
 
 	if (!level.is_open()) {
 		logger(LogLevel::ERR) << "Failed to open level data file '" << levelTextFile << "'\n";
@@ -75,40 +99,48 @@ std::vector<std::vector<TileType>> Level::levelLoader(const std::string& levelTe
 	return levelData;
 }
 
-std::vector<std::vector<aStarNode>> Level::getLevelTraversalCostMap() {
+std::vector<std::vector<AStarNode>> Level::getLevelTraversalCostMap() {
 	return this->levelTraversalCostMap;
 }
 
-bool Level::initTileTypes(const std::vector<std::pair<TileType, std::string>>& sources) {
-	// All the models come from the same place
-	std::string path = pathBuilder({"data", "models"});
-	for (const auto& source : sources) {
-		TileType tileType = source.first;
-		std::string filename = source.second;
-		OBJ::Data obj;
-		if (!OBJ::Loader::loadOBJ(path, filename, obj)) {
-			// Failure message should already be handled by loadOBJ
-			return false;
-		}
-		tileTypes[tileType] = obj;
-	}
-	return true;
+bool Level::initTileTypes(std::vector<std::pair<TileType, std::vector<SubObjectSource>>> sources)
+{
+    // All the models come from the same place
+    std::string path = pathBuilder({ "data", "models" });
+    for (auto source : sources) {
+
+        std::vector<SubObject> subObjects;
+        TileType tileType = source.first;
+        std::vector<SubObjectSource> objSources  = source.second;
+        for (auto objSource : objSources) {
+            OBJ::Data obj;
+            if (!OBJ::Loader::loadOBJ(path, objSource.filename, obj)) {
+                // Failure message should already be handled by loadOBJ
+                return false;
+            }
+            auto meshResult = objToMesh(obj);
+            if (!meshResult.first) {
+                logger(LogLevel::ERR) << "Failed to turn tile obj to meshes for tile " << objSource.filename << '\n';
+            }
+            subObjects.push_back({
+                meshResult.second,
+                objSource.parentMesh
+            });
+        }
+        tileTypes[tileType] = subObjects;
+    }
+    return true;
 }
 
 
 bool Level::displayPath(const std::vector<Coord>& path) {
 
 	for (const Coord& component : path) {
-		std::vector<Tile> tileRow;
+		std::vector<std::shared_ptr<Tile>> tileRow;
+        auto renderer = tileRenderers[TileType::SAND_2];
+        std::shared_ptr<Tile> tile = std::make_shared<Tile>(renderer);
 
-		Tile tile;
-		bool success = tile.init(tileTypes[TileType::SAND_2]);
-		if (!success) {
-			logger(LogLevel::ERR) << "FAILED TO INITIALIZE TILE OF TYPE " << static_cast<int>(TileType::SAND_2) << '\n';
-			return false;
-		}
-		// TODO: Standardize tile size and resize the model to be the correct size
-		tile.translate({component.colCoord, 0, component.rowCoord});
+		tile->translate({component.colCoord, 0, component.rowCoord});
 		tileRow.push_back(tile);
 		tiles.push_back(tileRow);
 	}

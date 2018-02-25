@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <memory>
 
 // glfw
 #define NOMINMAX
@@ -58,6 +59,16 @@ vec2  normalize(vec2 v);
 void gl_flush_errors();
 bool gl_has_errors();
 
+// Because iterating over pointer is good
+template<typename T>
+auto inline begin(std::shared_ptr<T> ptr) -> typename T::iterator {
+    return ptr->begin();
+}
+template<typename T>
+auto inline end(std::shared_ptr<T> ptr) -> typename T::iterator {
+    return ptr->end();
+}
+
 // Single Vertex Buffer element for non-textured meshes (colored.vs.glsl)
 struct Vertex
 {
@@ -86,7 +97,7 @@ struct Mesh
 
 // Container for Vertex and Fragment shader, which are then put(linked) together in a
 // single program that is then bound to the pipeline.
-struct Effect
+struct Shader
 {
 	bool load_from_file(const char* vs_path, const char* fs_path);
 	void release();
@@ -100,11 +111,13 @@ struct Effect
 // with its transform.
 struct Renderable
 {
-	std::vector<Mesh> meshes;
-	Effect effect;
+	std::shared_ptr<std::vector<Mesh>> meshes;
+	std::shared_ptr<Shader> shader;
 	glm::mat4 model = glm::mat4(1.0f); // Identity matrix
 
 	// projection contains the orthographic projection matrix. As every Renderable::draw()
 	// renders itself it needs it to correctly bind it to its shader.
 	virtual void draw(glm::mat4 viewProjection) = 0;
 };
+
+std::pair<bool, std::shared_ptr<std::vector<Mesh>>> objToMesh(OBJ::Data obj);

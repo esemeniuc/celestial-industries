@@ -11,7 +11,7 @@ bool Skybox::init(OBJ::Data obj)
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
 	glBufferData(GL_ARRAY_BUFFER, obj.data.size() * sizeof(OBJ::VertexData), obj.data.data(), GL_STATIC_DRAW);
 
-
+    meshes = std::make_shared<std::vector<Mesh>>();
 	for (auto group : obj.groups) {
 		Mesh mesh;
 		mesh.vbo = vbo_id;
@@ -27,11 +27,12 @@ bool Skybox::init(OBJ::Data obj)
 
 		mesh.numIndices = group.indices.size();
 		mesh.material = group.material;
-		meshes.push_back(mesh);
+		meshes->push_back(mesh);
 	}
 
 	// Loading shaders
-	return effect.load_from_file(shader_path("skybox.vs.glsl"), shader_path("skybox.fs.glsl"));
+    shader = std::make_shared<Shader>();
+	return shader->load_from_file(shader_path("skybox.vs.glsl"), shader_path("skybox.fs.glsl"));
 }
 
 void Skybox::destroy()
@@ -42,9 +43,9 @@ void Skybox::destroy()
 		glDeleteBuffers(1, &mesh.vao);
 	}
 
-	glDeleteShader(effect.vertex);
-	glDeleteShader(effect.fragment);
-	glDeleteShader(effect.program);
+	glDeleteShader(shader->vertex);
+	glDeleteShader(shader->fragment);
+	glDeleteShader(shader->program);
 }
 
 void Skybox::update(float ms)
@@ -55,14 +56,13 @@ void Skybox::update(float ms)
 void Skybox::draw(glm::mat4 viewProjection)
 {
 	// Setting shaders
-	glUseProgram(effect.program);
+	glUseProgram(shader->program);
 
 	// Getting uniform locations for glUniform* calls
-	GLuint vp_uloc = glGetUniformLocation(effect.program, "viewProjection");
-	GLuint model_uloc = glGetUniformLocation(effect.program, "model");
-	GLuint camera_uloc = glGetUniformLocation(effect.program, "cameraPosition");
+	GLuint vp_uloc = glGetUniformLocation(shader->program, "viewProjection");
+	GLuint model_uloc = glGetUniformLocation(shader->program, "model");
+	GLuint camera_uloc = glGetUniformLocation(shader->program, "cameraPosition");
 
-		
 	for (auto mesh : meshes) {
 		// Setting vertices and indices
 		glBindVertexArray(mesh.vao);
@@ -70,7 +70,7 @@ void Skybox::draw(glm::mat4 viewProjection)
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
 
 		// Input data location as in the vertex buffer
-		GLuint position_loc = glGetAttribLocation(effect.program, "position");
+		GLuint position_loc = glGetAttribLocation(shader->program, "position");
 		glEnableVertexAttribArray(position_loc);
 		glVertexAttribPointer(position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(OBJ::VertexData), (void*)0); 
 		glUniformMatrix4fv(vp_uloc, 1, GL_FALSE, &viewProjection[0][0]);

@@ -1,24 +1,28 @@
 #pragma once
 
-#include "objrenderable.hpp"
+#include "objbulkrenderer.hpp"
 
 // glm
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
 // The base class for every tile in the game
-class Tile : public OBJRenderable
+class Tile : public CompositeObjectBulkRenderable
 {
-	// shared stuff will go here at some point
-
 public:
-	bool init(const OBJ::Data& obj);
-	void destroy();
-	void update(float ms);
+    Tile(std::shared_ptr<CompositeObjectBulkRenderer> _parent) : CompositeObjectBulkRenderable(_parent) {};
+	virtual void update(float ms);
+private:
 	void setCost(float);
 	float getCost();
+    // cost to traverse a tile, used by AI for path finding
+    float cost;
+};
 
+class GunTowerTile : public Tile {
 private:
-	// cost to traverse a tile, used by AI for path finding
-	float cost;
+    float timeCounter = 0.0f;
+public:
+    GunTowerTile(std::shared_ptr<CompositeObjectBulkRenderer> _parent) : Tile(_parent) {};
+    void update(float ms) override;
 };

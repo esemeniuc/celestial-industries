@@ -22,7 +22,6 @@
 	logger << "more secrets\n"; //everything in this line and the previous will be logged as error
  */
 
-
 class Logger {
 
 	std::ofstream outFile;
@@ -31,6 +30,8 @@ class Logger {
 
 public:
 	Logger();
+
+    static constexpr char endl = '\n';
 
 	Logger& operator()(LogLevel logLevel);
 
