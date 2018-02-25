@@ -13,18 +13,27 @@
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-bool Tile::init(const OBJ::Data& obj) {
-    return OBJRenderable::init(obj); // Like calling super
-}
-
-void Tile::destroy()
-{
-    OBJRenderable::destroy();
-}
-
 void Tile::update(float ms)
 {
-	// Do nothing, our buildings be static
+    // Do nothing
+}
+
+void GunTowerTile::update(float ms)
+{
+    timeCounter += ms;
+    float period = 50;
+    glm::vec3 gunDisplacement = { 0, 0, 0.1 };
+    float amountToMove = sin(timeCounter / period);
+    setModelMatrix(
+        2,
+        gunDisplacement*amountToMove + glm::vec3({0,0,0.1})
+    );
+    setModelMatrix(
+        3,
+        -gunDisplacement*amountToMove + glm::vec3({ 0,0,0.1 })
+    );
+
+    rotate(1, ms/1000, { 0,1,0 });
 }
 
 void Tile::setCost(float value)

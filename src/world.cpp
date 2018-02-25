@@ -1,5 +1,6 @@
 // Header
 #include "world.hpp"
+#include "logger.hpp"
 #include <chrono>  // for high_resolution_clock
 
 // Same as static in c, local to compilation unit
@@ -14,7 +15,7 @@ namespace {
 }
 
 World::World() {
-	// Seeding rng with random device
+	// Seeding rng with random device`
 	m_rng = std::default_random_engine(std::random_device()());
 }
 
@@ -90,16 +91,28 @@ bool World::init(glm::vec2 screen) {
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
 
-	std::vector<std::pair<TileType, std::string>> tiles = {
-			{TileType::SAND_1,       "sand1.obj"},
-			{TileType::SAND_2,       "sand2.obj"},
-			{TileType::SAND_3,       "sand3.obj"},
-			{TileType::WALL,         "wall.obj"},
-			{TileType::BRICK_CUBE,   "brickCube.obj"},
-			{TileType::MINING_TOWER, "miningTower.obj"},
-			{TileType::TREE,         "treeTile1.obj"},
-			{TileType::PHOTON_TOWER, "photonTower.obj"}
+    /*
+    In the context of SubObjects the number to the left of the filename indicates which of the other objs the obj is dependent on. If it's -1 then that
+    means none. This is used to figure out what the transformation tree is for animating
+    */
+	std::vector<std::pair<TileType, std::vector<SubObjectSource>>> tiles = {
+            { TileType::SAND_1,       {{"sand1.obj", -1}} },
+            { TileType::SAND_2,       { {"sand2.obj", -1}} },
+            { TileType::SAND_3,       {{"sand3.obj", -1}} },
+            { TileType::WALL,         {{"wall.obj", -1}} },
+            { TileType::BRICK_CUBE,   {{"brickCube.obj", -1}} },
+            { TileType::MINING_TOWER, {{"miningTower.obj", -1}} },
+            { TileType::PHOTON_TOWER, {{"photonTower.obj", -1}} },
+            { TileType::TREE,         {{"treeTile1.obj", -1}} },
+            { TileType::GUN_TURRET,   {{"TurretBase.obj", -1}, {"TurretTop.obj", 0}, {"TurretGunsLeft.obj", 1}, {"TurretGunsRight.obj", 1}} },
 	};
+
+    // Load shader for default tiles
+    objShader = std::make_shared<Shader>();
+    if (!objShader->load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl"))) {
+        logger(LogLevel::ERR) << "Failed to load obj shader!" << '\n';
+        return false;
+    }
 
 	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isnt being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
@@ -107,9 +120,11 @@ bool World::init(glm::vec2 screen) {
 	size_t mapSize = levelArray.size();
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
-	level.init(levelArray, tiles);
+
+	level.init(levelArray, tiles, objShader);
+
 	// test different starting points for the AI
-	std::vector<std::vector<aStarNode>> costMap = level.getLevelTraversalCostMap();
+	std::vector<std::vector<AStarNode>> costMap = level.getLevelTraversalCostMap();
 	auto start = std::chrono::high_resolution_clock::now();
 	AI::aStar::a_star(costMap, 1, 19, 1, 11, 25);
 	AI::aStar::a_star(costMap, 1, 1, 1, 11, 25);
@@ -123,7 +138,8 @@ bool World::init(glm::vec2 screen) {
 	std::pair<bool, std::vector<Coord> > path =
 			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
 	level.displayPath(path.second);
-	selectedTile = {(int) mapSize / 2, (int) mapSize / 2};
+	selectedTileCoordinates = {(int) mapSize / 2, (int) mapSize / 2};
+    selectedTile = level.tiles[selectedTileCoordinates[0]][selectedTileCoordinates[1]];
 	return true;
 }
 
@@ -137,20 +153,20 @@ bool World::loadSkybox(const std::string& skyboxFilename, const std::string& sky
 
 	success &= OBJ::Loader::loadOBJ(geometryPath, skyboxFilename, skyboxObj);
 	if (!success) {
-		std::cout << "Failed to load skybox" << std::endl;
+        logger(LogLevel::ERR) << "Failed to load skybox" << '\n';
 		return false;
 	}
 
 	success &= m_skybox.init(skyboxObj);
 	if (!success) {
-		std::cout << "Failed to initialize skybox" << std::endl;
+        logger(LogLevel::ERR) << "Failed to initilize skybox" << '\n';
 		return false;
 	}
 
 	// specify texture unit corresponding to texture sampler in fragment shader
 	Texture skyboxTexture;
 	GLuint cube_texture;
-	glUniform1i(glGetUniformLocation(m_skybox.effect.program, "cube_texture"), 0);
+	glUniform1i(glGetUniformLocation(m_skybox.shader->program, "cube_texture"), 0);
 	m_skybox.set_cube_faces(texturePath);
 	skyboxTexture.generate_cube_map(m_skybox.get_cube_faces(), &cube_texture);
 	return true;
@@ -159,7 +175,6 @@ bool World::loadSkybox(const std::string& skyboxFilename, const std::string& sky
 // Releases all the associated resources
 void World::destroy() {
 	Mix_CloseAudio();
-	m_tile.destroy();
 	m_skybox.destroy();
 	glfwDestroyWindow(m_window);
 }
@@ -173,6 +188,9 @@ bool World::update(float elapsed_ms) {
 //	glm::vec2 screen = glm::vec2((float) w, (float) h);
 	camera.update(elapsed_ms);
 	total_time += elapsed_ms;
+    selectedTile->shouldDraw(true);
+    selectedTile = level.tiles[selectedTileCoordinates[0]][selectedTileCoordinates[1]];
+    selectedTile->shouldDraw(false);
 	return true;
 }
 
@@ -201,21 +219,12 @@ void World::draw() {
 
 	glm::mat4 projection = camera.getProjectionMatrix(m_screen.x, m_screen.y);
 	glm::mat4 view = camera.getViewMatrix();
+    glm::mat4 projectionView = projection * view;
 
-	int i = 0, j = 0; // used for showing the selected tile
-	for (auto tileRow : level.tiles) {
-		for (auto tile : tileRow) {
-			if (i == selectedTile[0] && j == selectedTile[1]) {
-				// do nothing
-			} else {
-				tile.draw(projection * view);
-			}
-			j++;
-		}
-		j = 0;
-		i++;
-	}
-
+    for (auto tileRenderer : level.tileRenderers) {
+        tileRenderer.second->render(projectionView);
+    }
+	
 	// make skybox rotate by 0.001 * pi/4 radians around y axis, every frame
 	//float y_rotation = 0.005 * glm::quarter_pi<float>();
 	//m_skybox.setRotation(glm::vec3(0.0, y_rotation, 0.0));
@@ -223,29 +232,28 @@ void World::draw() {
 	m_skybox.setCameraPosition(camera.position);
 	m_skybox.draw(projection * view * m_skybox.getModelMatrix());
 
-
 	// Presenting
 	glfwSwapBuffers(m_window);
 }
 
 void World::move_cursor_up() {
-	selectedTile[1]--;
-	printf("Selected tile: %d, %d\n", selectedTile[0], selectedTile[1]);
+	selectedTileCoordinates[1]--;
+	printf("Selected tile: %d, %d\n", selectedTileCoordinates[0], selectedTileCoordinates[1]);
 }
 
 void World::move_cursor_down() {
-	selectedTile[1]++;
-	printf("Selected tile: %d, %d\n", selectedTile[0], selectedTile[1]);
+	selectedTileCoordinates[1]++;
+	printf("Selected tile: %d, %d\n", selectedTileCoordinates[0], selectedTileCoordinates[1]);
 }
 
 void World::move_cursor_left() {
-	selectedTile[0]--;
-	printf("Selected tile: %d, %d\n", selectedTile[0], selectedTile[1]);
+	selectedTileCoordinates[0]--;
+	printf("Selected tile: %d, %d\n", selectedTileCoordinates[0], selectedTileCoordinates[1]);
 }
 
 void World::move_cursor_right() {
-	selectedTile[0]++;
-	printf("Selected tile: %d, %d\n", selectedTile[0], selectedTile[1]);
+	selectedTileCoordinates[0]++;
+	printf("Selected tile: %d, %d\n", selectedTileCoordinates[0], selectedTileCoordinates[1]);
 }
 
 // Should the game be over ?

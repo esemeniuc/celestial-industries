@@ -26,7 +26,8 @@ add_executable(proj
 		src/objrenderable.cpp
 		src/config.hpp
 		src/logger.cpp
-		src/pathfinder.cpp)
+		src/pathfinder.cpp
+		src/objbulkrenderer.cpp)
 
 target_compile_options(proj PUBLIC
 		-Wall
