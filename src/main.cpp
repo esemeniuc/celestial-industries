@@ -1,7 +1,6 @@
 // internal
 #include "common.hpp"
 #include "world.hpp"
-#include "logger.hpp"
 
 #define GL3W_IMPLEMENTATION
 #include <gl3w.h>
@@ -14,9 +13,6 @@ using Clock = std::chrono::high_resolution_clock;
 
 // Global 
 World world;
-const int width = 1000;
-const int height = 800;
-const char* title = "Your Title Here";
 Logger logger;
 
 // Entry point
@@ -24,7 +20,7 @@ int main(int argc, char* argv[])
 {
 	logger(LogLevel::DEBUG) << "Started game\n";
 	// Initializing world (after renderer.init().. sorry)
-	if (!world.init({ (float)width, (float)height }))
+	if (!world.init({ (float)Config::WINDOW_WIDTH, (float)Config::WINDOW_HEIGHT }))
 	{
 		// Time to read the error message
         logger(LogLevel::ERR) << "Press any key to exit" << '\n';

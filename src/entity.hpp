@@ -59,7 +59,7 @@ enum collision_geometry_type {
 class Entity : public OBJRenderable {
 public:
 	virtual void update(float ms) = 0;
-	void setvelocity (glm::vec3);	
+	void setVelocity (glm::vec3);
 	void setGravity (glm::vec3);
 	void setForce (glm::vec3);
 	void setGeometryId(long);

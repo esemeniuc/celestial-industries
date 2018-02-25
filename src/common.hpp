@@ -120,4 +120,16 @@ struct Renderable
 	virtual void draw(glm::mat4 viewProjection) = 0;
 };
 
+template<class T>
+T clamp(T value, T lower, T upper) {
+	if (value > upper) {
+		value = upper;
+	}
+
+	if (value < lower) {
+		value = lower;
+	}
+	return value;
+}
+
 std::pair<bool, std::shared_ptr<std::vector<Mesh>>> objToMesh(OBJ::Data obj);
