@@ -1,6 +1,5 @@
 #include "level.hpp"
 #include <iostream>
-#include <map>
 #include "logger.hpp"
 
 bool Level::init(
