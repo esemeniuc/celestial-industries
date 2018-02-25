@@ -136,7 +136,8 @@ bool World::init(glm::vec2 screen) {
 	std::pair<bool, std::vector<Coord> > path =
 			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
 	level.displayPath(path.second);
-	selectedTile = {(int) mapSize / 2, (int) mapSize / 2};
+	selectedTileCoordinates = {(int) mapSize / 2, (int) mapSize / 2};
+    selectedTile = level.tiles[selectedTileCoordinates[0]][selectedTileCoordinates[1]];
 	return true;
 }
 
@@ -185,6 +186,9 @@ bool World::update(float elapsed_ms) {
 //	glm::vec2 screen = glm::vec2((float) w, (float) h);
 	camera.update(elapsed_ms);
 	total_time += elapsed_ms;
+    selectedTile->shouldDraw(true);
+    selectedTile = level.tiles[selectedTileCoordinates[0]][selectedTileCoordinates[1]];
+    selectedTile->shouldDraw(false);
 	return true;
 }
 
@@ -231,23 +235,23 @@ void World::draw() {
 }
 
 void World::move_cursor_up() {
-	selectedTile[1]--;
-	printf("Selected tile: %d, %d\n", selectedTile[0], selectedTile[1]);
+	selectedTileCoordinates[1]--;
+	printf("Selected tile: %d, %d\n", selectedTileCoordinates[0], selectedTileCoordinates[1]);
 }
 
 void World::move_cursor_down() {
-	selectedTile[1]++;
-	printf("Selected tile: %d, %d\n", selectedTile[0], selectedTile[1]);
+	selectedTileCoordinates[1]++;
+	printf("Selected tile: %d, %d\n", selectedTileCoordinates[0], selectedTileCoordinates[1]);
 }
 
 void World::move_cursor_left() {
-	selectedTile[0]--;
-	printf("Selected tile: %d, %d\n", selectedTile[0], selectedTile[1]);
+	selectedTileCoordinates[0]--;
+	printf("Selected tile: %d, %d\n", selectedTileCoordinates[0], selectedTileCoordinates[1]);
 }
 
 void World::move_cursor_right() {
-	selectedTile[0]++;
-	printf("Selected tile: %d, %d\n", selectedTile[0], selectedTile[1]);
+	selectedTileCoordinates[0]++;
+	printf("Selected tile: %d, %d\n", selectedTileCoordinates[0], selectedTileCoordinates[1]);
 }
 
 // Should the game be over ?

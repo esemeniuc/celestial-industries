@@ -3,7 +3,7 @@
 #include "logger.hpp"
 
 bool Level::init(
-    std::vector<std::vector<TileType>> intArray,
+    std::vector<std::vector<TileType>> levelArray,
     std::vector<std::pair<TileType, std::vector<SubObjectSource>>> sources,
     std::shared_ptr<Shader> shader
 )
@@ -23,8 +23,8 @@ bool Level::init(
 	// So that re initializing will be the same as first initialization
 	tiles.clear();
 
-	for (size_t i = 0; i < intArray.size(); i++) {
-		std::vector<TileType> row = intArray[i];
+	for (size_t i = 0; i < levelArray.size(); i++) {
+		std::vector<TileType> row = levelArray[i];
 		std::vector<std::shared_ptr<Tile>> tileRow;
 		for (size_t j = 0; j < row.size(); j++) {
             TileType type = row[j];

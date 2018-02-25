@@ -81,8 +81,9 @@ private:
 	Camera camera;
 
 	// Selection
-	std::vector<int> selectedTile;
-	
+	std::vector<int> selectedTileCoordinates;
+    std::shared_ptr<Tile> selectedTile;
+
 	// Game entities
 
 	// C++ rng
