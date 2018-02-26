@@ -44,3 +44,4 @@ cmake-build-release
 #housekeeping
 build/
 debug.log
+valgrind.supp

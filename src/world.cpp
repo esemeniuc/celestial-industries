@@ -323,11 +323,8 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 }
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
-	// Handle the mouse movement here
-	int x = (int) xpos, y = (int) ypos;
 //	logger(LogLevel::DEBUG) << "X-pos: " << xpos << ", Y-pos: " << ypos << '\n';
-
-	camera.pan(x, y);
+	camera.pan((int)xpos, (int)ypos);
 }
 
 void World::on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset) {

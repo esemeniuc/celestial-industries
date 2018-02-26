@@ -27,7 +27,7 @@ add_executable(proj
 		src/config.hpp
 		src/logger.cpp
 		src/pathfinder.cpp
-		src/objbulkrenderer.cpp)
+		src/objbulkrenderer.cpp src/ai.cpp src/ai.h src/genericunit.cpp src/genericunit.h src/unitgroup.cpp src/unitgroup.h)
 
 target_compile_options(proj PUBLIC
 		-Wall
