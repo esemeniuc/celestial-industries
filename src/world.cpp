@@ -189,8 +189,17 @@ bool World::update(float elapsed_ms) {
 	camera.update(elapsed_ms);
 	total_time += elapsed_ms;
     selectedTile->shouldDraw(true);
-    selectedTile = level.tiles[selectedTileCoordinates[0]][selectedTileCoordinates[1]];
-    selectedTile->shouldDraw(false);
+
+	if (
+            selectedTileCoordinates[0] > 0 &&
+            selectedTileCoordinates[0] < level.tiles.size() &&
+            selectedTileCoordinates[1] > 0 &&
+            selectedTileCoordinates[1] < level.tiles[0].size()
+        ) {
+
+        selectedTile = level.tiles[selectedTileCoordinates[0]][selectedTileCoordinates[1]];
+        selectedTile->shouldDraw(false);
+	}
 	return true;
 }
 
@@ -328,6 +337,57 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 //	logger(LogLevel::DEBUG) << "X-pos: " << xpos << ", Y-pos: " << ypos << '\n';
 
 	camera.pan(x, y);
+
+	int windowWidth;
+	int windowHeight;
+	glfwGetWindowSize(window, &windowWidth, &windowHeight);
+    char debugMessage[10000];
+
+//	printf("width: %d, height: %d\n", windowWidth, windowHeight);
+
+	auto mouseX = xpos;
+	auto mouseY = windowHeight - ypos;
+
+	auto wincoords = glm::vec3(
+			mouseX,
+			m_screen.y - mouseY,
+			0.0f);
+
+	int framebufferWidth, framebufferHeight;
+	glfwGetFramebufferSize(m_window, &framebufferWidth, &framebufferHeight);
+
+	int computedFbX = (float) x/(float) windowWidth * (float) framebufferWidth;
+	int computedFbY = (float) y/(float) windowHeight* (float) framebufferHeight;
+
+	glm::vec2 windowCoordinates{ computedFbX, computedFbY };
+	glm::vec2 viewport{ framebufferWidth, framebufferHeight };
+	glm::vec4 clipCoordinates{ windowCoordinates / viewport * 2.0f - glm::vec2{ 1.0f }, -1.0f, 1.0f };
+	clipCoordinates[1] *= -1.0;
+	glm::mat4 clipWorldMatrix{ glm::inverse(camera.getProjectionMatrix(windowWidth, windowHeight) * camera.getViewMatrix()) };
+	glm::vec4 unprojectedWorldCoordinates{ clipWorldMatrix * clipCoordinates };
+	glm::vec3 worldCoordinates{ glm::vec3{ unprojectedWorldCoordinates } / unprojectedWorldCoordinates.w };
+
+	glm::vec3 directionVector = worldCoordinates - camera.position;
+	glm::vec3 planeNormalVector = {0,1,0};
+	glm::vec3 planePoint = {0,0,0};
+
+	float planeDotDirection = glm::dot(planeNormalVector, directionVector);
+	float t = glm::dot(planeNormalVector, (planePoint - camera.position)) / planeDotDirection;
+
+	if (t > 0) {
+		glm::vec3 pointInWorld = camera.position + (t * directionVector);
+        selectedTileCoordinates = {(int) pointInWorld.z, (int) pointInWorld.x};
+
+        snprintf(debugMessage, 10000, "FB mouse: %d, %d | Clipcoords: <%f, %f> | Camera surface coords: <%f, %f, %f> | Coordinates in world space: %f, %f, %f | Selected tile: <%d, %d>\n",
+                 computedFbX, computedFbY,
+                 clipCoordinates[0], clipCoordinates[1],
+                 worldCoordinates.x, worldCoordinates.y, worldCoordinates.z,
+                 pointInWorld.x, pointInWorld.y, pointInWorld.z,
+                 selectedTileCoordinates[0], selectedTileCoordinates[1]
+        );
+		logger(LogLevel::DEBUG) << debugMessage;
+	}
+
 }
 
 void World::on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset) {
