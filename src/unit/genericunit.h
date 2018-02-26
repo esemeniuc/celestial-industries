@@ -25,5 +25,14 @@ class GenericUnit : public Entity
 	// I wonder if we should include some info about the unit obj
 	//objective?
 
+public:
+	GenericUnit(int health, int energyLevel, int attackPower, int attackRange) : health(health),
+																				 energyLevel(energyLevel),
+																				 attackPower(attackPower),
+																				 attackRange(attackRange) {}
 
-}
+	void update(float ms) override {
+
+	}
+
+};
