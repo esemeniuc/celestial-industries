@@ -6,5 +6,8 @@
 #include <entity.hpp>
 
 class Building : Entity{
-
+	int health;
+	int attackPower;
+	int attackRange;
+	int attackSpeed;
 };

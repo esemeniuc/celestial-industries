@@ -4,6 +4,10 @@
 
 #pragma once
 
+#include <unordered_set>
+#include <unit/genericunit.h>
+#include "building.h"
+
 //assume AI has goal to destroy main control building of player
 /*we do the tree thing like alla suggested
 with look ahead to a depth level of 8 for example, 2^8 = 256
@@ -32,8 +36,13 @@ patrol/scout what player is doing
 //down a new building
 
 class Ai {
+	std::vector<std::vector<GenericUnit>> unitsSeen;
+	std::vector<std::vector<Building>> buildingsSeen;
 
-
+	int getValueOfPlayerUnits()
+	{
+		return 0;
+	}
 
 
 

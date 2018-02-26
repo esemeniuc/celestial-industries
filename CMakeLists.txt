@@ -31,7 +31,7 @@ add_executable(proj
 		src/ai.cpp
 		src/unit/genericunit.cpp
 		src/unit/unitgroup.cpp
-		src/unit/building.cpp src/unit/building.h)
+		src/building.cpp)
 
 target_compile_options(proj PUBLIC
 		-Wall
