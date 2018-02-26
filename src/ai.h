@@ -17,7 +17,7 @@ patrol/scout what player is doing
 //level 1: macro ai
 //ai manages its resources -- attack groups, denying area, fortifying areas (eg resources), destroying player buildings, expanding vision
 //decides on area owned (by ai), sum of the value of its units, sum of the value of the players units,
-//number of resource extracters owned by player (can be included in previous sum),
+//number of resource extractors owned by player (can be included in previous sum),
 
 
 //level 2: micro ai
