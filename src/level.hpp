@@ -65,22 +65,28 @@ struct Coord {
 
 class Level {
 public:
-	bool init(
-        std::vector<std::vector<TileType>> intArray,
-        std::vector<std::pair<TileType, std::vector<SubObjectSource>>> sources,
-        std::shared_ptr<Shader> shader
-    );
-
-    void update(float ms);
-
+	//members
     // Using a shared pointer to a tile allows us to actually have derived classes in there as well.
 	std::vector<std::vector<std::shared_ptr<Tile>>> tiles; // we can add the time dimension when we get there
 	std::map<TileType, std::vector<SubObject>> tileTypes;
     std::map<TileType, std::shared_ptr<CompositeObjectBulkRenderer>> tileRenderers;
+
+	//funcs
+	bool init(
+			std::vector<std::vector<TileType>> intArray,
+			std::vector<std::pair<TileType, std::vector<SubObjectSource>>> sources,
+			std::shared_ptr<Shader> shader
+	);
+
+	void update(float ms);
+
     std::vector<std::vector<TileType>> levelLoader(const std::string& levelTextFile);
-    bool displayPath(const std::vector<Coord>& levelArray);
     std::vector<std::vector<AStarNode>> getLevelTraversalCostMap();
+	bool displayPath(const std::vector<Coord>& levelArray);
 private:
-    bool initTileTypes(std::vector<std::pair<TileType, std::vector<SubObjectSource>>> sources);
+	//members
 	std::vector<std::vector<AStarNode>> levelTraversalCostMap;
+
+	//funcs
+	bool initTileTypes(std::vector<std::pair<TileType, std::vector<SubObjectSource>>> sources);
 };
