@@ -27,7 +27,11 @@ add_executable(proj
 		src/config.hpp
 		src/logger.cpp
 		src/pathfinder.cpp
-		src/objbulkrenderer.cpp)
+		src/objbulkrenderer.cpp
+		src/ai.cpp
+		src/unit/genericunit.cpp
+		src/unit/unitgroup.cpp
+		src/building.cpp)
 
 target_compile_options(proj PUBLIC
 		-Wall
@@ -46,6 +50,8 @@ endif ()
 
 
 target_include_directories(proj PUBLIC
+		src
+		src/unit
 		ext/gl3w
 		ext/stb_image
 		${SDL2_INCLUDE_DIRS}

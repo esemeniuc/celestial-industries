@@ -9,7 +9,7 @@ namespace AI {
 		AStarNode current = goal;
 		std::vector<Coord> path;
 		while (current != start) {
-			path.emplace_back(current);
+			path.emplace_back(current.rowCoord, current.colCoord);
 			current = came_from.at(current); //use at() to satisfy const constraint
 		}
 		std::reverse(path.begin(), path.end());
