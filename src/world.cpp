@@ -204,10 +204,10 @@ bool World::update(float elapsed_ms) {
     selectedTile->shouldDraw(true);
 
 	if (
-            selectedTileCoordinates.rowCoord > 0 &&
-            selectedTileCoordinates.rowCoord < level.tiles.size() &&
-            selectedTileCoordinates.colCoord > 0 &&
-            selectedTileCoordinates.colCoord < level.tiles[0].size()
+            selectedTileCoordinates.rowCoord >= 0 &&
+            selectedTileCoordinates.rowCoord < level.getLevelTraversalCostMap().size() &&
+            selectedTileCoordinates.colCoord >= 0 &&
+            selectedTileCoordinates.colCoord < level.getLevelTraversalCostMap()[0].size()
         ) {
 
         selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
@@ -216,7 +216,6 @@ bool World::update(float elapsed_ms) {
 
 
 	for (const auto& elem : tileRow) {
-//		elem->
 		elem->translate({0.1f, 0, 0.1f});
 	}
 
@@ -354,9 +353,7 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 	int windowWidth;
 	int windowHeight;
 	glfwGetWindowSize(window, &windowWidth, &windowHeight);
-    char debugMessage[10000];
-
-//	printf("width: %d, height: %d\n", windowWidth, windowHeight);
+//    char debugMessage[10000];
 
 	auto mouseX = xpos;
 	auto mouseY = windowHeight - ypos;
@@ -389,8 +386,8 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 
 	if (t > 0) {
 		glm::vec3 pointInWorld = camera.position + (t * directionVector);
-        selectedTileCoordinates.rowCoord = (int) pointInWorld.z;
-        selectedTileCoordinates.colCoord = (int) pointInWorld.x;
+        selectedTileCoordinates.rowCoord = (int) round(pointInWorld.z);
+        selectedTileCoordinates.colCoord = (int) round(pointInWorld.x);
 
 //        snprintf(debugMessage, 10000, "FB mouse: %d, %d | Clipcoords: <%f, %f> | Camera surface coords: <%f, %f, %f> | Coordinates in world space: %f, %f, %f | Selected tile: <%d, %d>\n",
 //                 computedFbX, computedFbY,
