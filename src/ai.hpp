@@ -45,6 +45,7 @@ class Ai {
 		return 0;
 	}
 
+	Building* getHighestValuedBuilding(std::list<Building> &buildings);
 
 
 
