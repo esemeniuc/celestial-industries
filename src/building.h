@@ -14,6 +14,11 @@ public:
 	Building():initialHealth(100), buildingValue(100) {
 
 	}
+
+	void update(float ms) override {
+
+	}
+
     const int buildingValue;
 };
 
@@ -23,6 +28,10 @@ enum class DefensiveBuildingState {
 };
 
 class DefensiveBuilding : Building {
+public:
+	void update(float ms) override {
+
+	}
 protected:
 
 	int attackPower;
