@@ -205,9 +205,9 @@ bool World::update(float elapsed_ms) {
 
 	if (
             selectedTileCoordinates.rowCoord >= 0 &&
-            selectedTileCoordinates.rowCoord < level.getLevelTraversalCostMap().size() &&
+            (unsigned long) selectedTileCoordinates.rowCoord < level.getLevelTraversalCostMap().size() &&
             selectedTileCoordinates.colCoord >= 0 &&
-            selectedTileCoordinates.colCoord < level.getLevelTraversalCostMap()[0].size()
+            (unsigned long) selectedTileCoordinates.colCoord < level.getLevelTraversalCostMap()[0].size()
         ) {
 
         selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
@@ -354,14 +354,6 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 	int windowHeight;
 	glfwGetWindowSize(window, &windowWidth, &windowHeight);
 //    char debugMessage[10000];
-
-	auto mouseX = xpos;
-	auto mouseY = windowHeight - ypos;
-
-	auto wincoords = glm::vec3(
-			mouseX,
-			m_screen.y - mouseY,
-			0.0f);
 
 	int framebufferWidth, framebufferHeight;
 	glfwGetFramebufferSize(m_window, &framebufferWidth, &framebufferHeight);
