@@ -1,25 +1,20 @@
 #pragma once
 
 // internal
-#include "common.hpp"
-#include "tile.hpp"
-#include "skybox.hpp"
 #include "camera.hpp"
+#include "common.hpp"
 #include "level.hpp"
 #include "pathfinder.hpp"
+#include "skybox.hpp"
+#include "tile.hpp"
 
-// stlib
-#include <vector>
+// stdlib
+#include <memory>
 #include <random>
-#include <cstring>
-#include <cassert>
-#include <sstream>
-#include <cmath>
-#include <map>
-#include <iostream>
+#include <vector>
 
+//sdl stuff
 #define SDL_MAIN_HANDLED
-
 #include <SDL.h>
 #include <SDL_mixer.h>
 
