@@ -31,7 +31,7 @@ class Logger {
 public:
 	Logger();
 
-    static constexpr char endl = '\n';
+    static constexpr const char endl = '\n';
 
 	Logger& operator()(LogLevel logLevel);
 

@@ -21,6 +21,12 @@ World::World() {
 
 World::~World() = default;
 
+//TODO: remove me
+std::vector<std::shared_ptr<Tile>> tileRow;
+std::pair<bool, std::vector<Coord>> path;
+#include <queue>
+std::queue<Coord> pathq;
+
 // World initialization
 bool World::init(glm::vec2 screen) {
 	//-------------------------------------------------------------------------
@@ -40,7 +46,7 @@ bool World::init(glm::vec2 screen) {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	glfwWindowHint(GLFW_RESIZABLE, 1);
-	m_window = glfwCreateWindow((int) screen.x, (int) screen.y, "A1 Assignment", nullptr, nullptr);
+	m_window = glfwCreateWindow((int) screen.x, (int) screen.y, Config::WINDOW_TITLE, nullptr, nullptr);
 	m_screen = screen;
 	if (m_window == nullptr)
 		return false;
@@ -91,30 +97,31 @@ bool World::init(glm::vec2 screen) {
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
 
-    /*
-    In the context of SubObjects the number to the left of the filename indicates which of the other objs the obj is dependent on. If it's -1 then that
-    means none. This is used to figure out what the transformation tree is for animating
-    */
+	/*
+	In the context of SubObjects the number to the left of the filename indicates which of the other objs the obj is dependent on. If it's -1 then that
+	means none. This is used to figure out what the transformation tree is for animating
+	*/
 	std::vector<std::pair<TileType, std::vector<SubObjectSource>>> tiles = {
-            { TileType::SAND_1,       {{"sand1.obj", -1}} },
-            { TileType::SAND_2,       { {"sand2.obj", -1}} },
-            { TileType::SAND_3,       {{"sand3.obj", -1}} },
-            { TileType::WALL,         {{"wall.obj", -1}} },
-            { TileType::BRICK_CUBE,   {{"brickCube.obj", -1}} },
-            { TileType::MINING_TOWER, {{"miningTower.obj", -1}} },
-            { TileType::PHOTON_TOWER, {{"photonTower.obj", -1}} },
-            { TileType::TREE,         {{"treeTile1.obj", -1}} },
-            { TileType::GUN_TURRET,   {{"TurretBase.obj", -1}, {"TurretTop.obj", 0}, {"TurretGunsLeft.obj", 1}, {"TurretGunsRight.obj", 1}} },
+			{TileType::SAND_1,       {{"sand1.obj",       -1}}},
+			{TileType::SAND_2,       {{"sand2.obj",       -1}}},
+			{TileType::SAND_3,       {{"sand3.obj",       -1}}},
+			{TileType::WALL,         {{"wall.obj",        -1}}},
+			{TileType::BRICK_CUBE,   {{"brickCube.obj",   -1}}},
+			{TileType::MINING_TOWER, {{"miningTower.obj", -1}}},
+			{TileType::PHOTON_TOWER, {{"photonTower.obj", -1}}},
+			{TileType::TREE,         {{"treeTile1.obj",   -1}}},
+			{TileType::BALL,         {{"ball.obj",        -1}}},
+			{TileType::GUN_TURRET,   {{"TurretBase.obj",  -1}, {"TurretTop.obj", 0}, {"TurretGunsLeft.obj", 1}, {"TurretGunsRight.obj", 1}}},
 	};
 
-    // Load shader for default tiles
-    objShader = std::make_shared<Shader>();
-    if (!objShader->load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl"))) {
-        logger(LogLevel::ERR) << "Failed to load obj shader!" << '\n';
-        return false;
-    }
+	// Load shader for default tiles
+	objShader = std::make_shared<Shader>();
+	if (!objShader->load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl"))) {
+		logger(LogLevel::ERR) << "Failed to load obj shader!" << '\n';
+		return false;
+	}
 
-	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isnt being shared
+	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isn't being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
 	std::vector<std::vector<TileType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
 	size_t mapSize = levelArray.size();
@@ -135,31 +142,38 @@ bool World::init(glm::vec2 screen) {
 	std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 
 	//display a path
-	std::pair<bool, std::vector<Coord> > path =
+	std::pair<bool, std::vector<Coord>> path =
 			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
 	level.displayPath(path.second);
-	selectedTileCoordinates = {(int) mapSize / 2, (int) mapSize / 2};
-    selectedTile = level.tiles[selectedTileCoordinates[0]][selectedTileCoordinates[1]];
+	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
+	selectedTileCoordinates.colCoord = (int) mapSize / 2;
+	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
+
+	for (int j = 0; j < 20; ++j) {
+		auto renderer = level.tileRenderers[TileType::BALL];
+		auto tile = std::make_shared<Tile>(renderer);
+
+		tile->translate({j, 0, j});
+		tileRow.push_back(tile);
+	}
+	level.tiles.push_back(tileRow);
 	return true;
 }
 
 // skybox
 bool World::loadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder) {
-	bool success = true;
 	OBJ::Data skyboxObj;
 
 	std::string geometryPath = pathBuilder({"data", "models"});
 	std::string texturePath = pathBuilder({"data", "textures", skyboxTextureFolder});
 
-	success &= OBJ::Loader::loadOBJ(geometryPath, skyboxFilename, skyboxObj);
-	if (!success) {
-        logger(LogLevel::ERR) << "Failed to load skybox" << '\n';
+	if (!OBJ::Loader::loadOBJ(geometryPath, skyboxFilename, skyboxObj)) {
+		logger(LogLevel::ERR) << "Failed to load skybox" << '\n';
 		return false;
 	}
 
-	success &= m_skybox.init(skyboxObj);
-	if (!success) {
-        logger(LogLevel::ERR) << "Failed to initilize skybox" << '\n';
+	if (!m_skybox.init(skyboxObj)) {
+		logger(LogLevel::ERR) << "Failed to initialize skybox" << '\n';
 		return false;
 	}
 
@@ -185,7 +199,6 @@ float total_time = 0.0f;
 bool World::update(float elapsed_ms) {
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
-//	glm::vec2 screen = glm::vec2((float) w, (float) h);
 	camera.update(elapsed_ms);
 	total_time += elapsed_ms;
     selectedTile->shouldDraw(true);
@@ -200,6 +213,13 @@ bool World::update(float elapsed_ms) {
         selectedTile = level.tiles[selectedTileCoordinates[0]][selectedTileCoordinates[1]];
         selectedTile->shouldDraw(false);
 	}
+
+
+	for (const auto& elem : tileRow) {
+//		elem->
+		elem->translate({0.1f, 0, 0.1f});
+	}
+
 	return true;
 }
 
@@ -213,31 +233,27 @@ void World::draw() {
 	glfwGetFramebufferSize(m_window, &w, &h);
 	m_screen = {(float) w, (float) h}; // ITS CONVENIENT TO HAVE IN FLOAT OK
 
-	// Updating window title with points
-	std::stringstream title_ss;
-	title_ss << "Celestial Industries";
-	glfwSetWindowTitle(m_window, title_ss.str().c_str());
-
 	// Clearing backbuffer
 	glViewport(0, 0, w, h);
-	glDepthRange(0.00001, 10);
-	const float clear_color[3] = {47.0 / 256.0, 61.0 / 256.0, 84.0 / 256.0};
-	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
-	glClearDepth(1.f);
+	glDepthRange(0.00001f, 10);
+	const float clear_color[3] = {47.0f / 256.0f, 61.0f / 256.0f, 84.0f / 256.0f};
+	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0f);
+	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 projection = camera.getProjectionMatrix(m_screen.x, m_screen.y);
 	glm::mat4 view = camera.getViewMatrix();
-    glm::mat4 projectionView = projection * view;
+	glm::mat4 projectionView = projection * view;
 
-    for (auto tileRenderer : level.tileRenderers) {
-        tileRenderer.second->render(projectionView);
-    }
-	
+	for (auto tileRenderer : level.tileRenderers) {
+		tileRenderer.second->render(projectionView);
+	}
+
+
 	// make skybox rotate by 0.001 * pi/4 radians around y axis, every frame
-	//float y_rotation = 0.005 * glm::quarter_pi<float>();
-	//m_skybox.setRotation(glm::vec3(0.0, y_rotation, 0.0));
-	//m_skybox.applyTransformations();
+//	float y_rotation = 0.005 * glm::quarter_pi<float>();
+//	m_skybox.setRotation(glm::vec3(0.0, y_rotation, 0.0));
+//	m_skybox.applyTransformations();
 	m_skybox.setCameraPosition(camera.position);
 	m_skybox.draw(projection * view * m_skybox.getModelMatrix());
 
@@ -246,23 +262,23 @@ void World::draw() {
 }
 
 void World::move_cursor_up() {
-	selectedTileCoordinates[1]--;
-	printf("Selected tile: %d, %d\n", selectedTileCoordinates[0], selectedTileCoordinates[1]);
+	selectedTileCoordinates.colCoord--;
+	printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
 }
 
 void World::move_cursor_down() {
-	selectedTileCoordinates[1]++;
-	printf("Selected tile: %d, %d\n", selectedTileCoordinates[0], selectedTileCoordinates[1]);
+	selectedTileCoordinates.colCoord++;
+	printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
 }
 
 void World::move_cursor_left() {
-	selectedTileCoordinates[0]--;
-	printf("Selected tile: %d, %d\n", selectedTileCoordinates[0], selectedTileCoordinates[1]);
+	selectedTileCoordinates.rowCoord--;
+	printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
 }
 
 void World::move_cursor_right() {
-	selectedTileCoordinates[0]++;
-	printf("Selected tile: %d, %d\n", selectedTileCoordinates[0], selectedTileCoordinates[1]);
+	selectedTileCoordinates.rowCoord++;
+	printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
 }
 
 // Should the game be over ?
@@ -332,10 +348,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 }
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
-	// Handle the mouse movement here
-	int x = (int) xpos, y = (int) ypos;
 //	logger(LogLevel::DEBUG) << "X-pos: " << xpos << ", Y-pos: " << ypos << '\n';
-
 	camera.pan(x, y);
 
 	int windowWidth;
@@ -387,6 +400,7 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
         );
 		logger(LogLevel::DEBUG) << debugMessage;
 	}
+
 
 }
 
