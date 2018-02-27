@@ -23,9 +23,11 @@ World::~World() = default;
 
 //TODO: remove me
 std::vector<std::shared_ptr<Tile>> tileRow;
-std::pair<bool, std::vector<Coord>> path;
-#include <queue>
-std::queue<Coord> pathq;
+
+#include <deque>
+
+std::deque<std::pair<float, float>> aStarPath;
+
 
 // World initialization
 bool World::init(glm::vec2 screen) {
@@ -142,18 +144,39 @@ bool World::init(glm::vec2 screen) {
 	std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 
 	//display a path
-	std::pair<bool, std::vector<Coord>> path =
-			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
-	level.displayPath(path.second);
+	std::vector<Coord> path =
+			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2).second;
+
+	for (int i = 0; i < path.size() - 1; i++) {
+		std::cout << path[i].rowCoord << '\t' << path[i].colCoord << '\n';
+
+		glm::dvec3 d1{path[i].rowCoord, path[i].colCoord, 0.0f};
+		for (float jj = 0; jj <= 1; jj += 0.1f) {
+			glm::dvec3 d2 = glm::mix(glm::vec3(path[i].rowCoord, path[i].colCoord, 0.0f),
+									 glm::vec3(path[i + 1].rowCoord, path[i + 1].colCoord, 0.0f), jj);
+
+			glm::dvec3 d3 = d2 - d1;
+
+			d1 = d2;
+			std::cout << d3.x << '\t' << d3.y << '\t' << d3.z << '\n';
+			aStarPath.emplace_back(d3.x, d3.y);
+
+		}
+//		aStarPath.emplace_back(path[i+1].rowCoord, path[i+1].colCoord);
+
+
+	}
+	level.displayPath(path);
 	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
 	selectedTileCoordinates.colCoord = (int) mapSize / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 
-	for (int j = 0; j < 20; ++j) {
+	for (int j = 0; j < 1; ++j) {
 		auto renderer = level.tileRenderers[TileType::BALL];
 		auto tile = std::make_shared<Tile>(renderer);
 
-		tile->translate({j, 0, j});
+//		tile->translate({j, 0, j});
+		tile->translate({27, 0, 12});
 		tileRow.push_back(tile);
 	}
 	level.tiles.push_back(tileRow);
@@ -201,22 +224,25 @@ bool World::update(float elapsed_ms) {
 	glfwGetFramebufferSize(m_window, &w, &h);
 	camera.update(elapsed_ms);
 	total_time += elapsed_ms;
-    selectedTile->shouldDraw(true);
+	selectedTile->shouldDraw(true);
 
 	if (
-            selectedTileCoordinates.rowCoord >= 0 &&
-            (unsigned long) selectedTileCoordinates.rowCoord < level.getLevelTraversalCostMap().size() &&
-            selectedTileCoordinates.colCoord >= 0 &&
-            (unsigned long) selectedTileCoordinates.colCoord < level.getLevelTraversalCostMap()[0].size()
-        ) {
+			selectedTileCoordinates.rowCoord >= 0 &&
+			(unsigned long) selectedTileCoordinates.rowCoord < level.getLevelTraversalCostMap().size() &&
+			selectedTileCoordinates.colCoord >= 0 &&
+			(unsigned long) selectedTileCoordinates.colCoord < level.getLevelTraversalCostMap()[0].size()
+			) {
 
-        selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
-        selectedTile->shouldDraw(false);
+		selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
+		selectedTile->shouldDraw(false);
 	}
 
 
 	for (const auto& elem : tileRow) {
-		elem->translate({0.1f, 0, 0.1f});
+
+		auto b = aStarPath.front();
+		elem->translate({b.second, 0, b.first});
+		aStarPath.pop_front();
 	}
 
 	return true;
@@ -348,7 +374,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 //	logger(LogLevel::DEBUG) << "X-pos: " << xpos << ", Y-pos: " << ypos << '\n';
-	camera.pan((int)xpos,(int) ypos);
+	camera.pan((int) xpos, (int) ypos);
 
 	int windowWidth;
 	int windowHeight;
@@ -358,28 +384,29 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 	int framebufferWidth, framebufferHeight;
 	glfwGetFramebufferSize(m_window, &framebufferWidth, &framebufferHeight);
 
-	int computedFbX = (float) xpos/(float) windowWidth * (float) framebufferWidth;
-	int computedFbY = (float) ypos/(float) windowHeight* (float) framebufferHeight;
+	int computedFbX = (float) xpos / (float) windowWidth * (float) framebufferWidth;
+	int computedFbY = (float) ypos / (float) windowHeight * (float) framebufferHeight;
 
-	glm::vec2 windowCoordinates{ computedFbX, computedFbY };
-	glm::vec2 viewport{ framebufferWidth, framebufferHeight };
-	glm::vec4 clipCoordinates{ windowCoordinates / viewport * 2.0f - glm::vec2{ 1.0f }, -1.0f, 1.0f };
+	glm::vec2 windowCoordinates{computedFbX, computedFbY};
+	glm::vec2 viewport{framebufferWidth, framebufferHeight};
+	glm::vec4 clipCoordinates{windowCoordinates / viewport * 2.0f - glm::vec2{1.0f}, -1.0f, 1.0f};
 	clipCoordinates[1] *= -1.0;
-	glm::mat4 clipWorldMatrix{ glm::inverse(camera.getProjectionMatrix(windowWidth, windowHeight) * camera.getViewMatrix()) };
-	glm::vec4 unprojectedWorldCoordinates{ clipWorldMatrix * clipCoordinates };
-	glm::vec3 worldCoordinates{ glm::vec3{ unprojectedWorldCoordinates } / unprojectedWorldCoordinates.w };
+	glm::mat4 clipWorldMatrix{
+			glm::inverse(camera.getProjectionMatrix(windowWidth, windowHeight) * camera.getViewMatrix())};
+	glm::vec4 unprojectedWorldCoordinates{clipWorldMatrix * clipCoordinates};
+	glm::vec3 worldCoordinates{glm::vec3{unprojectedWorldCoordinates} / unprojectedWorldCoordinates.w};
 
 	glm::vec3 directionVector = worldCoordinates - camera.position;
-	glm::vec3 planeNormalVector = {0,1,0};
-	glm::vec3 planePoint = {0,0,0};
+	glm::vec3 planeNormalVector = {0, 1, 0};
+	glm::vec3 planePoint = {0, 0, 0};
 
 	float planeDotDirection = glm::dot(planeNormalVector, directionVector);
 	float t = glm::dot(planeNormalVector, (planePoint - camera.position)) / planeDotDirection;
 
 	if (t > 0) {
 		glm::vec3 pointInWorld = camera.position + (t * directionVector);
-        selectedTileCoordinates.rowCoord = (int) round(pointInWorld.z);
-        selectedTileCoordinates.colCoord = (int) round(pointInWorld.x);
+		selectedTileCoordinates.rowCoord = (int) round(pointInWorld.z);
+		selectedTileCoordinates.colCoord = (int) round(pointInWorld.x);
 
 //        snprintf(debugMessage, 10000, "FB mouse: %d, %d | Clipcoords: <%f, %f> | Camera surface coords: <%f, %f, %f> | Coordinates in world space: %f, %f, %f | Selected tile: <%d, %d>\n",
 //                 computedFbX, computedFbY,

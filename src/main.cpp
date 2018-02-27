@@ -18,6 +18,13 @@ Logger logger;
 // Entry point
 int main(int argc, char* argv[])
 {
+//
+//	for (int i = 0; i <= 10; ++i) {
+//		glm::dvec3 d = glm::mix(glm::vec3(5.0f, 6.0f, 0.0f),glm::vec3(8.0f,10.0f,0.0f),(float)i/10);
+//
+////		std::cout << d.x <<' ' << d.y <<' '<< d.z << '\n';
+//	}
+
 	logger(LogLevel::DEBUG) << "Started game\n";
 	// Initializing world (after renderer.init().. sorry)
 	if (!world.init({ (float)Config::WINDOW_WIDTH, (float)Config::WINDOW_HEIGHT }))
