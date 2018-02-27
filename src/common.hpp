@@ -120,6 +120,14 @@ struct Renderable
 	virtual void draw(glm::mat4 viewProjection) = 0;
 };
 
+struct Coord {
+	int rowCoord, colCoord;
+
+	Coord() = default;
+
+	Coord(int _rowCoord, int _colCoord) : rowCoord(_rowCoord), colCoord(_colCoord) {}
+};
+
 template<class T>
 T clamp(T value, T lower, T upper) {
 	if (value > upper) {

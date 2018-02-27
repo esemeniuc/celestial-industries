@@ -65,7 +65,7 @@ private:
 	Camera camera;
 
 	// Selection
-	std::vector<int> selectedTileCoordinates;
+	Coord selectedTileCoordinates;
     std::shared_ptr<Tile> selectedTile;
 
 	// Game entities

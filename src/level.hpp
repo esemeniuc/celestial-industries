@@ -1,8 +1,9 @@
 #pragma once
 
 #include <limits>
-#include <ostream>
+#include <ostream> //for overloaded << operator
 #include <unordered_map>
+#include "common.hpp"
 #include "tile.hpp"
 
 #define INF std::numeric_limits<float>::infinity()
@@ -22,6 +23,7 @@ enum class TileType {
 	PHOTON_TOWER,
 	TREE,
 	GUN_TURRET,
+	BALL
 };
 
 // used to build a graph of nodes for the AI pathfinder to traverse each tile node.
@@ -50,16 +52,6 @@ struct AStarNode {
 		   << state.movementCost << " fScore: " << state.fScore;
 		return os;
 	}
-};
-
-struct Coord {
-	int rowCoord, colCoord;
-
-	Coord() = default;
-
-	Coord(AStarNode a) : rowCoord(a.rowCoord), colCoord(a.colCoord) {}
-
-	Coord(int _rowCoord, int _colCoord) : rowCoord(_rowCoord), colCoord(_colCoord) {}
 };
 
 class Level {
