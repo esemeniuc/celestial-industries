@@ -17,5 +17,3 @@ namespace Config {
 	const int CAMERA_START_POSITION_Y = 20;
 	const int CAMERA_START_POSITION_Z = -15;
 }
-
-

@@ -2,7 +2,7 @@
 
 #include <limits>
 #include <ostream> //for overloaded << operator
-#include <unordered_map>
+#include <map>
 #include "common.hpp"
 #include "tile.hpp"
 
@@ -59,8 +59,8 @@ public:
 	//members
 	// Using a shared pointer to a tile allows us to actually have derived classes in there as well.
 	std::vector<std::vector<std::shared_ptr<Tile>>> tiles; // we can add the time dimension when we get there
-	std::unordered_map<TileType, std::vector<SubObject>> tileTypes;
-	std::unordered_map<TileType, std::shared_ptr<CompositeObjectBulkRenderer>> tileRenderers;
+	std::map<TileType, std::vector<SubObject>> tileTypes;
+	std::map<TileType, std::shared_ptr<CompositeObjectBulkRenderer>> tileRenderers;
 
 	//funcs
 	bool init(
