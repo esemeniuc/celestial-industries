@@ -40,7 +40,7 @@ bool World::init(glm::vec2 screen) {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	glfwWindowHint(GLFW_RESIZABLE, 1);
-	m_window = glfwCreateWindow((int) screen.x, (int) screen.y, "A1 Assignment", nullptr, nullptr);
+	m_window = glfwCreateWindow((int) screen.x, (int) screen.y, Config::WINDOW_TITLE, nullptr, nullptr);
 	m_screen = screen;
 	if (m_window == nullptr)
 		return false;
@@ -159,7 +159,7 @@ bool World::loadSkybox(const std::string& skyboxFilename, const std::string& sky
 
 	success &= m_skybox.init(skyboxObj);
 	if (!success) {
-        logger(LogLevel::ERR) << "Failed to initilize skybox" << '\n';
+        logger(LogLevel::ERR) << "Failed to initialize skybox" << '\n';
 		return false;
 	}
 
@@ -204,14 +204,12 @@ void World::draw() {
 	glfwGetFramebufferSize(m_window, &w, &h);
 	m_screen = {(float) w, (float) h}; // ITS CONVENIENT TO HAVE IN FLOAT OK
 
-	glfwSetWindowTitle(m_window, Config::WINDOW_TITLE);
-
 	// Clearing backbuffer
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001f, 10);
 	const float clear_color[3] = {47.0f / 256.0f, 61.0f / 256.0f, 84.0f / 256.0f};
 	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0f);
-	glClearDepth(1.f);
+	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 projection = camera.getProjectionMatrix(m_screen.x, m_screen.y);
