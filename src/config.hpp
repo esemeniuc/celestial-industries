@@ -15,5 +15,5 @@ namespace Config {
 	constexpr const char* SYSTEM_LOG_FILE_PATH = "debug.log";
 	const int CAMERA_START_POSITION_X = 20;
 	const int CAMERA_START_POSITION_Y = 20;
-	const int CAMERA_START_POSITION_Z = -15;
+	const int CAMERA_START_POSITION_Z = 30;
 }
