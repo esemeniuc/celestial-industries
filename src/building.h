@@ -7,20 +7,22 @@
 
 class Building : Entity {
 protected:
-	int initialHealth;
+	const int initialHealth;
 	const int buildingValue; //for ai to calculate what to attack
 
 	int currentHealth;
 };
 
 
-enum class DefenceBuildingState {
+enum class DefensiveBuildingState {
 	IDLE, PIVOT, ATTACK
 };
 
-class DefenceBuilding : Building {
+class DefensiveBuilding : Building {
 protected:
+
 	int attackPower;
 	int attackRange;
 	int attackSpeed;
+	DefensiveBuildingState state;
 };
