@@ -114,7 +114,7 @@ bool World::init(glm::vec2 screen) {
         return false;
     }
 
-	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isnt being shared
+	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isn't being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
 	std::vector<std::vector<TileType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
 	size_t mapSize = levelArray.size();
@@ -204,16 +204,13 @@ void World::draw() {
 	glfwGetFramebufferSize(m_window, &w, &h);
 	m_screen = {(float) w, (float) h}; // ITS CONVENIENT TO HAVE IN FLOAT OK
 
-	// Updating window title with points
-	std::stringstream title_ss;
-	title_ss << "Celestial Industries";
-	glfwSetWindowTitle(m_window, title_ss.str().c_str());
+	glfwSetWindowTitle(m_window, Config::WINDOW_TITLE);
 
 	// Clearing backbuffer
 	glViewport(0, 0, w, h);
-	glDepthRange(0.00001, 10);
-	const float clear_color[3] = {47.0 / 256.0, 61.0 / 256.0, 84.0 / 256.0};
-	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
+	glDepthRange(0.00001f, 10);
+	const float clear_color[3] = {47.0f / 256.0f, 61.0f / 256.0f, 84.0f / 256.0f};
+	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0f);
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
