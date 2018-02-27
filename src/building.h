@@ -7,8 +7,10 @@
 
 class Building : Entity {
 protected:
-	int health;
+	int initialHealth;
+	const int buildingValue; //for ai to calculate what to attack
 
+	int currentHealth;
 };
 
 
