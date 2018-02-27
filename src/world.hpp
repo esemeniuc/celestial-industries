@@ -9,7 +9,7 @@
 #include "tile.hpp"
 
 // stdlib
-#include <memory>
+#include <memory> //for shared_ptr
 #include <random>
 #include <vector>
 
