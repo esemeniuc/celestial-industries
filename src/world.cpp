@@ -21,6 +21,8 @@ World::World() {
 
 World::~World() = default;
 
+std::vector<std::shared_ptr<Tile>> tileRow;
+
 // World initialization
 bool World::init(glm::vec2 screen) {
 	//-------------------------------------------------------------------------
@@ -142,16 +144,15 @@ bool World::init(glm::vec2 screen) {
 	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
 	selectedTileCoordinates.colCoord = (int) mapSize / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
-	
-	for (int j = 0; j < 100; ++j) {
-		std::vector<std::shared_ptr<Tile>> tileRow;
-		auto renderer = level.tileRenderers[TileType::BALL];
-		std::shared_ptr<Tile> tile = std::make_shared<Tile>(renderer);
 
-		tile->translate({j, 1, j});
+	for (int j = 0; j < 20; ++j) {
+		auto renderer = level.tileRenderers[TileType::BALL];
+		auto tile = std::make_shared<Tile>(renderer);
+
+		tile->translate({j, 0, j});
 		tileRow.push_back(tile);
-		level.tiles.push_back(tileRow);
 	}
+	level.tiles.push_back(tileRow);
 	return true;
 }
 
@@ -199,6 +200,11 @@ bool World::update(float elapsed_ms) {
 	selectedTile->shouldDraw(true);
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 	selectedTile->shouldDraw(false);
+
+	for (auto elem : tileRow) {
+		elem->translate({0.1f, 0, 0.1f});
+	}
+
 	return true;
 }
 
