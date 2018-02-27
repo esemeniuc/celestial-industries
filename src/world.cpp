@@ -147,25 +147,22 @@ bool World::init(glm::vec2 screen) {
 	std::vector<Coord> path =
 			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2).second;
 
+	//create interpolated moves for the ball
 	for (int i = 0; i < path.size() - 1; i++) {
-		std::cout << path[i].rowCoord << '\t' << path[i].colCoord << '\n';
+//		std::cout << path[i].rowCoord << '\t' << path[i].colCoord << '\n';
 
-		glm::dvec3 d1{path[i].rowCoord, path[i].colCoord, 0.0f};
-		for (float jj = 0; jj <= 1; jj += 0.1f) {
-			glm::dvec3 d2 = glm::mix(glm::vec3(path[i].rowCoord, path[i].colCoord, 0.0f),
-									 glm::vec3(path[i + 1].rowCoord, path[i + 1].colCoord, 0.0f), jj);
+		float stepSize = 1;
+		float dx = path[i + 1].rowCoord - path[i].rowCoord;
+		float dy = path[i + 1].colCoord - path[i].colCoord;
+		float transX = dx / stepSize;
+		float transY = dy / stepSize;
 
-			glm::dvec3 d3 = d2 - d1;
-
-			d1 = d2;
-			std::cout << d3.x << '\t' << d3.y << '\t' << d3.z << '\n';
-			aStarPath.emplace_back(d3.x, d3.y);
-
+		for (int k = 0; k < (int) stepSize; k++) {
+//			std::cout << transX << '\t' << transY << '\n';
+			aStarPath.emplace_back(transX, transY);
 		}
-//		aStarPath.emplace_back(path[i+1].rowCoord, path[i+1].colCoord);
-
-
 	}
+
 	level.displayPath(path);
 	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
 	selectedTileCoordinates.colCoord = (int) mapSize / 2;
@@ -176,7 +173,7 @@ bool World::init(glm::vec2 screen) {
 		auto tile = std::make_shared<Tile>(renderer);
 
 //		tile->translate({j, 0, j});
-		tile->translate({27, 0, 12});
+		tile->translate({27, 0, 11});
 		tileRow.push_back(tile);
 	}
 	level.tiles.push_back(tileRow);
@@ -237,12 +234,13 @@ bool World::update(float elapsed_ms) {
 		selectedTile->shouldDraw(false);
 	}
 
-
+	//display interpolated moves for ball
 	for (const auto& elem : tileRow) {
-
-		auto b = aStarPath.front();
-		elem->translate({b.second, 0, b.first});
-		aStarPath.pop_front();
+		if (!aStarPath.empty()) {
+			auto b = aStarPath.front();
+			elem->translate({b.second, 0, b.first});
+			aStarPath.pop_front();
+		}
 	}
 
 	return true;
