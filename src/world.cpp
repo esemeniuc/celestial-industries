@@ -204,13 +204,13 @@ bool World::update(float elapsed_ms) {
     selectedTile->shouldDraw(true);
 
 	if (
-            selectedTileCoordinates[0] > 0 &&
-            selectedTileCoordinates[0] < level.tiles.size() &&
-            selectedTileCoordinates[1] > 0 &&
-            selectedTileCoordinates[1] < level.tiles[0].size()
+            selectedTileCoordinates.rowCoord > 0 &&
+            selectedTileCoordinates.rowCoord < level.tiles.size() &&
+            selectedTileCoordinates.colCoord > 0 &&
+            selectedTileCoordinates.colCoord < level.tiles[0].size()
         ) {
 
-        selectedTile = level.tiles[selectedTileCoordinates[0]][selectedTileCoordinates[1]];
+        selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
         selectedTile->shouldDraw(false);
 	}
 
@@ -349,7 +349,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 //	logger(LogLevel::DEBUG) << "X-pos: " << xpos << ", Y-pos: " << ypos << '\n';
-	camera.pan(x, y);
+	camera.pan((int)xpos,(int) ypos);
 
 	int windowWidth;
 	int windowHeight;
@@ -369,8 +369,8 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 	int framebufferWidth, framebufferHeight;
 	glfwGetFramebufferSize(m_window, &framebufferWidth, &framebufferHeight);
 
-	int computedFbX = (float) x/(float) windowWidth * (float) framebufferWidth;
-	int computedFbY = (float) y/(float) windowHeight* (float) framebufferHeight;
+	int computedFbX = (float) xpos/(float) windowWidth * (float) framebufferWidth;
+	int computedFbY = (float) ypos/(float) windowHeight* (float) framebufferHeight;
 
 	glm::vec2 windowCoordinates{ computedFbX, computedFbY };
 	glm::vec2 viewport{ framebufferWidth, framebufferHeight };
@@ -389,16 +389,17 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 
 	if (t > 0) {
 		glm::vec3 pointInWorld = camera.position + (t * directionVector);
-        selectedTileCoordinates = {(int) pointInWorld.z, (int) pointInWorld.x};
+        selectedTileCoordinates.rowCoord = (int) pointInWorld.z;
+        selectedTileCoordinates.colCoord = (int) pointInWorld.x;
 
-        snprintf(debugMessage, 10000, "FB mouse: %d, %d | Clipcoords: <%f, %f> | Camera surface coords: <%f, %f, %f> | Coordinates in world space: %f, %f, %f | Selected tile: <%d, %d>\n",
-                 computedFbX, computedFbY,
-                 clipCoordinates[0], clipCoordinates[1],
-                 worldCoordinates.x, worldCoordinates.y, worldCoordinates.z,
-                 pointInWorld.x, pointInWorld.y, pointInWorld.z,
-                 selectedTileCoordinates[0], selectedTileCoordinates[1]
-        );
-		logger(LogLevel::DEBUG) << debugMessage;
+//        snprintf(debugMessage, 10000, "FB mouse: %d, %d | Clipcoords: <%f, %f> | Camera surface coords: <%f, %f, %f> | Coordinates in world space: %f, %f, %f | Selected tile: <%d, %d>\n",
+//                 computedFbX, computedFbY,
+//                 clipCoordinates[0], clipCoordinates[1],
+//                 worldCoordinates.x, worldCoordinates.y, worldCoordinates.z,
+//                 pointInWorld.x, pointInWorld.y, pointInWorld.z,
+//                 selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord
+//        );
+//		logger(LogLevel::DEBUG) << debugMessage;
 	}
 
 
