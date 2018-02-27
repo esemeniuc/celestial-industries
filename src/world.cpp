@@ -21,7 +21,11 @@ World::World() {
 
 World::~World() = default;
 
+//TODO: remove me
 std::vector<std::shared_ptr<Tile>> tileRow;
+std::pair<bool, std::vector<Coord>> path;
+#include <queue>
+std::queue<Coord> pathq;
 
 // World initialization
 bool World::init(glm::vec2 screen) {
@@ -201,7 +205,9 @@ bool World::update(float elapsed_ms) {
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 	selectedTile->shouldDraw(false);
 
-	for (auto elem : tileRow) {
+
+	for (const auto& elem : tileRow) {
+//		elem->
 		elem->translate({0.1f, 0, 0.1f});
 	}
 

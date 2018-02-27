@@ -4,8 +4,9 @@
 
 #pragma once
 
-#include "entity.hpp"
+#include <queue>
 #include "common.hpp"
+#include "entity.hpp"
 
 enum class UnitState {
 	IDLE, RECHARGING, LOW_ENERGY, ATTACK, RETREAT, ACTION
@@ -29,6 +30,7 @@ protected:
 	//mutable values
 	int currentHealth;
 	int currentEnergyLevel;
+	std::queue<Coord> moveTargets;
 	UnitState state;
 
 public:
