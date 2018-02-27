@@ -56,6 +56,11 @@ enum collision_geometry_type {
 	cg_bounding_cylinder,
 };
 
+enum class EntityOwner {
+	NONE, PLAYER, AI
+};
+
+
 class Entity : public OBJRenderable {
 public:
 	virtual void update(float ms) = 0;
@@ -100,4 +105,6 @@ protected:
 
 	// id number of the geometry
 	long geometry_id;
+
+	EntityOwner owner;
 };

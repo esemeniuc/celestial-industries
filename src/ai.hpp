@@ -5,7 +5,7 @@
 #pragma once
 
 #include <unordered_set>
-#include <unit/genericunit.h>
+#include "genericunit.hpp"
 #include "building.h"
 
 //assume AI has goal to destroy main control building of player
@@ -34,6 +34,7 @@ patrol/scout what player is doing
 // should we think about something like Line of sight (LOS), this is going to be local strategy I think (state machine based)
 //also the commander ai will still be line of sight based as well i think, because that way it wont attack you the moment you place
 //down a new building
+
 
 class Ai {
 	std::vector<std::vector<GenericUnit>> unitsSeen;

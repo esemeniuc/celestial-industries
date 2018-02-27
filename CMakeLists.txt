@@ -50,7 +50,8 @@ endif ()
 
 
 target_include_directories(proj PUBLIC
-		src/
+		src
+		src/unit
 		ext/gl3w
 		ext/stb_image
 		${SDL2_INCLUDE_DIRS}
