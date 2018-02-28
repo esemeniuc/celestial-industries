@@ -133,11 +133,11 @@ bool Level::initTileTypes(std::vector<std::pair<TileType, std::vector<SubObjectS
 }
 
 
-bool Level::displayPath(const std::vector<Coord>& path) {
+bool Level::displayPath(const std::vector<Coord>& path, TileType material) {
 
 	for (const Coord& component : path) {
 		std::vector<std::shared_ptr<Tile>> tileRow;
-        auto renderer = tileRenderers[TileType::SAND_2];
+        auto renderer = tileRenderers[material];
         std::shared_ptr<Tile> tile = std::make_shared<Tile>(renderer);
 
 		tile->translate({component.colCoord, 0, component.rowCoord});

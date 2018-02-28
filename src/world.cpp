@@ -22,11 +22,15 @@ World::World() {
 World::~World() = default;
 
 //TODO: remove me
-std::vector<std::shared_ptr<Tile>> tileRow;
+std::shared_ptr<Tile> unit1;
+std::shared_ptr<Tile> unit2;
+std::shared_ptr<Tile> unit3;
 
-#include <deque>
+#include <queue>
 
-std::deque<std::pair<float, float>> aStarPath;
+std::queue<std::pair<float, float>> interpPath1;
+std::queue<std::pair<float, float>> interpPath2;
+std::queue<std::pair<float, float>> interpPath3;
 
 
 // World initialization
@@ -134,49 +138,75 @@ bool World::init(glm::vec2 screen) {
 
 	// test different starting points for the AI
 	std::vector<std::vector<AStarNode>> costMap = level.getLevelTraversalCostMap();
-	auto start = std::chrono::high_resolution_clock::now();
-	AI::aStar::a_star(costMap, 1, 19, 1, 11, 25);
-	AI::aStar::a_star(costMap, 1, 1, 1, 11, 25);
-	AI::aStar::a_star(costMap, 1, 1, 39, 11, 25);
-	auto finish = std::chrono::high_resolution_clock::now();
+	//benchmark a*
+	{
+		auto start = std::chrono::high_resolution_clock::now();
+		AI::aStar::a_star(costMap, 1, 19, 1, 11, 25);
+		AI::aStar::a_star(costMap, 1, 1, 1, 11, 25);
+		AI::aStar::a_star(costMap, 1, 1, 39, 11, 25);
+		auto finish = std::chrono::high_resolution_clock::now();
 
-	std::chrono::duration<double> elapsed = finish - start;
-	std::cout << "Elapsed time: " << elapsed.count() << " s\n";
-
-	//display a path
-	std::vector<Coord> path =
-			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2).second;
-
-	//create interpolated moves for the ball
-	for (int i = 0; i < path.size() - 1; i++) {
-//		std::cout << path[i].rowCoord << '\t' << path[i].colCoord << '\n';
-
-		float stepSize = 1;
-		float dx = path[i + 1].rowCoord - path[i].rowCoord;
-		float dy = path[i + 1].colCoord - path[i].colCoord;
-		float transX = dx / stepSize;
-		float transY = dy / stepSize;
-
-		for (int k = 0; k < (int) stepSize; k++) {
-//			std::cout << transX << '\t' << transY << '\n';
-			aStarPath.emplace_back(transX, transY);
-		}
+		std::chrono::duration<double> elapsed = finish - start;
+		std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 	}
 
-	level.displayPath(path);
 	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
 	selectedTileCoordinates.colCoord = (int) mapSize / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 
-	for (int j = 0; j < 1; ++j) {
-		auto renderer = level.tileRenderers[TileType::BALL];
-		auto tile = std::make_shared<Tile>(renderer);
+//	for (int j = 0; j < 1; ++j) {
+//		auto renderer = level.tileRenderers[TileType::BALL];
+//		auto tile = std::make_shared<Tile>(renderer);
+//
+////		tile->translate({j, 0, j});
+//		tile->translate({27, 0, 11});
+//		tileRow.push_back(tile);
+//	}
+//	level.tiles.push_back(tileRow);
+//	return true;
 
-//		tile->translate({j, 0, j});
-		tile->translate({27, 0, 11});
-		tileRow.push_back(tile);
-	}
-	level.tiles.push_back(tileRow);
+	//ball example
+	//display a path
+	std::vector<Coord> path1 =
+			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2).second;
+	level.displayPath(path1, TileType::SAND_2);
+	interpPath1 = AI::aStar::createInterpolatedPath(path1);
+
+	//render the path
+	auto renderer = level.tileRenderers[TileType::BALL];
+	unit1 = std::make_shared<Tile>(renderer);
+	unit1->translate({27, 0, 11});
+	level.tiles.push_back({{unit1}});
+
+	//wall example
+	//display a path
+	std::vector<Coord> path2 =
+			AI::aStar::a_star(costMap, 1, 19, 40, (int) mapSize / 2, (int) mapSize / 2).second;
+	std::cout << "path2 length: " << path2.size() << '\n';
+	level.displayPath(path2, TileType::SAND_2);
+	interpPath2 = AI::aStar::createInterpolatedPath(path2);
+
+	//render the path
+	renderer = level.tileRenderers[TileType::WALL];
+	unit2 = std::make_shared<Tile>(renderer);
+	unit2->translate({39, 0, 19});
+	level.tiles.push_back({{unit2}});
+
+	//mining tower example
+	//display a path
+	std::vector<Coord> path3 =
+			AI::aStar::a_star(costMap, 1, 1, 40, (int) mapSize / 2, (int) mapSize / 2).second;
+	std::cout << "path3 length: " << path3.size() << '\n';
+	level.displayPath(path3, TileType::SAND_2);
+	interpPath3 = AI::aStar::createInterpolatedPath(path3);
+
+	//render the path
+	renderer = level.tileRenderers[TileType::MINING_TOWER];
+	unit3 = std::make_shared<Tile>(renderer);
+	unit3->translate({39, 0, 1});
+	level.tiles.push_back({{unit3}});
+
+
 	return true;
 }
 
@@ -235,12 +265,22 @@ bool World::update(float elapsed_ms) {
 	}
 
 	//display interpolated moves for ball
-	for (const auto& elem : tileRow) {
-		if (!aStarPath.empty()) {
-			auto b = aStarPath.front();
-			elem->translate({b.second, 0, b.first});
-			aStarPath.pop_front();
-		}
+	if (!interpPath1.empty()) {
+		auto coord = interpPath1.front();
+		unit1->translate({coord.second, 0, coord.first});
+		interpPath1.pop();
+	}
+
+	if (!interpPath2.empty()) {
+		auto coord = interpPath2.front();
+		unit2->translate({coord.second, 0, coord.first});
+		interpPath2.pop();
+	}
+
+	if (!interpPath3.empty()) {
+		auto coord = interpPath3.front();
+		unit3->translate({coord.second, 0, coord.first});
+		interpPath3.pop();
 	}
 
 	return true;

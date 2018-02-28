@@ -71,7 +71,7 @@ public:
 
 	void update(float ms);
 
-	bool displayPath(const std::vector<Coord>& levelArray);
+	bool displayPath(const std::vector<Coord>& levelArray, TileType material);
 
 	std::vector<std::vector<TileType>> levelLoader(const std::string& levelTextFile);
 

@@ -27,7 +27,7 @@ namespace AI {
 	float aStar::l2_norm(const AStarNode& startNode, const AStarNode& goal) {
 		int rowDiff = startNode.rowCoord - goal.rowCoord;
 		int colDiff = startNode.colCoord - goal.colCoord;
-		return (float)std::sqrt((rowDiff * rowDiff) + (colDiff * colDiff));
+		return (float) std::sqrt((rowDiff * rowDiff) + (colDiff * colDiff));
 	}
 
 	std::vector<AStarNode>
@@ -49,28 +49,28 @@ namespace AI {
 		// check if we can move forward a column
 		const float OBSTACLE_COST = 1000.0;
 		if ((col != numOfColumns - 1) && (((row == goalRow) && (col + 1 == goalCol)) ||
-			graph[row][col + 1].movementCost < OBSTACLE_COST)) {
+										  graph[row][col + 1].movementCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row][col + 1]);
 		}
 
 		// check if we can move backward a column
 		// costOfBackwardMove = std::get<2>(graph[row][col - 1]);
 		if ((col != 0) && (((row == goalRow) && (col - 1 == goalCol)) ||
-			graph[row][col - 1].movementCost < OBSTACLE_COST)) {
+						   graph[row][col - 1].movementCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row][col - 1]);
 		}
 
 		// check if we can move up a row
 		// costOfUpMove = std::get<2>(graph[row][col + 1]);
 		if ((row != 0) && (((row - 1 == goalRow) && (col == goalCol)) ||
-			graph[row - 1][col].movementCost < OBSTACLE_COST)) {
+						   graph[row - 1][col].movementCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row - 1][col]);
 		}
 
 		// check if we can move down a row
 		// costOfDownMove = std::get<2>(graph[row][col + 1]);
 		if ((row != numOfRows - 1) && (((row + 1 == goalRow) && (col == goalCol)) ||
-			graph[row + 1][col].movementCost < OBSTACLE_COST)) {
+									   graph[row + 1][col].movementCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row + 1][col]);
 		}
 
@@ -102,8 +102,8 @@ namespace AI {
 		int goalRow = goalX / tileSize;
 		int goalCol = goalZ / tileSize;
 
-        AStarNode start = AStarNode(startRow, startCol, 10.0f, 0.0f);
-        AStarNode goal = AStarNode(goalRow, goalCol, 10.0f, INF);
+		AStarNode start = AStarNode(startRow, startCol, 10.0f, 0.0f);
+		AStarNode goal = AStarNode(goalRow, goalCol, 10.0f, INF);
 
 		frontier.push(start);
 		came_from[start] = start;
@@ -142,5 +142,25 @@ namespace AI {
 		}
 
 		return {false, {}}; //false for bool because we didn't find a path
+	}
+
+	std::queue<std::pair<float, float>> AI::aStar::createInterpolatedPath(const std::vector<Coord>& path) {
+		std::queue<std::pair<float, float>> aStarPath;
+		//create interpolated moves for the ball
+		for (int i = 0; i < path.size() - 1; i++) {
+//		std::cout << path[i].rowCoord << '\t' << path[i].colCoord << '\n';
+
+			float stepSize = 3;
+			float dx = path[i + 1].rowCoord - path[i].rowCoord;
+			float dy = path[i + 1].colCoord - path[i].colCoord;
+			float transX = dx / stepSize;
+			float transY = dy / stepSize;
+
+			for (int k = 0; k < (int) stepSize; k++) {
+//			std::cout << transX << '\t' << transY << '\n';
+				aStarPath.emplace(transX, transY);
+			}
+		}
+		return aStarPath;
 	}
 }
