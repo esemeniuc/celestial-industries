@@ -31,7 +31,7 @@ public:
     void render(glm::mat4 viewProjection);
 };
 
-class Renderable { // Note: does NOT extend Renderable. This is intentional as it is not compatible with Renderable
+class Renderable {
 private:
     std::shared_ptr<Renderer> parent;
     unsigned int id;
