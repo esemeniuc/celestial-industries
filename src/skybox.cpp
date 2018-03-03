@@ -96,3 +96,11 @@ cube_textures Skybox::get_cube_faces()
 {
 	return faces;
 }
+
+glm::mat4 Skybox::getModelMatrix() {
+	return model;
+}
+
+void Skybox::setCameraPosition(glm::vec3 pos) {
+	cameraPosition = pos;
+}

@@ -54,13 +54,15 @@ glm::vec3 Entity::getPosition()
 void Entity::applyTransformations()
 {	
 	// apply scaling
-	this->model = glm::scale(this->model, this->scale);
+	glm::mat4 model;
+	model = glm::scale(model, this->scale);
 	// apply rotations
-	this->model = glm::rotate(this->model, rotation.x, glm::vec3(1.0, 0.0, 0.0));
-	this->model = glm::rotate(this->model, rotation.y, glm::vec3(0.0, 1.0, 0.0));
-	this->model = glm::rotate(this->model, rotation.z, glm::vec3(0.0, 0.0, 1.0));
+	model = glm::rotate(model, rotation.x, glm::vec3(1.0, 0.0, 0.0));
+	model = glm::rotate(model, rotation.y, glm::vec3(0.0, 1.0, 0.0));
+	model = glm::rotate(model, rotation.z, glm::vec3(0.0, 0.0, 1.0));
 	// apply translations
-	this->model = glm::translate(this->model, this->translation);	
+	model = glm::translate(model, this->translation);
+	setModelMatrix(0, model);
 }
 
 void Entity::setCollisionGeometryType(collision_geometry_type cgtype) 
@@ -92,3 +94,6 @@ bool Entity::isTextured()
 {
 	return this->texture_flag;
 }
+
+Entity::Entity(const std::shared_ptr<Renderer> &initParent) : Renderable(
+		initParent) {}

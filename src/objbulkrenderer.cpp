@@ -1,6 +1,6 @@
 #include "objbulkrenderer.hpp"
 
-CompositeObjectBulkRenderer::CompositeObjectBulkRenderer(
+Renderer::Renderer(
     std::shared_ptr<Shader> initShader,
     std::vector<SubObject> initSubobjects
 )
@@ -9,24 +9,24 @@ CompositeObjectBulkRenderer::CompositeObjectBulkRenderer(
     subObjects = initSubobjects;
 }
 
-void CompositeObjectBulkRenderer::addSubOjbect(SubObject subObject)
+void Renderer::addSubOjbect(SubObject subObject)
 {
     subObjects.push_back(subObject);
 }
 
-unsigned int CompositeObjectBulkRenderer::getNextId()
+unsigned int Renderer::getNextId()
 {
     return objects.size();
 }
 
-glm::mat4 CompositeObjectBulkRenderer::collapseMatrixVector(std::vector<glm::mat4> v)
+glm::mat4 Renderer::collapseMatrixVector(std::vector<glm::mat4> v)
 {
     glm::mat4 result = glm::mat4(1.0f);
     for (int i = v.size()-1; i >= 0; i--)
         result *= v[i];
     return result;
 }
-void CompositeObjectBulkRenderer::render(glm::mat4 viewProjection)
+void Renderer::render(glm::mat4 viewProjection)
 {
     // Setting shaders
     glUseProgram(shader->program);
@@ -69,7 +69,7 @@ void CompositeObjectBulkRenderer::render(glm::mat4 viewProjection)
             glUniform3f(diffuse_uloc, mesh.material.diffuse.x, mesh.material.diffuse.y, mesh.material.diffuse.z);
             glUniform3f(specular_uloc, mesh.material.specular.x, mesh.material.specular.y, mesh.material.specular.z);
             glUniform1i(hasDiffuseMap_uloc, mesh.material.hasDiffuseMap);
-            for (const CompositeObjectData& object : objects) {
+            for (const RenderableInstanceData& object : objects) {
                 if (object.shouldDraw) {
                     std::vector<glm::mat4> modelMatrices;
                     int modelIndex = i;
@@ -87,7 +87,7 @@ void CompositeObjectBulkRenderer::render(glm::mat4 viewProjection)
     }
 }
 
-CompositeObjectBulkRenderable::CompositeObjectBulkRenderable(std::shared_ptr<CompositeObjectBulkRenderer> initParent)
+Renderable::Renderable(std::shared_ptr<Renderer> initParent)
 {
     parent = initParent;
     id = parent->getNextId();
@@ -100,47 +100,47 @@ CompositeObjectBulkRenderable::CompositeObjectBulkRenderable(std::shared_ptr<Com
     });
 }
 
-void CompositeObjectBulkRenderable::shouldDraw(bool val)
+void Renderable::shouldDraw(bool val)
 {
     parent->objects[id].shouldDraw = val;
 }
 
-void CompositeObjectBulkRenderable::translate(glm::vec3 translation) {
+void Renderable::translate(glm::vec3 translation) {
     translate(0, translation);
 }
 
-void CompositeObjectBulkRenderable::rotate(float amount, glm::vec3 axis)
+void Renderable::rotate(float amount, glm::vec3 axis)
 {
     rotate(0, amount, axis);
 }
 
-void CompositeObjectBulkRenderable::scale(glm::vec3 s)
+void Renderable::scale(glm::vec3 s)
 {
     scale(0, s);
 }
 
-void CompositeObjectBulkRenderable::translate(int modelIndex, glm::vec3 translation)
+void Renderable::translate(int modelIndex, glm::vec3 translation)
 {
     parent->objects[id].matrixStack[modelIndex] = glm::translate(parent->objects[id].matrixStack[modelIndex], translation);
 }
 
-void CompositeObjectBulkRenderable::rotate(int modelIndex, float amount, glm::vec3 axis)
+void Renderable::rotate(int modelIndex, float amount, glm::vec3 axis)
 {
     parent->objects[id].matrixStack[modelIndex] = glm::rotate(parent->objects[id].matrixStack[modelIndex], amount, axis);
 }
 
-void CompositeObjectBulkRenderable::scale(int modelIndex, glm::vec3 scale)
+void Renderable::scale(int modelIndex, glm::vec3 scale)
 {
 
     parent->objects[id].matrixStack[modelIndex] = glm::scale(parent->objects[id].matrixStack[modelIndex], scale);
 }
 
-void CompositeObjectBulkRenderable::setModelMatrix(int modelIndex, glm::mat4 mat)
+void Renderable::setModelMatrix(int modelIndex, glm::mat4 mat)
 {
     parent->objects[id].matrixStack[modelIndex] = mat;
 }
 
-void CompositeObjectBulkRenderable::setModelMatrix(int modelIndex, glm::vec3 translation, float angle, glm::vec3 rotationAxis, glm::vec3 scale)
+void Renderable::setModelMatrix(int modelIndex, glm::vec3 translation, float angle, glm::vec3 rotationAxis, glm::vec3 scale)
 {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::scale(model, scale);

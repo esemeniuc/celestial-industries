@@ -6,7 +6,7 @@ struct SubObject {
     int parentMesh;
 };
 
-struct CompositeObjectData {
+struct RenderableInstanceData {
     bool shouldDraw;
     std::vector<glm::mat4> matrixStack; // Must be of identical length as subobject's meshes. enforced in constructor.
 };
@@ -16,13 +16,13 @@ struct SubObjectSource {
     int parentMesh;
 };
 
-class CompositeObjectBulkRenderer {
+class Renderer {
     std::shared_ptr<Shader> shader;
     glm::mat4 collapseMatrixVector(std::vector<glm::mat4> v);
 public:
     std::vector<SubObject> subObjects;
-    std::vector<CompositeObjectData> objects;
-    CompositeObjectBulkRenderer(
+    std::vector<RenderableInstanceData> objects;
+    Renderer(
         std::shared_ptr<Shader> initShader,
         std::vector<SubObject> initSubobjects
     );
@@ -31,12 +31,12 @@ public:
     void render(glm::mat4 viewProjection);
 };
 
-class CompositeObjectBulkRenderable { // Note: does NOT extend Renderable. This is intentional as it is not compatible with Renderable
+class Renderable { // Note: does NOT extend Renderable. This is intentional as it is not compatible with Renderable
 private:
-    std::shared_ptr<CompositeObjectBulkRenderer> parent;
+    std::shared_ptr<Renderer> parent;
     unsigned int id;
 public:
-    CompositeObjectBulkRenderable(std::shared_ptr<CompositeObjectBulkRenderer> initParent);
+    Renderable(std::shared_ptr<Renderer> initParent);
     void shouldDraw(bool val);
 
     void translate(int modelIndex, glm::vec3 translation);
@@ -50,5 +50,5 @@ public:
     void rotate(float amount, glm::vec3 axis);
     void scale(glm::vec3 scale);
 
-    virtual ~CompositeObjectBulkRenderable() {};
+    virtual ~Renderable() {};
 };
