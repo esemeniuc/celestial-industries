@@ -54,7 +54,7 @@ glm::vec3 Entity::getPosition()
 void Entity::applyTransformations()
 {	
 	// apply scaling
-	glm::mat4 model;
+	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::scale(model, this->scale);
 	// apply rotations
 	model = glm::rotate(model, rotation.x, glm::vec3(1.0, 0.0, 0.0));
