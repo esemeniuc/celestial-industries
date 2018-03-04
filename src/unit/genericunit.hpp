@@ -37,11 +37,11 @@ public:
 
 	GenericUnit(int _initialHealth, int _initialEnergyLevel, int _attackDamage, int _attackRange, int _attackSpeed,
 				int _movementSpeed, int _unitValue, EntityOwner _owner, int _currentHealth, int _currentEnergyLevel,
-				UnitState _state) : initialHealth(_initialHealth), initialEnergyLevel(_initialEnergyLevel),
+				UnitState _state, std::shared_ptr<Renderer> _parent) : initialHealth(_initialHealth), initialEnergyLevel(_initialEnergyLevel),
 									attackDamage(_attackDamage), attackRange(_attackRange), attackSpeed(_attackSpeed),
 									movementSpeed(_movementSpeed), unitValue(_unitValue),
 									currentHealth(_currentHealth), currentEnergyLevel(_currentEnergyLevel),
-									state(_state) {
+									state(_state), Entity(_parent) {
 		owner = _owner;
 	}
 
@@ -55,9 +55,9 @@ public:
 class RangedUnit : public GenericUnit {
 	//stuff
 public:
-	explicit RangedUnit() : GenericUnit(100, 50, 10, 6, 1, 1, 50,
+	explicit RangedUnit(std::shared_ptr<Renderer> _parent) : GenericUnit(100, 50, 10, 6, 1, 1, 50,
 										EntityOwner::PLAYER, initialHealth,
-										initialEnergyLevel, UnitState::IDLE) {
+										initialEnergyLevel, UnitState::IDLE, _parent) {
 		logger(LogLevel::DEBUG) << "unit built" << Logger::endl;
 	}
 

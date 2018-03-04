@@ -100,35 +100,41 @@ bool World::init(glm::vec2 screen) {
 	/*
 	In the context of SubObjects the number to the left of the filename indicates which of the other objs the obj is dependent on. If it's -1 then that
 	means none. This is used to figure out what the transformation tree is for animating
+
+	 -1 = base
 	*/
-	std::vector<std::pair<TileType, std::vector<SubObjectSource>>> tiles = {
-			{TileType::SAND_1,       {{"sand1.obj",       -1}}},
-			{TileType::SAND_2,       {{"sand2.obj",       -1}}},
-			{TileType::SAND_3,       {{"sand3.obj",       -1}}},
-			{TileType::WALL,         {{"wall.obj",        -1}}},
-			{TileType::BRICK_CUBE,   {{"brickCube.obj",   -1}}},
-			{TileType::MINING_TOWER, {{"miningTower.obj", -1}}},
-			{TileType::PHOTON_TOWER, {{"photonTower.obj", -1}}},
-			{TileType::TREE,         {{"treeTile1.obj",   -1}}},
-			{TileType::BALL,         {{"ball.obj",        -1}}},
-			{TileType::GUN_TURRET,   {{"TurretBase.obj",  -1}, {"TurretTop.obj", 0}, {"TurretGunsLeft.obj", 1}, {"TurretGunsRight.obj", 1}}},
+	std::vector<std::pair<Config::MeshType, std::vector<SubObjectSource>>> meshSources = {
+			{Config::MeshType::SAND_1,       {{"sand1.obj",       -1}}},
+			{Config::MeshType::SAND_2,       {{"sand2.obj",       -1}}},
+			{Config::MeshType::SAND_3,       {{"sand3.obj",       -1}}},
+			{Config::MeshType::WALL,         {{"wall.obj",        -1}}},
+			{Config::MeshType::BRICK_CUBE,   {{"brickCube.obj",   -1}}},
+			{Config::MeshType::MINING_TOWER, {{"miningTower.obj", -1}}},
+			{Config::MeshType::PHOTON_TOWER, {{"photonTower.obj", -1}}},
+			{Config::MeshType::TREE,         {{"treeTile1.obj",   -1}}},
+			{Config::MeshType::BALL,         {{"ball.obj",        -1}}},
+			{Config::MeshType::GUN_TURRET,   {{"TurretBase.obj",  -1}, {"TurretTop.obj", 0}, {"TurretGunsLeft.obj", 1}, {"TurretGunsRight.obj", 1}}},
 	};
 
-	// Load shader for default tiles
-	objShader = std::make_shared<Shader>();
-	if (!objShader->load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl"))) {
-		logger(LogLevel::ERR) << "Failed to load obj shader!" << '\n';
-		return false;
+    // Load shader for default meshSources
+    objShader = std::make_shared<Shader>();
+    if (!objShader->load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl"))) {
+        logger(LogLevel::ERR) << "Failed to load obj shader!" << '\n';
+        return false;
+    }
+
+	if(!initMeshTypes(meshSources)){
+		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
 	}
 
 	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isn't being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
-	std::vector<std::vector<TileType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
+	std::vector<std::vector<Config::MeshType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
 	size_t mapSize = levelArray.size();
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
 
-	level.init(levelArray, tiles, objShader);
+	level.init(levelArray, meshRenderers);
 
 	// test different starting points for the AI
 	std::vector<std::vector<AStarNode>> costMap = level.getLevelTraversalCostMap();
@@ -150,7 +156,7 @@ bool World::init(glm::vec2 screen) {
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 
 	for (int j = 0; j < 20; ++j) {
-		auto renderer = level.tileRenderers[TileType::BALL];
+		auto renderer = meshRenderers[Config::MeshType::BALL];
 		auto tile = std::make_shared<Tile>(renderer);
 
 		tile->translate({j, 0, j});
@@ -158,6 +164,35 @@ bool World::init(glm::vec2 screen) {
 	}
 	level.tiles.push_back(tileRow);
 	return true;
+}
+
+bool World::initMeshTypes(std::vector<std::pair<Config::MeshType, std::vector<SubObjectSource>>> sources)
+{
+    // All the models come from the same place
+    std::string path = pathBuilder({ "data", "models" });
+    for (auto source : sources) {
+
+        std::vector<SubObject> subObjects;
+        Config::MeshType tileType = source.first;
+        std::vector<SubObjectSource> objSources  = source.second;
+        for (auto objSource : objSources) {
+            OBJ::Data obj;
+            if (!OBJ::Loader::loadOBJ(path, objSource.filename, obj)) {
+                // Failure message should already be handled by loadOBJ
+                return false;
+            }
+            auto meshResult = objToMesh(obj);
+            if (!meshResult.first) {
+                logger(LogLevel::ERR) << "Failed to turn tile obj to meshes for tile " << objSource.filename << '\n';
+            }
+            subObjects.push_back({
+                                         meshResult.second,
+                                         objSource.parentMesh
+                                 });
+        }
+        meshRenderers[tileType] = std::make_shared<Renderer>(objShader, subObjects);
+    }
+    return true;
 }
 
 // skybox
@@ -244,8 +279,8 @@ void World::draw() {
 	glm::mat4 view = camera.getViewMatrix();
 	glm::mat4 projectionView = projection * view;
 
-	for (auto tileRenderer : level.tileRenderers) {
-		tileRenderer.second->render(projectionView);
+	for (auto renderer : meshRenderers) {
+		renderer.second->render(projectionView);
 	}
 
 

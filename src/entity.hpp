@@ -16,6 +16,7 @@
 // custom headers
 #include "objrenderable.hpp"
 #include "objloader.hpp"
+#include "objbulkrenderer.hpp"
 
 // collision geometries
 struct bounding_box {
@@ -61,8 +62,10 @@ enum class EntityOwner {
 };
 
 
-class Entity : public OBJRenderable {
+class Entity : public Renderable {
 public:
+	explicit Entity(const std::shared_ptr<Renderer> &initParent);
+
 	virtual void update(float ms) = 0;
 	void setVelocity (glm::vec3);
 	void setGravity (glm::vec3);
