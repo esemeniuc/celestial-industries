@@ -288,7 +288,7 @@ void World::draw() {
 //	float y_rotation = 0.005 * glm::quarter_pi<float>();
 //	m_skybox.setRotation(glm::vec3(0.0, y_rotation, 0.0));
 //	m_skybox.applyTransformations();
-	m_skybox.setCameraPosition(camera.position);
+	m_skybox.getCameraPosition(camera.position);
 	m_skybox.draw(projection * view * m_skybox.getModelMatrix());
 
 	// Presenting

@@ -12,7 +12,7 @@ public:
 	void draw(glm::mat4 mvp);
 	void set_cube_faces(const std::string relative_path);
 	glm::mat4 getModelMatrix();
-	void setCameraPosition(glm::vec3 pos);
+	void getCameraPosition(glm::vec3 pos);
 
 	cube_textures get_cube_faces();
     std::shared_ptr<Shader> shader;
