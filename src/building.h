@@ -11,7 +11,7 @@ protected:
     //for ai to calculate what to attack
 	int currentHealth;
 public:
-	Building():initialHealth(100), buildingValue(100) {
+	Building(std::shared_ptr<Renderer> _parent):initialHealth(100), buildingValue(100), Entity(_parent) {
 
 	}
 
@@ -29,6 +29,7 @@ enum class DefensiveBuildingState {
 
 class DefensiveBuilding : Building {
 public:
+	DefensiveBuilding(std::shared_ptr<Renderer> _parent): Building(_parent) {}
 	void update(float ms) override {
 
 	}

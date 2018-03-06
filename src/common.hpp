@@ -108,19 +108,6 @@ struct Shader
 	GLuint program;
 };
 
-// Helper container for all the information we need when rendering an object together
-// with its transform.
-struct Renderable
-{
-	std::shared_ptr<std::vector<Mesh>> meshes;
-	std::shared_ptr<Shader> shader;
-	glm::mat4 model = glm::mat4(1.0f); // Identity matrix
-
-	// projection contains the orthographic projection matrix. As every Renderable::draw()
-	// renders itself it needs it to correctly bind it to its shader.
-	virtual void draw(glm::mat4 viewProjection) = 0;
-};
-
 struct Coord {
 	int rowCoord, colCoord;
 

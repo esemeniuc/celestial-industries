@@ -23,11 +23,10 @@ add_executable(proj
 		src/camera.cpp
 		src/textureloader.cpp
 		src/level.cpp
-		src/objrenderable.cpp
 		src/config.hpp
 		src/logger.cpp
 		src/pathfinder.cpp
-		src/objbulkrenderer.cpp
+		src/renderer.cpp
 		src/ai.cpp
 		src/unit/genericunit.cpp
 		src/unit/unitgroup.cpp
