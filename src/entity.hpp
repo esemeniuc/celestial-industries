@@ -14,7 +14,6 @@
 #include "glm/gtx/quaternion.hpp"
 
 // custom headers
-#include "objrenderable.hpp"
 #include "objloader.hpp"
 #include "objbulkrenderer.hpp"
 
