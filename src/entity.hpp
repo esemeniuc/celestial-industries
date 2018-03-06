@@ -15,7 +15,7 @@
 
 // custom headers
 #include "objloader.hpp"
-#include "objbulkrenderer.hpp"
+#include "renderer.hpp"
 
 // collision geometries
 struct bounding_box {

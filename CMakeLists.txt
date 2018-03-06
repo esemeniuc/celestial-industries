@@ -26,7 +26,7 @@ add_executable(proj
 		src/config.hpp
 		src/logger.cpp
 		src/pathfinder.cpp
-		src/objbulkrenderer.cpp
+		src/renderer.cpp
 		src/ai.cpp
 		src/unit/genericunit.cpp
 		src/unit/unitgroup.cpp

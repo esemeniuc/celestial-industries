@@ -508,7 +508,7 @@
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\common.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\world.cpp" />
-    <ClCompile Include="..\src\objbulkrenderer.cpp" />
+    <ClCompile Include="..\src\renderer.cpp" />
     <ClCompile Include="..\src\objloader.cpp" />
     <ClCompile Include="..\src\pathfinder.cpp" />
     <ClCompile Include="..\src\skybox.cpp" />
@@ -523,7 +523,7 @@
     <ClInclude Include="..\src\level.hpp" />
     <ClInclude Include="..\src\logger.hpp" />
     <ClInclude Include="..\src\loglevel.hpp" />
-    <ClInclude Include="..\src\objbulkrenderer.hpp" />
+    <ClInclude Include="..\src\renderer.hpp" />
     <ClInclude Include="..\src\objloader.hpp" />
     <ClInclude Include="..\src\pathfinder.hpp" />
     <ClInclude Include="..\src\skybox.hpp" />

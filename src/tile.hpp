@@ -1,6 +1,6 @@
 #pragma once
 
-#include "objbulkrenderer.hpp"
+#include "renderer.hpp"
 
 // glm
 #include "glm/mat4x4.hpp"

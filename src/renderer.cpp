@@ -1,4 +1,4 @@
-#include "objbulkrenderer.hpp"
+#include "renderer.hpp"
 
 Renderer::Renderer(
     std::shared_ptr<Shader> initShader,

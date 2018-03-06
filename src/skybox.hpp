@@ -1,8 +1,6 @@
 #pragma once
-
 #include "entity.hpp"
 #include "textureloader.hpp"
-
 
 class Skybox {
 public:
@@ -23,4 +21,3 @@ private:
     std::shared_ptr<std::vector<Mesh>> meshes;
     glm::mat4 model = glm::mat4(1.0f);
 };
-
