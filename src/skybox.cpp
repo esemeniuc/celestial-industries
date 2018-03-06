@@ -101,6 +101,6 @@ glm::mat4 Skybox::getModelMatrix() {
 	return model;
 }
 
-void Skybox::setCameraPosition(glm::vec3 pos) {
+void Skybox::getCameraPosition(glm::vec3 pos) {
 	cameraPosition = pos;
 }

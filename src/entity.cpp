@@ -41,7 +41,7 @@ void Entity::setPosition(glm::vec3 pos)
 	this->position = pos;
 }
 
-void Entity::setCameraPosition(glm::vec3 cameraPos)
+void Entity::getCameraPosition(glm::vec3 cameraPos)
 {
 	this->cameraPosition = cameraPos;
 }
