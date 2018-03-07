@@ -171,26 +171,9 @@ bool World::initMeshTypes(std::vector<std::pair<Config::MeshType, std::vector<Su
     // All the models come from the same place
     std::string path = pathBuilder({ "data", "models" });
     for (auto source : sources) {
-
-        std::vector<SubObject> subObjects;
         Config::MeshType tileType = source.first;
         std::vector<SubObjectSource> objSources  = source.second;
-        for (auto objSource : objSources) {
-            OBJ::Data obj;
-            if (!OBJ::Loader::loadOBJ(path, objSource.filename, obj)) {
-                // Failure message should already be handled by loadOBJ
-                return false;
-            }
-            auto meshResult = objToMesh(obj);
-            if (!meshResult.first) {
-                logger(LogLevel::ERR) << "Failed to turn tile obj to meshes for tile " << objSource.filename << '\n';
-            }
-            subObjects.push_back({
-                                         meshResult.second,
-                                         objSource.parentMesh
-                                 });
-        }
-        meshRenderers[tileType] = std::make_shared<Renderer>(objShader, subObjects);
+        meshRenderers[tileType] = std::make_shared<Renderer>(objShader, objSources);
     }
     return true;
 }

@@ -126,5 +126,3 @@ T clamp(T value, T lower, T upper) {
 	}
 	return value;
 }
-
-std::pair<bool, std::shared_ptr<std::vector<Mesh>>> objToMesh(OBJ::Data obj);

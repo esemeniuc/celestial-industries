@@ -6,6 +6,13 @@ struct SubObject {
     int parentMesh;
 };
 
+struct ShaderData {
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+    bool hasDiffuseMap;
+};
+
 struct RenderableInstanceData {
     bool shouldDraw;
     std::vector<glm::mat4> matrixStack; // Must be of identical length as subobject's meshes. enforced in constructor.
@@ -21,14 +28,19 @@ class Renderer {
     glm::mat4 collapseMatrixVector(std::vector<glm::mat4> v);
 public:
     std::vector<SubObject> subObjects;
-    std::vector<RenderableInstanceData> objects;
+    std::vector<RenderableInstanceData> instances;
     Renderer(
         std::shared_ptr<Shader> initShader,
-        std::vector<SubObject> initSubobjects
+        std::vector<SubObjectSource> subObjectSources
     );
-    void addSubOjbect(SubObject subObject);
+    SubObject loadSubObject(SubObjectSource source);
     unsigned int getNextId();
     void render(glm::mat4 viewProjection);
+private:
+    // TODO: replace with uniform buffers
+    GLuint mvpUniform, ambientUniform, diffuseUniform, specularUniform,
+        hasDiffusemapUniform, positionAttribute, texcoordAttribute,
+        normalAttribute;
 };
 
 class Renderable {
