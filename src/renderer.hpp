@@ -1,20 +1,6 @@
 #pragma once
 #include "common.hpp"
-
-struct SubObject {
-    std::shared_ptr<std::vector<Mesh>> meshes;
-    int parentMesh;
-};
-
-struct RenderableInstanceData {
-    bool shouldDraw;
-    std::vector<glm::mat4> matrixStack; // Must be of identical length as subobject's meshes. enforced in constructor.
-};
-
-struct SubObjectSource {
-    std::string filename;
-    int parentMesh;
-};
+#include "models.hpp"
 
 class Renderer {
     std::shared_ptr<Shader> shader;
