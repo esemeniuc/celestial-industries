@@ -1,7 +1,7 @@
 #include "models.hpp"
 
 namespace Models {
-    std::vector<std::pair<Models::MeshType, std::vector<SubObjectSource>>> Models::meshSources = {
+    std::vector<std::pair<Models::MeshType, std::vector<SubObjectSource>>> meshSources = {
         { Models::MeshType::SAND_1,      { { "sand1.obj",       -1 } } },
         { Models::MeshType::SAND_2,      { { "sand2.obj",       -1 } } },
         { Models::MeshType::SAND_3,      { { "sand3.obj",       -1 } } },
