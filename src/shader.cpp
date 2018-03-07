@@ -38,12 +38,15 @@ bool Shader::load_from_file(const char* vs_path, const char* fs_path)
         return false;
     }
 
-    // Reading sources
-    std::stringstream vs_ss, fs_ss;
-    vs_ss << vs_is.rdbuf();
-    fs_ss << fs_is.rdbuf();
-    std::string vs_str = vs_ss.str();
-    std::string fs_str = fs_ss.str();
+	// Reading sources
+
+	//this copies the data directly into a string, see
+	//https://stackoverflow.com/questions/2912520/read-file-contents-into-a-string-in-c
+	std::string vs_str((std::istreambuf_iterator<char>(vs_is)),
+					   (std::istreambuf_iterator<char>()));
+
+	std::string fs_str((std::istreambuf_iterator<char>(fs_is)),
+					   (std::istreambuf_iterator<char>()));
     const char* vs_src = vs_str.c_str();
     const char* fs_src = fs_str.c_str();
     GLsizei vs_len = (GLsizei)vs_str.size();
