@@ -1,6 +1,6 @@
 #pragma once
 #include "common.hpp"
-#include "models.hpp"
+#include "model.hpp"
 
 class Renderer {
     std::shared_ptr<Shader> shader;

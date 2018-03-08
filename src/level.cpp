@@ -3,22 +3,22 @@
 #include "logger.hpp"
 
 bool Level::init(
-    std::vector<std::vector<Models::MeshType>> levelArray,
-    std::map<Models::MeshType, std::shared_ptr<Renderer>> meshRenderers
+    std::vector<std::vector<Model::MeshType>> levelArray,
+    std::map<Model::MeshType, std::shared_ptr<Renderer>> meshRenderers
 )
 {
     // So that re initializing will be the same as first initialization
 	tiles.clear();
 
 	for (size_t i = 0; i < levelArray.size(); i++) {
-		std::vector<Models::MeshType> row = levelArray[i];
+		std::vector<Model::MeshType> row = levelArray[i];
 		std::vector<std::shared_ptr<Tile>> tileRow;
 		for (size_t j = 0; j < row.size(); j++) {
-            Models::MeshType type = row[j];
+            Model::MeshType type = row[j];
             auto renderer = meshRenderers[type];
             std::shared_ptr<Tile> tilePointer;
             switch (type) {
-            case Models::MeshType::GUN_TURRET:
+            case Model::MeshType::GUN_TURRET:
                 tilePointer = std::make_shared<GunTowerTile>(renderer);
                 break;
             default:
@@ -42,11 +42,11 @@ void Level::update(float ms)
     }
 }
 
-std::vector<std::vector<Models::MeshType>> Level::levelLoader(const std::string& levelTextFile) {
+std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& levelTextFile) {
 	std::ifstream level(levelTextFile);
 	std::string line;
-	std::vector<std::vector<Models::MeshType>> levelData;
-	std::vector<Models::MeshType> row;
+	std::vector<std::vector<Model::MeshType>> levelData;
+	std::vector<Model::MeshType> row;
 	std::vector<AStarNode> tileData;
 
 	if (!level.is_open()) {
@@ -61,17 +61,17 @@ std::vector<std::vector<Models::MeshType>> Level::levelLoader(const std::string&
 		for (const char tile : line) {
 			switch (tile) {
 				case '#': {
-					row.push_back(Models::MeshType::TREE);
+					row.push_back(Model::MeshType::TREE);
 					tileData.emplace_back(rowNumber, colNumber, 1000.0, INF);
 					break;
 				}
 				case ' ': {
-					row.push_back(Models::MeshType::SAND_1);
+					row.push_back(Model::MeshType::SAND_1);
 					tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
 					break;
 				}
 				default: {
-					row.push_back(Models::MeshType::SAND_2);
+					row.push_back(Model::MeshType::SAND_2);
 					tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
 					break;
 				}

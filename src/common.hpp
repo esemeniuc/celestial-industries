@@ -1,7 +1,7 @@
 #pragma once
 #include "config.hpp"
 #include "logger.hpp"
-#include "models.hpp"
+#include "model.hpp"
 #include "objloader.hpp"
 
 // stlib

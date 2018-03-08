@@ -104,13 +104,13 @@ bool World::init(glm::vec2 screen) {
         return false;
     }
 
-	if(!initMeshTypes(Models::meshSources)){
+	if(!initMeshTypes(Model::meshSources)){
 		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
 	}
 
 	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isn't being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
-	std::vector<std::vector<Models::MeshType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
+	std::vector<std::vector<Model::MeshType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
 	size_t mapSize = levelArray.size();
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
@@ -137,7 +137,7 @@ bool World::init(glm::vec2 screen) {
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 
 	for (int j = 0; j < 20; ++j) {
-		auto renderer = meshRenderers[Models::MeshType::BALL];
+		auto renderer = meshRenderers[Model::MeshType::BALL];
 		auto tile = std::make_shared<Tile>(renderer);
 
 		tile->translate({j, 0, j});
@@ -147,14 +147,14 @@ bool World::init(glm::vec2 screen) {
 	return true;
 }
 
-bool World::initMeshTypes(std::vector<std::pair<Models::MeshType, std::vector<SubObjectSource>>> sources)
+bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources)
 {
     // All the models come from the same place
     std::string path = pathBuilder({ "data", "models" });
     for (auto source : sources) {
 
         std::vector<SubObject> subObjects;
-        Models::MeshType tileType = source.first;
+        Model::MeshType tileType = source.first;
         std::vector<SubObjectSource> objSources  = source.second;
         for (auto objSource : objSources) {
             OBJ::Data obj;

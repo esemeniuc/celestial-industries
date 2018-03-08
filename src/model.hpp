@@ -36,7 +36,7 @@ struct SubObjectSource {
     int parentMesh;
 };
 
-namespace Models {
+namespace Model {
     enum class MeshType {
         SAND_1,
         SAND_2,
@@ -50,5 +50,5 @@ namespace Models {
         BALL
     };
 
-    extern std::vector<std::pair<Models::MeshType, std::vector<SubObjectSource>>> meshSources;
+    extern std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> meshSources;
 }
