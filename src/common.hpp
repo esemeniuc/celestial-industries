@@ -1,6 +1,7 @@
 #pragma once
 #include "config.hpp"
 #include "logger.hpp"
+#include "model.hpp"
 #include "objloader.hpp"
 
 // stlib
@@ -83,17 +84,6 @@ struct TexturedVertex
 	vec2 texcoord;
 };
 
-// A Mesh is a collection of a VertexBuffer and an IndexBuffer. A VAO
-// represents a Vertex Array Object and is the container for 1 or more Vertex Buffers and 
-// an Index Buffer
-struct Mesh
-{
-	GLuint vao;
-	GLuint vbo;
-	GLuint ibo;
-	GLuint numIndices;
-	OBJ::Material material;
-};
 
 struct Coord {
 	int rowCoord, colCoord;
