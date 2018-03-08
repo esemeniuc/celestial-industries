@@ -195,3 +195,10 @@ void Shader::release()
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
 }
+
+GLuint Shader::getNextBindPoint()
+{
+    GLuint bindPoint = nextBindPoint;
+    bindPoint++;
+    return bindPoint;
+}

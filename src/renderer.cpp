@@ -9,6 +9,9 @@ Renderer::Renderer(
     for (auto source : subObjectSources) {
         subObjects.push_back(loadSubObject(source));
     }
+    glGenBuffers(1, &modelMatricesBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, modelMatricesBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4)*maxInstances, NULL, GL_STREAM_DRAW);
 }
 
 SubObject Renderer::loadSubObject(SubObjectSource source)
@@ -18,10 +21,7 @@ SubObject Renderer::loadSubObject(SubObjectSource source)
 
     // Getting uniform locations for glUniform* calls
     mvpUniform = glGetUniformLocation(shader->program, "mvp");
-    ambientUniform = glGetUniformLocation(shader->program, "material_ambient");
-    diffuseUniform = glGetUniformLocation(shader->program, "material_diffuse");
-    specularUniform = glGetUniformLocation(shader->program, "material_specular");
-    hasDiffusemapUniform = glGetUniformLocation(shader->program, "hasDiffuseMap");
+    materialUniformBlock = glGetUniformBlockIndex(shader->program, "material");
 
     // Getting attribute locations
     positionAttribute = glGetAttribLocation(shader->program, "in_position");
@@ -60,6 +60,24 @@ SubObject Renderer::loadSubObject(SubObjectSource source)
 
         mesh.numIndices = group.indices.size();
         mesh.material = group.material;
+
+        // Uniform block
+        GLuint materialBindingPoint = shader->getNextBindPoint();
+        glUniformBlockBinding(shader->program, materialUniformBlock, materialBindingPoint);
+        glGenBuffers(1, &mesh.ubo);
+        glBindBuffer(GL_UNIFORM_BUFFER, mesh.ubo);
+
+        ShaderData material = {
+            glm::vec4(group.material.ambient, 1.0),
+            glm::vec4(group.material.diffuse, 1.0),
+            glm::vec4(group.material.specular, 1.0),
+            group.material.hasDiffuseMap
+        };
+
+        // Todo: This is clearly suboptimal
+        std::vector<ShaderData> materialVector = { material };
+        glBindBufferBase(GL_UNIFORM_BUFFER, materialBindingPoint, mesh.ubo);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderData), materialVector.data(), GL_DYNAMIC_DRAW);
 
 
         // Input data location as in the vertex buffer
@@ -101,18 +119,35 @@ void Renderer::render(glm::mat4 viewProjection)
         for (const Mesh& mesh : subObjects[i].meshes) {
             // Setting vertices and indices
             glBindVertexArray(mesh.vao);
+            glBindBuffer(GL_UNIFORM_BUFFER, mesh.ubo);
 
             if (mesh.material.hasDiffuseMap) {
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, mesh.material.diffuseMap->id);
             }
 
+            //glBindBuffer(GL_ARRAY_BUFFER, modelMatricesBuffer);
+            //// http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/
+            //std::vector<glm::mat4> matrices;
+            //for (const RenderableInstanceData& instance : instances) {
+            //    std::vector<glm::mat4> modelMatrices;
+            //    int modelIndex = i;
+            //    while (modelIndex != -1) {
+            //        modelMatrices.push_back(instance.matrixStack[modelIndex]);
+            //        modelIndex = subObjects[modelIndex].parentMesh;
+            //    }
+            //    matrices.push_back(viewProjection * collapseMatrixVector(modelMatrices));
+            //}
+
+            //glBufferData(GL_ARRAY_BUFFER, maxInstances * sizeof(ShaderData), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+            //glBufferSubData(GL_ARRAY_BUFFER, 0, instances.size() * sizeof(ShaderData), matrices.data());
+
             // Setting uniform values to the currently bound program
             // TODO: Ask TA if I can somehow move this stuff out
-            glUniform3f(ambientUniform, mesh.material.ambient.x, mesh.material.ambient.y, mesh.material.ambient.z);
-            glUniform3f(diffuseUniform, mesh.material.diffuse.x, mesh.material.diffuse.y, mesh.material.diffuse.z);
-            glUniform3f(specularUniform, mesh.material.specular.x, mesh.material.specular.y, mesh.material.specular.z);
-            glUniform1i(hasDiffusemapUniform, mesh.material.hasDiffuseMap);
+            //glUniform3f(ambientUniform, mesh.material.ambient.x, mesh.material.ambient.y, mesh.material.ambient.z);
+            //glUniform3f(diffuseUniform, mesh.material.diffuse.x, mesh.material.diffuse.y, mesh.material.diffuse.z);
+            //glUniform3f(specularUniform, mesh.material.specular.x, mesh.material.specular.y, mesh.material.specular.z);
+            //glUniform1i(hasDiffusemapUniform, mesh.material.hasDiffuseMap);
             for (const RenderableInstanceData& instance : instances) {
                 if (instance.shouldDraw) {
                     std::vector<glm::mat4> modelMatrices;

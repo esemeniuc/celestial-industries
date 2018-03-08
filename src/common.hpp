@@ -91,6 +91,7 @@ struct Mesh
 	GLuint vao;
 	GLuint vbo;
 	GLuint ibo;
+    GLuint ubo;
 	GLuint numIndices;
 	OBJ::Material material;
 };
@@ -101,6 +102,8 @@ struct Shader
 {
 	bool load_from_file(const char* vs_path, const char* fs_path);
 	void release();
+    GLuint getNextBindPoint();
+    GLuint nextBindPoint = 1;
 
 	GLuint vertex;
 	GLuint fragment;

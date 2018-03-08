@@ -7,9 +7,9 @@ struct SubObject {
 };
 
 struct ShaderData {
-    glm::vec3 ambient;
-    glm::vec3 diffuse;
-    glm::vec3 specular;
+    glm::vec4 ambient;
+    glm::vec4 diffuse;
+    glm::vec4 specular;
     bool hasDiffuseMap;
 };
 
@@ -38,9 +38,8 @@ public:
     void render(glm::mat4 viewProjection);
 private:
     // TODO: replace with uniform buffers
-    GLuint mvpUniform, ambientUniform, diffuseUniform, specularUniform,
-        hasDiffusemapUniform, positionAttribute, texcoordAttribute,
-        normalAttribute;
+    GLuint mvpUniform, materialUniformBlock, positionAttribute, texcoordAttribute, normalAttribute, modelMatricesBuffer;
+    const unsigned int maxInstances = 65536;
 };
 
 class Renderable {
