@@ -6,7 +6,7 @@ struct SubObject {
     int parentMesh;
 };
 
-struct ShaderData {
+struct ShaderMaterialData {
     glm::vec4 ambient;
     glm::vec4 diffuse;
     glm::vec4 specular;
@@ -17,6 +17,10 @@ struct ShaderData {
 };
 
 struct RenderableInstanceData {
+    /*
+    Note: do not modify instances of this directly - do it through the methods on Renderer
+    */
+
     bool shouldDraw;
     std::vector<glm::mat4> matrixStack; // Must be of identical length as subobject's meshes. enforced in constructor.
 };
@@ -39,16 +43,28 @@ public:
     SubObject loadSubObject(SubObjectSource source);
     unsigned int getNextId();
     void render(glm::mat4 viewProjection);
+    void updateModelMatrixStack(unsigned int modelIndex);
 private:
     // TODO: replace with uniform buffers
-    GLuint mvpUniform, materialUniformBlock, positionAttribute, texcoordAttribute, normalAttribute, modelMatricesBuffer;
-    const unsigned int maxInstances = 65536;
+    GLuint viewProjectionUniform, modelIndexUniform, instanceDataAttribute, materialUniformBlock, positionAttribute, texcoordAttribute, normalAttribute, instancesDataBuffer;
+    static const unsigned int maxInstances = 65536; // Note: this must be equalt to the value in the shader, otherwise weird things will eventually happen probably
+
+    struct ShaderInstancesData {
+        unsigned int stride;
+        float padding1;
+        float padding2;
+        float padding3;
+        glm::mat4 modelMatrices[maxInstances];
+    };
+
+    ShaderInstancesData instancesData;
 };
 
 class Renderable {
 private:
     std::shared_ptr<Renderer> parent;
     unsigned int id;
+
 public:
     Renderable(std::shared_ptr<Renderer> initParent);
     void shouldDraw(bool val);

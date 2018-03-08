@@ -9,9 +9,17 @@ Renderer::Renderer(
     for (auto source : subObjectSources) {
         subObjects.push_back(loadSubObject(source));
     }
-    glGenBuffers(1, &modelMatricesBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, modelMatricesBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4)*maxInstances, NULL, GL_STREAM_DRAW);
+
+    instanceDataAttribute = glGetUniformBlockIndex(shader->program, "InstancesData");
+
+    glGenBuffers(1, &instancesDataBuffer);
+    glBindBuffer(GL_UNIFORM_BUFFER, instancesDataBuffer);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 2, instancesDataBuffer);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderInstancesData), NULL, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    instancesData.stride = subObjects.size();
+
 }
 
 SubObject Renderer::loadSubObject(SubObjectSource source)
@@ -20,14 +28,15 @@ SubObject Renderer::loadSubObject(SubObjectSource source)
     gl_flush_errors();
 
     // Getting uniform locations for glUniform* calls
-    mvpUniform = glGetUniformLocation(shader->program, "mvp");
-
+    viewProjectionUniform = glGetUniformLocation(shader->program, "vp");
+    modelIndexUniform = glGetUniformLocation(shader->program, "modelIndex");
     materialUniformBlock = glGetUniformBlockIndex(shader->program, "MaterialInfo");
 
     // Getting attribute locations
     positionAttribute = glGetAttribLocation(shader->program, "in_position");
     texcoordAttribute = glGetAttribLocation(shader->program, "in_texcoord");
     normalAttribute = glGetAttribLocation(shader->program, "in_normal");
+
 
     OBJ::Data obj;
     std::string path = pathBuilder({ "data", "models" });
@@ -66,7 +75,7 @@ SubObject Renderer::loadSubObject(SubObjectSource source)
         glGenBuffers(1, &mesh.ubo);
         glBindBuffer(GL_UNIFORM_BUFFER, mesh.ubo);
 
-        ShaderData material = {
+        ShaderMaterialData material = {
             glm::vec4(group.material.ambient, 1.0),
             glm::vec4(group.material.diffuse, 1.0),
             glm::vec4(group.material.specular, 1.0),
@@ -76,10 +85,8 @@ SubObject Renderer::loadSubObject(SubObjectSource source)
             false
         };
 
-        // Todo: This is clearly suboptimal
-        //std::vector<ShaderData> materialVector = { material };
         glBindBufferBase(GL_UNIFORM_BUFFER, 1, mesh.ubo);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderData), &material, GL_DYNAMIC_DRAW);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderMaterialData), &material, GL_DYNAMIC_DRAW);
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
         // Input data location as in the vertex buffer
@@ -102,6 +109,9 @@ SubObject Renderer::loadSubObject(SubObjectSource source)
 
 unsigned int Renderer::getNextId()
 {
+    if (instances.size() + 1 > maxInstances / subObjects.size()) {
+        throw "Too many instances! Increase maxInstances if you want to do this";
+    }
     return instances.size();
 }
 
@@ -112,61 +122,51 @@ glm::mat4 Renderer::collapseMatrixVector(std::vector<glm::mat4> v)
         result *= v[i];
     return result;
 }
+
 void Renderer::render(glm::mat4 viewProjection)
 {
     // Setting shaders
     glUseProgram(shader->program);
 
+    glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, &viewProjection[0][0]);
+
+    glBindBuffer(GL_UNIFORM_BUFFER, instancesDataBuffer);
+    glUniformBlockBinding(shader->program, instanceDataAttribute, 2); // layout hardcoded in shader
+    glBindBufferBase(GL_UNIFORM_BUFFER, 2, instancesDataBuffer);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderInstancesData), &instancesData, GL_DYNAMIC_DRAW);
+    //glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
     for (size_t i = 0; i < subObjects.size(); i++) {
         for (const Mesh& mesh : subObjects[i].meshes) {
             // Setting vertices and indices
             glBindVertexArray(mesh.vao);
+
             glBindBuffer(GL_UNIFORM_BUFFER, mesh.ubo);
             glUniformBlockBinding(shader->program, materialUniformBlock, 1); // layout hardcoded in shader
             glBindBufferBase(GL_UNIFORM_BUFFER, 1, mesh.ubo);
+
+            glUniform1i(modelIndexUniform, i);
 
             if (mesh.material.hasDiffuseMap) {
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, mesh.material.diffuseMap->id);
             }
 
-            //glBindBuffer(GL_ARRAY_BUFFER, modelMatricesBuffer);
-            //// http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/
-            //std::vector<glm::mat4> matrices;
-            //for (const RenderableInstanceData& instance : instances) {
-            //    std::vector<glm::mat4> modelMatrices;
-            //    int modelIndex = i;
-            //    while (modelIndex != -1) {
-            //        modelMatrices.push_back(instance.matrixStack[modelIndex]);
-            //        modelIndex = subObjects[modelIndex].parentMesh;
-            //    }
-            //    matrices.push_back(viewProjection * collapseMatrixVector(modelMatrices));
-            //}
-
-            //glBufferData(GL_ARRAY_BUFFER, maxInstances * sizeof(ShaderData), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
-            //glBufferSubData(GL_ARRAY_BUFFER, 0, instances.size() * sizeof(ShaderData), matrices.data());
-
-            // Setting uniform values to the currently bound program
-            // TODO: Ask TA if I can somehow move this stuff out
-            //glUniform3f(ambientUniform, mesh.material.ambient.x, mesh.material.ambient.y, mesh.material.ambient.z);
-            //glUniform3f(diffuseUniform, mesh.material.diffuse.x, mesh.material.diffuse.y, mesh.material.diffuse.z);
-            //glUniform3f(specularUniform, mesh.material.specular.x, mesh.material.specular.y, mesh.material.specular.z);
-            //glUniform1i(hasDiffusemapUniform, mesh.material.hasDiffuseMap);
-            for (const RenderableInstanceData& instance : instances) {
-                if (instance.shouldDraw) {
-                    std::vector<glm::mat4> modelMatrices;
-                    int modelIndex = i;
-                    while (modelIndex != -1) {
-                        modelMatrices.push_back(instance.matrixStack[modelIndex]);
-                        modelIndex = subObjects[modelIndex].parentMesh;
-                    }
-                    glm::mat4 mvp = viewProjection * collapseMatrixVector(modelMatrices);
-                    glUniformMatrix4fv(mvpUniform, 1, GL_FALSE, &mvp[0][0]);
-                    // Drawing!
-                    glDrawElements(GL_TRIANGLES, mesh.numIndices, GL_UNSIGNED_INT, nullptr);
-                }
-            }
+            glDrawElementsInstanced(GL_TRIANGLES, mesh.numIndices, GL_UNSIGNED_INT, nullptr, instances.size());
         }
+    }
+}
+
+void Renderer::updateModelMatrixStack(unsigned int instanceIndex)
+{
+    for (size_t i = 0; i < subObjects.size(); i++) {
+        std::vector<glm::mat4> modelMatrices;
+        int modelIndex = i;
+        while (modelIndex != -1) {
+            modelMatrices.push_back(instances[instanceIndex].matrixStack[modelIndex]);
+            modelIndex = subObjects[modelIndex].parentMesh;
+        }
+        instancesData.modelMatrices[instanceIndex] = collapseMatrixVector(modelMatrices);
     }
 }
 
@@ -175,11 +175,13 @@ Renderable::Renderable(std::shared_ptr<Renderer> initParent)
     parent = initParent;
     id = parent->getNextId();
     std::vector<glm::mat4> matrixStack;
-    for (size_t i = 0; i < parent->subObjects.size(); i++)
+    std::vector<glm::mat4> computedModelMatrices;
+    for (size_t i = 0; i < parent->subObjects.size(); i++) {
         matrixStack.push_back(glm::mat4(1.0f));
+    }
     parent->instances.push_back({
         true,
-        matrixStack
+        matrixStack,
     });
 }
 
@@ -190,37 +192,44 @@ void Renderable::shouldDraw(bool val)
 
 void Renderable::translate(glm::vec3 translation) {
     translate(0, translation);
+    parent->updateModelMatrixStack(id);
 }
 
 void Renderable::rotate(float amount, glm::vec3 axis)
 {
     rotate(0, amount, axis);
+    parent->updateModelMatrixStack(id);
 }
 
 void Renderable::scale(glm::vec3 s)
 {
     scale(0, s);
+    parent->updateModelMatrixStack(id);
 }
 
 void Renderable::translate(int modelIndex, glm::vec3 translation)
 {
     parent->instances[id].matrixStack[modelIndex] = glm::translate(parent->instances[id].matrixStack[modelIndex], translation);
+    parent->updateModelMatrixStack(id);
 }
 
 void Renderable::rotate(int modelIndex, float amount, glm::vec3 axis)
 {
     parent->instances[id].matrixStack[modelIndex] = glm::rotate(parent->instances[id].matrixStack[modelIndex], amount, axis);
+    parent->updateModelMatrixStack(id);
 }
 
 void Renderable::scale(int modelIndex, glm::vec3 scale)
 {
 
     parent->instances[id].matrixStack[modelIndex] = glm::scale(parent->instances[id].matrixStack[modelIndex], scale);
+    parent->updateModelMatrixStack(id);
 }
 
 void Renderable::setModelMatrix(int modelIndex, glm::mat4 mat)
 {
     parent->instances[id].matrixStack[modelIndex] = mat;
+    parent->updateModelMatrixStack(id);
 }
 
 void Renderable::setModelMatrix(int modelIndex, glm::vec3 translation, float angle, glm::vec3 rotationAxis, glm::vec3 scale)
@@ -230,4 +239,5 @@ void Renderable::setModelMatrix(int modelIndex, glm::vec3 translation, float ang
     model = glm::rotate(model, angle, rotationAxis);
     model = glm::translate(model, translation);
     parent->instances[id].matrixStack[modelIndex] = model;
+    parent->updateModelMatrixStack(id);
 }

@@ -10,12 +10,26 @@ out vec3 vs_normal;
 out vec3 vs_position;
 out vec3 vs_lightVector;
 
+
 // Application data
-uniform mat4 mvp;
+uniform mat4 vp;
+
+layout(std140, binding = 2, row_major) uniform InstancesData {
+        uint stride;
+        float padding1;
+        float padding2;
+        float padding3;
+        mat4 modelMatrices[65536];
+};
+
+uniform int modelIndex;
+
 
 void main()
 {
-	gl_Position = mvp * vec4(in_position, 1);
+    uint idx = gl_InstanceID*stride+modelIndex;
+    mat4 model = modelMatrices[idx];
+	gl_Position = (vp*model) * vec4(in_position, 1);
 	vs_texcoord = in_texcoord;
 	vs_normal = in_normal;
 	vs_position = gl_Position.xyz;
