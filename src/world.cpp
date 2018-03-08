@@ -129,7 +129,7 @@ bool World::init(glm::vec2 screen) {
 
 	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isn't being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
-	std::vector<std::vector<Config::MeshType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
+	std::vector<std::vector<Config::MeshType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1gunTrees.txt");
 	size_t mapSize = levelArray.size();
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
@@ -236,6 +236,9 @@ bool World::update(float elapsed_ms) {
 	for (const auto& elem : tileRow) {
 		elem->translate({0.1f, 0, 0.1f});
 	}
+    for (const auto& turret : level.guntowers) {
+        turret->update(elapsed_ms);
+    }
 
 	return true;
 }

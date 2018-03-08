@@ -20,6 +20,7 @@ Renderer::Renderer(
 
     instancesData.stride = subObjects.size();
 
+    logger(LogLevel::INFO) << "stride " << instancesData.stride << " \n";
 }
 
 SubObject Renderer::loadSubObject(SubObjectSource source)
@@ -109,9 +110,9 @@ SubObject Renderer::loadSubObject(SubObjectSource source)
 
 unsigned int Renderer::getNextId()
 {
-    if (instances.size() + 1 > maxInstances / subObjects.size()) {
-        throw "Too many instances! Increase maxInstances if you want to do this";
-    }
+    //if (instances.size() + 1 > maxInstances / subObjects.size()) {
+    //    throw "Too many instances! Increase maxInstances if you want to do this";
+    //}
     return instances.size();
 }
 
@@ -166,7 +167,7 @@ void Renderer::updateModelMatrixStack(unsigned int instanceIndex)
             modelMatrices.push_back(instances[instanceIndex].matrixStack[modelIndex]);
             modelIndex = subObjects[modelIndex].parentMesh;
         }
-        instancesData.modelMatrices[instanceIndex] = collapseMatrixVector(modelMatrices);
+        instancesData.modelMatrices[instanceIndex*subObjects.size()+i] = collapseMatrixVector(modelMatrices);
     }
 }
 
@@ -175,7 +176,6 @@ Renderable::Renderable(std::shared_ptr<Renderer> initParent)
     parent = initParent;
     id = parent->getNextId();
     std::vector<glm::mat4> matrixStack;
-    std::vector<glm::mat4> computedModelMatrices;
     for (size_t i = 0; i < parent->subObjects.size(); i++) {
         matrixStack.push_back(glm::mat4(1.0f));
     }
