@@ -11,6 +11,9 @@ struct ShaderData {
     glm::vec4 diffuse;
     glm::vec4 specular;
     bool hasDiffuseMap;
+    bool padding1;  // Padding is needed because std140 dictates everything is in steps of 4 bytes. I beleive it will actually allow us to
+    bool padding2;  // use these padding bools, but if thewy arent there we're going to read garbage on those that are :)
+    bool padding3;
 };
 
 struct RenderableInstanceData {

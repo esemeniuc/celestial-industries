@@ -21,7 +21,8 @@ SubObject Renderer::loadSubObject(SubObjectSource source)
 
     // Getting uniform locations for glUniform* calls
     mvpUniform = glGetUniformLocation(shader->program, "mvp");
-    materialUniformBlock = glGetUniformBlockIndex(shader->program, "material");
+
+    materialUniformBlock = glGetUniformBlockIndex(shader->program, "MaterialInfo");
 
     // Getting attribute locations
     positionAttribute = glGetAttribLocation(shader->program, "in_position");
@@ -62,8 +63,6 @@ SubObject Renderer::loadSubObject(SubObjectSource source)
         mesh.material = group.material;
 
         // Uniform block
-        GLuint materialBindingPoint = shader->getNextBindPoint();
-        glUniformBlockBinding(shader->program, materialUniformBlock, materialBindingPoint);
         glGenBuffers(1, &mesh.ubo);
         glBindBuffer(GL_UNIFORM_BUFFER, mesh.ubo);
 
@@ -71,14 +70,17 @@ SubObject Renderer::loadSubObject(SubObjectSource source)
             glm::vec4(group.material.ambient, 1.0),
             glm::vec4(group.material.diffuse, 1.0),
             glm::vec4(group.material.specular, 1.0),
-            group.material.hasDiffuseMap
+            group.material.hasDiffuseMap,
+            false,
+            false,
+            false
         };
 
         // Todo: This is clearly suboptimal
-        std::vector<ShaderData> materialVector = { material };
-        glBindBufferBase(GL_UNIFORM_BUFFER, materialBindingPoint, mesh.ubo);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderData), materialVector.data(), GL_DYNAMIC_DRAW);
-
+        //std::vector<ShaderData> materialVector = { material };
+        glBindBufferBase(GL_UNIFORM_BUFFER, 1, mesh.ubo);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderData), &material, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
         // Input data location as in the vertex buffer
         glEnableVertexAttribArray(positionAttribute);
@@ -120,6 +122,8 @@ void Renderer::render(glm::mat4 viewProjection)
             // Setting vertices and indices
             glBindVertexArray(mesh.vao);
             glBindBuffer(GL_UNIFORM_BUFFER, mesh.ubo);
+            glUniformBlockBinding(shader->program, materialUniformBlock, 1); // layout hardcoded in shader
+            glBindBufferBase(GL_UNIFORM_BUFFER, 1, mesh.ubo);
 
             if (mesh.material.hasDiffuseMap) {
                 glActiveTexture(GL_TEXTURE0);

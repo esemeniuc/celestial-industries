@@ -5,11 +5,14 @@ in vec3 vs_normal;
 in vec3 vs_position;
 in vec3 vs_lightVector;
 
-uniform material {
+layout(std140, binding = 1) uniform MaterialInfo {
     vec4 ambient;
     vec4 diffuse;
     vec4 specular;
     bool hasDiffuseMap;
+    bool padding1; // Surpisingly necessary - lookup std140 or see comment in ShaderData
+    bool padding2;
+    bool padding3;
 };
 
 uniform sampler2D diffuseMapSampler;
