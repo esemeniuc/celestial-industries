@@ -1,5 +1,6 @@
 #pragma once
 #include "common.hpp"
+#include "shader.hpp"
 
 struct SubObject {
     std::shared_ptr<std::vector<Mesh>> meshes;
