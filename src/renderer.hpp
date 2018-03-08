@@ -3,21 +3,6 @@
 #include "model.hpp"
 #include "shader.hpp"
 
-struct SubObject {
-    std::shared_ptr<std::vector<Mesh>> meshes;
-    int parentMesh;
-};
-
-struct RenderableInstanceData {
-    bool shouldDraw;
-    std::vector<glm::mat4> matrixStack; // Must be of identical length as subobject's meshes. enforced in constructor.
-};
-
-struct SubObjectSource {
-    std::string filename;
-    int parentMesh;
-};
-
 class Renderer {
     std::shared_ptr<Shader> shader;
     glm::mat4 collapseMatrixVector(std::vector<glm::mat4> v);
