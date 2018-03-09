@@ -83,18 +83,18 @@ bool World::init(glm::vec2 screen) {
 	//-------------------------------------------------------------------------
 	// Loading music and sounds
 	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-		fprintf(stderr, "Failed to initialize SDL Audio");
+		logger(LogLevel::ERR) << "Failed to initialize SDL Audio\n";
 		return false;
 	}
 
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
-		fprintf(stderr, "Failed to open audio device");
+		logger(LogLevel::ERR) << "Failed to open audio device\n";
 		return false;
 	}
 
 	// setup skybox
-	bool skyboxLoaded = loadSkybox("skybox.obj", "skybox");
-	if (!skyboxLoaded) {
+	if (!loadSkybox("skybox.obj", "skybox")) {
+		logger(LogLevel::ERR) << "Failed to open skybox\n";
 		return false;
 	}
 
@@ -122,20 +122,21 @@ bool World::init(glm::vec2 screen) {
 			{Config::MeshType::GUN_TURRET,   {{"TurretBase.obj",  -1}, {"TurretTop.obj", 0}, {"TurretGunsLeft.obj", 1}, {"TurretGunsRight.obj", 1}}},
 	};
 
-    // Load shader for default meshSources
-    objShader = std::make_shared<Shader>();
-    if (!objShader->load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl"))) {
-        logger(LogLevel::ERR) << "Failed to load obj shader!" << '\n';
-        return false;
-    }
+	// Load shader for default meshSources
+	objShader = std::make_shared<Shader>();
+	if (!objShader->load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl"))) {
+		logger(LogLevel::ERR) << "Failed to load obj shader!" << '\n';
+		return false;
+	}
 
-	if(!initMeshTypes(meshSources)){
+	if (!initMeshTypes(meshSources)) {
 		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
 	}
 
 	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isn't being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
-	std::vector<std::vector<Config::MeshType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
+	std::vector<std::vector<Config::MeshType>> levelArray = level.levelLoader(
+			pathBuilder({"data", "levels"}) + "level1.txt");
 	size_t mapSize = levelArray.size();
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
@@ -160,28 +161,17 @@ bool World::init(glm::vec2 screen) {
 	selectedTileCoordinates.colCoord = (int) mapSize / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 
-<<<<<<< HEAD
-//	for (int j = 0; j < 1; ++j) {
-//		auto renderer = level.tileRenderers[TileType::BALL];
-//		auto tile = std::make_shared<Tile>(renderer);
-//
-////		tile->translate({j, 0, j});
-//		tile->translate({27, 0, 11});
-//		tileRow.push_back(tile);
-//	}
-//	level.tiles.push_back(tileRow);
-//	return true;
+	std::shared_ptr<Tile> sandTile = std::make_shared<Tile>(meshRenderers[Config::MeshType::BALL]);
 
 	//ball example
 	//display a path
 	std::vector<Coord> path1 =
 			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2).second;
-	level.displayPath(path1, TileType::SAND_2);
+	level.displayPath(path1, sandTile);
 	interpPath1 = AI::aStar::createInterpolatedPath(path1);
 
 	//render the path
-	auto renderer = level.tileRenderers[TileType::BALL];
-	unit1 = std::make_shared<Tile>(renderer);
+	unit1 = std::make_shared<Tile>(meshRenderers[Config::MeshType::BALL]);
 	unit1->translate({27, 0, 11});
 	level.tiles.push_back({{unit1}});
 
@@ -190,12 +180,11 @@ bool World::init(glm::vec2 screen) {
 	std::vector<Coord> path2 =
 			AI::aStar::a_star(costMap, 1, 19, 40, (int) mapSize / 2, (int) mapSize / 2).second;
 	std::cout << "path2 length: " << path2.size() << '\n';
-	level.displayPath(path2, TileType::SAND_2);
+	level.displayPath(path2, sandTile);
 	interpPath2 = AI::aStar::createInterpolatedPath(path2);
 
 	//render the path
-	renderer = level.tileRenderers[TileType::WALL];
-	unit2 = std::make_shared<Tile>(renderer);
+	unit2 = std::make_shared<Tile>(meshRenderers[Config::MeshType::WALL]);
 	unit2->translate({39, 0, 19});
 	level.tiles.push_back({{unit2}});
 
@@ -204,51 +193,43 @@ bool World::init(glm::vec2 screen) {
 	std::vector<Coord> path3 =
 			AI::aStar::a_star(costMap, 1, 1, 40, (int) mapSize / 2, (int) mapSize / 2).second;
 	std::cout << "path3 length: " << path3.size() << '\n';
-	level.displayPath(path3, TileType::SAND_2);
+	level.displayPath(path3, sandTile);
 	interpPath3 = AI::aStar::createInterpolatedPath(path3);
 
 	//render the path
-	renderer = level.tileRenderers[TileType::MINING_TOWER];
-	unit3 = std::make_shared<Tile>(renderer);
+	unit3 = std::make_shared<Tile>(meshRenderers[Config::MeshType::MINING_TOWER]);
 	unit3->translate({39, 0, 1});
 	level.tiles.push_back({{unit3}});
 
-///======= andy stuff
-	for (int j = 0; j < 20; ++j) {
-		auto renderer = meshRenderers[Config::MeshType::BALL];
-		auto tile = std::make_shared<Tile>(renderer);
-	}
-		//not andy
 	return true;
 }
 
-bool World::initMeshTypes(std::vector<std::pair<Config::MeshType, std::vector<SubObjectSource>>> sources)
-{
-    // All the models come from the same place
-    std::string path = pathBuilder({ "data", "models" });
-    for (auto source : sources) {
+bool World::initMeshTypes(std::vector<std::pair<Config::MeshType, std::vector<SubObjectSource>>> sources) {
+	// All the models come from the same place
+	std::string path = pathBuilder({"data", "models"});
+	for (auto source : sources) {
 
-        std::vector<SubObject> subObjects;
-        Config::MeshType tileType = source.first;
-        std::vector<SubObjectSource> objSources  = source.second;
-        for (auto objSource : objSources) {
-            OBJ::Data obj;
-            if (!OBJ::Loader::loadOBJ(path, objSource.filename, obj)) {
-                // Failure message should already be handled by loadOBJ
-                return false;
-            }
-            auto meshResult = objToMesh(obj);
-            if (!meshResult.first) {
-                logger(LogLevel::ERR) << "Failed to turn tile obj to meshes for tile " << objSource.filename << '\n';
-            }
-            subObjects.push_back({
-                                         meshResult.second,
-                                         objSource.parentMesh
-                                 });
-        }
-        meshRenderers[tileType] = std::make_shared<Renderer>(objShader, subObjects);
-    }
-    return true;
+		std::vector<SubObject> subObjects;
+		Config::MeshType tileType = source.first;
+		std::vector<SubObjectSource> objSources = source.second;
+		for (auto objSource : objSources) {
+			OBJ::Data obj;
+			if (!OBJ::Loader::loadOBJ(path, objSource.filename, obj)) {
+				// Failure message should already be handled by loadOBJ
+				return false;
+			}
+			auto meshResult = objToMesh(obj);
+			if (!meshResult.first) {
+				logger(LogLevel::ERR) << "Failed to turn tile obj to meshes for tile " << objSource.filename << '\n';
+			}
+			subObjects.push_back({
+										 meshResult.second,
+										 objSource.parentMesh
+								 });
+		}
+		meshRenderers[tileType] = std::make_shared<Renderer>(objShader, subObjects);
+	}
+	return true;
 }
 
 // skybox

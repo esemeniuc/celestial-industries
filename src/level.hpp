@@ -4,6 +4,7 @@
 #include <ostream> //for overloaded << operator
 #include <map>
 #include "common.hpp"
+#include "config.hpp"
 #include "tile.hpp"
 
 #define INF std::numeric_limits<float>::infinity()
@@ -55,7 +56,7 @@ public:
 
 	void update(float ms);
 
-	bool displayPath(const std::vector<Coord>& levelArray, TileType material);
+	bool displayPath(const std::vector<Coord>& levelArray, std::shared_ptr<Tile> tile);
 
 	std::vector<std::vector<Config::MeshType>> levelLoader(const std::string& levelTextFile);
 
