@@ -33,7 +33,7 @@ class World {
 public:
 	//members
 	bool advanced_mode = false;
-    std::map<Config::MeshType, std::shared_ptr<Renderer>> meshRenderers;
+    std::map<Model::MeshType, std::shared_ptr<Renderer>> meshRenderers;
 	//funcs
 	World();
 
@@ -97,5 +97,5 @@ private:
 
 	void on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
 
-    bool initMeshTypes(std::vector<std::pair<Config::MeshType, std::vector<SubObjectSource>>> sources);
+    bool initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources);
 };

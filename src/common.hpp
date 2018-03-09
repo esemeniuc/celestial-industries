@@ -1,6 +1,7 @@
 #pragma once
 #include "config.hpp"
 #include "logger.hpp"
+#include "model.hpp"
 #include "objloader.hpp"
 
 // stlib
@@ -83,29 +84,6 @@ struct TexturedVertex
 	vec2 texcoord;
 };
 
-// A Mesh is a collection of a VertexBuffer and an IndexBuffer. A VAO
-// represents a Vertex Array Object and is the container for 1 or more Vertex Buffers and 
-// an Index Buffer
-struct Mesh
-{
-	GLuint vao;
-	GLuint vbo;
-	GLuint ibo;
-	GLuint numIndices;
-	OBJ::Material material;
-};
-
-// Container for Vertex and Fragment shader, which are then put(linked) together in a
-// single program that is then bound to the pipeline.
-struct Shader
-{
-	bool load_from_file(const char* vs_path, const char* fs_path);
-	void release();
-
-	GLuint vertex;
-	GLuint fragment;
-	GLuint program;
-};
 
 struct Coord {
 	int rowCoord, colCoord;

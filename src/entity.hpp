@@ -11,6 +11,7 @@
 
 // custom headers
 #include "objloader.hpp"
+#include "model.hpp"
 #include "renderer.hpp"
 
 

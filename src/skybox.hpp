@@ -1,6 +1,7 @@
 #pragma once
 #include "entity.hpp"
 #include "textureloader.hpp"
+#include "shader.hpp"
 
 class Skybox {
 public:
