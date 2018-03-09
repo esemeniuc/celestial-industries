@@ -94,13 +94,10 @@ std::vector<std::vector<AStarNode>> Level::getLevelTraversalCostMap() {
 bool Level::displayPath(const std::vector<Coord>& path, std::shared_ptr<Tile> tile) {
 
 	for (const Coord& component : path) {
-		std::vector<std::shared_ptr<Tile>> tileRow;
-
 		tile->translate({component.colCoord, 0, component.rowCoord});
-		tileRow.push_back(tile);
-		tiles.push_back(tileRow);
+		tiles.push_back({tile});
 	}
-
 
 	return true;
 }
+1

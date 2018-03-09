@@ -144,7 +144,7 @@ bool World::init(glm::vec2 screen) {
 	selectedTileCoordinates.colCoord = (int) mapSize / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 
-	std::shared_ptr<Tile> sandTile = std::make_shared<Tile>(meshRenderers[Model::MeshType::BALL]);
+	std::shared_ptr<Tile> sandTile = std::make_shared<Tile>(meshRenderers[Model::MeshType::SAND_2]);
 
 	//ball example
 	//display a path
