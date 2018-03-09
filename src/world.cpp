@@ -103,24 +103,6 @@ bool World::init(glm::vec2 screen) {
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
 
-	/*
-	In the context of SubObjects the number to the left of the filename indicates which of the other objs the obj is dependent on. If it's -1 then that
-	means none. This is used to figure out what the transformation tree is for animating
-
-	 -1 = base
-	*/
-	std::vector<std::pair<Config::MeshType, std::vector<SubObjectSource>>> meshSources = {
-			{Config::MeshType::SAND_1,       {{"sand1.obj",       -1}}},
-			{Config::MeshType::SAND_2,       {{"sand2.obj",       -1}}},
-			{Config::MeshType::SAND_3,       {{"sand3.obj",       -1}}},
-			{Config::MeshType::WALL,         {{"wall.obj",        -1}}},
-			{Config::MeshType::BRICK_CUBE,   {{"brickCube.obj",   -1}}},
-			{Config::MeshType::MINING_TOWER, {{"miningTower.obj", -1}}},
-			{Config::MeshType::PHOTON_TOWER, {{"photonTower.obj", -1}}},
-			{Config::MeshType::TREE,         {{"treeTile1.obj",   -1}}},
-			{Config::MeshType::BALL,         {{"ball.obj",        -1}}},
-			{Config::MeshType::GUN_TURRET,   {{"TurretBase.obj",  -1}, {"TurretTop.obj", 0}, {"TurretGunsLeft.obj", 1}, {"TurretGunsRight.obj", 1}}},
-	};
 
 	// Load shader for default meshSources
 	objShader = std::make_shared<Shader>();
@@ -129,13 +111,14 @@ bool World::init(glm::vec2 screen) {
 		return false;
 	}
 
-	if (!initMeshTypes(meshSources)) {
+	if (!initMeshTypes(Model::meshSources)) {
 		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
 	}
 
 	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isn't being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
-	std::vector<std::vector<Config::MeshType>> levelArray = level.levelLoader(
+
+	std::vector<std::vector<Model::MeshType>> levelArray = level.levelLoader(
 			pathBuilder({"data", "levels"}) + "level1.txt");
 	size_t mapSize = levelArray.size();
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
@@ -161,7 +144,7 @@ bool World::init(glm::vec2 screen) {
 	selectedTileCoordinates.colCoord = (int) mapSize / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 
-	std::shared_ptr<Tile> sandTile = std::make_shared<Tile>(meshRenderers[Config::MeshType::BALL]);
+	std::shared_ptr<Tile> sandTile = std::make_shared<Tile>(meshRenderers[Model::MeshType::BALL]);
 
 	//ball example
 	//display a path
@@ -171,7 +154,7 @@ bool World::init(glm::vec2 screen) {
 	interpPath1 = AI::aStar::createInterpolatedPath(path1);
 
 	//render the path
-	unit1 = std::make_shared<Tile>(meshRenderers[Config::MeshType::BALL]);
+	unit1 = std::make_shared<Tile>(meshRenderers[Model::MeshType::BALL]);
 	unit1->translate({27, 0, 11});
 	level.tiles.push_back({{unit1}});
 
@@ -184,7 +167,7 @@ bool World::init(glm::vec2 screen) {
 	interpPath2 = AI::aStar::createInterpolatedPath(path2);
 
 	//render the path
-	unit2 = std::make_shared<Tile>(meshRenderers[Config::MeshType::WALL]);
+	unit2 = std::make_shared<Tile>(meshRenderers[Model::MeshType::WALL]);
 	unit2->translate({39, 0, 19});
 	level.tiles.push_back({{unit2}});
 
@@ -197,20 +180,20 @@ bool World::init(glm::vec2 screen) {
 	interpPath3 = AI::aStar::createInterpolatedPath(path3);
 
 	//render the path
-	unit3 = std::make_shared<Tile>(meshRenderers[Config::MeshType::MINING_TOWER]);
+	unit3 = std::make_shared<Tile>(meshRenderers[Model::MeshType::MINING_TOWER]);
 	unit3->translate({39, 0, 1});
 	level.tiles.push_back({{unit3}});
 
 	return true;
 }
 
-bool World::initMeshTypes(std::vector<std::pair<Config::MeshType, std::vector<SubObjectSource>>> sources) {
+bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources) {
 	// All the models come from the same place
 	std::string path = pathBuilder({"data", "models"});
 	for (auto source : sources) {
 
 		std::vector<SubObject> subObjects;
-		Config::MeshType tileType = source.first;
+		Model::MeshType tileType = source.first;
 		std::vector<SubObjectSource> objSources = source.second;
 		for (auto objSource : objSources) {
 			OBJ::Data obj;

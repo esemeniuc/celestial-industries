@@ -28,6 +28,8 @@ add_executable(proj
 		src/pathfinder.cpp
 		src/renderer.cpp
 		src/ai.cpp
+		src/model.cpp
+		src/shader.cpp
 		src/unit/genericunit.cpp
 		src/unit/unitgroup.cpp
 		src/building.cpp)

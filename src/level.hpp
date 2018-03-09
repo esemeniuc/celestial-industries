@@ -6,6 +6,7 @@
 #include "common.hpp"
 #include "config.hpp"
 #include "tile.hpp"
+#include "model.hpp"
 
 #define INF std::numeric_limits<float>::infinity()
 
@@ -50,15 +51,15 @@ public:
 
 	//funcs
 	bool init(
-			std::vector<std::vector<Config::MeshType>> levelArray,
-			std::map<Config::MeshType, std::shared_ptr<Renderer>> meshRenderers
+			std::vector<std::vector<Model::MeshType>> levelArray,
+			std::map<Model::MeshType, std::shared_ptr<Renderer>> meshRenderers
 	);
 
 	void update(float ms);
 
 	bool displayPath(const std::vector<Coord>& levelArray, std::shared_ptr<Tile> tile);
 
-	std::vector<std::vector<Config::MeshType>> levelLoader(const std::string& levelTextFile);
+	std::vector<std::vector<Model::MeshType>> levelLoader(const std::string& levelTextFile);
 
 	std::vector<std::vector<AStarNode>> getLevelTraversalCostMap();
 
