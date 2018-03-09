@@ -65,21 +65,21 @@ std::vector<std::vector<Config::MeshType>> Level::levelLoader(const std::string&
 			switch (tile) {
 				case '#': {
 					row.push_back(Config::MeshType::TREE);
-					tileData.emplace_back(rowNumber, colNumber, 1000.0, INF);
+					tileData.emplace_back(rowNumber, colNumber, 1000, INF);
 					break;
 				}
 				case ' ': {
 					row.push_back(Config::MeshType::SAND_1);
-					tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
+					tileData.emplace_back(rowNumber, colNumber, 10, INF);
 					break;
 				}
                 case 'G':
                     row.push_back(Config::MeshType::GUN_TURRET);
-                    tileData.emplace_back(rowNumber, colNumber, 1000.0, INF);
+                    tileData.emplace_back(rowNumber, colNumber, 1000, INF);
                     break;
 				default: {
 					row.push_back(Config::MeshType::SAND_2);
-					tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
+					tileData.emplace_back(rowNumber, colNumber, 10, INF);
 					break;
 				}
 			}

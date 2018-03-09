@@ -43,7 +43,7 @@ public:
     SubObject loadSubObject(SubObjectSource source);
     unsigned int getNextId();
     void render(glm::mat4 viewProjection);
-    void updateModelMatrixStack(unsigned int modelIndex);
+    void updateModelMatrixStack(unsigned int modelIndex, bool updateHierarchically=true);
     glm::mat4 getModelMatrix(unsigned int id, unsigned int modelIndex);
 private:
     // TODO: replace with uniform buffers
@@ -63,10 +63,10 @@ private:
 
 class Renderable {
 private:
-    std::shared_ptr<Renderer> parent;
-    unsigned int id;
 
 public:
+    std::shared_ptr<Renderer> parent;
+    unsigned int id;
     Renderable(std::shared_ptr<Renderer> initParent);
     void shouldDraw(bool val);
 

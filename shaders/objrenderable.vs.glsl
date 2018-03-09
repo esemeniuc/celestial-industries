@@ -14,7 +14,7 @@ out vec3 vs_lightVector;
 // Application data
 uniform mat4 vp;
 
-layout(std140, binding = 2, row_major) uniform InstancesData {
+layout(std140, binding = 2) uniform InstancesData {
         uint stride;
         float padding1;
         float padding2;
