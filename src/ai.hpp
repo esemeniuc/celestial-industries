@@ -6,7 +6,7 @@
 
 #include <unordered_set>
 #include "genericunit.hpp"
-#include "building.h"
+#include "building.hpp"
 
 //assume AI has goal to destroy main control building of player
 /*we do the tree thing like alla suggested

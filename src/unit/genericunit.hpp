@@ -26,6 +26,7 @@ protected:
 	const int attackRange; //range in tiles
 	const int attackSpeed; //attacks per second
 	const int movementSpeed; //tiles per second, maybe make non const later for energy effects
+	const int visionRange;
 	const int unitValue;
 	//mutable values
 	int currentHealth;
@@ -35,13 +36,29 @@ protected:
 
 public:
 
-	GenericUnit(int _initialHealth, int _initialEnergyLevel, int _attackDamage, int _attackRange, int _attackSpeed,
-				int _movementSpeed, int _unitValue, EntityOwner _owner, int _currentHealth, int _currentEnergyLevel,
-				UnitState _state, std::shared_ptr<Renderer> _parent) : initialHealth(_initialHealth), initialEnergyLevel(_initialEnergyLevel),
-									attackDamage(_attackDamage), attackRange(_attackRange), attackSpeed(_attackSpeed),
-									movementSpeed(_movementSpeed), unitValue(_unitValue),
-									currentHealth(_currentHealth), currentEnergyLevel(_currentEnergyLevel),
-									state(_state), Entity(_parent) {
+	GenericUnit(int _initialHealth,
+				int _initialEnergyLevel,
+				int _attackDamage,
+				int _attackRange,
+				int _attackSpeed,
+				int _movementSpeed,
+				int _visionRange,
+				int _unitValue,
+				EntityOwner _owner,
+				int _currentHealth,
+				int _currentEnergyLevel,
+				UnitState _state,
+				std::shared_ptr<Renderer> _parent) : initialHealth(_initialHealth),
+													 initialEnergyLevel(_initialEnergyLevel),
+													 attackDamage(_attackDamage),
+													 attackRange(_attackRange),
+													 attackSpeed(_attackSpeed),
+													 movementSpeed(_movementSpeed),
+													 visionRange(_visionRange),
+													 unitValue(_unitValue),
+													 currentHealth(_currentHealth),
+													 currentEnergyLevel(_currentEnergyLevel),
+													 state(_state), Entity(_parent) {
 		owner = _owner;
 	}
 
@@ -55,9 +72,9 @@ public:
 class RangedUnit : public GenericUnit {
 	//stuff
 public:
-	explicit RangedUnit(std::shared_ptr<Renderer> _parent) : GenericUnit(100, 50, 10, 6, 1, 1, 50,
-										EntityOwner::PLAYER, initialHealth,
-										initialEnergyLevel, UnitState::IDLE, _parent) {
+	explicit RangedUnit(std::shared_ptr<Renderer> _parent) : GenericUnit(100, 50, 10, 6, 1, 1, 6, 50,
+																		 EntityOwner::PLAYER, initialHealth,
+																		 initialEnergyLevel, UnitState::IDLE, _parent) {
 		logger(LogLevel::DEBUG) << "unit built" << Logger::endl;
 	}
 

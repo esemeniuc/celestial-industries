@@ -176,7 +176,7 @@ bool World::init(glm::vec2 screen) {
 	std::vector<Coord> path3 =
 			AI::aStar::a_star(costMap, 1, 1, 40, (int) mapSize / 2, (int) mapSize / 2).second;
 	std::cout << "path3 length: " << path3.size() << '\n';
-	level.displayPath(path3, sandTile);
+	level.displayPath(path3, std::make_shared<Tile>(meshRenderers[Model::MeshType::SAND_2]));
 	interpPath3 = AI::aStar::createInterpolatedPath(path3);
 
 	//render the path
@@ -205,10 +205,7 @@ bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<Sub
 			if (!meshResult.first) {
 				logger(LogLevel::ERR) << "Failed to turn tile obj to meshes for tile " << objSource.filename << '\n';
 			}
-			subObjects.push_back({
-										 meshResult.second,
-										 objSource.parentMesh
-								 });
+			subObjects.push_back({meshResult.second, objSource.parentMesh});
 		}
 		meshRenderers[tileType] = std::make_shared<Renderer>(objShader, subObjects);
 	}

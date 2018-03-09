@@ -94,10 +94,10 @@ std::vector<std::vector<AStarNode>> Level::getLevelTraversalCostMap() {
 bool Level::displayPath(const std::vector<Coord>& path, std::shared_ptr<Tile> tile) {
 
 	for (const Coord& component : path) {
+//		std::make_shared<Tile>(meshRenderers[Model::MeshType::SAND_2])
 		tile->translate({component.colCoord, 0, component.rowCoord});
 		tiles.push_back({tile});
 	}
 
 	return true;
 }
-1
