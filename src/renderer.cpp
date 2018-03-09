@@ -171,6 +171,11 @@ void Renderer::updateModelMatrixStack(unsigned int instanceIndex)
     }
 }
 
+glm::mat4 Renderer::getModelMatrix(unsigned int id, unsigned int modelIndex)
+{
+    return instancesData.modelMatrices[id*instancesData.stride + modelIndex];
+}
+
 Renderable::Renderable(std::shared_ptr<Renderer> initParent)
 {
     parent = initParent;
@@ -190,54 +195,63 @@ void Renderable::shouldDraw(bool val)
     parent->instances[id].shouldDraw = val;
 }
 
-void Renderable::translate(glm::vec3 translation) {
+void Renderable::translate(glm::vec3 translation, bool updateHeirarchically) {
     translate(0, translation);
-    parent->updateModelMatrixStack(id);
+    if(updateHeirarchically)parent->updateModelMatrixStack(id);
 }
 
-void Renderable::rotate(float amount, glm::vec3 axis)
+void Renderable::rotate(float amount, glm::vec3 axis, bool updateHeirarchically)
 {
     rotate(0, amount, axis);
-    parent->updateModelMatrixStack(id);
+    if(updateHeirarchically)parent->updateModelMatrixStack(id);;
 }
 
-void Renderable::scale(glm::vec3 s)
+void Renderable::scale(glm::vec3 s, bool updateHeirarchically)
 {
     scale(0, s);
-    parent->updateModelMatrixStack(id);
+    if(updateHeirarchically)parent->updateModelMatrixStack(id);;
 }
 
-void Renderable::translate(int modelIndex, glm::vec3 translation)
+/*
+    Sets the individual model matrices for the 
+*/
+void Renderable::setModelMatricesFromComputed()
+{
+    for (int modelIndex = 0; modelIndex < parent->subObjects.size(); modelIndex++)
+        parent->instances[id].matrixStack[modelIndex] = parent->getModelMatrix(id, modelIndex);
+}
+
+void Renderable::translate(int modelIndex, glm::vec3 translation, bool updateHeirarchically)
 {
     parent->instances[id].matrixStack[modelIndex] = glm::translate(parent->instances[id].matrixStack[modelIndex], translation);
-    parent->updateModelMatrixStack(id);
+    if(updateHeirarchically)parent->updateModelMatrixStack(id);;
 }
 
-void Renderable::rotate(int modelIndex, float amount, glm::vec3 axis)
+void Renderable::rotate(int modelIndex, float amount, glm::vec3 axis, bool updateHeirarchically)
 {
     parent->instances[id].matrixStack[modelIndex] = glm::rotate(parent->instances[id].matrixStack[modelIndex], amount, axis);
-    parent->updateModelMatrixStack(id);
+    if(updateHeirarchically)parent->updateModelMatrixStack(id);;
 }
 
-void Renderable::scale(int modelIndex, glm::vec3 scale)
+void Renderable::scale(int modelIndex, glm::vec3 scale, bool updateHeirarchically)
 {
 
     parent->instances[id].matrixStack[modelIndex] = glm::scale(parent->instances[id].matrixStack[modelIndex], scale);
-    parent->updateModelMatrixStack(id);
+    if(updateHeirarchically)parent->updateModelMatrixStack(id);;
 }
 
-void Renderable::setModelMatrix(int modelIndex, glm::mat4 mat)
+void Renderable::setModelMatrix(int modelIndex, glm::mat4 mat, bool updateHeirarchically)
 {
     parent->instances[id].matrixStack[modelIndex] = mat;
-    parent->updateModelMatrixStack(id);
+    if(updateHeirarchically)parent->updateModelMatrixStack(id);;
 }
 
-void Renderable::setModelMatrix(int modelIndex, glm::vec3 translation, float angle, glm::vec3 rotationAxis, glm::vec3 scale)
+void Renderable::setModelMatrix(int modelIndex, glm::vec3 translation, float angle, glm::vec3 rotationAxis, glm::vec3 scale, bool updateHeirarchically)
 {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::scale(model, scale);
     model = glm::rotate(model, angle, rotationAxis);
     model = glm::translate(model, translation);
     parent->instances[id].matrixStack[modelIndex] = model;
-    parent->updateModelMatrixStack(id);
+    if(updateHeirarchically)parent->updateModelMatrixStack(id);;
 }

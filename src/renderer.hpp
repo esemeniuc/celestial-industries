@@ -44,6 +44,7 @@ public:
     unsigned int getNextId();
     void render(glm::mat4 viewProjection);
     void updateModelMatrixStack(unsigned int modelIndex);
+    glm::mat4 getModelMatrix(unsigned int id, unsigned int modelIndex);
 private:
     // TODO: replace with uniform buffers
     GLuint viewProjectionUniform, modelIndexUniform, instanceDataAttribute, materialUniformBlock, positionAttribute, texcoordAttribute, normalAttribute, instancesDataBuffer;
@@ -69,16 +70,17 @@ public:
     Renderable(std::shared_ptr<Renderer> initParent);
     void shouldDraw(bool val);
 
-    void translate(int modelIndex, glm::vec3 translation);
-    void rotate(int modelIndex, float amount, glm::vec3 axis);
-    void scale(int modelIndex, glm::vec3 scale);
-    void setModelMatrix(int modelIndex, glm::mat4 mat);
-    void setModelMatrix(int modelIndex, glm::vec3 translation = { 0,0,0 }, float angle = 0, glm::vec3 rotationAxis = { 0,1,0 }, glm::vec3 scale = { 1,1,1 });
+    void setModelMatricesFromComputed();
+    void translate(int modelIndex, glm::vec3 translation, bool updateHeirarchically = true);
+    void rotate(int modelIndex, float amount, glm::vec3 axis, bool updateHeirarchically = true);
+    void scale(int modelIndex, glm::vec3 scale, bool updateHeirarchically = true);
+    void setModelMatrix(int modelIndex, glm::mat4 mat, bool updateHeirarchically = true);
+    void setModelMatrix(int modelIndex, glm::vec3 translation = { 0,0,0 }, float angle = 0, glm::vec3 rotationAxis = { 0,1,0 }, glm::vec3 scale = { 1,1,1 }, bool updateHeirarchically = true);
 
     // When subobject modelIndex is not provided it is assumed you wish to apply the transformation to the whole model
-    void translate(glm::vec3 translation);
-    void rotate(float amount, glm::vec3 axis);
-    void scale(glm::vec3 scale);
+    void translate(glm::vec3 translation, bool updateHeirarchically = true);
+    void rotate(float amount, glm::vec3 axis, bool updateHeirarchically = true);
+    void scale(glm::vec3 scale, bool updateHeirarchically = true);
 
     virtual ~Renderable() {};
 };
