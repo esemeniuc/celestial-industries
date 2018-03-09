@@ -48,7 +48,7 @@ public:
 private:
     // TODO: replace with uniform buffers
     GLuint viewProjectionUniform, modelIndexUniform, instanceDataAttribute, materialUniformBlock, positionAttribute, texcoordAttribute, normalAttribute, instancesDataBuffer;
-    static const unsigned int maxInstances = Config::maxTotalSubObjectsPerRenderer;
+    static const unsigned int maxInstances = Config::MAX_TOTAL_SUBOBJECTS_PER_RENDERER;
 
     struct ShaderInstancesData {
         unsigned int stride;
