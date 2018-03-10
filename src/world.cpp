@@ -21,10 +21,10 @@ World::World() {
 World::~World() = default;
 
 //TODO: remove me
-typedef std::shared_ptr<Tile> pseudoUnit;
+typedef Entity pseudoUnit;
 
 std::unordered_set<pseudoUnit> units;
-
+std::vector<std::vector<Entity>> entityMap;
 
 std::queue<std::pair<float, float>> interpPath1;
 std::queue<std::pair<float, float>> interpPath2;
