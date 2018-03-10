@@ -36,7 +36,7 @@ protected:
 
 public:
 
-	GenericUnit() : initialHealth(100),
+	GenericUnit(const std::shared_ptr<Renderer> _parent) : initialHealth(100),
 					initialEnergyLevel(50),
 					attackDamage(6),
 					attackRange(6),
@@ -47,8 +47,7 @@ public:
 					currentHealth(50),
 					currentEnergyLevel(50),
 					state(UnitState::IDLE),
-					Entity(nullptr)
-	{
+					Entity(_parent) {
 	}
 
 	GenericUnit(int _initialHealth,
@@ -83,10 +82,13 @@ public:
 
 	}
 
-	float inRange(const Entity& entity) {
-		return glm::length(glm::vec2(entity.getPosition() - this->getPosition()));
+	bool inVisionRange(const Entity& entity) {
+		return glm::length(glm::vec2(entity.getPosition() - this->getPosition())) <= visionRange;
 	}
 
+	bool inAttackRange(const Entity& entity) {
+		return glm::length(glm::vec2(entity.getPosition() - this->getPosition())) <= attackRange;
+	}
 };
 
 //https://softwareengineering.stackexchange.com/questions/253704/when-is-type-testing-ok

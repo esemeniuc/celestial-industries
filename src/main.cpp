@@ -13,7 +13,6 @@ using Clock = std::chrono::high_resolution_clock;
 
 // Global 
 World world;
-Logger logger;
 
 // Entry point
 int main(int argc, char* argv[])
