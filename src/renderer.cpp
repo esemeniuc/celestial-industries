@@ -12,6 +12,7 @@ Renderer::Renderer(
 
     instanceDataAttribute = glGetUniformBlockIndex(shader->program, "InstancesData");
 
+
     glGenBuffers(1, &instancesDataBuffer);
     glBindBuffer(GL_UNIFORM_BUFFER, instancesDataBuffer);
     glBindBufferBase(GL_UNIFORM_BUFFER, 2, instancesDataBuffer);

@@ -1,34 +1,7 @@
 #pragma once
 #include "common.hpp"
-
-struct SubObject {
-    std::shared_ptr<std::vector<Mesh>> meshes;
-    int parentMesh;
-};
-
-struct ShaderMaterialData {
-    glm::vec4 ambient;
-    glm::vec4 diffuse;
-    glm::vec4 specular;
-    bool hasDiffuseMap;
-    bool padding1;  // Padding is needed because std140 dictates everything is in steps of 4 bytes. I beleive it will actually allow us to
-    bool padding2;  // use these padding bools, but if thewy arent there we're going to read garbage on those that are :)
-    bool padding3;
-};
-
-struct RenderableInstanceData {
-    /*
-    Note: do not modify instances of this directly - do it through the methods on Renderer
-    */
-
-    bool shouldDraw;
-    std::vector<glm::mat4> matrixStack; // Must be of identical length as subobject's meshes. enforced in constructor.
-};
-
-struct SubObjectSource {
-    std::string filename;
-    int parentMesh;
-};
+#include "model.hpp"
+#include "shader.hpp"
 
 class Renderer {
     std::shared_ptr<Shader> shader;
@@ -56,6 +29,16 @@ private:
         float padding2;
         float padding3;
         glm::mat4 modelMatrices[maxInstances];
+    };
+
+    struct ShaderMaterialData {
+        glm::vec4 ambient;
+        glm::vec4 diffuse;
+        glm::vec4 specular;
+        bool hasDiffuseMap;
+        bool padding1;  // Padding is needed because std140 dictates everything is in steps of 4 bytes. I beleive it will actually allow us to
+        bool padding2;  // use these padding bools, but if thewy arent there we're going to read garbage on those that are :)
+        bool padding3;
     };
 
     ShaderInstancesData instancesData;

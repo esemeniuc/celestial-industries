@@ -1,4 +1,4 @@
-#version 330 
+#version 440 
 // Input attributes
 in vec3 in_position;
 in vec2 in_texcoord;

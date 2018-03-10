@@ -1,4 +1,4 @@
-#version 330
+#version 440
 // From vertex shader
 in vec2 vs_texcoord;
 in vec3 vs_normal;
