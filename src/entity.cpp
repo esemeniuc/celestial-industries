@@ -46,7 +46,7 @@ void Entity::getCameraPosition(glm::vec3 cameraPos)
 	this->cameraPosition = cameraPos;
 }
 
-glm::vec3 Entity::getPosition()
+glm::vec3 Entity::getPosition() const
 {
 	return this->position;
 }

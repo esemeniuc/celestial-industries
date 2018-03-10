@@ -76,7 +76,7 @@ public:
 	void setScale(glm::vec3);
 	void setPosition(glm::vec3);
 	void getCameraPosition(glm::vec3);
-	glm::vec3 getPosition();
+	glm::vec3 getPosition() const;
 	void applyTransformations();
 	void setCollisionGeometryType(collision_geometry_type);
 	glm::mat4 getModelMatrix();

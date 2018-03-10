@@ -50,7 +50,6 @@ class Ai {
 public:
     Building* bestBuildingToAttack(std::list<Building> &buildings, Entity& entity);
 	Building* getHighestValuedBuilding(std::list<Building> &buildings);
-    float getDistanceBetweenEntities(Entity& entity1, Entity& entity2);
 
 	Ai() {
 

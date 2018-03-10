@@ -1,12 +1,13 @@
-#include "common.hpp"
-
-// stlib
 #include <vector>
 #include <sstream>
 #include <string>
 #include <iostream>
 
+#include "common.hpp"
+
 // Our stuff
+Logger logger;
+
 
 char separator()
 {

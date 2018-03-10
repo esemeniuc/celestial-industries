@@ -1,8 +1,4 @@
 #pragma once
-#include "config.hpp"
-#include "logger.hpp"
-#include "model.hpp"
-#include "objloader.hpp"
 
 // stlib
 #include <fstream> // stdout, stderr..
@@ -20,6 +16,11 @@
 #include <glm/fwd.hpp>
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+
+#include "config.hpp"
+#include "logger.hpp"
+#include "model.hpp"
+#include "objloader.hpp"
 
 // Simple utility macros to avoid mistyping directory name, name has to be a string literal
 // audio_path("audio.ogg") -> data/audio/audio.ogg

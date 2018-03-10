@@ -36,6 +36,21 @@ protected:
 
 public:
 
+	GenericUnit() : initialHealth(100),
+					initialEnergyLevel(50),
+					attackDamage(6),
+					attackRange(6),
+					attackSpeed(1),
+					movementSpeed(1),
+					visionRange(6),
+					unitValue(50),
+					currentHealth(50),
+					currentEnergyLevel(50),
+					state(UnitState::IDLE),
+					Entity(nullptr)
+	{
+	}
+
 	GenericUnit(int _initialHealth,
 				int _initialEnergyLevel,
 				int _attackDamage,
@@ -44,9 +59,9 @@ public:
 				int _movementSpeed,
 				int _visionRange,
 				int _unitValue,
-				EntityOwner _owner,
 				int _currentHealth,
 				int _currentEnergyLevel,
+				EntityOwner _owner,
 				UnitState _state,
 				std::shared_ptr<Renderer> _parent) : initialHealth(_initialHealth),
 													 initialEnergyLevel(_initialEnergyLevel),
@@ -58,7 +73,9 @@ public:
 													 unitValue(_unitValue),
 													 currentHealth(_currentHealth),
 													 currentEnergyLevel(_currentEnergyLevel),
-													 state(_state), Entity(_parent) {
+//													 owner(_owner),
+													 state(_state),
+													 Entity(_parent) {
 		owner = _owner;
 	}
 
@@ -66,15 +83,22 @@ public:
 
 	}
 
+	float inRange(const Entity& entity) {
+		return glm::length(glm::vec2(entity.getPosition() - this->getPosition()));
+	}
+
 };
 
 //https://softwareengineering.stackexchange.com/questions/253704/when-is-type-testing-ok
 class RangedUnit : public GenericUnit {
-	//stuff
+
 public:
 	explicit RangedUnit(std::shared_ptr<Renderer> _parent) : GenericUnit(100, 50, 10, 6, 1, 1, 6, 50,
-																		 EntityOwner::PLAYER, initialHealth,
-																		 initialEnergyLevel, UnitState::IDLE, _parent) {
+																		 initialHealth,
+																		 initialEnergyLevel,
+																		 EntityOwner::PLAYER,
+																		 UnitState::IDLE,
+																		 _parent) {
 		logger(LogLevel::DEBUG) << "unit built" << Logger::endl;
 	}
 
