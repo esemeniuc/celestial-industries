@@ -5,7 +5,7 @@ in vec3 vs_normal;
 in vec3 vs_position;
 in vec3 vs_lightVector;
 
-layout(std140, binding = 1) uniform MaterialInfo {
+layout(std140) uniform MaterialInfo {
     vec4 ambient;
     vec4 diffuse;
     vec4 specular;
@@ -13,7 +13,7 @@ layout(std140, binding = 1) uniform MaterialInfo {
     bool padding1; // Surpisingly necessary - lookup std140 or see comment in ShaderData
     bool padding2;
     bool padding3;
-};
+}  mat;
 
 uniform sampler2D diffuseMapSampler;
 
@@ -25,14 +25,14 @@ void main()
 	vec4 lightColor = vec4(1.0,1.0,1.0, 1.0);
 	float angleToLight = clamp( dot(normalize(vs_normal), normalize(vs_lightVector)), 0, 1);
 	vec4 diffuseColor;
-	if(hasDiffuseMap){
-		diffuseColor = diffuse*texture(diffuseMapSampler, vs_texcoord);
+	if(mat.hasDiffuseMap){
+		diffuseColor = mat.diffuse*texture(diffuseMapSampler, vs_texcoord);
 	} else {
-		diffuseColor = diffuse;
+		diffuseColor = mat.diffuse;
 	}
 	if(angleToLight < 0.05){
 		// Shitty way of simulating ambient light
 		angleToLight = 0.05;
 	}
-	color = ambient+lightColor*angleToLight*diffuseColor;
+	color = mat.ambient+lightColor*angleToLight*diffuseColor;
 }

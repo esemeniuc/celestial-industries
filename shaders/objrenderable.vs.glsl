@@ -14,21 +14,21 @@ out vec3 vs_lightVector;
 // Application data
 uniform mat4 vp;
 
-layout(std140, binding = 2) uniform InstancesData {
+layout(std140) uniform InstancesData {
         uint stride;
         float padding1;
         float padding2;
         float padding3;
-        mat4 modelMatrices[65536];
-};
+        mat4 modelMatrices[1000];
+} instances;
 
 uniform int modelIndex;
 
 
 void main()
 {
-    uint idx = gl_InstanceID*stride+modelIndex;
-    mat4 model = modelMatrices[idx];
+    uint idx = gl_InstanceID*instances.stride+modelIndex;
+    mat4 model = instances.modelMatrices[idx];
 	gl_Position = (vp*model) * vec4(in_position, 1);
 	vs_texcoord = in_texcoord;
 	vs_normal = in_normal;

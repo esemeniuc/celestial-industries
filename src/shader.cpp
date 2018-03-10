@@ -67,13 +67,21 @@ bool Shader::load_from_file(const char* vs_path, const char* fs_path)
     // Shaders already delete if compilation fails
     if (!gl_compile_shader(vertex)) {
         logger(LogLevel::ERR) << "Vertex shader failed to compile\n";
+        std::vector<char> v(1024);
+        glGetShaderInfoLog(vertex, 1024, NULL, v.data());
+        std::string s(begin(v), end(v));
+        logger(LogLevel::ERR) << s << "\n";
         return false;
     }
 
     if (!gl_compile_shader(fragment))
     {
         logger(LogLevel::ERR) << "Fragment shader failed to compile\n";
-        glDeleteShader(vertex);
+        std::vector<char> v(1024);
+        glGetShaderInfoLog(fragment, 1024, NULL, v.data());
+        std::string s(begin(v), end(v));
+        logger(LogLevel::ERR) << s << "\n";
+        glDeleteShader(fragment);
         return false;
     }
 
