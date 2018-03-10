@@ -1,8 +1,49 @@
 #include "entity.hpp"
 
-Entity::Entity(Model::MeshType geometry) : renderable(Model::meshRenderers[geometry]){}
+Entity::Entity(Model::MeshType geometry) : geometryRenderer(Model::meshRenderers[geometry]){}
 
-void Entity::update(float ms)
+void Entity::animate(float ms)
 {
+    this->geometryRenderer.scale(glm::vec3(1.001, 1.001, 1.001));
     // TODO: add code to update an entity
+}
+
+void Entity::translate(int modelIndex, glm::vec3 translation)
+{
+    this->geometryRenderer.translate(modelIndex, translation);
+}
+
+void Entity::rotate(int modelIndex, float amount, glm::vec3 axis)
+{
+    this->geometryRenderer.rotate(modelIndex, axis);
+}
+
+void Entity::scale(int modelIndex, glm::vec3 scale)
+{
+    this->geometryRenderer.scale(modelIndex, scale);
+}
+
+void Entity::setModelMatrix(int modelIndex, glm::mat4 mat)
+{
+    this->geometryRenderer.setModelMatrix(modelIndex, mat);
+}
+
+void Entity::setModelMatrix(int modelIndex, glm::vec3 translation, float angle, glm::vec3 rotationAxis, glm::vec3 scale)
+{
+    this->geometryRenderer.setModelMatrix(modelIndex, translation, angle, rotationAxis, scale);
+}
+
+void Entity::translate(glm::vec3 translation)
+{
+    this->geometryRenderer.translate(translation);
+}
+
+void Entity::rotate(float amount, glm::vec3 axis)
+{
+    this->geometryRenderer.rotate(amount, axis);
+}
+
+void Entity::scale(glm::vec3 scale)
+{
+    this->geometryRenderer.scale(scale);
 }

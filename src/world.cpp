@@ -22,7 +22,8 @@ World::World() {
 World::~World() = default;
 
 //TODO: remove me
-std::vector<std::shared_ptr<Tile>> tileRow;
+std::shared_ptr<Entity> ballPointer;
+std::shared_ptr<Entity> ballPointer2;
 std::pair<bool, std::vector<Coord>> path;
 #include <queue>
 std::queue<Coord> pathq;
@@ -128,7 +129,8 @@ bool World::init(glm::vec2 screen) {
 	std::chrono::duration<double> elapsed = finish - start;
 	std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 
-    std::shared_ptr<Entity> ballPointer = std::make_shared<Entity>(Model::MeshType::BALL);
+    ballPointer = std::make_shared<Entity>(Model::MeshType::BALL);
+    ballPointer2 = std::make_shared<Entity>(Model::MeshType::BALL);
 
 	//display a path
 	std::pair<bool, std::vector<Coord>> path =
@@ -224,10 +226,8 @@ bool World::update(float elapsed_ms) {
         selectedTile->shouldDraw(false);
 	}
 
-
-	for (const auto& elem : tileRow) {
-		elem->translate({0.1f, 0, 0.1f});
-	}
+    ballPointer->translate(glm::vec3(0.01, 0.0, 0.01));
+    ballPointer2->translate(glm::vec3(-0.01, 0.0, -0.01));
 
 	return true;
 }
