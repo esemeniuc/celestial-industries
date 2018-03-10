@@ -12,11 +12,14 @@
 // custom headers
 #include "objloader.hpp"
 #include "renderer.hpp"
+#include "model.hpp"
 
 class Entity {
 public:
-    Entity();
+    Entity() = default;
+    Entity(Model::MeshType geometry);
 	virtual void update(float ms);
+
 protected:
     Renderable renderable;
 };

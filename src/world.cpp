@@ -128,6 +128,8 @@ bool World::init(glm::vec2 screen) {
 	std::chrono::duration<double> elapsed = finish - start;
 	std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 
+    std::shared_ptr<Entity> ballPointer = std::make_shared<Entity>(Model::MeshType::BALL);
+
 	//display a path
 	std::pair<bool, std::vector<Coord>> path =
 			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
@@ -135,15 +137,7 @@ bool World::init(glm::vec2 screen) {
 	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
 	selectedTileCoordinates.colCoord = (int) mapSize / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
-
-	for (int j = 0; j < 20; ++j) {
-		auto renderer = Model::meshRenderers[Model::MeshType::BALL];
-		auto tile = std::make_shared<Tile>(renderer);
-
-		tile->translate({j, 0, j});
-		tileRow.push_back(tile);
-	}
-	level.tiles.push_back(tileRow);
+    	
 	return true;
 }
 
