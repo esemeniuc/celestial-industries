@@ -11,20 +11,12 @@
 
 // custom headers
 #include "objloader.hpp"
-#include "model.hpp"
 #include "renderer.hpp"
 
-
-enum class EntityOwner {
-	NONE, PLAYER, AI
-};
-
-class Entity : public Renderable {
+class Entity {
 public:
-	explicit Entity(const std::shared_ptr<Renderer> &initParent);
+    Entity();
 	virtual void update(float ms);
-
 protected:
-    std::map<Config::MeshType, std::shared_ptr<Renderer>> meshRenderers;
-	EntityOwner owner;
+    Renderable renderable;
 };

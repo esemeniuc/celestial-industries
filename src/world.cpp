@@ -115,7 +115,7 @@ bool World::init(glm::vec2 screen) {
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
 
-	level.init(levelArray, meshRenderers);
+	level.init(levelArray, Model::meshRenderers);
 
 	// test different starting points for the AI
 	std::vector<std::vector<AStarNode>> costMap = level.getLevelTraversalCostMap();
@@ -137,7 +137,7 @@ bool World::init(glm::vec2 screen) {
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 
 	for (int j = 0; j < 20; ++j) {
-		auto renderer = meshRenderers[Model::MeshType::BALL];
+		auto renderer = Model::meshRenderers[Model::MeshType::BALL];
 		auto tile = std::make_shared<Tile>(renderer);
 
 		tile->translate({j, 0, j});
@@ -171,7 +171,7 @@ bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<Sub
                                          objSource.parentMesh
                                  });
         }
-        meshRenderers[tileType] = std::make_shared<Renderer>(objShader, subObjects);
+        Model::meshRenderers[tileType] = std::make_shared<Renderer>(objShader, subObjects);
     }
     return true;
 }
@@ -260,7 +260,7 @@ void World::draw() {
 	glm::mat4 view = camera.getViewMatrix();
 	glm::mat4 projectionView = projection * view;
 
-	for (auto renderer : meshRenderers) {
+	for (auto renderer : Model::meshRenderers) {
 		renderer.second->render(projectionView);
 	}
 

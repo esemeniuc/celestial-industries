@@ -148,3 +148,37 @@ void Renderable::setModelMatrix(int modelIndex, glm::vec3 translation, float ang
     model = glm::translate(model, translation);
     parent->objects[id].matrixStack[modelIndex] = model;
 }
+
+std::pair<bool, std::shared_ptr<std::vector<Mesh>>> objToMesh(OBJ::Data obj)
+{
+    logger(LogLevel::DEBUG) << "Converting to meshes... " << '\n';
+    // Clearing errors
+    gl_flush_errors();
+
+    GLuint vbo_id;
+    // Vertex Buffer creation
+    glGenBuffers(1, &vbo_id);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
+    glBufferData(GL_ARRAY_BUFFER, obj.data.size() * sizeof(OBJ::VertexData), obj.data.data(), GL_STATIC_DRAW);
+
+    auto meshes = std::make_shared<std::vector<Mesh>>();
+    for (auto group : obj.groups) {
+        Mesh mesh;
+        mesh.vbo = vbo_id;
+        // Index Buffer creation
+        glGenBuffers(1, &mesh.ibo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, group.indices.size() * sizeof(unsigned int), group.indices.data(), GL_STATIC_DRAW);
+
+        // Vertex Array (Container for Vertex + Index buffer)
+        glGenVertexArrays(1, &mesh.vao);
+        if (gl_has_errors())
+            return { false, meshes };
+
+        mesh.numIndices = group.indices.size();
+        mesh.material = group.material;
+        meshes->push_back(mesh);
+    }
+
+    return { true, meshes };
+}

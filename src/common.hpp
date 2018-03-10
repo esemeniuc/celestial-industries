@@ -1,7 +1,6 @@
 #pragma once
 #include "config.hpp"
 #include "logger.hpp"
-#include "model.hpp"
 #include "objloader.hpp"
 
 // stlib
@@ -104,5 +103,3 @@ T clamp(T value, T lower, T upper) {
 	}
 	return value;
 }
-
-std::pair<bool, std::shared_ptr<std::vector<Mesh>>> objToMesh(OBJ::Data obj);
