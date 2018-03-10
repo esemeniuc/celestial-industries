@@ -7,6 +7,7 @@
 #include "pathfinder.hpp"
 #include "skybox.hpp"
 #include "tile.hpp"
+#include "model.hpp"
 
 // stdlib
 #include <memory> //for shared_ptr
@@ -32,7 +33,6 @@ class World {
 public:
 	//members
 	bool advanced_mode = false;
-    std::map<Model::MeshType, std::shared_ptr<Renderer>> meshRenderers;
 	//funcs
 	World();
 
@@ -89,12 +89,12 @@ private:
 
 	bool loadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder);
 
+	bool initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources);
+
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
 	void on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
-
-    bool initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources);
 };

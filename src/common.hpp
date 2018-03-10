@@ -1,4 +1,10 @@
 #pragma once
+<<<<<<< HEAD
+=======
+#include "config.hpp"
+#include "logger.hpp"
+#include "objloader.hpp"
+>>>>>>> EntityRefactor
 
 // stlib
 #include <fstream> // stdout, stderr..
@@ -86,7 +92,6 @@ struct TexturedVertex
 	vec2 texcoord;
 };
 
-
 struct Coord {
 	int rowCoord, colCoord;
 
@@ -106,5 +111,3 @@ T clamp(T value, T lower, T upper) {
 	}
 	return value;
 }
-
-std::pair<bool, std::shared_ptr<std::vector<Mesh>>> objToMesh(OBJ::Data obj);

@@ -15,7 +15,9 @@ Building* Ai::bestBuildingToAttack(std::list<Building>& buildings, Entity& entit
 
     for (auto& currentBuilding : buildings) {
         int buildingValue = currentBuilding.buildingValue;
+
         float distanceToBuilding = 0;//getDistanceBetweenEntities(currentBuilding, entity); //fixme to revert
+
         float attackValue = buildingValue - (distanceToBuilding * PRIORITIZE_CLOSER_ATTACKS);
 
         if (attackValue > bestAttackValue) {

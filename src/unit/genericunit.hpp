@@ -36,7 +36,7 @@ protected:
 
 public:
 
-	GenericUnit(const std::shared_ptr<Renderer> _parent) : initialHealth(100),
+	GenericUnit() : initialHealth(100),
 					initialEnergyLevel(50),
 					attackDamage(6),
 					attackRange(6),
@@ -46,8 +46,21 @@ public:
 					unitValue(50),
 					currentHealth(50),
 					currentEnergyLevel(50),
-					state(UnitState::IDLE),
-					Entity(_parent) {
+					state(UnitState::IDLE) {
+	}
+
+	GenericUnit(Model::MeshType _meshType) : initialHealth(100),
+											 initialEnergyLevel(50),
+											 attackDamage(6),
+											 attackRange(6),
+											 attackSpeed(1),
+											 movementSpeed(1),
+											 visionRange(6),
+											 unitValue(50),
+											 currentHealth(50),
+											 currentEnergyLevel(50),
+											 state(UnitState::IDLE),
+											 Entity(_meshType) {
 	}
 
 	GenericUnit(int _initialHealth,
@@ -62,23 +75,23 @@ public:
 				int _currentEnergyLevel,
 				EntityOwner _owner,
 				UnitState _state,
-				std::shared_ptr<Renderer> _parent) : initialHealth(_initialHealth),
-													 initialEnergyLevel(_initialEnergyLevel),
-													 attackDamage(_attackDamage),
-													 attackRange(_attackRange),
-													 attackSpeed(_attackSpeed),
-													 movementSpeed(_movementSpeed),
-													 visionRange(_visionRange),
-													 unitValue(_unitValue),
-													 currentHealth(_currentHealth),
-													 currentEnergyLevel(_currentEnergyLevel),
+				Model::MeshType _meshType) : initialHealth(_initialHealth),
+											 initialEnergyLevel(_initialEnergyLevel),
+											 attackDamage(_attackDamage),
+											 attackRange(_attackRange),
+											 attackSpeed(_attackSpeed),
+											 movementSpeed(_movementSpeed),
+											 visionRange(_visionRange),
+											 unitValue(_unitValue),
+											 currentHealth(_currentHealth),
+											 currentEnergyLevel(_currentEnergyLevel),
 //													 owner(_owner),
-													 state(_state),
-													 Entity(_parent) {
-		owner = _owner;
+											 state(_state),
+											 Entity(_meshType) {
+		aiInfo.owner = _owner;
 	}
 
-	void update(float ms) override {
+	void animate(float ms) override {
 
 	}
 
@@ -99,13 +112,14 @@ public:
 class RangedUnit : public GenericUnit {
 
 public:
-	explicit RangedUnit(std::shared_ptr<Renderer> _parent) : GenericUnit(100, 50, 10, 6, 1, 1, 6, 50,
-																		 initialHealth,
-																		 initialEnergyLevel,
-																		 EntityOwner::PLAYER,
-																		 UnitState::IDLE,
-																		 _parent) {
-		logger(LogLevel::DEBUG) << "unit built" << Logger::endl;
+
+	RangedUnit(Model::MeshType _meshType) : GenericUnit(100, 50, 10, 6, 1, 1, 6, 50,
+														initialHealth,
+														initialEnergyLevel,
+														EntityOwner::PLAYER,
+														UnitState::IDLE,
+														_meshType) {
+		logger(LogLevel::DEBUG) << "ranged unit built" << Logger::endl;
 	}
 
 };

@@ -30,6 +30,11 @@ std::queue<std::pair<float, float>> interpPath1;
 std::queue<std::pair<float, float>> interpPath2;
 std::queue<std::pair<float, float>> interpPath3;
 
+std::shared_ptr<Entity> ballPointer;
+std::shared_ptr<Entity> ballPointer2;
+std::pair<bool, std::vector<Coord>> path;
+#include <queue>
+std::queue<Coord> pathq;
 
 // World initialization
 bool World::init(glm::vec2 screen) {
@@ -122,7 +127,7 @@ bool World::init(glm::vec2 screen) {
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
 
-	level.init(levelArray, meshRenderers);
+	level.init(levelArray, Model::meshRenderers);
 
 	// test different starting points for the AI
 	std::vector<std::vector<AStarNode>> costMap = level.getLevelTraversalCostMap();
@@ -138,6 +143,7 @@ bool World::init(glm::vec2 screen) {
 		std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 	}
 
+<<<<<<< HEAD
 	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
 	selectedTileCoordinates.colCoord = (int) mapSize / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
@@ -210,6 +216,49 @@ bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<Sub
 		meshRenderers[tileType] = std::make_shared<Renderer>(objShader, subObjects);
 	}
 	return true;
+=======
+    ballPointer = std::make_shared<Entity>(Model::MeshType::BALL);
+    ballPointer2 = std::make_shared<Entity>(Model::MeshType::BALL);
+
+	//display a path
+	std::pair<bool, std::vector<Coord>> path =
+			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
+	level.displayPath(path.second);
+	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
+	selectedTileCoordinates.colCoord = (int) mapSize / 2;
+	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
+    	
+	return true;
+}
+
+bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources)
+{
+    // All the models come from the same place
+    std::string path = pathBuilder({ "data", "models" });
+    for (auto source : sources) {
+
+        std::vector<SubObject> subObjects;
+        Model::MeshType tileType = source.first;
+        std::vector<SubObjectSource> objSources  = source.second;
+        for (auto objSource : objSources) {
+            OBJ::Data obj;
+            if (!OBJ::Loader::loadOBJ(path, objSource.filename, obj)) {
+                // Failure message should already be handled by loadOBJ
+                return false;
+            }
+            auto meshResult = objToMesh(obj);
+            if (!meshResult.first) {
+                logger(LogLevel::ERR) << "Failed to turn tile obj to meshes for tile " << objSource.filename << '\n';
+            }
+            subObjects.push_back({
+                                         meshResult.second,
+                                         objSource.parentMesh
+                                 });
+        }
+        Model::meshRenderers[tileType] = std::make_shared<Renderer>(objShader, subObjects);
+    }
+    return true;
+>>>>>>> EntityRefactor
 }
 
 // skybox
@@ -266,6 +315,7 @@ bool World::update(float elapsed_ms) {
 		selectedTile->shouldDraw(false);
 	}
 
+<<<<<<< HEAD
 	//display interpolated moves for ball
 	for(const auto& unit : units)
 	{
@@ -275,6 +325,11 @@ bool World::update(float elapsed_ms) {
 			interpPath1.pop();
 		}
 	}
+=======
+    ballPointer->translate(glm::vec3(0.01, 0.0, 0.01));
+    ballPointer2->translate(glm::vec3(-0.01, 0.0, -0.01));
+    ballPointer2->animate(elapsed_ms);
+>>>>>>> EntityRefactor
 
 
 
@@ -315,7 +370,7 @@ void World::draw() {
 	glm::mat4 view = camera.getViewMatrix();
 	glm::mat4 projectionView = projection * view;
 
-	for (auto renderer : meshRenderers) {
+	for (auto renderer : Model::meshRenderers) {
 		renderer.second->render(projectionView);
 	}
 

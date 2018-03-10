@@ -4,110 +4,61 @@
 #include <cmath>
 #include <sstream>
 #include <cstring>
+#include <map>
 
 // glm
-#define GLM_ENABLE_EXPERIMENTAL
-
 #include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtx/transform.hpp"
-#include "glm/gtx/quaternion.hpp"
 
 // custom headers
 #include "objloader.hpp"
-#include "model.hpp"
 #include "renderer.hpp"
-
-// collision geometries
-struct bounding_box {
-
-//               	 @ + + + + + + + + @						|
-//               	 +\                +\						|
-//               	 + \               + \						|
-//               	 +  \              +  \         y			|
-//           width   +   \             +   \        |			|
-//               	 +    @ + + + + + +++ + @       |______ x	|
-//               	 +    +            +    +        \			|
-//               	 +    +            +    +         \			|
-//               	 +    +            +    +          z		|
-//  corner position  @ + +++ + + + + + @    +					|
-//               	  \   +             \   +					|
-//               	   \  +              \  +					|
-//               height \ +               \ +					|
-//               	     \+    length      \+					|
-//               	      @ + + + + + + + + @					|
-
-	double length, width, height;
-	glm::vec3 corner_position;
-};
-
-struct bounding_sphere {
-	double radius;
-	glm::vec3 center;
-};
-
-struct bounding_cylinder {
-	double radius, height;
-	glm::vec3 center;
-};
-
-enum collision_geometry_type {
-	cg_bounding_box,
-	cg_bounding_sphere,
-	cg_bounding_cylinder,
-};
+#include "model.hpp"
 
 enum class EntityOwner {
 	NONE, PLAYER, AI
 };
 
+enum class EntityType {
+	NONE, NON_ATTACKING, DEFENSIVE_PASSIVE, DEFENSIVE_ACTIVE, OFFENSIVE
+};
 
-class Entity : public Renderable {
+struct EntityInfo {
+	EntityOwner owner = EntityOwner::NONE;
+	EntityType type = EntityType::NONE;
+	int value; //used for AI to prioritize targets
+};
+
+class Entity {
 public:
-	explicit Entity(const std::shared_ptr<Renderer> &initParent);
+	//members
+	EntityInfo aiInfo;
 
-	virtual void update(float ms) = 0;
-	void setVelocity (glm::vec3);
-	void setGravity (glm::vec3);
-	void setForce (glm::vec3);
-	void setGeometryId(long);
-	void setRotation (glm::vec3);
-	void setTranslation (glm::vec3);
-	void setScale(glm::vec3);
-	void setPosition(glm::vec3);
-	void getCameraPosition(glm::vec3);
-	glm::vec3 getPosition() const;
-	void applyTransformations();
-	void setCollisionGeometryType(collision_geometry_type);
-	glm::mat4 getModelMatrix();
-	collision_geometry_type getCollisionGeometryType();
-	glm::vec3 getVelocity();
-	long getGeometryId();
-	bool isTextured();
+	// constructors
+	Entity();
+
+	Entity(Model::MeshType geometry);
+
+	// functions
+	virtual void animate(float ms);
+
+	void translate(int modelIndex, glm::vec3 translation);
+
+	void rotate(int modelIndex, float amount, glm::vec3 axis);
+
+	void scale(int modelIndex, glm::vec3 scale);
+
+	void setModelMatrix(int modelIndex, glm::mat4 mat);
+
+	void setModelMatrix(int modelIndex, glm::vec3 translation = {0, 0, 0}, float angle = 0,
+						glm::vec3 rotationAxis = {0, 1, 0}, glm::vec3 scale = {1, 1, 1});
+
+	// When subobject modelIndex is not provided it is assumed you wish to apply the transformation to the whole model
+	void translate(glm::vec3 translation);
+
+	void rotate(float amount, glm::vec3 axis);
+
+	void scale(glm::vec3 scale);
 
 protected:
-	// physical properties
-	double density;
-	double volume;
-	glm::vec3 velocity;
-	glm::vec3 gravity;
-	glm::vec3 applied_force;
-	glm::vec3 translation = glm::vec3(0.0, 0.0, 0.0);
-	glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0);
-	glm::vec3 rotation = glm::vec3(0.0, 0.0,0.0);
-	glm::vec3 position;
-	glm::vec3 cameraPosition;
-	glm::mat4 model = glm::mat4(1.0);
-	
-	// collision geometry type
-	collision_geometry_type cg_type;
-
-	// graphics attributes
-	size_t indices;
-	bool texture_flag;
-
-	// id number of the geometry
-	long geometry_id;
-
-	EntityOwner owner;
+	Renderable geometryRenderer;
 };
