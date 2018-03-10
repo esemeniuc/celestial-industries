@@ -2,11 +2,10 @@
 #include "world.hpp"
 #include "logger.hpp"
 #include <chrono>  // for high_resolution_clock
-
+#include <queue>
+#include <unordered_set>
 // Same as static in c, local to compilation unit
 namespace {
-//	const size_t TILE_WIDTH = 10;
-
 	namespace {
 		void glfw_err_cb(int error, const char* desc) {
 			fprintf(stderr, "%d: %s", error, desc);
@@ -22,11 +21,10 @@ World::World() {
 World::~World() = default;
 
 //TODO: remove me
-std::shared_ptr<Tile> unit1;
-std::shared_ptr<Tile> unit2;
-std::shared_ptr<Tile> unit3;
+typedef std::shared_ptr<Tile> pseudoUnit;
 
-#include <queue>
+std::unordered_set<pseudoUnit> units;
+
 
 std::queue<std::pair<float, float>> interpPath1;
 std::queue<std::pair<float, float>> interpPath2;
@@ -144,29 +142,31 @@ bool World::init(glm::vec2 screen) {
 	selectedTileCoordinates.colCoord = (int) mapSize / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 
-	std::shared_ptr<Tile> sandTile = std::make_shared<Tile>(meshRenderers[Model::MeshType::SAND_2]);
-
 	//ball example
 	//display a path
 	std::vector<Coord> path1 =
 			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2).second;
-	level.displayPath(path1, sandTile);
+	level.displayPath(path1);
 	interpPath1 = AI::aStar::createInterpolatedPath(path1);
 
 	//render the path
+	pseudoUnit unit1;
 	unit1 = std::make_shared<Tile>(meshRenderers[Model::MeshType::BALL]);
 	unit1->translate({27, 0, 11});
 	level.tiles.push_back({{unit1}});
+	units.insert(unit1);
 
 	//wall example
 	//display a path
 	std::vector<Coord> path2 =
 			AI::aStar::a_star(costMap, 1, 19, 40, (int) mapSize / 2, (int) mapSize / 2).second;
 	std::cout << "path2 length: " << path2.size() << '\n';
-	level.displayPath(path2, sandTile);
+	level.displayPath(path2);
 	interpPath2 = AI::aStar::createInterpolatedPath(path2);
 
 	//render the path
+	pseudoUnit unit2;
+	std::shared_ptr<Tile> unit3;
 	unit2 = std::make_shared<Tile>(meshRenderers[Model::MeshType::WALL]);
 	unit2->translate({39, 0, 19});
 	level.tiles.push_back({{unit2}});
@@ -176,7 +176,7 @@ bool World::init(glm::vec2 screen) {
 	std::vector<Coord> path3 =
 			AI::aStar::a_star(costMap, 1, 1, 40, (int) mapSize / 2, (int) mapSize / 2).second;
 	std::cout << "path3 length: " << path3.size() << '\n';
-	level.displayPath(path3, std::make_shared<Tile>(meshRenderers[Model::MeshType::SAND_2]));
+	level.displayPath(path3);
 	interpPath3 = AI::aStar::createInterpolatedPath(path3);
 
 	//render the path
@@ -267,23 +267,28 @@ bool World::update(float elapsed_ms) {
 	}
 
 	//display interpolated moves for ball
-	if (!interpPath1.empty()) {
-		auto coord = interpPath1.front();
-		unit1->translate({coord.second, 0, coord.first});
-		interpPath1.pop();
+	for(const auto& unit : units)
+	{
+		if (!interpPath1.empty()) {
+			auto coord = interpPath1.front();
+			unit->translate({coord.second, 0, coord.first});
+			interpPath1.pop();
+		}
 	}
 
-	if (!interpPath2.empty()) {
-		auto coord = interpPath2.front();
-		unit2->translate({coord.second, 0, coord.first});
-		interpPath2.pop();
-	}
 
-	if (!interpPath3.empty()) {
-		auto coord = interpPath3.front();
-		unit3->translate({coord.second, 0, coord.first});
-		interpPath3.pop();
-	}
+
+//	if (!interpPath2.empty()) {
+//		auto coord = interpPath2.front();
+//		unit2->translate({coord.second, 0, coord.first});
+//		interpPath2.pop();
+//	}
+//
+//	if (!interpPath3.empty()) {
+//		auto coord = interpPath3.front();
+//		unit3->translate({coord.second, 0, coord.first});
+//		interpPath3.pop();
+//	}
 
 	return true;
 }

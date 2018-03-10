@@ -31,7 +31,7 @@ protected:
 	//mutable values
 	int currentHealth;
 	int currentEnergyLevel;
-	std::queue<Coord> moveTargets;
+	std::queue<Coord> targetPath;
 	UnitState state;
 
 public:
@@ -88,6 +88,10 @@ public:
 
 	bool inAttackRange(const Entity& entity) {
 		return glm::length(glm::vec2(entity.getPosition() - this->getPosition())) <= attackRange;
+	}
+
+	void setTargetPath(const std::queue<Coord>& targetPath) {
+		GenericUnit::targetPath = targetPath;
 	}
 };
 

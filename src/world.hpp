@@ -26,8 +26,7 @@
 // glfw
 #include "GLFW/glfw3.h"
 
-
-// Container for all our entities and game logic. Individual rendering / update is 
+// Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
 class World {
 public:

@@ -57,7 +57,7 @@ public:
 
 	void update(float ms);
 
-	bool displayPath(const std::vector<Coord>& levelArray, std::shared_ptr<Tile> tile);
+	bool displayPath(const std::vector<Coord>& levelArray);
 
 	std::vector<std::vector<Model::MeshType>> levelLoader(const std::string& levelTextFile);
 

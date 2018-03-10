@@ -6,11 +6,11 @@
 #include "catch.hpp"
 #include "genericunit.hpp"
 #include "world.hpp"
+#include "global.hpp"
 
-World world;
-
-TEST_CASE("Unit range is accurate", "[generic unit]") {
+TEST_CASE("Unit range is accurate", "[generic_unit]") {
 	world.init({(float) Config::WINDOW_WIDTH, (float) Config::WINDOW_HEIGHT});
+//	world.initMeshTypes(Model::meshSources);
 	std::shared_ptr<Renderer> parent = world.meshRenderers[Model::MeshType::SAND_2];
 
 	GenericUnit genericUnit1(parent);

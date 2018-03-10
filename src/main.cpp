@@ -7,12 +7,9 @@
 
 // stlib
 #include <chrono>
-#include <iostream>
+#include "global.hpp"
 
 using Clock = std::chrono::high_resolution_clock;
-
-// Global 
-World world;
 
 // Entry point
 int main(int argc, char* argv[])

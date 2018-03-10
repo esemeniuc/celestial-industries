@@ -45,26 +45,27 @@ set(CUSTOM_INCLUDE_LIBS
 
 set(PROJ_SOURCES
 		ext/gl3w/GL/gl3w.c
-		src/objloader.cpp
+		src/ai.cpp
+		src/camera.cpp
+		src/config.hpp
 		src/common.cpp
 		src/entity.cpp
-		src/tile.cpp
-		src/skybox.cpp
-		src/world.cpp
-		src/camera.cpp
-		src/textureloader.cpp
+		src/global.cpp
 		src/level.cpp
-		src/config.hpp
 		src/logger.cpp
+		src/model.cpp
+		src/objloader.cpp
 		src/pathfinder.cpp
 		src/renderer.cpp
-		src/ai.cpp
-		src/model.cpp
 		src/shader.cpp
+		src/skybox.cpp
+		src/textureloader.cpp
+		src/tile.cpp
+		src/world.cpp
 		src/unit/genericunit.cpp
 		src/unit/unitgroup.cpp
 		src/building.cpp
-		)
+		src/global.hpp)
 
 
 add_executable(proj

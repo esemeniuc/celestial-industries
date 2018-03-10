@@ -8,7 +8,6 @@
 // Our stuff
 Logger logger;
 
-
 char separator()
 {
 	return '/';
