@@ -83,7 +83,6 @@ struct TexturedVertex
 	vec2 texcoord;
 };
 
-
 struct Coord {
 	int rowCoord, colCoord;
 

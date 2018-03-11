@@ -15,7 +15,7 @@ void Entity::translate(int modelIndex, glm::vec3 translation)
 
 void Entity::rotate(int modelIndex, float amount, glm::vec3 axis)
 {
-    this->geometryRenderer.rotate(modelIndex, axis);
+    this->geometryRenderer.rotate(modelIndex, amount, axis);
 }
 
 void Entity::scale(int modelIndex, glm::vec3 scale)
