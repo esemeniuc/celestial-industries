@@ -152,9 +152,9 @@ bool World::init(glm::vec2 screen) {
 	}
 	//display a path
 	int startx = 12, startz = 27;
-	int targetx = 20, targetz = 20;
+	int targetx = 10, targetz = 10;
 	std::vector<Coord> path1 =
-			AI::aStar::a_star(costMap, 1, 12, 27, (int) levelArray.size() / 2, (int) levelArray.size() / 2).second;
+			AI::aStar::a_star(costMap, 1, 12, 27, targetx, targetz).second;
 	level.displayPath(path1);
 	entityMap[startx][startz].push_back(GenericUnit());
 	interpPath1 = AI::aStar::createInterpolatedPath(path1);
@@ -163,7 +163,7 @@ bool World::init(glm::vec2 screen) {
 	unit1 = std::make_shared<Tile>(Model::meshRenderers[Model::MeshType::BALL]);
 	unit1->translate({27, 0, 11});
 	level.tiles.push_back({{unit1}});
-//	units.insert(unit1);
+	units.insert(unit1);
 
 	//wall example
 	//display a path
@@ -199,7 +199,7 @@ bool World::init(glm::vec2 screen) {
 	//level.displayPath(path.second);
 
 	selectedTileCoordinates.rowCoord = (int) levelArray.size() / 2;
-	selectedTileCoordinates.colCoord = (int) levelArray.size()  / 2;
+	selectedTileCoordinates.colCoord = (int) levelArray.size() / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 
 	return true;
