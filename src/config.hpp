@@ -16,6 +16,9 @@ namespace Config {
 	const int CAMERA_START_POSITION_X = 20;
 	const int CAMERA_START_POSITION_Y = 20;
 	const int CAMERA_START_POSITION_Z = -15;
+    
+    // Note: this must be equalt to the value in the shader, otherwise weird things will eventually happen probably
+    const unsigned int MAX_TOTAL_SUBOBJECTS_PER_RENDERER = 1000; // If you change this and not the shader you are a bad person
 
 	enum class MeshType {
 		SAND_1,

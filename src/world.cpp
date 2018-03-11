@@ -2,6 +2,8 @@
 #include "world.hpp"
 #include "logger.hpp"
 #include <chrono>  // for high_resolution_clock
+#include "renderer.hpp"
+#include "world.hpp"
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -111,6 +113,7 @@ bool World::init(glm::vec2 screen) {
 	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isn't being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
 	std::vector<std::vector<Model::MeshType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
+
 	size_t mapSize = levelArray.size();
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
@@ -120,18 +123,19 @@ bool World::init(glm::vec2 screen) {
 	// test different starting points for the AI
 	std::vector<std::vector<AStarNode>> costMap = level.getLevelTraversalCostMap();
 	auto start = std::chrono::high_resolution_clock::now();
-	AI::aStar::a_star(costMap, 1, 19, 1, 11, 25);
-	AI::aStar::a_star(costMap, 1, 1, 1, 11, 25);
-	AI::aStar::a_star(costMap, 1, 1, 39, 11, 25);
+    // commented out due to hard coded locations on variable levels
+	//AI::aStar::a_star(costMap, 1, 19, 1, 11, 25);
+	//AI::aStar::a_star(costMap, 1, 1, 1, 11, 25);
+	//AI::aStar::a_star(costMap, 1, 1, 39, 11, 25);
 	auto finish = std::chrono::high_resolution_clock::now();
 
 	std::chrono::duration<double> elapsed = finish - start;
 	std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 
 	//display a path
-	std::pair<bool, std::vector<Coord>> path =
-			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
-	level.displayPath(path.second);
+	//std::pair<bool, std::vector<Coord>> path =
+	//		AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
+	//level.displayPath(path.second);
 	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
 	selectedTileCoordinates.colCoord = (int) mapSize / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
@@ -152,26 +156,9 @@ bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<Sub
     // All the models come from the same place
     std::string path = pathBuilder({ "data", "models" });
     for (auto source : sources) {
-
-        std::vector<SubObject> subObjects;
         Model::MeshType tileType = source.first;
         std::vector<SubObjectSource> objSources  = source.second;
-        for (auto objSource : objSources) {
-            OBJ::Data obj;
-            if (!OBJ::Loader::loadOBJ(path, objSource.filename, obj)) {
-                // Failure message should already be handled by loadOBJ
-                return false;
-            }
-            auto meshResult = objToMesh(obj);
-            if (!meshResult.first) {
-                logger(LogLevel::ERR) << "Failed to turn tile obj to meshes for tile " << objSource.filename << '\n';
-            }
-            subObjects.push_back({
-                                         meshResult.second,
-                                         objSource.parentMesh
-                                 });
-        }
-        meshRenderers[tileType] = std::make_shared<Renderer>(objShader, subObjects);
+        meshRenderers[tileType] = std::make_shared<Renderer>(objShader, objSources);
     }
     return true;
 }
@@ -234,6 +221,9 @@ bool World::update(float elapsed_ms) {
 	for (const auto& elem : tileRow) {
 		elem->translate({0.1f, 0, 0.1f});
 	}
+    for (const auto& turret : level.guntowers) {
+        turret->update(elapsed_ms);
+    }
 
 	return true;
 }

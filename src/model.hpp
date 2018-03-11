@@ -17,6 +17,7 @@ struct Mesh
     GLuint vao;
     GLuint vbo;
     GLuint ibo;
+    GLuint ubo;
     GLuint numIndices;
     OBJ::Material material;
 };
