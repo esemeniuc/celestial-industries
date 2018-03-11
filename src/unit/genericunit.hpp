@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <queue>
+#include <vector>
 #include "common.hpp"
 #include "entity.hpp"
 
@@ -31,7 +31,7 @@ protected:
 	//mutable values
 	int currentHealth;
 	int currentEnergyLevel;
-	std::queue<Coord> targetPath;
+	std::vector<Coord> targetPath;
 	UnitState state;
 
 public:
@@ -95,15 +95,15 @@ public:
 
 	}
 
-	bool inVisionRange(const Entity& entity) {
-		return glm::length(glm::vec2(entity.getPosition() - this->getPosition())) <= visionRange;
-	}
+//	bool inVisionRange(const Entity& entity) {
+//		return glm::length(glm::vec2(entity.getPosition() - this->getPosition())) <= visionRange;
+//	}
+//
+//	bool inAttackRange(const Entity& entity) {
+//		return glm::length(glm::vec2(entity.getPosition() - this->getPosition())) <= attackRange;
+//	}
 
-	bool inAttackRange(const Entity& entity) {
-		return glm::length(glm::vec2(entity.getPosition() - this->getPosition())) <= attackRange;
-	}
-
-	void setTargetPath(const std::queue<Coord>& targetPath) {
+	void setTargetPath(const std::vector<Coord>& targetPath) {
 		GenericUnit::targetPath = targetPath;
 	}
 };

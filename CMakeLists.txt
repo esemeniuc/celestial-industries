@@ -46,11 +46,13 @@ set(CUSTOM_INCLUDE_LIBS
 set(PROJ_SOURCES
 		ext/gl3w/GL/gl3w.c
 		src/ai.cpp
+		src/building.cpp
 		src/camera.cpp
 		src/config.hpp
 		src/common.cpp
 		src/entity.cpp
 		src/global.cpp
+		src/global.hpp
 		src/level.cpp
 		src/logger.cpp
 		src/model.cpp
@@ -64,9 +66,12 @@ set(PROJ_SOURCES
 		src/world.cpp
 		src/unit/genericunit.cpp
 		src/unit/unitgroup.cpp
-		src/building.cpp
-		src/global.hpp)
+		)
 
+set(TEST_SUITE_SOURCES
+		test/example.cpp
+		test/genericunit_test.cpp
+		)
 
 add_executable(proj
 		src/main.cpp
@@ -81,15 +86,17 @@ target_include_directories(proj PUBLIC ${CUSTOM_INCLUDE_DIRS})
 target_link_libraries(proj ${CUSTOM_INCLUDE_LIBS})
 
 
+
+
+
+
+
 # Prepare "Catch" library for other executables
 set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/catch2/single_include)
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 
-set(TEST_SUITE_SOURCES
-		test/example.cpp
-		test/genericunit_test.cpp
-		)
+set(TEST_SUITE_SOURCES ${TEST_SUITE_SOURCES})
 
 add_executable(test_suite ${PROJ_SOURCES} ${TEST_SUITE_SOURCES})
 target_compile_options(test_suite PUBLIC ${CUSTOM_COMPILE_FLAGS})

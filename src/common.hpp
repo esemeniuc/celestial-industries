@@ -1,10 +1,8 @@
 #pragma once
-<<<<<<< HEAD
-=======
+
 #include "config.hpp"
 #include "logger.hpp"
 #include "objloader.hpp"
->>>>>>> EntityRefactor
 
 // stlib
 #include <fstream> // stdout, stderr..
@@ -23,11 +21,6 @@
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-#include "config.hpp"
-#include "logger.hpp"
-#include "model.hpp"
-#include "objloader.hpp"
-
 // Simple utility macros to avoid mistyping directory name, name has to be a string literal
 // audio_path("audio.ogg") -> data/audio/audio.ogg
 #ifdef _MSC_VER
@@ -45,23 +38,11 @@
 // Our stuff
 extern Logger logger; //use extern so we share the logger in main.cpp with all other cpp files
 
-std::vector<std::string> splitString(std::string input, const char seperator);
+std::vector<std::string> splitString(std::string input, const char separator);
 char separator();
 
 std::string pathBuilder(std::vector<std::string> parts);
 std::string pathAppender(std::string base, std::vector<std::string> parts);
-
-// Not much math is needed and there are already way too many libraries linked (:    <--- That's not just evil, it's also silly
-// If you want to do some overloads..
-struct vec2 { float x, y; };
-struct vec3 { float x, y, z; };
-struct mat3 { vec3 c0, c1, c2; };
-
-// Utility functions
-float dot(vec2 l, vec2 r);
-float dot(vec3 l, vec3 r);
-mat3  mul(const mat3& l, const mat3& r);
-vec2  normalize(vec2 v);
 
 // OpenGL utilities
 // cleans error buffer
@@ -77,20 +58,6 @@ template<typename T>
 auto inline end(std::shared_ptr<T> ptr) -> typename T::iterator {
     return ptr->end();
 }
-
-// Single Vertex Buffer element for non-textured meshes (colored.vs.glsl)
-struct Vertex
-{
-	vec3 position;
-	vec3 color;
-};
-
-// Single Vertex Buffer element for textured sprites (textured.vs.glsl)
-struct TexturedVertex
-{
-	vec3 position;
-	vec2 texcoord;
-};
 
 struct Coord {
 	int rowCoord, colCoord;

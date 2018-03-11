@@ -20,10 +20,11 @@ World::World() {
 
 World::~World() = default;
 
-//TODO: remove me
-typedef Entity pseudoUnit;
-
-std::unordered_set<pseudoUnit> units;
+typedef std::shared_ptr<Tile> pseudoUnit;
+//std::unordered_set<pseudoUnit> units;
+pseudoUnit unit1;
+pseudoUnit unit2;
+pseudoUnit unit3;
 std::vector<std::vector<Entity>> entityMap;
 
 std::queue<std::pair<float, float>> interpPath1;
@@ -33,7 +34,9 @@ std::queue<std::pair<float, float>> interpPath3;
 std::shared_ptr<Entity> ballPointer;
 std::shared_ptr<Entity> ballPointer2;
 std::pair<bool, std::vector<Coord>> path;
+
 #include <queue>
+
 std::queue<Coord> pathq;
 
 // World initialization
@@ -143,7 +146,6 @@ bool World::init(glm::vec2 screen) {
 		std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 	}
 
-<<<<<<< HEAD
 	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
 	selectedTileCoordinates.colCoord = (int) mapSize / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
@@ -156,11 +158,10 @@ bool World::init(glm::vec2 screen) {
 	interpPath1 = AI::aStar::createInterpolatedPath(path1);
 
 	//render the path
-	pseudoUnit unit1;
-	unit1 = std::make_shared<Tile>(meshRenderers[Model::MeshType::BALL]);
+	unit1 = std::make_shared<Tile>(Model::meshRenderers[Model::MeshType::BALL]);
 	unit1->translate({27, 0, 11});
 	level.tiles.push_back({{unit1}});
-	units.insert(unit1);
+//	units.insert(unit1);
 
 	//wall example
 	//display a path
@@ -171,9 +172,7 @@ bool World::init(glm::vec2 screen) {
 	interpPath2 = AI::aStar::createInterpolatedPath(path2);
 
 	//render the path
-	pseudoUnit unit2;
-	std::shared_ptr<Tile> unit3;
-	unit2 = std::make_shared<Tile>(meshRenderers[Model::MeshType::WALL]);
+	unit2 = std::make_shared<Tile>(Model::meshRenderers[Model::MeshType::WALL]);
 	unit2->translate({39, 0, 19});
 	level.tiles.push_back({{unit2}});
 
@@ -186,12 +185,24 @@ bool World::init(glm::vec2 screen) {
 	interpPath3 = AI::aStar::createInterpolatedPath(path3);
 
 	//render the path
-	unit3 = std::make_shared<Tile>(meshRenderers[Model::MeshType::MINING_TOWER]);
+	unit3 = std::make_shared<Tile>(Model::meshRenderers[Model::MeshType::MINING_TOWER]);
 	unit3->translate({39, 0, 1});
 	level.tiles.push_back({{unit3}});
 
+	ballPointer = std::make_shared<Entity>(Model::MeshType::BALL);
+	ballPointer2 = std::make_shared<Entity>(Model::MeshType::BALL);
+
+	//display a path
+	std::pair<bool, std::vector<Coord>> path =
+			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
+	level.displayPath(path.second);
+	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
+	selectedTileCoordinates.colCoord = (int) mapSize / 2;
+	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
+
 	return true;
 }
+
 
 bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources) {
 	// All the models come from the same place
@@ -211,54 +222,14 @@ bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<Sub
 			if (!meshResult.first) {
 				logger(LogLevel::ERR) << "Failed to turn tile obj to meshes for tile " << objSource.filename << '\n';
 			}
-			subObjects.push_back({meshResult.second, objSource.parentMesh});
+			subObjects.push_back({
+										 meshResult.second,
+										 objSource.parentMesh
+								 });
 		}
-		meshRenderers[tileType] = std::make_shared<Renderer>(objShader, subObjects);
+		Model::meshRenderers[tileType] = std::make_shared<Renderer>(objShader, subObjects);
 	}
 	return true;
-=======
-    ballPointer = std::make_shared<Entity>(Model::MeshType::BALL);
-    ballPointer2 = std::make_shared<Entity>(Model::MeshType::BALL);
-
-	//display a path
-	std::pair<bool, std::vector<Coord>> path =
-			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
-	level.displayPath(path.second);
-	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
-	selectedTileCoordinates.colCoord = (int) mapSize / 2;
-	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
-    	
-	return true;
-}
-
-bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources)
-{
-    // All the models come from the same place
-    std::string path = pathBuilder({ "data", "models" });
-    for (auto source : sources) {
-
-        std::vector<SubObject> subObjects;
-        Model::MeshType tileType = source.first;
-        std::vector<SubObjectSource> objSources  = source.second;
-        for (auto objSource : objSources) {
-            OBJ::Data obj;
-            if (!OBJ::Loader::loadOBJ(path, objSource.filename, obj)) {
-                // Failure message should already be handled by loadOBJ
-                return false;
-            }
-            auto meshResult = objToMesh(obj);
-            if (!meshResult.first) {
-                logger(LogLevel::ERR) << "Failed to turn tile obj to meshes for tile " << objSource.filename << '\n';
-            }
-            subObjects.push_back({
-                                         meshResult.second,
-                                         objSource.parentMesh
-                                 });
-        }
-        Model::meshRenderers[tileType] = std::make_shared<Renderer>(objShader, subObjects);
-    }
-    return true;
->>>>>>> EntityRefactor
 }
 
 // skybox
@@ -315,35 +286,35 @@ bool World::update(float elapsed_ms) {
 		selectedTile->shouldDraw(false);
 	}
 
-<<<<<<< HEAD
 	//display interpolated moves for ball
-	for(const auto& unit : units)
-	{
-		if (!interpPath1.empty()) {
-			auto coord = interpPath1.front();
-			unit->translate({coord.second, 0, coord.first});
-			interpPath1.pop();
-		}
+//	for (const auto& unit : units) {
+//		if (!interpPath1.empty()) {
+//			auto coord = interpPath1.front();
+//			unit->translate({coord.second, 0, coord.first});
+//			interpPath1.pop();
+//		}
+//	}
+	ballPointer->translate(glm::vec3(0.01, 0.0, 0.01));
+	ballPointer2->translate(glm::vec3(-0.01, 0.0, -0.01));
+	ballPointer2->animate(elapsed_ms);
+
+
+	if (!interpPath1.empty()) {
+		auto coord = interpPath1.front();
+		unit1->translate({coord.second, 0, coord.first});
+		interpPath1.pop();
 	}
-=======
-    ballPointer->translate(glm::vec3(0.01, 0.0, 0.01));
-    ballPointer2->translate(glm::vec3(-0.01, 0.0, -0.01));
-    ballPointer2->animate(elapsed_ms);
->>>>>>> EntityRefactor
+	if (!interpPath2.empty()) {
+		auto coord = interpPath2.front();
+		unit2->translate({coord.second, 0, coord.first});
+		interpPath2.pop();
+	}
 
-
-
-//	if (!interpPath2.empty()) {
-//		auto coord = interpPath2.front();
-//		unit2->translate({coord.second, 0, coord.first});
-//		interpPath2.pop();
-//	}
-//
-//	if (!interpPath3.empty()) {
-//		auto coord = interpPath3.front();
-//		unit3->translate({coord.second, 0, coord.first});
-//		interpPath3.pop();
-//	}
+	if (!interpPath3.empty()) {
+		auto coord = interpPath3.front();
+		unit3->translate({coord.second, 0, coord.first});
+		interpPath3.pop();
+	}
 
 	return true;
 }
