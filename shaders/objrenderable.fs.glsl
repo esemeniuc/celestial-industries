@@ -1,4 +1,4 @@
-#version 440
+#version 410
 // From vertex shader
 in vec2 vs_texcoord;
 in vec3 vs_normal;
@@ -9,10 +9,7 @@ layout(std140) uniform MaterialInfo {
     vec4 ambient;
     vec4 diffuse;
     vec4 specular;
-    bool hasDiffuseMap;
-    bool padding1; // Surpisingly necessary - lookup std140 or see comment in ShaderData
-    bool padding2;
-    bool padding3;
+    bool hasDiffuseMap;   
 }  mat;
 
 uniform sampler2D diffuseMapSampler;

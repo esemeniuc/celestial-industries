@@ -1,4 +1,4 @@
-#version 440 
+#version 410 
 // Input attributes
 in vec3 in_position;
 in vec2 in_texcoord;
@@ -16,9 +16,6 @@ uniform mat4 vp;
 
 layout(std140) uniform InstancesData {
         uint stride;
-        float padding1;
-        float padding2;
-        float padding3;
         mat4 modelMatrices[1000];
 } instances;
 
