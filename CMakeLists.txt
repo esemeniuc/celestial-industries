@@ -42,7 +42,8 @@ add_executable(proj
 		src/world.cpp
 		src/unit/genericunit.cpp
 		src/unit/unitgroup.cpp
-		)
+		src/building.cpp
+		src/particle.cpp)
 
 target_compile_options(proj PUBLIC
 		-Wall

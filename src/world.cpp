@@ -23,12 +23,14 @@ World::World() {
 
 World::~World() = default;
 
+
 //TODO: remove me
 std::shared_ptr<Entity> ballPointer;
 std::shared_ptr<Entity> ballPointer2;
 std::pair<bool, std::vector<Coord>> path;
 #include <queue>
 std::queue<Coord> pathq;
+std::vector<std::shared_ptr<Entity>> particles;
 
 // World initialization
 bool World::init(glm::vec2 screen) {
@@ -136,6 +138,12 @@ bool World::init(glm::vec2 screen) {
     ballPointer = std::make_shared<Entity>(Model::MeshType::BALL);
     ballPointer2 = std::make_shared<Entity>(Model::MeshType::BALL);
 
+    // create 100 particles
+    for (int i = 0; i < 100; ++i) {
+        particles.push_back(std::make_shared<Entity>(Model::MeshType::BALL));
+        particles[i]->scale(glm::vec3(0.1, 0.1, 0.1));
+    }
+
 	//display a path
 	//std::pair<bool, std::vector<Coord>> path =
 	//		AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
@@ -219,6 +227,11 @@ bool World::update(float elapsed_ms) {
 
     for (const auto& turret : level.guntowers) {
         turret->update(elapsed_ms);
+    }
+
+    for (auto& particle : particles) {
+//        particle->translate(glm::vec3(0,0,0));
+		particle->translate(glm::vec3(0.01));
     }
 
 	return true;

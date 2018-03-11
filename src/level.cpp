@@ -77,6 +77,11 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
                     row.push_back(Model::MeshType::GUN_TURRET);
                     tileData.emplace_back(rowNumber, colNumber, 1000, INF);
                     break;
+                case 'V': {
+                    row.push_back(Model::MeshType::GEYSER);
+                    tileData.emplace_back(rowNumber, colNumber, 1000.0, INF);
+                    break;
+                }
 				default: {
 					row.push_back(Model::MeshType::SAND_2);
 					tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
