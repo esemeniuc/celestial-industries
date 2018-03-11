@@ -163,7 +163,7 @@ bool World::init(glm::vec2 screen) {
 	unit1 = std::make_shared<Tile>(Model::meshRenderers[Model::MeshType::BALL]);
 	unit1->translate({27, 0, 11});
 	level.tiles.push_back({{unit1}});
-	units.insert(unit1);
+//	units.insert(unit1);
 
 	//wall example
 	//display a path

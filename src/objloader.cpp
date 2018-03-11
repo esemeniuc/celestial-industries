@@ -1,4 +1,4 @@
-﻿﻿#include "objloader.hpp"
+﻿#include "objloader.hpp"
 #include "common.hpp"
 
 #include <cmath>
