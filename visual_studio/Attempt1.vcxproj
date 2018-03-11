@@ -513,6 +513,7 @@
     <ClCompile Include="..\src\renderer.cpp" />
     <ClCompile Include="..\src\objloader.cpp" />
     <ClCompile Include="..\src\pathfinder.cpp" />
+    <ClCompile Include="..\src\rigidBody.cpp" />
     <ClCompile Include="..\src\shader.cpp" />
     <ClCompile Include="..\src\skybox.cpp" />
     <ClCompile Include="..\src\textureloader.cpp" />
@@ -531,6 +532,7 @@
     <ClInclude Include="..\src\renderer.hpp" />
     <ClInclude Include="..\src\objloader.hpp" />
     <ClInclude Include="..\src\pathfinder.hpp" />
+    <ClInclude Include="..\src\rigidBody.hpp" />
     <ClInclude Include="..\src\shader.hpp" />
     <ClInclude Include="..\src\skybox.hpp" />
     <ClInclude Include="..\src\textureloader.hpp" />

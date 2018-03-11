@@ -13,6 +13,7 @@
 #include "objloader.hpp"
 #include "renderer.hpp"
 #include "model.hpp"
+#include "rigidBody.hpp"
 
 enum class EntityOwner {
 	NONE, PLAYER, AI
@@ -61,4 +62,5 @@ public:
 
 protected:
 	Renderable geometryRenderer;
+    RigidBody rigidBody;
 };

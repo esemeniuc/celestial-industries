@@ -58,7 +58,7 @@ bool World::init(glm::vec2 screen) {
 	glfwSwapInterval(1); // vsync
 
 	// Load OpenGL function pointers
-	gl3w_init();
+	gl3wInit();
 
 	// Setting callbacks to member functions (that's why the redirect is needed)
 	// Input is handled using GLFW, for more info see
