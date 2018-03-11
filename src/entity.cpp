@@ -1,99 +1,49 @@
 #include "entity.hpp"
 
-void Entity::setVelocity(glm::vec3 v)
+Entity::Entity(Model::MeshType geometry) : geometryRenderer(Model::meshRenderers[geometry]){}
+
+//example of using the animate function when overriding Entity
+void Entity::animate(float ms)
 {
-	this->velocity = v;
+    this->geometryRenderer.scale(glm::vec3(1.01, 1.01, 1.01)); //default implementation for demo purposes
 }
 
-void Entity::setGravity(glm::vec3 g) 
+void Entity::translate(int modelIndex, glm::vec3 translation)
 {
-	this->gravity = g;
+    this->geometryRenderer.translate(modelIndex, translation);
 }
 
-void Entity::setForce(glm::vec3 f) 
+void Entity::rotate(int modelIndex, float amount, glm::vec3 axis)
 {
-	this->applied_force = f;
+    this->geometryRenderer.rotate(modelIndex, amount, axis);
 }
 
-void Entity::setGeometryId(long id) 
+void Entity::scale(int modelIndex, glm::vec3 scale)
 {
-	this->geometry_id = id;
+    this->geometryRenderer.scale(modelIndex, scale);
 }
 
-// specify angles in radians
-void Entity::setRotation(glm::vec3 rotation_angles_radians)
+void Entity::setModelMatrix(int modelIndex, glm::mat4 mat)
 {
-	this->rotation = rotation_angles_radians;
+    this->geometryRenderer.setModelMatrix(modelIndex, mat);
 }
 
-void Entity::setTranslation(glm::vec3 _translation)
+void Entity::setModelMatrix(int modelIndex, glm::vec3 translation, float angle, glm::vec3 rotationAxis, glm::vec3 scale)
 {
-	this->translation = _translation;
+    this->geometryRenderer.setModelMatrix(modelIndex, translation, angle, rotationAxis, scale);
 }
 
-void Entity::setScale(glm::vec3 _scale)
+void Entity::translate(glm::vec3 translation)
 {
-	this->scale = _scale;
+    this->geometryRenderer.translate(translation);
 }
 
-void Entity::setPosition(glm::vec3 pos)
+void Entity::rotate(float amount, glm::vec3 axis)
 {
-	this->position = pos;
+    this->geometryRenderer.rotate(amount, axis);
 }
 
-void Entity::getCameraPosition(glm::vec3 cameraPos)
+void Entity::scale(glm::vec3 scale)
 {
-	this->cameraPosition = cameraPos;
+    this->geometryRenderer.scale(scale);
 }
-
-glm::vec3 Entity::getPosition()
-{
-	return this->position;
-}
-
-void Entity::applyTransformations()
-{	
-	// apply scaling
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::scale(model, this->scale);
-	// apply rotations
-	model = glm::rotate(model, rotation.x, glm::vec3(1.0, 0.0, 0.0));
-	model = glm::rotate(model, rotation.y, glm::vec3(0.0, 1.0, 0.0));
-	model = glm::rotate(model, rotation.z, glm::vec3(0.0, 0.0, 1.0));
-	// apply translations
-	model = glm::translate(model, this->translation);
-	setModelMatrix(0, model);
-}
-
-void Entity::setCollisionGeometryType(collision_geometry_type cgtype) 
-{
-	this->cg_type = cgtype;
-}
-
-glm::mat4 Entity::getModelMatrix()
-{
-	return this->model;
-}
-
-collision_geometry_type Entity::getCollisionGeometryType() 
-{
-	return this->cg_type;
-}
-
-glm::vec3 Entity::getVelocity() 
-{
-	return this->velocity;
-}
-
-long Entity::getGeometryId() 
-{
-	return this->geometry_id;
-}
-
-bool Entity::isTextured() 
-{
-	return this->texture_flag;
-}
-
-Entity::Entity(const std::shared_ptr<Renderer> &initParent) : Renderable(
-		initParent) {}

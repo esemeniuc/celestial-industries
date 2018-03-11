@@ -61,35 +61,34 @@ void gl_flush_errors()
 
 bool gl_has_errors()
 {
-	GLenum error = glGetError();
+    GLenum error = glGetError();
 
-	if (error == GL_NO_ERROR) return false;
+    if (error == GL_NO_ERROR) return false;
 
-	while (error != GL_NO_ERROR)
-	{
-		const char* error_str = "";
-		switch (error)
-		{
-		case GL_INVALID_OPERATION:
-			error_str = "INVALID_OPERATION";
-			break;
-		case GL_INVALID_ENUM:
-			error_str = "INVALID_ENUM";
-			break;
-		case GL_INVALID_VALUE:
-			error_str = "INVALID_VALUE";
-			break;
-		case GL_OUT_OF_MEMORY:
-			error_str = "OUT_OF_MEMORY";
-			break;
-		case GL_INVALID_FRAMEBUFFER_OPERATION:
-			error_str = "INVALID_FRAMEBUFFER_OPERATION";
-			break;
-		}
+    while (error != GL_NO_ERROR)
+    {
+        const char* error_str = "";
+        switch (error)
+        {
+        case GL_INVALID_OPERATION:
+            error_str = "INVALID_OPERATION";
+            break;
+        case GL_INVALID_ENUM:
+            error_str = "INVALID_ENUM";
+            break;
+        case GL_INVALID_VALUE:
+            error_str = "INVALID_VALUE";
+            break;
+        case GL_OUT_OF_MEMORY:
+            error_str = "OUT_OF_MEMORY";
+            break;
+        case GL_INVALID_FRAMEBUFFER_OPERATION:
+            error_str = "INVALID_FRAMEBUFFER_OPERATION";
+            break;
+        }
 
-		fprintf(stderr, "OpenGL: %s", error_str);
-		error = glGetError();
-	}
-
-	return true;
+        logger(LogLevel::DEBUG) << "OpenGL: " << error_str << '\n';
+        error = glGetError();
+    }
+    return true;
 }

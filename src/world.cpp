@@ -24,7 +24,8 @@ World::World() {
 World::~World() = default;
 
 //TODO: remove me
-std::vector<std::shared_ptr<Tile>> tileRow;
+std::shared_ptr<Entity> ballPointer;
+std::shared_ptr<Entity> ballPointer2;
 std::pair<bool, std::vector<Coord>> path;
 #include <queue>
 std::queue<Coord> pathq;
@@ -118,7 +119,7 @@ bool World::init(glm::vec2 screen) {
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
 
-	level.init(levelArray, meshRenderers);
+	level.init(levelArray, Model::meshRenderers);
 
 	// test different starting points for the AI
 	std::vector<std::vector<AStarNode>> costMap = level.getLevelTraversalCostMap();
@@ -132,6 +133,9 @@ bool World::init(glm::vec2 screen) {
 	std::chrono::duration<double> elapsed = finish - start;
 	std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 
+    ballPointer = std::make_shared<Entity>(Model::MeshType::BALL);
+    ballPointer2 = std::make_shared<Entity>(Model::MeshType::BALL);
+
 	//display a path
 	//std::pair<bool, std::vector<Coord>> path =
 	//		AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
@@ -139,15 +143,7 @@ bool World::init(glm::vec2 screen) {
 	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
 	selectedTileCoordinates.colCoord = (int) mapSize / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
-
-	for (int j = 0; j < 20; ++j) {
-		auto renderer = meshRenderers[Model::MeshType::BALL];
-		auto tile = std::make_shared<Tile>(renderer);
-
-		tile->translate({j, 0, j});
-		tileRow.push_back(tile);
-	}
-	level.tiles.push_back(tileRow);
+    	
 	return true;
 }
 
@@ -158,7 +154,7 @@ bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<Sub
     for (auto source : sources) {
         Model::MeshType tileType = source.first;
         std::vector<SubObjectSource> objSources  = source.second;
-        meshRenderers[tileType] = std::make_shared<Renderer>(objShader, objSources);
+        Model::meshRenderers[tileType] = std::make_shared<Renderer>(objShader, objSources);
     }
     return true;
 }
@@ -217,10 +213,10 @@ bool World::update(float elapsed_ms) {
         selectedTile->shouldDraw(false);
 	}
 
+    ballPointer->translate(glm::vec3(0.01, 0.0, 0.01));
+    ballPointer2->translate(glm::vec3(-0.01, 0.0, -0.01));
+    ballPointer2->animate(elapsed_ms);
 
-	for (const auto& elem : tileRow) {
-		elem->translate({0.1f, 0, 0.1f});
-	}
     for (const auto& turret : level.guntowers) {
         turret->update(elapsed_ms);
     }
@@ -250,7 +246,7 @@ void World::draw() {
 	glm::mat4 view = camera.getViewMatrix();
 	glm::mat4 projectionView = projection * view;
 
-	for (auto renderer : meshRenderers) {
+	for (auto renderer : Model::meshRenderers) {
 		renderer.second->render(projectionView);
 	}
 

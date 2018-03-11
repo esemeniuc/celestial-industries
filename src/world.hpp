@@ -7,6 +7,7 @@
 #include "pathfinder.hpp"
 #include "skybox.hpp"
 #include "tile.hpp"
+#include "model.hpp"
 
 // stdlib
 #include <memory> //for shared_ptr
@@ -33,7 +34,6 @@ class World {
 public:
 	//members
 	bool advanced_mode = false;
-    std::map<Model::MeshType, std::shared_ptr<Renderer>> meshRenderers;
 	//funcs
 	World();
 

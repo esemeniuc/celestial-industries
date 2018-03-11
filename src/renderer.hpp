@@ -1,7 +1,36 @@
 #pragma once
 #include "common.hpp"
-#include "model.hpp"
 #include "shader.hpp"
+
+// A Mesh is a collection of a VertexBuffer and an IndexBuffer. A VAO
+// represents a Vertex Array Object and is the container for 1 or more Vertex Buffers and 
+// an Index Buffer
+struct Mesh
+{
+    GLuint vao;
+    GLuint vbo;
+    GLuint ibo;
+    GLuint ubo;
+    GLuint numIndices;
+    OBJ::Material material;
+};
+
+struct SubObject {
+    std::shared_ptr<std::vector<Mesh>> meshes;
+    int parentMesh;
+};
+
+struct RenderableInstanceData {
+    bool shouldDraw;
+    std::vector<glm::mat4> matrixStack;
+};
+
+struct SubObjectSource {
+    std::string filename;
+    int parentMesh;
+};
+
+std::pair<bool, std::shared_ptr<std::vector<Mesh>>> objToMesh(OBJ::Data obj);
 
 class Renderer {
     std::shared_ptr<Shader> shader;
