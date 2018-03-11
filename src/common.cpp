@@ -87,9 +87,8 @@ bool gl_has_errors()
             break;
         }
 
-        fprintf(stderr, "OpenGL: %s", error_str);
+        logger(LogLevel::DEBUG) << "OpenGL: " << error_str << '\n';
         error = glGetError();
     }
-
     return true;
 }
