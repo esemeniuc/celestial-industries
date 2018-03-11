@@ -12,12 +12,12 @@ void RigidBody::setGravity(glm::vec3 _gravity)
 
 void RigidBody::updateForce(glm::vec3 _force)
 {
-    this->applied_force = _force;
+    this->appliedForce = _force;
 }
 
 void RigidBody::setGeometryId(int _id)
 {
-    this->geometry_id = _id;
+    this->geometryId = _id;
 }
 
 void RigidBody::updateOrientation(glm::vec3 _rotation)
@@ -35,14 +35,14 @@ glm::vec3 RigidBody::getPosition()
     return position;
 }
 
-void RigidBody::setCollisionGeometryType(collision_geometry_type _cg)
+void RigidBody::setCollisionGeometryType(CollisionGeomType _cg)
 {
-    this->cg_type = _cg;
+    this->cgType = _cg;
 }
 
-collision_geometry_type RigidBody::getCollisionGeometryType()
+CollisionGeomType RigidBody::getCollisionGeometryType()
 {
-    return this->cg_type;
+    return this->cgType;
 }
 
 glm::vec3 RigidBody::getVelocity()
@@ -52,5 +52,5 @@ glm::vec3 RigidBody::getVelocity()
 
 long RigidBody::getGeometryId()
 {
-    return this->geometry_id;
+    return this->geometryId;
 }

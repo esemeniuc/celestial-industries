@@ -12,27 +12,37 @@ find_package(SDL2_mixer REQUIRED)
 find_package(glfw3 REQUIRED)
 add_subdirectory(ext/glm)
 
+
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+	# Support Unix Makefiles and Ninja
+	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+endif()
+
 add_executable(proj
-		src/objloader.cpp
-		src/common.cpp
-		src/main.cpp
-		src/entity.cpp
-		src/tile.cpp
-		src/skybox.cpp
-		src/world.cpp
+		ext/gl3w/GL/gl3w.c
+		src/ai.cpp
+		src/building.cpp
 		src/camera.cpp
-		src/textureloader.cpp
-		src/level.cpp
 		src/config.hpp
+		src/common.cpp
+		src/entity.cpp
+		src/level.cpp
 		src/logger.cpp
+		src/main.cpp
+		src/model.cpp
+		src/objloader.cpp
 		src/pathfinder.cpp
 		src/renderer.cpp
-		src/ai.cpp
-		src/model.cpp
+		src/rigidBody.cpp
 		src/shader.cpp
+		src/skybox.cpp
+		src/textureloader.cpp
+		src/tile.cpp
+		src/world.cpp
 		src/unit/genericunit.cpp
 		src/unit/unitgroup.cpp
-		src/building.cpp)
+		)
 
 target_compile_options(proj PUBLIC
 		-Wall
@@ -54,6 +64,7 @@ target_include_directories(proj PUBLIC
 		src
 		src/unit
 		ext/gl3w
+		ext/gl3w/GL
 		ext/stb_image
 		${SDL2_INCLUDE_DIRS}
 		${SDL2_MIXER_INCLUDE_DIRS}
