@@ -501,6 +501,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\collisiondetection.cpp" />
     <ClCompile Include="..\src\entity.cpp" />
     <ClCompile Include="..\src\camera.cpp" />
     <ClCompile Include="..\src\level.cpp" />
@@ -519,6 +520,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\camera.hpp" />
+    <ClInclude Include="..\src\collisiondetection.hpp" />
     <ClInclude Include="..\src\common.hpp" />
     <ClInclude Include="..\src\config.hpp" />
     <ClInclude Include="..\src\entity.hpp" />

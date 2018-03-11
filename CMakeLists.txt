@@ -32,7 +32,8 @@ add_executable(proj
 		src/shader.cpp
 		src/unit/genericunit.cpp
 		src/unit/unitgroup.cpp
-		src/building.cpp)
+		src/building.cpp
+        src/collisiondetection.cpp)
 
 target_compile_options(proj PUBLIC
 		-Wall
