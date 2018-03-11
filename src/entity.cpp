@@ -2,10 +2,10 @@
 
 Entity::Entity(Model::MeshType geometry) : geometryRenderer(Model::meshRenderers[geometry]){}
 
+//example of using the animate function when overriding Entity
 void Entity::animate(float ms)
 {
-    this->geometryRenderer.scale(glm::vec3(1.001, 1.001, 1.001));
-    // TODO: add code to update an entity
+    this->geometryRenderer.scale(glm::vec3(1.01, 1.01, 1.01)); //default implementation for demo purposes
 }
 
 void Entity::translate(int modelIndex, glm::vec3 translation)

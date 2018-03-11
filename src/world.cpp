@@ -228,6 +228,7 @@ bool World::update(float elapsed_ms) {
 
     ballPointer->translate(glm::vec3(0.01, 0.0, 0.01));
     ballPointer2->translate(glm::vec3(-0.01, 0.0, -0.01));
+    ballPointer2->animate(elapsed_ms);
 
 	return true;
 }
