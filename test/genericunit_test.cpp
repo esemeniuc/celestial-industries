@@ -11,16 +11,15 @@
 TEST_CASE("Unit range is accurate", "[generic_unit]") {
 	world.init({(float) Config::WINDOW_WIDTH, (float) Config::WINDOW_HEIGHT});
 //	world.initMeshTypes(Model::meshSources);
-	std::shared_ptr<Renderer> parent = world.meshRenderers[Model::MeshType::SAND_2];
+//	std::shared_ptr<Renderer> parent = world.meshRenderers[Model::MeshType::SAND_2];
 
-	GenericUnit genericUnit1(parent);
-	GenericUnit genericUnit2(parent);
+	GenericUnit genericUnit1;
+	GenericUnit genericUnit2;
 	std::cout << genericUnit2.getPosition().x << '\n';
 	std::cout << genericUnit2.getPosition().y << '\n';
 	std::cout << genericUnit2.getPosition().z << '\n';
 	genericUnit1.translate({1.0, 0.0, 0.0});
 	genericUnit2.translate({3.0, 3.0, 0.0});
-	genericUnit2.applyTransformations();
 	std::cout << genericUnit2.getPosition().x << '\n';
 	std::cout << genericUnit2.getPosition().y << '\n';
 	std::cout << genericUnit2.getPosition().z << '\n';

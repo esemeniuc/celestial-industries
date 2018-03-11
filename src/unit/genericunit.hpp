@@ -81,11 +81,6 @@ public:
 											 GamePiece(_initialHealth, _visionRange, _owner, type, _unitValue) {
 	}
 
-	void translate(glm::vec3 translation)
-	{
-		entity->translate(translation);
-	}
-
 	void move(float elapsed_time) {
 		elapsed_time / movementSpeed;
 	}

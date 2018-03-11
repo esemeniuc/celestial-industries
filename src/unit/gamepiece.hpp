@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <utility>
 #include "entity.hpp"
 #include "rigidBody.hpp"
 
@@ -41,11 +42,22 @@ public:
 			  value(value) {}
 
 	GamePiece(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceType type,
-			  int currentHealth, int value, const std::shared_ptr<Entity>& entity) : initialHealth(initialHealth),
-																					 visionRange(visionRange),
-																					 owner(owner), type(type),
-																					 currentHealth(currentHealth),
-																					 value(value), entity(entity) {}
+			  int currentHealth, int value, std::shared_ptr<Entity> entity) : initialHealth(initialHealth),
+																			  visionRange(visionRange),
+																			  owner(owner), type(type),
+																			  currentHealth(currentHealth),
+																			  value(value), entity(std::move(entity)) {}
+
+	glm::vec3 getPosition() const
+	{
+		return rigidBody.getPosition();
+	}
+	
+	void translate(glm::vec3 translation)
+	{
+		entity->translate(translation);
+		rigidBody.updatePosition(translation);
+	}
 };
 
 
