@@ -26,7 +26,7 @@ protected:
 	const int attackDamage;
 	const int attackRange; //range in tiles
 	const int attackSpeed; //attacks per second
-	const int movementSpeed; //tiles per second, maybe make non const later for energy effects
+	const int movementSpeed; //units per second, maybe make non const later for energy effects
 
 	//mutable values
 	int currentEnergyLevel;
@@ -40,7 +40,7 @@ public:
 					attackDamage(6),
 					attackRange(6),
 					attackSpeed(1),
-					movementSpeed(1),
+					movementSpeed(5),
 					currentEnergyLevel(50),
 					state(UnitState::IDLE),
 					GamePiece(100, 6, GamePieceOwner::NONE, GamePieceType::NONE, 50) {
@@ -81,20 +81,59 @@ public:
 											 GamePiece(_initialHealth, _visionRange, _owner, type, _unitValue) {
 	}
 
+	//gets the index into the targetPath vector
+	int getPathIndex() {
+		return int((targetPathStartTimestamp / 1000) * movementSpeed);
+	}
+
+	//returns a pathIndex and a 0-100% value to interpolate between steps in a path
+	std::pair<int, float> getInterpolationPercentage() {
+		float intermediateVal = (targetPathStartTimestamp / 1000) * movementSpeed;
+		int pathIndex = (int) intermediateVal;
+		float interpolationPercent = intermediateVal - pathIndex;
+
+		return {pathIndex, interpolationPercent};
+	}
+
+	float lerp(float v0, float v1, float t) {
+		return v0 + t * (v1 - v0);
+	}
+
 	void move(float elapsed_time) {
-		elapsed_time / movementSpeed;
+		targetPathStartTimestamp += elapsed_time;
+
+		std::pair<int, float> index = getInterpolationPercentage(); //first is index into path, second is interp amount (0 to 1)
+		if (index.first < targetPath.size() - 1) {
+			Coord curr = targetPath[index.first];
+			Coord next = targetPath[index.first + 1];
+
+			float dRow = next.rowCoord - curr.rowCoord;
+			float dCol = next.colCoord - curr.colCoord;
+
+			float transRow = (dRow /60) * movementSpeed;
+			float transCol = (dCol /60) * movementSpeed ;
+//			float transRow = dRow * movementSpeed;
+//			float transCol = dCol * movementSpeed;
+
+			std::cout << "eft= " << elapsed_time << "\ttt = " << targetPathStartTimestamp << "\tindex= " << index.first
+					  << "\tinterp= " << index.second << "\ttrow=" << transRow << "\ttcol= " << transCol << '\n';
+
+
+			translate({transCol, 0, transRow});
+		}
 	}
 
 
 	bool inVisionRange(const GamePiece& _gamePiece) {
-		return glm::length(glm::vec2(_gamePiece.rigidBody.getPosition() - rigidBody.getPosition())) <= visionRange;
+		return glm::length(glm::vec2(_gamePiece.getPosition() - rigidBody.getPosition())) <= visionRange;
 	}
 
 	bool inAttackRange(const GamePiece& _gamePiece) {
-		return glm::length(glm::vec2(_gamePiece.rigidBody.getPosition() - rigidBody.getPosition())) <= attackRange;
+		return glm::length(glm::vec2(_gamePiece.getPosition() - rigidBody.getPosition())) <= attackRange;
 	}
 
 	void setTargetPath(const std::vector<Coord>& targetPath) {
+		targetPathStartTimestamp = 0;
 		GenericUnit::targetPath = targetPath;
 	}
 };

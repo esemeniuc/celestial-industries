@@ -89,16 +89,16 @@ public:
     void shouldDraw(bool val);
 
     void setModelMatricesFromComputed();
-    void translate(int modelIndex, glm::vec3 translation, bool updateHeirarchically = true);
-    void rotate(int modelIndex, float amount, glm::vec3 axis, bool updateHeirarchically = true);
-    void scale(int modelIndex, glm::vec3 scale, bool updateHeirarchically = true);
-    void setModelMatrix(int modelIndex, glm::mat4 mat, bool updateHeirarchically = true);
-    void setModelMatrix(int modelIndex, glm::vec3 translation = { 0,0,0 }, float angle = 0, glm::vec3 rotationAxis = { 0,1,0 }, glm::vec3 scale = { 1,1,1 }, bool updateHeirarchically = true);
+    void translate(int modelIndex, glm::vec3 translation, bool updateHierarchically = true);
+    void rotate(int modelIndex, float amount, glm::vec3 axis, bool updateHierarchically = true);
+    void scale(int modelIndex, glm::vec3 scale, bool updateHierarchically = true);
+    void setModelMatrix(int modelIndex, glm::mat4 mat, bool updateHierarchically = true);
+    void setModelMatrix(int modelIndex, glm::vec3 translation = { 0,0,0 }, float angle = 0, glm::vec3 rotationAxis = { 0,1,0 }, glm::vec3 scale = { 1,1,1 }, bool updateHierarchically = true);
 
     // When subobject modelIndex is not provided it is assumed you wish to apply the transformation to the whole model
-    void translate(glm::vec3 translation, bool updateHeirarchically = true);
-    void rotate(float amount, glm::vec3 axis, bool updateHeirarchically = true);
-    void scale(glm::vec3 scale, bool updateHeirarchically = true);
+    void translate(glm::vec3 translation, bool updateHierarchically = true);
+    void rotate(float amount, glm::vec3 axis, bool updateHierarchically = true);
+    void scale(glm::vec3 scale, bool updateHierarchically = true);
 
     virtual ~Renderable() {};
 };

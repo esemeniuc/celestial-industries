@@ -27,9 +27,11 @@ protected:
 	std::shared_ptr<Entity> entity; //for being drawn
 
 public:
+	//members
 	RigidBody rigidBody;
 
 
+	//constructors
 	GamePiece(const int initialHealth, const int visionRange) : initialHealth(initialHealth),
 																visionRange(visionRange) {}
 
@@ -48,15 +50,14 @@ public:
 																			  currentHealth(currentHealth),
 																			  value(value), entity(std::move(entity)) {}
 
-	glm::vec3 getPosition() const
-	{
+	//funcs
+	glm::vec3 getPosition() const {
 		return rigidBody.getPosition();
 	}
-	
-	void translate(glm::vec3 translation)
-	{
-		entity->translate(translation);
-		rigidBody.updatePosition(translation);
+
+	void translate(glm::vec3 translation) {
+		entity->translate(translation); //for on screen
+		rigidBody.updatePosition(translation); //for game world state
 	}
 };
 

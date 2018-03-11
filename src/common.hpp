@@ -18,6 +18,7 @@
 
 // glm
 #include <glm/fwd.hpp>
+#include <ostream>
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -65,6 +66,16 @@ struct Coord {
 	Coord() = default;
 
 	Coord(int _rowCoord, int _colCoord) : rowCoord(_rowCoord), colCoord(_colCoord) {}
+
+	bool operator==(const Coord& rhs) const {
+		return rowCoord == rhs.rowCoord &&
+			   colCoord == rhs.colCoord;
+	}
+
+	friend std::ostream& operator<<(std::ostream& os, const Coord& coord) {
+		os << "rowCoord: " << coord.rowCoord << " colCoord: " << coord.colCoord;
+		return os;
+	}
 };
 
 template<class T>

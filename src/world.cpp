@@ -160,13 +160,6 @@ bool World::init(glm::vec2 screen) {
 	temp.translate({27, 0, 11});
 	temp.setTargetPath(path1);
 	entityMap[startx][startz].push_back(temp);
-//	interpPath1 = AI::aStar::createInterpolatedPath(path1);
-
-	//render the path
-	unit1 = std::make_shared<Tile>(Model::meshRenderers[Model::MeshType::BALL]);
-	unit1->translate({27, 0, 11});
-	level.tiles.push_back({{unit1}});
-//	units.insert(unit1);
 
 	//wall example
 	//display a path
