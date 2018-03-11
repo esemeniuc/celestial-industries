@@ -4,6 +4,7 @@
 #include <chrono>  // for high_resolution_clock
 #include "renderer.hpp"
 #include "world.hpp"
+#include "particle.h"
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -30,7 +31,10 @@ std::shared_ptr<Entity> ballPointer2;
 std::pair<bool, std::vector<Coord>> path;
 #include <queue>
 std::queue<Coord> pathq;
+
 std::vector<std::shared_ptr<Entity>> particles;
+std::vector<FireworkRule> particleRules;
+
 
 // World initialization
 bool World::init(glm::vec2 screen) {
@@ -137,6 +141,16 @@ bool World::init(glm::vec2 screen) {
 
     ballPointer = std::make_shared<Entity>(Model::MeshType::BALL);
     ballPointer2 = std::make_shared<Entity>(Model::MeshType::BALL);
+
+    // particle setup
+    particleRules.emplace_back();
+    particleRules.back().setParameters(
+                0, // type
+                3, 5, // age range
+                glm::vec3(-5, -5, -5), // min velocity
+                glm::vec3(5, 5, 5), // max velocity
+                0.1 // damping
+    );
 
     // create 100 particles
     for (int i = 0; i < 100; ++i) {
