@@ -11,6 +11,7 @@ void Entity::animate(float ms)
 void Entity::translate(int modelIndex, glm::vec3 translation)
 {
     this->geometryRenderer.translate(modelIndex, translation);
+    this->rigidBody.updatePosition(translation);
 }
 
 void Entity::rotate(int modelIndex, float amount, glm::vec3 axis)
@@ -36,6 +37,7 @@ void Entity::setModelMatrix(int modelIndex, glm::vec3 translation, float angle, 
 void Entity::translate(glm::vec3 translation)
 {
     this->geometryRenderer.translate(translation);
+    this->rigidBody.updatePosition(translation);
 }
 
 void Entity::rotate(float amount, glm::vec3 axis)

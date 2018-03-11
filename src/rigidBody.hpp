@@ -31,13 +31,12 @@ enum collision_geometry_type {
 
 class RigidBody{
 public:
-    void setVelocity(glm::vec3);
+    void updateVelocity(glm::vec3);
     void setGravity(glm::vec3);
-    void setForce(glm::vec3);
+    void updateForce(glm::vec3);
     void setGeometryId(int);
-    void setRotation(glm::vec3);
-    void setTranslation(glm::vec3);
-    void setPosition(glm::vec3);
+    void updateOrientation(glm::vec3);
+    void updatePosition(glm::vec3);
     glm::vec3 getPosition();
     void setCollisionGeometryType(collision_geometry_type);
     collision_geometry_type getCollisionGeometryType();

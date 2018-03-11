@@ -1,6 +1,6 @@
 #include "rigidBody.hpp"
 
-void RigidBody::setVelocity(glm::vec3 _velocity)
+void RigidBody::updateVelocity(glm::vec3 _velocity)
 {
     this->velocity = _velocity;
 }
@@ -10,7 +10,7 @@ void RigidBody::setGravity(glm::vec3 _gravity)
     this->gravity = _gravity;
 }
 
-void RigidBody::setForce(glm::vec3 _force)
+void RigidBody::updateForce(glm::vec3 _force)
 {
     this->applied_force = _force;
 }
@@ -20,17 +20,12 @@ void RigidBody::setGeometryId(int _id)
     this->geometry_id = _id;
 }
 
-void RigidBody::setRotation(glm::vec3 _rotation)
+void RigidBody::updateOrientation(glm::vec3 _rotation)
 {
-    this->rotation = _rotation;
+    this->rotation += _rotation;
 }
 
-void RigidBody::setTranslation(glm::vec3 _translation)
-{
-    this->position += _translation;
-}
-
-void RigidBody::setPosition(glm::vec3 _pos)
+void RigidBody::updatePosition(glm::vec3 _pos)
 {
     this->position = _pos;
 }
