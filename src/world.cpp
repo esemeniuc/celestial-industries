@@ -32,7 +32,8 @@ std::pair<bool, std::vector<Coord>> path;
 #include <queue>
 std::queue<Coord> pathq;
 
-std::vector<std::shared_ptr<Entity>> particles;
+std::vector<Particle> particles;
+std::vector<std::shared_ptr<Entity>> particleGraphics;
 std::vector<FireworkRule> particleRules;
 
 
@@ -146,16 +147,21 @@ bool World::init(glm::vec2 screen) {
     particleRules.emplace_back();
     particleRules.back().setParameters(
                 0, // type
-                3, 5, // age range
-                glm::vec3(-5, -5, -5), // min velocity
-                glm::vec3(5, 5, 5), // max velocity
-                0.1 // damping
+                3, 20, // age range
+                glm::vec3(-2*0.1, 2*0.1, -2*0.1), // min velocity
+                glm::vec3(2*0.1, 9*0.1, 2*0.1), // max velocity
+                0.995 // damping
     );
 
-    // create 100 particles
-    for (int i = 0; i < 100; ++i) {
-        particles.push_back(std::make_shared<Entity>(Model::MeshType::BALL));
-        particles[i]->scale(glm::vec3(0.1, 0.1, 0.1));
+    // create 1000 particle objects
+    for (int i = 0; i < 200; ++i) {
+        particles.emplace_back();
+        particleRules[0].create(&particles[i], nullptr);
+        particles[i].setPosition({20, 0, 20});
+
+        particleGraphics.push_back(std::make_shared<Entity>(Model::MeshType::BALL));
+        particleGraphics[i]->translate(particles[i].getPosition());
+//        particleGraphics[i]->scale(glm::vec3(0.1, 0.1, 0.1));
     }
 
 	//display a path
@@ -243,9 +249,18 @@ bool World::update(float elapsed_ms) {
         turret->update(elapsed_ms);
     }
 
-    for (auto& particle : particles) {
-//        particle->translate(glm::vec3(0,0,0));
-		particle->translate(glm::vec3(0.01));
+    for (int i = 0; i < particles.size(); ++i) {
+        auto particle = &particles[i];
+        auto particleEntity = particleGraphics[i];
+
+        particle->updatePosition(elapsed_ms);
+		particleEntity->translate(particle->getVelocity());
+
+        glm::vec3 particlePosition = particleGraphics[i]->getPosition();
+        glm::vec3 particleVelocity = particles[i].getVelocity();
+        logger(LogLevel::DEBUG) << "particle[" << i << "] "
+                << particlePosition.x << ", " << particlePosition.y << ", " << particlePosition.z << " | "
+                << particleVelocity.x << ", " << particleVelocity.y << ", " << particleVelocity.z << '\n';
     }
 
 	return true;

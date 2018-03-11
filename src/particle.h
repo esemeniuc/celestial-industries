@@ -54,9 +54,6 @@ private:
 
 };
 
-
-class Firework : public Particle {};
-
 struct FireworkRule {
     unsigned int type;
 
@@ -98,7 +95,7 @@ struct FireworkRule {
     void setParameters(unsigned int type, float minimumAge, float maximumAge, const glm::vec3 &minimumVelocity,
                        const glm::vec3 &maximumVelocity, float damping);
 
-    void create(Firework *firework, const Firework *parent) const;
+    void create(Particle *firework, const Particle *parent) const;
 };
 
 #endif //PROJ_PARTICLE_H

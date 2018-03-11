@@ -2,11 +2,12 @@
 #include <random>
 #include "particle.h"
 
+std::random_device r;
+std::default_random_engine randomGenerator(r());
 
 template <typename NumberType>
 NumberType randomNumber(const NumberType minimum, const NumberType maximum) {
-    std::default_random_engine randomGenerator;
-    std::uniform_int_distribution<NumberType> distribution(minimum, maximum);
+    std::uniform_real_distribution<NumberType> distribution(minimum, maximum);
     return distribution(randomGenerator);
 }
 
@@ -25,6 +26,7 @@ float Particle::getMass() {
 }
 
 void Particle::setMass(float mass) {
+    assert(mass > 0);
     inverseMass = 1.0f / mass;
 }
 
@@ -32,15 +34,22 @@ void Particle::setInfiniteMass() {
     inverseMass = 0.0f;
 }
 
+/**
+ *
+ * @param timeDelta number in milliseconds
+ */
 void Particle::updatePosition(float timeDelta) {
+    // internally, everything in the particle system is computed in terms of seconds.
+    timeDelta *= 0.001;
+
     // TODO: consider removing the acceleration piece of this
 //    position += velocity*timeDelta + acceleration*timeDelta*timeDelta*0.5;
     assert(timeDelta > 0.0);
 
     position += velocity*timeDelta;
-//    glm::vec3 newAcceleration = acceleration;
+    glm::vec3 newAcceleration = acceleration;
 //    newAcceleration += forceAccum*inverseMass;
-//    velocity += newAcceleration*timeDelta;
+    velocity += newAcceleration*timeDelta;
 
     velocity *= pow(damping, timeDelta);
 }
@@ -101,7 +110,7 @@ void FireworkRule::setParameters(
     this->damping = damping;
 }
 
-void FireworkRule::create(Firework *firework, const Firework *parent = nullptr) const {
+void FireworkRule::create(Particle *firework, const Particle *parent = nullptr) const {
     firework->setType(type);
 
     firework->setAge(randomNumber<float>(minimumAge, maximumAge));
@@ -122,7 +131,7 @@ void FireworkRule::create(Firework *firework, const Firework *parent = nullptr) 
     firework->setDamping(damping);
 
     // TODO: revisit this
-    firework->setAcceleration({0, 9.8, 0});
+    firework->setAcceleration({0, -0.5, 0});
 
     // TODO: implement force accumulator
 }
