@@ -38,15 +38,15 @@ void GunTowerTile::update(float ms)
         }
         else {
             float period = 50;
-            glm::vec3 gunDisplacement = { 0, 0, 0.1 };
+            glm::vec3 gunDisplacement = { 0.0, 0.0, 0.1 };
             float amountToMove = sin(timeCounter / period);
             setModelMatrix(
                 2,
-                gunDisplacement*amountToMove + glm::vec3({ 0,0,0.1 })
+                gunDisplacement*amountToMove + glm::vec3({ 0.0, 0.0, 0.1 })
             );
             setModelMatrix(
                 3,
-                -gunDisplacement * amountToMove + glm::vec3({ 0,0,0.1 })
+                -gunDisplacement * amountToMove + glm::vec3({ 0.0, 0.0, 0.1 })
             );
 
             rotate(1, ms / 1000, { 0,1,0 });
@@ -72,7 +72,7 @@ void GunTowerTile::explode(glm::vec3 dir)
         }
         explosionDirections.push_back(result);
     }
-    timeCounter = 0;
+    timeCounter = 0.0f;
 }
 
 void Tile::setCost(float value)
