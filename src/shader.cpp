@@ -32,9 +32,15 @@ bool Shader::load_from_file(const char* vs_path, const char* fs_path)
     std::ifstream vs_is(vs_path);
     std::ifstream fs_is(fs_path);
 
-    if (!vs_is.good() || !fs_is.good())
+    if (!vs_is.good())
     {
-        logger(LogLevel::ERR) << "Failed to load shader files: " << vs_path << fs_path << '\n';
+        logger(LogLevel::ERR) << "Failed to load vertex shader files: " << vs_path << fs_path << '\n';
+        return false;
+    }
+
+    if (!fs_is.good())
+    {
+        logger(LogLevel::ERR) << "Failed to load fragment shader files: " << vs_path << fs_path << '\n';
         return false;
     }
 
@@ -59,12 +65,23 @@ bool Shader::load_from_file(const char* vs_path, const char* fs_path)
 
     // Compiling
     // Shaders already delete if compilation fails
-    if (!gl_compile_shader(vertex))
+    if (!gl_compile_shader(vertex)) {
+        logger(LogLevel::ERR) << "Vertex shader failed to compile\n";
+        std::vector<char> v(1024);
+        glGetShaderInfoLog(vertex, 1024, NULL, v.data());
+        std::string s(begin(v), end(v));
+        logger(LogLevel::ERR) << s << '\n';
         return false;
+    }
 
     if (!gl_compile_shader(fragment))
     {
-        glDeleteShader(vertex);
+        logger(LogLevel::ERR) << "Fragment shader failed to compile\n";
+        std::vector<char> v(1024);
+        glGetShaderInfoLog(fragment, 1024, NULL, v.data());
+        std::string s(begin(v), end(v));
+        logger(LogLevel::ERR) << s << '\n';
+        glDeleteShader(fragment);
         return false;
     }
 

@@ -98,10 +98,6 @@ public:
 		elapsed_time/movementSpeed;
 	}
 
-	void moveTo()
-	{
-		AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2).second;
-	}
 
 	void animate(float ms) override {
 

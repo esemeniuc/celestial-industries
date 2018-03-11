@@ -5,6 +5,8 @@
 #include "genericunit.hpp"
 #include "logger.hpp"
 #include "world.hpp"
+#include "renderer.hpp"
+
 // Same as static in c, local to compilation unit
 namespace {
 	namespace {
@@ -123,6 +125,7 @@ bool World::init(glm::vec2 screen) {
 
 	std::vector<std::vector<Model::MeshType>> levelArray = level.levelLoader(
 			pathBuilder({"data", "levels"}) + "level1.txt");
+
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
 
@@ -142,16 +145,18 @@ bool World::init(glm::vec2 screen) {
 		std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 	}
 
+
 	entityMap.resize(levelArray.size());
 	for (size_t i = 0; i < levelArray.size(); i++) {
 		entityMap[i].resize(levelArray[i].size());
 	}
 	//display a path
 	int startx = 12, startz = 27;
+	int targetx = 20, targetz = 20;
 	std::vector<Coord> path1 =
 			AI::aStar::a_star(costMap, 1, 12, 27, (int) levelArray.size() / 2, (int) levelArray.size() / 2).second;
 	level.displayPath(path1);
-	entityMap[startx][startz].push_back()
+	entityMap[startx][startz].push_back(GenericUnit());
 	interpPath1 = AI::aStar::createInterpolatedPath(path1);
 
 	//render the path
@@ -162,8 +167,7 @@ bool World::init(glm::vec2 screen) {
 
 	//wall example
 	//display a path
-	std::vector<Coord> path2 =
-			AI::aStar::a_star(costMap, 1, 19, 40, (int) mapSize / 2, (int) mapSize / 2).second;
+	std::vector<Coord> path2 = AI::aStar::a_star(costMap, 1, 19, 40, targetx, targetz).second;
 	std::cout << "path2 length: " << path2.size() << '\n';
 	level.displayPath(path2);
 	interpPath2 = AI::aStar::createInterpolatedPath(path2);
@@ -176,7 +180,7 @@ bool World::init(glm::vec2 screen) {
 	//mining tower example
 	//display a path
 	std::vector<Coord> path3 =
-			AI::aStar::a_star(costMap, 1, 1, 40, (int) mapSize / 2, (int) mapSize / 2).second;
+			AI::aStar::a_star(costMap, 1, 1, 40, targetx, targetz).second;
 	std::cout << "path3 length: " << path3.size() << '\n';
 	level.displayPath(path3);
 	interpPath3 = AI::aStar::createInterpolatedPath(path3);
@@ -190,41 +194,24 @@ bool World::init(glm::vec2 screen) {
 	ballPointer2 = std::make_shared<Entity>(Model::MeshType::BALL);
 
 	//display a path
-	std::pair<bool, std::vector<Coord>> path =
-			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
-	level.displayPath(path.second);
-	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
-	selectedTileCoordinates.colCoord = (int) mapSize / 2;
+	//std::pair<bool, std::vector<Coord>> path =
+	//		AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
+	//level.displayPath(path.second);
+
+	selectedTileCoordinates.rowCoord = (int) levelArray.size() / 2;
+	selectedTileCoordinates.colCoord = (int) levelArray.size()  / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 
 	return true;
 }
 
-
 bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources) {
 	// All the models come from the same place
 	std::string path = pathBuilder({"data", "models"});
 	for (auto source : sources) {
-
-		std::vector<SubObject> subObjects;
 		Model::MeshType tileType = source.first;
 		std::vector<SubObjectSource> objSources = source.second;
-		for (auto objSource : objSources) {
-			OBJ::Data obj;
-			if (!OBJ::Loader::loadOBJ(path, objSource.filename, obj)) {
-				// Failure message should already be handled by loadOBJ
-				return false;
-			}
-			auto meshResult = objToMesh(obj);
-			if (!meshResult.first) {
-				logger(LogLevel::ERR) << "Failed to turn tile obj to meshes for tile " << objSource.filename << '\n';
-			}
-			subObjects.push_back({
-										 meshResult.second,
-										 objSource.parentMesh
-								 });
-		}
-		Model::meshRenderers[tileType] = std::make_shared<Renderer>(objShader, subObjects);
+		Model::meshRenderers[tileType] = std::make_shared<Renderer>(objShader, objSources);
 	}
 	return true;
 }
@@ -320,6 +307,10 @@ bool World::update(float elapsed_ms) {
 		auto coord = interpPath3.front();
 		unit3->translate({coord.second, 0, coord.first});
 		interpPath3.pop();
+	}
+
+	for (const auto& turret : level.guntowers) {
+		turret->update(elapsed_ms);
 	}
 
 	return true;

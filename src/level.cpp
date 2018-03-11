@@ -18,9 +18,12 @@ bool Level::init(
             auto renderer = meshRenderers[type];
             std::shared_ptr<Tile> tilePointer;
             switch (type) {
-            case Model::MeshType::GUN_TURRET:
-                tilePointer = std::make_shared<GunTowerTile>(renderer);
+            case Model::MeshType::GUN_TURRET: {
+                auto turret = std::make_shared<GunTowerTile>(renderer);
+                guntowers.push_back(turret);
+                tilePointer = turret;
                 break;
+            }
             default:
                 tilePointer = std::make_shared<Tile>(renderer);
             }
@@ -70,6 +73,10 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 					tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
 					break;
 				}
+                case 'G':
+                    row.push_back(Model::MeshType::GUN_TURRET);
+                    tileData.emplace_back(rowNumber, colNumber, 1000, INF);
+                    break;
 				default: {
 					row.push_back(Model::MeshType::SAND_2);
 					tileData.emplace_back(rowNumber, colNumber, 10.0, INF);

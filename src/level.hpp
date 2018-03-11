@@ -63,6 +63,8 @@ public:
 
 	std::vector<std::vector<AStarNode>> getLevelTraversalCostMap();
 
+    std::vector<std::shared_ptr<GunTowerTile>> guntowers;
+
 private:
 	//members
 	std::vector<std::vector<AStarNode>> levelTraversalCostMap;

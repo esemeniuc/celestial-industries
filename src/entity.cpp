@@ -1,5 +1,7 @@
 #include "entity.hpp"
 
+Entity::Entity() {}
+
 Entity::Entity(Model::MeshType geometry) : geometryRenderer(Model::meshRenderers[geometry]){}
 
 //example of using the animate function when overriding Entity
@@ -15,7 +17,7 @@ void Entity::translate(int modelIndex, glm::vec3 translation)
 
 void Entity::rotate(int modelIndex, float amount, glm::vec3 axis)
 {
-    this->geometryRenderer.rotate(modelIndex, axis);
+    this->geometryRenderer.rotate(modelIndex, amount, axis);
 }
 
 void Entity::scale(int modelIndex, glm::vec3 scale)
