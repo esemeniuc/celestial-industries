@@ -15,25 +15,9 @@
 #include "model.hpp"
 #include "rigidBody.hpp"
 
-enum class EntityOwner {
-	NONE, PLAYER, AI
-};
-
-enum class EntityType {
-	NONE, NON_ATTACKING, DEFENSIVE_PASSIVE, DEFENSIVE_ACTIVE, OFFENSIVE
-};
-
-struct EntityInfo {
-	EntityOwner owner = EntityOwner::NONE;
-	EntityType type = EntityType::NONE;
-	int value; //used for AI to prioritize targets
-};
 
 class Entity {
 public:
-	//members
-	EntityInfo aiInfo;
-
 	// constructors
 	Entity();
 

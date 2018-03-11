@@ -57,6 +57,7 @@ set(PROJ_SOURCES
 		src/config.hpp
 		src/common.cpp
 		src/entity.cpp
+		src/unit/gamepiece.cpp
 		src/global.cpp
 		src/global.hpp
 		src/level.cpp
@@ -72,8 +73,7 @@ set(PROJ_SOURCES
 		src/tile.cpp
 		src/world.cpp
 		src/unit/genericunit.cpp
-		src/unit/unitgroup.cpp
-		)
+		src/unit/unitgroup.cpp)
 
 set(TEST_SUITE_SOURCES
 		test/example.cpp

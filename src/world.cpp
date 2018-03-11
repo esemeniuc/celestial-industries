@@ -156,8 +156,11 @@ bool World::init(glm::vec2 screen) {
 	std::vector<Coord> path1 =
 			AI::aStar::a_star(costMap, 1, 12, 27, targetx, targetz).second;
 	level.displayPath(path1);
-	entityMap[startx][startz].push_back(GenericUnit());
-	interpPath1 = AI::aStar::createInterpolatedPath(path1);
+	GenericUnit temp;
+	temp.translate({27, 0, 11});
+	temp.setTargetPath(path1);
+	entityMap[startx][startz].push_back(temp);
+//	interpPath1 = AI::aStar::createInterpolatedPath(path1);
 
 	//render the path
 	unit1 = std::make_shared<Tile>(Model::meshRenderers[Model::MeshType::BALL]);

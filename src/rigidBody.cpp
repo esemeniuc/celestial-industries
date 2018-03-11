@@ -30,7 +30,7 @@ void RigidBody::updatePosition(glm::vec3 _pos)
     this->position = _pos;
 }
 
-glm::vec3 RigidBody::getPosition()
+glm::vec3 RigidBody::getPosition() const
 {
     return position;
 }

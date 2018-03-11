@@ -8,6 +8,7 @@
 #include "common.hpp"
 #include "entity.hpp"
 #include "pathfinder.hpp"
+#include "gamepiece.hpp"
 
 enum class UnitState {
 	IDLE, RECHARGING, LOW_ENERGY, ATTACK, RETREAT, ACTION
@@ -15,54 +16,48 @@ enum class UnitState {
 
 
 //assumes we have position from entity class
-class GenericUnit : public Entity {
+class GenericUnit : public GamePiece {
 private:
 
 
 protected:
 	//immutable values
-	const int initialHealth;
 	const int initialEnergyLevel;
 	const int attackDamage;
 	const int attackRange; //range in tiles
 	const int attackSpeed; //attacks per second
 	const int movementSpeed; //tiles per second, maybe make non const later for energy effects
-	const int visionRange;
-	const int unitValue;
+
 	//mutable values
-	int currentHealth;
 	int currentEnergyLevel;
+	UnitState state;
 	std::vector<Coord> targetPath;
 	float targetPathStartTimestamp; //needed to get delta time
-	UnitState state;
 
 public:
 
-	GenericUnit() : initialHealth(100),
-					initialEnergyLevel(50),
+	GenericUnit() : initialEnergyLevel(50),
 					attackDamage(6),
 					attackRange(6),
 					attackSpeed(1),
 					movementSpeed(1),
-					visionRange(6),
-					unitValue(50),
-					currentHealth(50),
 					currentEnergyLevel(50),
-					state(UnitState::IDLE) {
+					state(UnitState::IDLE),
+					GamePiece(100, 6, GamePieceOwner::NONE, GamePieceType::NONE, 50) {
+
+		entity = std::make_shared<Entity>(Model::MeshType::BALL);
 	}
 
-	GenericUnit(Model::MeshType _meshType) : initialHealth(100),
-											 initialEnergyLevel(50),
+	GenericUnit(Model::MeshType _meshType) : initialEnergyLevel(50),
 											 attackDamage(6),
 											 attackRange(6),
 											 attackSpeed(1),
 											 movementSpeed(1),
-											 visionRange(6),
-											 unitValue(50),
-											 currentHealth(50),
 											 currentEnergyLevel(50),
 											 state(UnitState::IDLE),
-											 Entity(_meshType) {
+											 GamePiece(100, 6, GamePieceOwner::NONE, GamePieceType::NONE, 50) {
+
+		entity = std::make_shared<Entity>(_meshType);
 	}
 
 	GenericUnit(int _initialHealth,
@@ -73,43 +68,36 @@ public:
 				int _movementSpeed,
 				int _visionRange,
 				int _unitValue,
-				int _currentHealth,
-				int _currentEnergyLevel,
-				EntityOwner _owner,
+				GamePieceOwner _owner,
+				GamePieceType _type,
 				UnitState _state,
-				Model::MeshType _meshType) : initialHealth(_initialHealth),
-											 initialEnergyLevel(_initialEnergyLevel),
+				Model::MeshType _meshType) : initialEnergyLevel(_initialEnergyLevel),
 											 attackDamage(_attackDamage),
 											 attackRange(_attackRange),
 											 attackSpeed(_attackSpeed),
 											 movementSpeed(_movementSpeed),
-											 visionRange(_visionRange),
-											 unitValue(_unitValue),
-											 currentHealth(_currentHealth),
-											 currentEnergyLevel(_currentEnergyLevel),
-//													 owner(_owner),
+											 currentEnergyLevel(_initialEnergyLevel),
 											 state(_state),
-											 Entity(_meshType) {
-		aiInfo.owner = _owner;
+											 GamePiece(_initialHealth, _visionRange, _owner, type, _unitValue) {
 	}
 
-	void move(float elapsed_time)
+	void translate(glm::vec3 translation)
 	{
-		elapsed_time/movementSpeed;
+		entity->translate(translation);
+	}
+
+	void move(float elapsed_time) {
+		elapsed_time / movementSpeed;
 	}
 
 
-	void animate(float ms) override {
-
+	bool inVisionRange(const GamePiece& _gamePiece) {
+		return glm::length(glm::vec2(_gamePiece.rigidBody.getPosition() - rigidBody.getPosition())) <= visionRange;
 	}
 
-//	bool inVisionRange(const Entity& entity) {
-//		return glm::length(glm::vec2(entity.getPosition() - this->getPosition())) <= visionRange;
-//	}
-//
-//	bool inAttackRange(const Entity& entity) {
-//		return glm::length(glm::vec2(entity.getPosition() - this->getPosition())) <= attackRange;
-//	}
+	bool inAttackRange(const GamePiece& _gamePiece) {
+		return glm::length(glm::vec2(_gamePiece.rigidBody.getPosition() - rigidBody.getPosition())) <= attackRange;
+	}
 
 	void setTargetPath(const std::vector<Coord>& targetPath) {
 		GenericUnit::targetPath = targetPath;
@@ -121,10 +109,10 @@ class RangedUnit : public GenericUnit {
 
 public:
 
+
 	RangedUnit(Model::MeshType _meshType) : GenericUnit(100, 50, 10, 6, 1, 1, 6, 50,
-														initialHealth,
-														initialEnergyLevel,
-														EntityOwner::PLAYER,
+														GamePieceOwner::PLAYER,
+														GamePieceType::OFFENSIVE,
 														UnitState::IDLE,
 														_meshType) {
 		logger(LogLevel::DEBUG) << "ranged unit built" << Logger::endl;

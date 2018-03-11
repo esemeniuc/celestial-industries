@@ -44,7 +44,7 @@ public:
 
 	void updatePosition(glm::vec3);
 
-	glm::vec3 getPosition();
+	glm::vec3 getPosition() const;
 
 	void setCollisionGeometryType(CollisionGeomType);
 
