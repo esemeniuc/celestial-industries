@@ -70,7 +70,7 @@ bool Shader::load_from_file(const char* vs_path, const char* fs_path)
         std::vector<char> v(1024);
         glGetShaderInfoLog(vertex, 1024, NULL, v.data());
         std::string s(begin(v), end(v));
-        logger(LogLevel::ERR) << s << "\n";
+        logger(LogLevel::ERR) << s << '\n';
         return false;
     }
 
@@ -80,7 +80,7 @@ bool Shader::load_from_file(const char* vs_path, const char* fs_path)
         std::vector<char> v(1024);
         glGetShaderInfoLog(fragment, 1024, NULL, v.data());
         std::string s(begin(v), end(v));
-        logger(LogLevel::ERR) << s << "\n";
+        logger(LogLevel::ERR) << s << '\n';
         glDeleteShader(fragment);
         return false;
     }
