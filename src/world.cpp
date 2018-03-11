@@ -1,9 +1,10 @@
 // Header
-#include "world.hpp"
-#include "logger.hpp"
 #include <chrono>  // for high_resolution_clock
 #include <queue>
 #include <unordered_set>
+#include "genericunit.hpp"
+#include "logger.hpp"
+#include "world.hpp"
 // Same as static in c, local to compilation unit
 namespace {
 	namespace {
@@ -25,7 +26,7 @@ typedef std::shared_ptr<Tile> pseudoUnit;
 pseudoUnit unit1;
 pseudoUnit unit2;
 pseudoUnit unit3;
-std::vector<std::vector<Entity>> entityMap;
+std::vector<std::vector<std::vector<GenericUnit>>> entityMap; //2d map of entities, where more than 1 entity can be in a
 
 std::queue<std::pair<float, float>> interpPath1;
 std::queue<std::pair<float, float>> interpPath2;
@@ -34,10 +35,6 @@ std::queue<std::pair<float, float>> interpPath3;
 std::shared_ptr<Entity> ballPointer;
 std::shared_ptr<Entity> ballPointer2;
 std::pair<bool, std::vector<Coord>> path;
-
-#include <queue>
-
-std::queue<Coord> pathq;
 
 // World initialization
 bool World::init(glm::vec2 screen) {
@@ -126,7 +123,6 @@ bool World::init(glm::vec2 screen) {
 
 	std::vector<std::vector<Model::MeshType>> levelArray = level.levelLoader(
 			pathBuilder({"data", "levels"}) + "level1.txt");
-	size_t mapSize = levelArray.size();
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
 
@@ -146,15 +142,16 @@ bool World::init(glm::vec2 screen) {
 		std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 	}
 
-	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
-	selectedTileCoordinates.colCoord = (int) mapSize / 2;
-	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
-
-	//ball example
+	entityMap.resize(levelArray.size());
+	for (size_t i = 0; i < levelArray.size(); i++) {
+		entityMap[i].resize(levelArray[i].size());
+	}
 	//display a path
+	int startx = 12, startz = 27;
 	std::vector<Coord> path1 =
-			AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2).second;
+			AI::aStar::a_star(costMap, 1, 12, 27, (int) levelArray.size() / 2, (int) levelArray.size() / 2).second;
 	level.displayPath(path1);
+	entityMap[startx][startz].push_back()
 	interpPath1 = AI::aStar::createInterpolatedPath(path1);
 
 	//render the path
@@ -284,6 +281,15 @@ bool World::update(float elapsed_ms) {
 
 		selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 		selectedTile->shouldDraw(false);
+	}
+
+	for (auto& dim1 : entityMap) {
+		for (auto& dim2 : dim1) {
+			for (auto& dim3 : dim2) {
+				dim3.move(elapsed_ms);
+
+			}
+		}
 	}
 
 	//display interpolated moves for ball

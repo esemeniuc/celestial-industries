@@ -7,6 +7,7 @@
 #include <vector>
 #include "common.hpp"
 #include "entity.hpp"
+#include "pathfinder.hpp"
 
 enum class UnitState {
 	IDLE, RECHARGING, LOW_ENERGY, ATTACK, RETREAT, ACTION
@@ -32,6 +33,7 @@ protected:
 	int currentHealth;
 	int currentEnergyLevel;
 	std::vector<Coord> targetPath;
+	float targetPathStartTimestamp; //needed to get delta time
 	UnitState state;
 
 public:
@@ -89,6 +91,16 @@ public:
 											 state(_state),
 											 Entity(_meshType) {
 		aiInfo.owner = _owner;
+	}
+
+	void move(float elapsed_time)
+	{
+		elapsed_time/movementSpeed;
+	}
+
+	void moveTo()
+	{
+		AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2).second;
 	}
 
 	void animate(float ms) override {
