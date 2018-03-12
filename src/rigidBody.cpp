@@ -1,4 +1,5 @@
 #include "rigidBody.hpp"
+#include "collisiondetection.hpp"
 
 void RigidBody::updateVelocity(glm::vec3 _velocity)
 {

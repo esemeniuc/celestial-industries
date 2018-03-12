@@ -4,6 +4,7 @@
 #include <chrono>  // for high_resolution_clock
 #include "renderer.hpp"
 #include "world.hpp"
+#include "collisiondetection.hpp"
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -32,6 +33,8 @@ std::queue<Coord> pathq;
 
 // World initialization
 bool World::init(glm::vec2 screen) {
+    CollisionDetection::test();
+
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -58,7 +61,7 @@ bool World::init(glm::vec2 screen) {
 	glfwSwapInterval(1); // vsync
 
 	// Load OpenGL function pointers
-	gl3wInit();
+	gl3w_init();
 
 	// Setting callbacks to member functions (that's why the redirect is needed)
 	// Input is handled using GLFW, for more info see

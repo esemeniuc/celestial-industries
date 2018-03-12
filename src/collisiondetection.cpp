@@ -1,24 +1,21 @@
 #include "collisiondetection.hpp"
 
 #include <algorithm>
+#include <array>
 
 namespace CollisionDetection {
-    CollisionInfo CollisionDetection::movingBodyCollidesWithStatic(bounding_box staticBox, bounding_box movingBox, glm::vec3 staticPosition, glm::vec3 movingStartPosition, glm::vec3 movingEndPosition, float totalTime)
+    CollisionInfo CollisionDetection::movingBodyCollidesWithStatic(BoundingBox staticBox, BoundingBox movingBox, glm::vec3 staticPosition, glm::vec3 movingStartPosition, glm::vec3 movingEndPosition, float totalTime)
     {
-        // Box is wide in terms of X and high in terms of Z
-        float movingWidth = abs(movingBox.upperCorner.x - movingBox.lowerCorner.x);
-        float movingHeight = abs(movingBox.upperCorner.z - movingBox.lowerCorner.z);
-
-        
+        return aabbMinkowskiCollisions(staticBox, movingBox, staticPosition, staticPosition, movingStartPosition, movingEndPosition, totalTime);        
     }
 
-    CollisionInfo aabbMinkowskiCollisions(bounding_box a, bounding_box b, glm::vec3 aStart, glm::vec3 aEnd, glm::vec3 bStart, glm::vec3 bEnd, float totalTime)
+    CollisionInfo aabbMinkowskiCollisions(BoundingBox a, BoundingBox b, glm::vec3 aStart, glm::vec3 aEnd, glm::vec3 bStart, glm::vec3 bEnd, float totalTime)
     {
         // Based off https://gamedev.stackexchange.com/questions/93035/whats-the-fastest-way-checking-if-two-moving-aabbs-intersect#93096
         // TODO: are their coordinates relative or not? this may affect results, but at least wont be subtle
 
-        bounding_box rotatedA = rotateBoundingBoxAboutOrigin(a);
-        bounding_box sum = minkowskiSum(rotatedA, b);
+        BoundingBox rotatedA = rotateBoundingBoxAboutOrigin(a);
+        BoundingBox sum = minkowskiSum(rotatedA, b);
         
         glm::vec3 aVelocity = (aEnd - aStart) / totalTime;
         glm::vec3 bVelocity = (bEnd - bStart) / totalTime;
@@ -30,9 +27,14 @@ namespace CollisionDetection {
         return segmentAABBCollision(segment, sum, totalTime);
     }
 
-    bounding_box normalizeBoundingBox(bounding_box box)
+    CollisionInfo aabbMinkowskiCollisions(CollideableInstance a, CollideableInstance b, float totalTime)
     {
-        bounding_box result;
+        return aabbMinkowskiCollisions(a.box, b.box, a.start, a.end, b.start, b.end, totalTime);
+    }
+
+    BoundingBox normalizeBoundingBox(BoundingBox box)
+    {
+        BoundingBox result;
         result.upperCorner.x = std::max(box.upperCorner.x, box.lowerCorner.x);
         result.upperCorner.z = std::max(box.upperCorner.z, box.lowerCorner.z);
         result.lowerCorner.x = std::min(box.upperCorner.x, box.lowerCorner.x);
@@ -40,9 +42,9 @@ namespace CollisionDetection {
         return result;
     }
 
-    bounding_box rotateBoundingBoxAboutOrigin(bounding_box box)
+    BoundingBox rotateBoundingBoxAboutOrigin(BoundingBox box)
     {
-        bounding_box result;
+        BoundingBox result;
         result.upperCorner.x = -box.upperCorner.x;
         result.upperCorner.z = -box.upperCorner.z;
         result.lowerCorner.x = -box.lowerCorner.x;
@@ -50,9 +52,9 @@ namespace CollisionDetection {
         return normalizeBoundingBox(result);
     }
 
-    bounding_box minkowskiSum(bounding_box a, bounding_box b)
+    BoundingBox minkowskiSum(BoundingBox a, BoundingBox b)
     {
-        bounding_box result;
+        BoundingBox result;
         result.lowerCorner.x = a.lowerCorner.x + b.lowerCorner.x;
         result.lowerCorner.z = a.lowerCorner.z + b.lowerCorner.z;
         result.upperCorner.x = a.upperCorner.x + b.upperCorner.x;
@@ -96,7 +98,7 @@ namespace CollisionDetection {
         };
     }
 
-    CollisionInfo segmentAABBCollision(LineSegment segment, bounding_box box, float totalTime)
+    CollisionInfo segmentAABBCollision(LineSegment segment, BoundingBox box, float totalTime)
     {
         // Effectively we check the segment against all four edges of the box
         float minX, minZ, maxX, maxZ;
@@ -137,6 +139,65 @@ namespace CollisionDetection {
                 0
             };
         }
+    }
+
+    bool test()
+    {
+        /*
+        Test suite logic follows the following diagram: https://puu.sh/zFbw6/feb4333778.png
+        */
+        CollideableInstance a;
+        a.box.lowerCorner = { 1, 0, 4 };
+        a.box.upperCorner = { 2, 0, 5 };
+        a.start = { 1.5, 0, 4.5 };
+        a.end = { 4.5, 0, 4.5 };
+
+        CollideableInstance b;
+        b.box.lowerCorner = { 3, 0, 5.5 };
+        b.box.upperCorner = { 4, 0, 6.5 };
+        b.start = { 3.5, 0, 6 };
+        b.end = { 3.5, 0, 1.5 };
+
+        CollideableInstance c;
+        c.box.lowerCorner = { 1.5, 0, 2 };
+        c.box.upperCorner = { 2.5, 0, 3 };
+        c.start = { 2, 0, 2.5 };
+        c.end = { 3.5, 0, 2.5 };
+
+        CollideableInstance d;
+        d.box.lowerCorner = { 9,0,4 };
+        d.box.upperCorner = { 10,0,5 };
+        d.start = { 9.5, 0, 4.5 };
+        d.end = { 6.5, 0, 4.5 };
+
+        CollideableInstance e;
+        e.box.lowerCorner = { 6, 0, 3 };
+        e.box.upperCorner = { 7, 0, 4 };
+        e.start = { 6.5, 0, 3.5 };
+        e.end = { 9.5, 0, 1.5 };
+
+        CollideableInstance f;
+        f.box.lowerCorner = { 6, 0, 1 };
+        f.box.upperCorner = { 7, 0, 2 };
+        f.start = { 6.5, 0, 1.5 };
+        f.end = { 9.5, 0, 3.5 };
+
+        std::array<CollideableInstance, 6> instances = {a,b,c,d,e,f};
+        for (int i = 0; i < 6; i++) {
+            instances[i].box.upperCorner = { 1, 0, 1 };
+            instances[i].box.lowerCorner = { 0,0,0 };
+        }
+        /*
+        Test collisions for A
+        */
+        for (int i = 0; i < 6; i++) {
+            if (i != 0) { // No need to test against self
+                CollisionInfo collision = aabbMinkowskiCollisions(instances[0], instances[i], 1.0);
+                logger(LogLevel::INFO) << "Collision info [" << i << "]: collided?" << collision.collided << "\n";
+            }
+        }
+
+        return true;
     }
 
 }

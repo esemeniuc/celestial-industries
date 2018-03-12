@@ -4598,19 +4598,6 @@ GLAPI GLuint APIENTRY glCreateShaderProgramEXT (GLenum type, const GLchar *strin
 #endif
 #endif /* GL_EXT_separate_shader_objects */
 
-#ifndef GL_EXT_shader_framebuffer_fetch
-#define GL_EXT_shader_framebuffer_fetch 1
-#define GL_FRAGMENT_SHADER_DISCARDS_SAMPLES_EXT 0x8A52
-#endif /* GL_EXT_shader_framebuffer_fetch */
-
-#ifndef GL_EXT_shader_framebuffer_fetch_non_coherent
-#define GL_EXT_shader_framebuffer_fetch_non_coherent 1
-typedef void (APIENTRYP PFNGLFRAMEBUFFERFETCHBARRIEREXTPROC) (void);
-#ifdef GL_GLEXT_PROTOTYPES
-GLAPI void APIENTRY glFramebufferFetchBarrierEXT (void);
-#endif
-#endif /* GL_EXT_shader_framebuffer_fetch_non_coherent */
-
 #ifndef GL_EXT_shader_integer_mix
 #define GL_EXT_shader_integer_mix 1
 #endif /* GL_EXT_shader_integer_mix */
@@ -4625,8 +4612,6 @@ GLAPI void APIENTRY glFramebufferFetchBarrierEXT (void);
 
 #ifndef GL_EXT_texture_filter_minmax
 #define GL_EXT_texture_filter_minmax 1
-#define GL_TEXTURE_REDUCTION_MODE_EXT     0x9366
-#define GL_WEIGHTED_AVERAGE_EXT           0x9367
 #endif /* GL_EXT_texture_filter_minmax */
 
 #ifndef GL_EXT_texture_sRGB_decode
@@ -4692,7 +4677,7 @@ typedef void (APIENTRYP PFNGLENDPERFQUERYINTELPROC) (GLuint queryHandle);
 typedef void (APIENTRYP PFNGLGETFIRSTPERFQUERYIDINTELPROC) (GLuint *queryId);
 typedef void (APIENTRYP PFNGLGETNEXTPERFQUERYIDINTELPROC) (GLuint queryId, GLuint *nextQueryId);
 typedef void (APIENTRYP PFNGLGETPERFCOUNTERINFOINTELPROC) (GLuint queryId, GLuint counterId, GLuint counterNameLength, GLchar *counterName, GLuint counterDescLength, GLchar *counterDesc, GLuint *counterOffset, GLuint *counterDataSize, GLuint *counterTypeEnum, GLuint *counterDataTypeEnum, GLuint64 *rawCounterMaxValue);
-typedef void (APIENTRYP PFNGLGETPERFQUERYDATAINTELPROC) (GLuint queryHandle, GLuint flags, GLsizei dataSize, void *data, GLuint *bytesWritten);
+typedef void (APIENTRYP PFNGLGETPERFQUERYDATAINTELPROC) (GLuint queryHandle, GLuint flags, GLsizei dataSize, GLvoid *data, GLuint *bytesWritten);
 typedef void (APIENTRYP PFNGLGETPERFQUERYIDBYNAMEINTELPROC) (GLchar *queryName, GLuint *queryId);
 typedef void (APIENTRYP PFNGLGETPERFQUERYINFOINTELPROC) (GLuint queryId, GLuint queryNameLength, GLchar *queryName, GLuint *dataSize, GLuint *noCounters, GLuint *noInstances, GLuint *capsMask);
 #ifdef GL_GLEXT_PROTOTYPES
@@ -4703,7 +4688,7 @@ GLAPI void APIENTRY glEndPerfQueryINTEL (GLuint queryHandle);
 GLAPI void APIENTRY glGetFirstPerfQueryIdINTEL (GLuint *queryId);
 GLAPI void APIENTRY glGetNextPerfQueryIdINTEL (GLuint queryId, GLuint *nextQueryId);
 GLAPI void APIENTRY glGetPerfCounterInfoINTEL (GLuint queryId, GLuint counterId, GLuint counterNameLength, GLchar *counterName, GLuint counterDescLength, GLchar *counterDesc, GLuint *counterOffset, GLuint *counterDataSize, GLuint *counterTypeEnum, GLuint *counterDataTypeEnum, GLuint64 *rawCounterMaxValue);
-GLAPI void APIENTRY glGetPerfQueryDataINTEL (GLuint queryHandle, GLuint flags, GLsizei dataSize, void *data, GLuint *bytesWritten);
+GLAPI void APIENTRY glGetPerfQueryDataINTEL (GLuint queryHandle, GLuint flags, GLsizei dataSize, GLvoid *data, GLuint *bytesWritten);
 GLAPI void APIENTRY glGetPerfQueryIdByNameINTEL (GLchar *queryName, GLuint *queryId);
 GLAPI void APIENTRY glGetPerfQueryInfoINTEL (GLuint queryId, GLuint queryNameLength, GLchar *queryName, GLuint *dataSize, GLuint *noCounters, GLuint *noInstances, GLuint *capsMask);
 #endif
@@ -4938,11 +4923,6 @@ GLAPI void APIENTRY glConservativeRasterParameterfNV (GLenum pname, GLfloat valu
 #endif
 #endif /* GL_NV_conservative_raster_dilate */
 
-#ifndef GL_NV_conservative_raster_pre_snap
-#define GL_NV_conservative_raster_pre_snap 1
-#define GL_CONSERVATIVE_RASTER_MODE_PRE_SNAP_NV 0x9550
-#endif /* GL_NV_conservative_raster_pre_snap */
-
 #ifndef GL_NV_conservative_raster_pre_snap_triangles
 #define GL_NV_conservative_raster_pre_snap_triangles 1
 #define GL_CONSERVATIVE_RASTER_MODE_NV    0x954D
@@ -4953,10 +4933,6 @@ typedef void (APIENTRYP PFNGLCONSERVATIVERASTERPARAMETERINVPROC) (GLenum pname, 
 GLAPI void APIENTRY glConservativeRasterParameteriNV (GLenum pname, GLint param);
 #endif
 #endif /* GL_NV_conservative_raster_pre_snap_triangles */
-
-#ifndef GL_NV_conservative_raster_underestimation
-#define GL_NV_conservative_raster_underestimation 1
-#endif /* GL_NV_conservative_raster_underestimation */
 
 #ifndef GL_NV_draw_vulkan_image
 #define GL_NV_draw_vulkan_image 1
