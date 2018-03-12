@@ -13,7 +13,7 @@ void Entity::translate(int modelIndex, glm::vec3 translation)
     // when an entity is translated, translate both the geometry being rendered
     // and the (invisible) collision geometry with it
     this->geometryRenderer.translate(modelIndex, translation);
-    this->rigidBody.setPosition(this->rigidBody.getPosition + translation);
+    this->rigidBody.setPosition(this->rigidBody.getPosition() + translation);
 }
 
 void Entity::rotate(int modelIndex, float amount, glm::vec3 axis)
@@ -21,7 +21,7 @@ void Entity::rotate(int modelIndex, float amount, glm::vec3 axis)
     // when an entity is rotated, rotate both the geometry being rendered
     // and the (invisible) collision geometry with it
     this->geometryRenderer.rotate(modelIndex, axis);
-    this->rigidBody.setRotation(this->rigidBody.getRotation + amount, axis);
+    this->rigidBody.setRotation(this->rigidBody.getRotation(axis) + amount, axis);
 }
 
 void Entity::scale(int modelIndex, glm::vec3 scale)
@@ -51,13 +51,13 @@ void Entity::setModelMatrix(int modelIndex, glm::vec3 translation, float angle, 
 void Entity::translate(glm::vec3 translation)
 {
     this->geometryRenderer.translate(translation);
-    this->rigidBody.setPosition(this->rigidBody.getPosition + translation);
+    this->rigidBody.setPosition(this->rigidBody.getPosition() + translation);
 }
 
 void Entity::rotate(float amount, glm::vec3 axis)
 {
     this->geometryRenderer.rotate(amount, axis);
-    this->rigidBody.setRotation(this->rigidBody.getRotation + amount, axis);
+    this->rigidBody.setRotation(this->rigidBody.getRotation(axis) + amount, axis);
 }
 
 void Entity::scale(glm::vec3 scale)
@@ -66,4 +66,9 @@ void Entity::scale(glm::vec3 scale)
     // but I don't expect to have an entity being scaled multiple times
     // beyond when they are first loaded in our game world
     this->geometryRenderer.scale(scale);
+}
+
+RigidBody Entity::getRigidBody()
+{
+    return this->rigidBody;
 }

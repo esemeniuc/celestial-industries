@@ -46,7 +46,7 @@ public:
 
 	glm::vec3 getPosition();
 
-    glm::vec3 getRotation();
+    float getRotation(glm::vec3);
 
 	void setCollisionGeometryType(CollisionGeomType);
 

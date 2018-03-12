@@ -50,9 +50,20 @@ glm::vec3 RigidBody::getPosition()
     return position;
 }
 
-glm::vec3 RigidBody::getRotation()
+float RigidBody::getRotation(glm::vec3 _axis)
 {
-    return this->rotation;
+    // if rotation angle is about x axis
+    if (_axis.x != 0.0f && _axis.y == 0.0f && _axis.z == 0.0f) {
+        return rotation.x;
+    }
+    // if rotation angle is about y axis
+    if (_axis.x == 0.0f && _axis.y != 0.0f && _axis.z == 0.0f) {
+        return rotation.y;
+    }
+    // if rotation angle is about z axis
+    if (_axis.x == 0.0f && _axis.y == 0.0f && _axis.z != 0.0f) {
+        return rotation.z;
+    }
 }
 
 void RigidBody::setCollisionGeometryType(CollisionGeomType _cg)

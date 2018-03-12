@@ -66,6 +66,8 @@ public:
 
     void scale(glm::vec3 scale);
 
+    RigidBody getRigidBody();
+
 protected:
     Renderable geometryRenderer;
     RigidBody rigidBody;
