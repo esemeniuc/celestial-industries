@@ -34,6 +34,8 @@ public:
 
 	void setModelMatrix(int modelIndex, glm::mat4 mat);
 
+	glm::mat4 getModelMatrix(int modelIndex) const;
+
 	void setModelMatrix(int modelIndex, glm::vec3 translation = {0, 0, 0}, float angle = 0,
 						glm::vec3 rotationAxis = {0, 1, 0}, glm::vec3 scale = {1, 1, 1});
 
@@ -44,7 +46,7 @@ public:
 
 	void scale(glm::vec3 scale);
 
+	Renderable geometryRenderer;//FIXME: HACK
 protected:
-	Renderable geometryRenderer;
     RigidBody rigidBody;
 };

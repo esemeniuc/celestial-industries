@@ -5,6 +5,10 @@
 #pragma once
 
 #include <vector>
+
+#define GLM_ENABLE_EXPERIMENTAL
+
+#include <glm/gtx/string_cast.hpp>
 #include "common.hpp"
 #include "entity.hpp"
 #include "pathfinder.hpp"
@@ -35,7 +39,6 @@ protected:
 	double targetPathStartTimestamp; //needed to get delta time
 
 public:
-
 
 
 	GenericUnit() : initialEnergyLevel(50),
@@ -118,8 +121,14 @@ public:
 
 			double transRow = curr.rowCoord + (dRow * index.second);
 			double transCol = curr.colCoord + (dCol * index.second);
-			entity->setModelMatrix(0, {transCol, 0, transRow});
+			glm::mat4 m = entity->getModelMatrix(0);
+			m[3][0] = (float) transCol;
+			m[3][2] = (float) transRow;
 
+			entity->geometryRenderer.setModelMatrix(0, m);
+			entity->setModelMatrix(0, {transCol, 0, transRow});
+//			std::cout << transRow << ' ' << transCol << '\n';
+//			std::cout << glm::to_string(m) << '\n';
 //			std::cout << "eft= " << elapsed_time << "\ttt = " << targetPathStartTimestamp << "\tindex= " << index.first
 //					  << "\tinterp= " << index.second << "\ttrow=" << transRow << "\ttcol= " << transCol << '\n';
 

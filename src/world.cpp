@@ -1,11 +1,9 @@
 // Header
 #include <chrono>  // for high_resolution_clock
-#include <queue>
 #include <unordered_set>
 #include "genericunit.hpp"
 #include "logger.hpp"
 #include "world.hpp"
-#include "renderer.hpp"
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -23,20 +21,10 @@ World::World() {
 
 World::~World() = default;
 
-typedef std::shared_ptr<Tile> pseudoUnit;
-//std::unordered_set<pseudoUnit> units;
-pseudoUnit unit1;
-pseudoUnit unit2;
-pseudoUnit unit3;
 std::vector<std::vector<std::vector<GenericUnit>>> entityMap; //2d map of entities, where more than 1 entity can be in a
-
-std::queue<std::pair<float, float>> interpPath1;
-std::queue<std::pair<float, float>> interpPath2;
-std::queue<std::pair<float, float>> interpPath3;
 
 std::shared_ptr<Entity> ballPointer;
 std::shared_ptr<Entity> ballPointer2;
-std::pair<bool, std::vector<Coord>> path;
 
 // World initialization
 bool World::init(glm::vec2 screen) {

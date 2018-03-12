@@ -26,6 +26,13 @@ void Entity::scale(int modelIndex, glm::vec3 scale)
     this->geometryRenderer.scale(modelIndex, scale);
 }
 
+
+glm::mat4 Entity::getModelMatrix(int modelIndex) const
+{
+	return geometryRenderer.parent->instances[geometryRenderer.id].matrixStack[modelIndex];
+}
+
+
 void Entity::setModelMatrix(int modelIndex, glm::mat4 mat)
 {
     this->geometryRenderer.setModelMatrix(modelIndex, mat);
