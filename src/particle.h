@@ -10,92 +10,160 @@
 #include "renderer.hpp"
 #include "entity.hpp"
 
+namespace Particles {
 
-class Particle {
+    class Particle;
+    struct FireworkRule;
+    class ParticleSpawner;
 
-public:
-    float getMass();
-    void setMass(float mass);
-    void setInfiniteMass();
-    void setDamping(float damping);
-    void setType(int type);
-    void setAge(float age);
-    void setPosition(glm::vec3 position);
-    glm::vec3 getPosition() const;
-    void setVelocity(glm::vec3 velocity);
-    glm::vec3 getVelocity() const;
-    void setAcceleration(glm::vec3 acceleration);
-    glm::vec3 getAcceleration() const;
+    class Particle {
+    public:
+        float getMass();
 
-    void updatePosition(float timeDelta);
+        void setMass(float mass);
 
-    /**
-     * Return true if the particle needs removal.
-     *
-     * @param timeDelta
-     * @return
-     */
-    bool update(float timeDelta) {
-        updatePosition(timeDelta);
-        age -= timeDelta;
-        return age < 0;
-    }
+        void setInfiniteMass();
 
-private:
-    int type;
-    float age;
-    float inverseMass;
+        void setDamping(float damping);
 
-    glm::vec3 position;
-    glm::vec3 velocity;
-    glm::vec3 acceleration;
+        void setType(int type);
 
-    float damping;
+        void setAge(float age);
 
-};
+        void setPosition(glm::vec3 position);
 
-struct FireworkRule {
-    unsigned int type;
+        void initializePosition(glm::vec3 position);
 
-    float minimumAge;
+        glm::vec3 getPosition() const;
 
-    float maximumAge;
+        void setVelocity(glm::vec3 velocity);
 
-    glm::vec3 minimumVelocity;
+        glm::vec3 getVelocity() const;
 
-    glm::vec3 maximumVelocity;
+        void setAcceleration(glm::vec3 acceleration);
 
-    float damping;
+        glm::vec3 getAcceleration() const;
 
-    struct Payload {
-        unsigned type;
-        unsigned count;
+        void updatePosition(float timeDelta);
+
+        /**
+         * Return true if the particle needs removal.
+         *
+         * @param timeDelta
+         * @return
+         */
+        bool update(float timeDelta) {
+            updatePosition(timeDelta);
+            age -= timeDelta;
+            return age < 0;
+        }
+
+    private:
+        int type;
+        float age;
+        float inverseMass;
+
+        glm::vec3 position;
+        glm::vec3 initialPosition;
+        glm::vec3 velocity;
+        glm::vec3 initialVelocity;
+        glm::vec3 acceleration;
+        glm::vec3 initialAcceleration;
+
+        float damping;
+
+        void resetParticle();
+
     };
 
-    unsigned payloadCount;
-    Payload *payloads;
+    struct FireworkRule {
+        unsigned int type;
 
-    FireworkRule()
-    :
-    payloadCount(0),
-    payloads(NULL)
-    {
-    }
+        float minimumAge;
 
-    void init(unsigned payloadCount) {
-        this->payloadCount = payloadCount;
-        payloads = new Payload[payloadCount];
-    }
+        float maximumAge;
 
-    ~FireworkRule()
-    {
-        if (payloads != nullptr) delete[] payloads;
-    }
+        glm::vec3 minimumVelocity;
 
-    void setParameters(unsigned int type, float minimumAge, float maximumAge, const glm::vec3 &minimumVelocity,
-                       const glm::vec3 &maximumVelocity, float damping);
+        glm::vec3 maximumVelocity;
 
-    void create(Particle *firework, const Particle *parent) const;
-};
+        float damping;
 
+        struct Payload {
+            unsigned type;
+            unsigned count;
+        };
+
+        unsigned payloadCount;
+        Payload *payloads;
+
+        FireworkRule()
+                :
+                payloadCount(0),
+                payloads(NULL) {
+        }
+
+        void init(unsigned payloadCount) {
+            this->payloadCount = payloadCount;
+            payloads = new Payload[payloadCount];
+        }
+
+        ~FireworkRule() {
+            if (payloads != nullptr) delete[] payloads;
+        }
+
+        void setParameters(unsigned int type, float minimumAge, float maximumAge, const glm::vec3 &minimumVelocity,
+                           const glm::vec3 &maximumVelocity, float damping);
+
+        void create(Particle *firework, const Particle *parent) const;
+    };
+
+
+    class ParticleSpawner {
+    public:
+        ParticleSpawner() = delete;
+        ParticleSpawner(const ParticleSpawner &) = delete;
+        ParticleSpawner(const ParticleSpawner &&) = delete;
+
+        ParticleSpawner(
+                const glm::vec3 &position,
+                const glm::vec3 &direction,
+                float spread,
+                float particleWidth,
+                float particleHeight,
+                float particleLifespan,
+                float particleSpeed
+        );
+
+        float getSpread() const;
+        void setSpread(float spread);
+        float getParticleWidth() const;
+        void setParticleWidth(float particleWidth);
+        float getParticleHeight() const;
+        void setParticleHeight(float particleHeight);
+        float getParticleLifespan() const;
+        void setParticleLifespan(float particleLifespan);
+        float getParticleSpeed() const;
+        void setParticleSpeed(float particleSpeed);
+        const glm::vec3 &getPosition() const;
+        void setPosition(const glm::vec3 &position);
+
+        void renderParticles(float elapsed_ms);
+
+    private:
+        glm::vec3 position;
+        glm::vec3 direction;
+        float spread;
+        float particleWidth;
+        float particleHeight;
+        float particleLifespan;
+        float particleSpeed;
+
+        unsigned int activeParticles;
+
+        void createParticles();
+    };
+
+    void InitializeParticleSystem();
+}
 #endif //PROJ_PARTICLE_H

@@ -44,7 +44,10 @@ public:
 
 	void translate(int modelIndex, glm::vec3 translation);
 
+
 	glm::vec3 getPosition();
+
+	void setPosition(glm::vec3 position);
 
 	void rotate(int modelIndex, float amount, glm::vec3 axis);
 

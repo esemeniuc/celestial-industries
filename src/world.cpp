@@ -32,9 +32,7 @@ std::pair<bool, std::vector<Coord>> path;
 #include <queue>
 std::queue<Coord> pathq;
 
-std::vector<Particle> particles;
-std::vector<std::shared_ptr<Entity>> particleGraphics;
-std::vector<FireworkRule> particleRules;
+std::shared_ptr<Particles::ParticleSpawner> firespawner;
 
 
 // World initialization
@@ -144,25 +142,17 @@ bool World::init(glm::vec2 screen) {
     ballPointer2 = std::make_shared<Entity>(Model::MeshType::BALL);
 
     // particle setup
-    particleRules.emplace_back();
-    particleRules.back().setParameters(
-                0, // type
-                3, 20, // age range
-                glm::vec3(-2*0.1, 2*0.1, -2*0.1), // min velocity
-                glm::vec3(2*0.1, 9*0.1, 2*0.1), // max velocity
-                0.995 // damping
-    );
+    Particles::InitializeParticleSystem();
 
-    // create 1000 particle objects
-    for (int i = 0; i < 200; ++i) {
-        particles.emplace_back();
-        particleRules[0].create(&particles[i], nullptr);
-        particles[i].setPosition({20, 0, 20});
-
-        particleGraphics.push_back(std::make_shared<Entity>(Model::MeshType::BALL));
-        particleGraphics[i]->translate(particles[i].getPosition());
-//        particleGraphics[i]->scale(glm::vec3(0.1, 0.1, 0.1));
-    }
+    firespawner = std::make_shared<Particles::ParticleSpawner>(
+					glm::vec3{20, 0, 10},
+					glm::vec3{0,1,0},
+					1,
+					0.1,
+					0.1,
+					5,
+					0.5
+			);
 
 	//display a path
 	//std::pair<bool, std::vector<Coord>> path =
@@ -249,19 +239,7 @@ bool World::update(float elapsed_ms) {
         turret->update(elapsed_ms);
     }
 
-    for (int i = 0; i < particles.size(); ++i) {
-        auto particle = &particles[i];
-        auto particleEntity = particleGraphics[i];
-
-        particle->updatePosition(elapsed_ms);
-		particleEntity->translate(particle->getVelocity());
-
-        glm::vec3 particlePosition = particleGraphics[i]->getPosition();
-        glm::vec3 particleVelocity = particles[i].getVelocity();
-        logger(LogLevel::DEBUG) << "particle[" << i << "] "
-                << particlePosition.x << ", " << particlePosition.y << ", " << particlePosition.z << " | "
-                << particleVelocity.x << ", " << particleVelocity.y << ", " << particleVelocity.z << '\n';
-    }
+	firespawner->renderParticles(elapsed_ms);
 
 	return true;
 }
@@ -392,7 +370,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 //	logger(LogLevel::DEBUG) << "X-pos: " << xpos << ", Y-pos: " << ypos << '\n';
-	camera.pan((int)xpos,(int) ypos);
+//	camera.pan((int)xpos,(int) ypos);
 
 	int windowWidth;
 	int windowHeight;
