@@ -32,7 +32,7 @@ protected:
 	int currentEnergyLevel;
 	UnitState state;
 	std::vector<Coord> targetPath;
-	float targetPathStartTimestamp; //needed to get delta time
+	double targetPathStartTimestamp; //needed to get delta time
 
 public:
 
@@ -86,11 +86,11 @@ public:
 		return int((targetPathStartTimestamp / 1000) * movementSpeed);
 	}
 
-	//returns a pathIndex and a 0-100% value to interpolate between steps in a path
-	std::pair<int, float> getInterpolationPercentage() {
-		float intermediateVal = (targetPathStartTimestamp / 1000) * movementSpeed;
+	//returns a pathIndex and a 0.00 - 0.99 value to interpolate between steps in a path
+	std::pair<int, double> getInterpolationPercentage() {
+		double intermediateVal = (targetPathStartTimestamp / 1000) * movementSpeed;
 		int pathIndex = (int) intermediateVal;
-		float interpolationPercent = intermediateVal - pathIndex;
+		double interpolationPercent = (intermediateVal - pathIndex);
 
 		return {pathIndex, interpolationPercent};
 	}
@@ -99,27 +99,29 @@ public:
 		return v0 + t * (v1 - v0);
 	}
 
-	void move(float elapsed_time) {
+	void move(double elapsed_time) {
 		targetPathStartTimestamp += elapsed_time;
 
-		std::pair<int, float> index = getInterpolationPercentage(); //first is index into path, second is interp amount (0 to 1)
+		std::pair<int, double> index = getInterpolationPercentage(); //first is index into path, second is interp amount (0 to 1)
 		if (index.first < targetPath.size() - 1) {
 			Coord curr = targetPath[index.first];
 			Coord next = targetPath[index.first + 1];
 
-			float dRow = next.rowCoord - curr.rowCoord;
-			float dCol = next.colCoord - curr.colCoord;
+			double dRow = next.rowCoord - curr.rowCoord;
+			double dCol = next.colCoord - curr.colCoord;
 
-			float transRow = (dRow /60) * movementSpeed;
-			float transCol = (dCol /60) * movementSpeed ;
-//			float transRow = dRow * movementSpeed;
-//			float transCol = dCol * movementSpeed;
+//			double transRow = (dRow / (1000 / elapsed_time)) * movementSpeed;
+//			double transCol = (dCol / (1000 / elapsed_time)) * movementSpeed;
+//			translate({transCol, 0, transRow});
+
+			double transRow = curr.rowCoord + (dRow * index.second);
+			double transCol = curr.colCoord + (dCol * index.second);
+			entity->setModelMatrix(0, {transCol, 0, transRow});
+//			entity->setModelMatrix(0, {transRow, 0, transCol});
 
 			std::cout << "eft= " << elapsed_time << "\ttt = " << targetPathStartTimestamp << "\tindex= " << index.first
 					  << "\tinterp= " << index.second << "\ttrow=" << transRow << "\ttcol= " << transCol << '\n';
 
-
-			translate({transCol, 0, transRow});
 		}
 	}
 

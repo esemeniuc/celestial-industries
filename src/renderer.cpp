@@ -247,6 +247,12 @@ void Renderable::scale(int modelIndex, glm::vec3 scale, bool updateHierarchicall
     parent->updateModelMatrixStack(id, updateHierarchically);
 }
 
+glm::mat4 Renderable::getModelMatrix(int modelIndex)
+{
+//	this->
+	return parent->instances[id].matrixStack[modelIndex];
+}
+
 void Renderable::setModelMatrix(int modelIndex, glm::mat4 mat, bool updateHierarchically)
 {
     parent->instances[id].matrixStack[modelIndex] = mat;

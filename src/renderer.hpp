@@ -99,6 +99,8 @@ public:
     void translate(glm::vec3 translation, bool updateHierarchically = true);
     void rotate(float amount, glm::vec3 axis, bool updateHierarchically = true);
     void scale(glm::vec3 scale, bool updateHierarchically = true);
+	glm::mat4 getModelMatrix(int modelIndex);
 
-    virtual ~Renderable() {};
+
+	virtual ~Renderable() {};
 };

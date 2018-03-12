@@ -12,7 +12,10 @@ namespace AI {
 			path.emplace_back(current.rowCoord, current.colCoord);
 			current = came_from.at(current); //use at() to satisfy const constraint
 		}
+//		path.emplace_back(start.rowCoord, start.colCoord);
+
 		std::reverse(path.begin(), path.end());
+
 		return path;
 	}
 

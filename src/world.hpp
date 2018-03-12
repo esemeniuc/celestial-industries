@@ -45,7 +45,7 @@ public:
 	void destroy();
 
 	// Steps the game ahead by ms milliseconds
-	bool update(float ms);
+	bool update(double ms);
 
 	// Renders our scene
 	void draw();

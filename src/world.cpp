@@ -154,10 +154,10 @@ bool World::init(glm::vec2 screen) {
 	int startx = 12, startz = 27;
 	int targetx = 10, targetz = 10;
 	std::vector<Coord> path1 =
-			AI::aStar::a_star(costMap, 1, 12, 27, targetx, targetz).second;
-	level.displayPath(path1);
+			AI::aStar::a_star(costMap, 1, startx, startz, targetx, targetz).second;
+//	level.displayPath(path1);
 	GenericUnit temp;
-	temp.translate({27, 0, 11});
+	temp.translate({startz, 0, startx-1});
 	temp.setTargetPath(path1);
 	entityMap[startx][startz].push_back(temp);
 
@@ -165,7 +165,7 @@ bool World::init(glm::vec2 screen) {
 	//display a path
 	std::vector<Coord> path2 = AI::aStar::a_star(costMap, 1, 19, 40, targetx, targetz).second;
 	std::cout << "path2 length: " << path2.size() << '\n';
-	level.displayPath(path2);
+//	level.displayPath(path2);
 	interpPath2 = AI::aStar::createInterpolatedPath(path2);
 
 	//render the path
@@ -178,7 +178,7 @@ bool World::init(glm::vec2 screen) {
 	std::vector<Coord> path3 =
 			AI::aStar::a_star(costMap, 1, 1, 40, targetx, targetz).second;
 	std::cout << "path3 length: " << path3.size() << '\n';
-	level.displayPath(path3);
+//	level.displayPath(path3);
 	interpPath3 = AI::aStar::createInterpolatedPath(path3);
 
 	//render the path
@@ -186,8 +186,12 @@ bool World::init(glm::vec2 screen) {
 	unit3->translate({39, 0, 1});
 	level.tiles.push_back({{unit3}});
 
+
+//	Entity* ballPtr = new Entity(BALL);
+
 	ballPointer = std::make_shared<Entity>(Model::MeshType::BALL);
 	ballPointer2 = std::make_shared<Entity>(Model::MeshType::BALL);
+//	ballPointer2->setModelMatrix(0,{4,4,4});
 
 	//display a path
 	//std::pair<bool, std::vector<Coord>> path =
@@ -248,7 +252,7 @@ void World::destroy() {
 // Update our game world
 float total_time = 0.0f;
 
-bool World::update(float elapsed_ms) {
+bool World::update(double elapsed_ms) {
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
 	camera.update(elapsed_ms);
@@ -266,11 +270,10 @@ bool World::update(float elapsed_ms) {
 		selectedTile->shouldDraw(false);
 	}
 
-	for (auto& dim1 : entityMap) {
-		for (auto& dim2 : dim1) {
-			for (auto& dim3 : dim2) {
-				dim3.move(elapsed_ms);
-
+	for (auto& row : entityMap) {
+		for (auto& col : row) {
+			for (auto& entityInACell : col) {
+				entityInACell.move(elapsed_ms);
 			}
 		}
 	}
@@ -283,9 +286,9 @@ bool World::update(float elapsed_ms) {
 //			interpPath1.pop();
 //		}
 //	}
-	ballPointer->translate(glm::vec3(0.01, 0.0, 0.01));
-	ballPointer2->translate(glm::vec3(-0.01, 0.0, -0.01));
-	ballPointer2->animate(elapsed_ms);
+//	ballPointer->translate(glm::vec3(0.01, 0.0, 0.01));
+//	ballPointer2->translate(glm::vec3(-0.01, 0.0, -0.01));
+//	ballPointer2->animate(elapsed_ms);
 
 
 	if (!interpPath1.empty()) {
