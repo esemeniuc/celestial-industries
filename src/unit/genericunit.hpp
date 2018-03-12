@@ -36,11 +36,13 @@ protected:
 
 public:
 
+
+
 	GenericUnit() : initialEnergyLevel(50),
 					attackDamage(6),
 					attackRange(6),
 					attackSpeed(1),
-					movementSpeed(5),
+					movementSpeed(15),
 					currentEnergyLevel(50),
 					state(UnitState::IDLE),
 					GamePiece(100, 6, GamePieceOwner::NONE, GamePieceType::NONE, 50) {
@@ -117,10 +119,9 @@ public:
 			double transRow = curr.rowCoord + (dRow * index.second);
 			double transCol = curr.colCoord + (dCol * index.second);
 			entity->setModelMatrix(0, {transCol, 0, transRow});
-//			entity->setModelMatrix(0, {transRow, 0, transCol});
 
-			std::cout << "eft= " << elapsed_time << "\ttt = " << targetPathStartTimestamp << "\tindex= " << index.first
-					  << "\tinterp= " << index.second << "\ttrow=" << transRow << "\ttcol= " << transCol << '\n';
+//			std::cout << "eft= " << elapsed_time << "\ttt = " << targetPathStartTimestamp << "\tindex= " << index.first
+//					  << "\tinterp= " << index.second << "\ttrow=" << transRow << "\ttcol= " << transCol << '\n';
 
 		}
 	}
