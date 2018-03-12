@@ -33,7 +33,7 @@ bool World::init(glm::vec2 screen) {
 	// Core Opengl 3.
 	glfwSetErrorCallback(glfw_err_cb);
 	if (!glfwInit()) {
-		fprintf(stderr, "Failed to initialize GLFW");
+		logger(LogLevel::ERR) << "Failed to initialize GLFW\n";
 		return false;
 	}
 
