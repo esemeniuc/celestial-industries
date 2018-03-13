@@ -1,6 +1,14 @@
 #pragma once
 #include "common.hpp"
 
+
+// collision geometries
+struct BoundingBox {
+    //using two corners along the diagonal of box to describe it
+    glm::vec3 lowerCorner;
+    glm::vec3 upperCorner;
+};
+
 namespace CollisionDetection {
     struct MovingBoundingBox {
         BoundingBox box;
