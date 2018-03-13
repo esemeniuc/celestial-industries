@@ -89,10 +89,10 @@ float RigidBody::getInverseMass()
 
 float RigidBody::getMass()
 {
-    if (this->inverseMass == 0) {
-
+    if (this->inverseMass < EPSILON) {
+        return INF;
     }
-    
+    return 1.0f/this->inverseMass;
 }
 
 float RigidBody::getDampingFactor()

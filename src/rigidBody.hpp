@@ -1,9 +1,9 @@
 #pragma once
-
 #include <cassert>
 #include <cmath>
 #include <sstream>
 #include <cstring>
+#include "config.hpp"
 
 // glm
 #define GLM_ENABLE_EXPERIMENTAL
