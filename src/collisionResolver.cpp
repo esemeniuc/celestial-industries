@@ -15,7 +15,7 @@ namespace CollisionDetection {
         float inverseMass = rigidBody.getInverseMass();
         acceleration = force * inverseMass;
 
-        // calculat new velocity
+        // calculate new velocity
         glm::vec3 newVelocity = startVelocity + acceleration * integrationPeriod;
         // scale it with a damping amount
         newVelocity *= powf(rigidBody.getDampingFactor(), integrationPeriod);
