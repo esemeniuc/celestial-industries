@@ -207,6 +207,20 @@ namespace Particles {
         ParticleEmitter::direction = direction;
     }
 
+    /**
+     * Creates a new ParticleEmitter, an object in the world that emits a continuous-looking
+     * stream of particles. Use this, not the ParticleEmitter class's constructor, to create
+     * them.
+     *
+     * @param position xyz-coordinates to place the emitter on. y must be >= 0.
+     * @param direction unit vector giving the direction that particles are emitted into
+     * @param spread how far particles may vary from the direction vector
+     * @param particleWidth width of a particle graphic
+     * @param particleHeight height of a particle graphic
+     * @param particleLifespan how long a particle may exist before being reset and respawned
+     * @param particleSpeed how quickly this emitter's particles move
+     * @return pointer to the created ParticleEmitter
+     */
     std::shared_ptr<ParticleEmitter> makeParticleEmitter(
             const glm::vec3 &position,
             const glm::vec3 &direction,
