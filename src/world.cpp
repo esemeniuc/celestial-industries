@@ -4,6 +4,7 @@
 #include <chrono>  // for high_resolution_clock
 #include "renderer.hpp"
 #include "world.hpp"
+#include "particle.hpp"
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -23,12 +24,16 @@ World::World() {
 
 World::~World() = default;
 
+
 //TODO: remove me
 std::shared_ptr<Entity> ballPointer;
 std::shared_ptr<Entity> ballPointer2;
 std::pair<bool, std::vector<Coord>> path;
 #include <queue>
 std::queue<Coord> pathq;
+
+std::shared_ptr<Particles::ParticleEmitter> fireSpawner;
+
 
 // World initialization
 bool World::init(glm::vec2 screen) {
@@ -221,6 +226,8 @@ bool World::update(float elapsed_ms) {
         turret->update(elapsed_ms);
     }
 
+	Particles::updateParticleStates(elapsed_ms);
+
 	return true;
 }
 
@@ -349,13 +356,11 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 }
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
-//	logger(LogLevel::DEBUG) << "X-pos: " << xpos << ", Y-pos: " << ypos << '\n';
 	camera.pan((int)xpos,(int) ypos);
 
 	int windowWidth;
 	int windowHeight;
 	glfwGetWindowSize(window, &windowWidth, &windowHeight);
-//    char debugMessage[10000];
 
 	int framebufferWidth, framebufferHeight;
 	glfwGetFramebufferSize(m_window, &framebufferWidth, &framebufferHeight);
@@ -382,15 +387,6 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 		glm::vec3 pointInWorld = camera.position + (t * directionVector);
         selectedTileCoordinates.rowCoord = (int) round(pointInWorld.z);
         selectedTileCoordinates.colCoord = (int) round(pointInWorld.x);
-
-//        snprintf(debugMessage, 10000, "FB mouse: %d, %d | Clipcoords: <%f, %f> | Camera surface coords: <%f, %f, %f> | Coordinates in world space: %f, %f, %f | Selected tile: <%d, %d>\n",
-//                 computedFbX, computedFbY,
-//                 clipCoordinates[0], clipCoordinates[1],
-//                 worldCoordinates.x, worldCoordinates.y, worldCoordinates.z,
-//                 pointInWorld.x, pointInWorld.y, pointInWorld.z,
-//                 selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord
-//        );
-//		logger(LogLevel::DEBUG) << debugMessage;
 	}
 
 

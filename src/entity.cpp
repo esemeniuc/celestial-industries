@@ -72,3 +72,12 @@ RigidBody Entity::getRigidBody()
 {
     return this->rigidBody;
 }
+
+glm::vec3 Entity::getPosition() {
+    return rigidBody.getPosition();
+}
+
+void Entity::setPosition(glm::vec3 position) {
+    rigidBody.updatePosition(position);
+    this->geometryRenderer.setModelMatrix(0, position);
+}

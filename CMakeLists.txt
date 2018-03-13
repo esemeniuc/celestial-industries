@@ -43,6 +43,7 @@ add_executable(proj
 		src/unit/genericunit.cpp
 		src/unit/unitgroup.cpp
 		src/building.cpp
+		src/particle.cpp)
 		src/collisiondetection.cpp
 		collisionResolver.cpp
 		src/rigidBody.cpp)
