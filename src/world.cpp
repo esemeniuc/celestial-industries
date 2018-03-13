@@ -4,7 +4,7 @@
 #include <chrono>  // for high_resolution_clock
 #include "renderer.hpp"
 #include "world.hpp"
-#include "particle.h"
+#include "particle.hpp"
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -32,7 +32,7 @@ std::pair<bool, std::vector<Coord>> path;
 #include <queue>
 std::queue<Coord> pathq;
 
-std::shared_ptr<Particles::ParticleSpawner> firespawner;
+std::shared_ptr<Particles::ParticleEmitter> fireSpawner;
 
 
 // World initialization
@@ -116,6 +116,9 @@ bool World::init(glm::vec2 screen) {
 		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
 	}
 
+    // particle setup
+    Particles::InitializeParticleSystem();
+
 	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isn't being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
 	std::vector<std::vector<Model::MeshType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
@@ -140,19 +143,6 @@ bool World::init(glm::vec2 screen) {
 
     ballPointer = std::make_shared<Entity>(Model::MeshType::BALL);
     ballPointer2 = std::make_shared<Entity>(Model::MeshType::BALL);
-
-    // particle setup
-    Particles::InitializeParticleSystem();
-
-    firespawner = std::make_shared<Particles::ParticleSpawner>(
-					glm::vec3{20, 0, 10},
-					glm::vec3{0,1,0},
-					1,
-					0.1,
-					0.1,
-					5,
-					0.5
-			);
 
 	//display a path
 	//std::pair<bool, std::vector<Coord>> path =
@@ -239,7 +229,7 @@ bool World::update(float elapsed_ms) {
         turret->update(elapsed_ms);
     }
 
-	firespawner->renderParticles(elapsed_ms);
+	Particles::updateParticleStates(elapsed_ms);
 
 	return true;
 }

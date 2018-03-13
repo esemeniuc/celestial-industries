@@ -1,11 +1,12 @@
 #include <cmath>
 #include <random>
-#include "particle.h"
+#include "particle.hpp"
 
 namespace Particles {
     std::vector<Particle> particles;
     std::vector<std::shared_ptr<Entity>> particleGraphics;
-    std::vector<FireworkRule> particleRules;
+    std::vector<ParticleRule> particleRules;
+    std::vector<std::shared_ptr<ParticleEmitter>> particleEmitters;
 
     std::random_device r;
     std::default_random_engine randomGenerator(r());
@@ -16,7 +17,6 @@ namespace Particles {
         return distribution(randomGenerator);
     }
 
-
     glm::vec3 randomVector(const glm::vec3 minimum, const glm::vec3 maximum) {
         return {
                 randomNumber<float>(minimum.x, maximum.x),
@@ -25,6 +25,11 @@ namespace Particles {
         };
     }
 
+    void updateParticleStates(float elapsed_ms) {
+        for (std::shared_ptr<ParticleEmitter> emitter : particleEmitters) {
+            emitter->updateParticlePositions(elapsed_ms);
+        }
+    }
 
     float Particle::getMass() {
         return 1.0f / inverseMass;
@@ -62,13 +67,13 @@ namespace Particles {
 
 
         // is the particle out of bounds? reset it if yes
-        if (age > particleRules[type].maximumAge || position.y <= 0) {
+        if (age > particleEmitters[emitterId]->getParticleLifespan() || position.y <= 0) {
             resetParticle();
         }
     }
 
-    void Particle::setType(int type) {
-        this->type = type;
+    void Particle::setEmitterId(int emitterId) {
+        this->emitterId = emitterId;
     }
 
     void Particle::setAge(float age) {
@@ -120,7 +125,7 @@ namespace Particles {
     }
 
 
-    void FireworkRule::setParameters(
+    void ParticleRule::setParameters(
             unsigned type,
             float minimumAge,
             float maximumAge,
@@ -133,95 +138,141 @@ namespace Particles {
         this->maximumAge = maximumAge;
         this->minimumVelocity = minimumVelocity;
         this->maximumVelocity = maximumVelocity;
-        this->damping = damping;
+//        this->damping = damping;
     }
 
-    void FireworkRule::create(Particle *firework, const Particle *parent = nullptr) const {
-        firework->setType(type);
+    void ParticleRule::create(
+            Particle *particle,
+            ParticleEmitter *emitter,
+            const Particle *parent = nullptr) const {
 
-        firework->setAge(randomNumber<float>(minimumAge, maximumAge));
+        particle->setEmitterId(type);
+        particle->setAge(randomNumber<float>(0.0f, emitter->getParticleLifespan()));
 
         glm::vec3 velocity = {};
         if (parent) {
-            firework->setPosition(parent->getPosition());
+            particle->setPosition(parent->getPosition());
         } else {
             // static starting position
-            // TODO: revisit this
-            firework->setPosition({20, 0, 20});
+            // TODO: revisit support for parent particles
+//            particle->setPosition({20, 0, 20});
         }
 
-        velocity += randomVector(minimumVelocity, maximumVelocity);
-        firework->setVelocity(velocity);
+        // TODO: pick vectors on the surface of a sphere here
+        velocity += randomVector(
+                emitter->getParticleSpeed()*emitter->getDirection() - glm::vec3{emitter->getSpread(), 0, emitter->getSpread()},
+                emitter->getParticleSpeed()*emitter->getDirection() + glm::vec3{emitter->getSpread(), 0, emitter->getSpread()});
 
-        firework->setMass(1);
-        firework->setDamping(damping);
+        particle->setVelocity(velocity);
+
+        particle->setMass(1);
+        particle->setDamping(0.995);
 
         // TODO: revisit this
-        firework->setAcceleration({0, -5, 0});
+        particle->setAcceleration({0, -5, 0});
 
         // TODO: implement force accumulator
     }
 
-    const glm::vec3 &ParticleSpawner::getPosition() const {
+    const glm::vec3 &ParticleEmitter::getPosition() const {
         return position;
     }
 
-    void ParticleSpawner::setPosition(const glm::vec3 &position) {
-        ParticleSpawner::position = position;
+    void ParticleEmitter::setPosition(const glm::vec3 &position) {
+        ParticleEmitter::position = position;
     }
 
-    float ParticleSpawner::getSpread() const {
+    float ParticleEmitter::getSpread() const {
         return spread;
     }
 
-    void ParticleSpawner::setSpread(float spread) {
-        ParticleSpawner::spread = spread;
+    void ParticleEmitter::setSpread(float spread) {
+        ParticleEmitter::spread = spread;
     }
 
-    float ParticleSpawner::getParticleWidth() const {
+    float ParticleEmitter::getParticleWidth() const {
         return particleWidth;
     }
 
-    void ParticleSpawner::setParticleWidth(float particleWidth) {
-        ParticleSpawner::particleWidth = particleWidth;
+    void ParticleEmitter::setParticleWidth(float particleWidth) {
+        ParticleEmitter::particleWidth = particleWidth;
     }
 
-    float ParticleSpawner::getParticleHeight() const {
+    float ParticleEmitter::getParticleHeight() const {
         return particleHeight;
     }
 
-    void ParticleSpawner::setParticleHeight(float particleHeight) {
-        ParticleSpawner::particleHeight = particleHeight;
+    void ParticleEmitter::setParticleHeight(float particleHeight) {
+        ParticleEmitter::particleHeight = particleHeight;
     }
 
-    float ParticleSpawner::getParticleLifespan() const {
+    float ParticleEmitter::getParticleLifespan() const {
         return particleLifespan;
     }
 
-    void ParticleSpawner::setParticleLifespan(float particleLifespan) {
-        ParticleSpawner::particleLifespan = particleLifespan;
+    void ParticleEmitter::setParticleLifespan(float particleLifespan) {
+        ParticleEmitter::particleLifespan = particleLifespan;
     }
 
-    float ParticleSpawner::getParticleSpeed() const {
+    float ParticleEmitter::getParticleSpeed() const {
         return particleSpeed;
     }
 
-    void ParticleSpawner::setParticleSpeed(float particleSpeed) {
-        ParticleSpawner::particleSpeed = particleSpeed;
+    void ParticleEmitter::setParticleSpeed(float particleSpeed) {
+        ParticleEmitter::particleSpeed = particleSpeed;
     }
 
-    ParticleSpawner::ParticleSpawner(const glm::vec3 &position, const glm::vec3 &direction, float spread,
-                                     float particleWidth, float particleHeight, float particleLifespan,
-                                     float particleSpeed)
-            : position(position), direction(direction), spread(spread), particleWidth(particleWidth),
-              particleHeight(particleHeight), particleLifespan(particleLifespan), particleSpeed(particleSpeed) {
+    glm::vec3 ParticleEmitter::getDirection() const {
+        return direction;
+    }
 
+    void ParticleEmitter::setDirection(glm::vec3 direction) {
+        ParticleEmitter::direction = direction;
+    }
+
+    std::shared_ptr<ParticleEmitter> makeParticleEmitter(
+            const glm::vec3 &position,
+            const glm::vec3 &direction,
+            float spread,
+            float particleWidth,
+            float particleHeight,
+            float particleLifespan,
+            float particleSpeed
+    ) {
+        auto emitter = std::make_shared<ParticleEmitter>(
+                position,
+                direction,
+                spread,
+                particleWidth,
+                particleHeight,
+                particleLifespan,
+                particleSpeed
+        );
+        particleEmitters.push_back(emitter);
+        return emitter;
+    }
+
+    ParticleEmitter::ParticleEmitter(
+            const glm::vec3 &position,
+            const glm::vec3 &direction,
+            float spread,
+            float particleWidth,
+            float particleHeight,
+            float particleLifespan,
+            float particleSpeed
+    ) : position(position),
+        direction(direction),
+        spread(spread),
+        particleWidth(particleWidth),
+        particleHeight(particleHeight),
+        particleLifespan(particleLifespan),
+        particleSpeed(particleSpeed)
+    {
         this->createParticles();
+        this->emitterId = particleEmitters.size();
     }
 
-    void ParticleSpawner::renderParticles(float elapsed_ms) {
-//        logger(LogLevel::DEBUG) << particles.size();
-
+    void ParticleEmitter::updateParticlePositions(float elapsed_ms) {
         for (size_t i = 0; i < particles.size(); ++i) {
             auto particle = &particles[i];
             auto particleEntity = particleGraphics[i];
@@ -238,19 +289,16 @@ namespace Particles {
         }
     }
 
-    void ParticleSpawner::createParticles() {
-        // create ~1000 particle objects
-        for (int i = 0; i < 999; ++i) {
+    void ParticleEmitter::createParticles() {
+        for (int i = 0; i < 200; ++i) {
             particles.emplace_back();
-            particleRules[0].create(&particles[i], nullptr);
-            particles[i].initializePosition({20, 0, 20});
+            particleRules[0].create(&particles[i], this, nullptr);
+            particles[i].initializePosition(position);
 
-            particleGraphics.push_back(std::make_shared<Entity>(Model::MeshType::GEYSER));
+            particleGraphics.push_back(std::make_shared<Entity>(Model::MeshType::PARTICLE));
             particleGraphics[i]->translate(particles[i].getPosition());
-//            particleGraphics[i]->scale(glm::vec3(0.001));
         }
     }
-
 
     /**
      * This function defines all the particle rules.
@@ -260,8 +308,8 @@ namespace Particles {
         particleRules.back().setParameters(
                 0, // type
                 0, 5, // age range
-                glm::vec3(-2, 8, -2), // min velocity
-                glm::vec3(2, 9, 2), // max velocity
+                glm::vec3(-1, 2, -1), // min velocity
+                glm::vec3(1, 4, 1), // max velocity
                 0.995 // damping
         );
     }

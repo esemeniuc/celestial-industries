@@ -13,37 +13,35 @@
 namespace Particles {
 
     class Particle;
-    struct FireworkRule;
-    class ParticleSpawner;
+    struct ParticleRule;
+    class ParticleEmitter;
+
+    void updateParticleStates(float elapsed_ms);
+    std::shared_ptr<ParticleEmitter> makeParticleEmitter(
+            const glm::vec3 &position,
+            const glm::vec3 &direction,
+            float spread,
+            float particleWidth,
+            float particleHeight,
+            float particleLifespan,
+            float particleSpeed
+    );
 
     class Particle {
     public:
         float getMass();
-
         void setMass(float mass);
-
         void setInfiniteMass();
-
         void setDamping(float damping);
-
-        void setType(int type);
-
+        void setEmitterId(int emitterId);
         void setAge(float age);
-
         void setPosition(glm::vec3 position);
-
         void initializePosition(glm::vec3 position);
-
         glm::vec3 getPosition() const;
-
         void setVelocity(glm::vec3 velocity);
-
         glm::vec3 getVelocity() const;
-
         void setAcceleration(glm::vec3 acceleration);
-
         glm::vec3 getAcceleration() const;
-
         void updatePosition(float timeDelta);
 
         /**
@@ -59,7 +57,7 @@ namespace Particles {
         }
 
     private:
-        int type;
+        int emitterId;
         float age;
         float inverseMass;
 
@@ -76,7 +74,7 @@ namespace Particles {
 
     };
 
-    struct FireworkRule {
+    struct ParticleRule {
         unsigned int type;
 
         float minimumAge;
@@ -97,7 +95,7 @@ namespace Particles {
         unsigned payloadCount;
         Payload *payloads;
 
-        FireworkRule()
+        ParticleRule()
                 :
                 payloadCount(0),
                 payloads(NULL) {
@@ -108,24 +106,24 @@ namespace Particles {
             payloads = new Payload[payloadCount];
         }
 
-        ~FireworkRule() {
+        ~ParticleRule() {
             if (payloads != nullptr) delete[] payloads;
         }
 
         void setParameters(unsigned int type, float minimumAge, float maximumAge, const glm::vec3 &minimumVelocity,
                            const glm::vec3 &maximumVelocity, float damping);
 
-        void create(Particle *firework, const Particle *parent) const;
+        void create(Particle *particle, ParticleEmitter *emitter, const Particle *parent) const;
     };
 
 
-    class ParticleSpawner {
+    class ParticleEmitter {
     public:
-        ParticleSpawner() = delete;
-        ParticleSpawner(const ParticleSpawner &) = delete;
-        ParticleSpawner(const ParticleSpawner &&) = delete;
+        ParticleEmitter() = delete;
+        ParticleEmitter(const ParticleEmitter &) = delete;
+        ParticleEmitter(const ParticleEmitter &&) = delete;
 
-        ParticleSpawner(
+        ParticleEmitter(
                 const glm::vec3 &position,
                 const glm::vec3 &direction,
                 float spread,
@@ -137,6 +135,8 @@ namespace Particles {
 
         float getSpread() const;
         void setSpread(float spread);
+        glm::vec3 getDirection() const;
+        void setDirection(glm::vec3 direction);
         float getParticleWidth() const;
         void setParticleWidth(float particleWidth);
         float getParticleHeight() const;
@@ -148,7 +148,7 @@ namespace Particles {
         const glm::vec3 &getPosition() const;
         void setPosition(const glm::vec3 &position);
 
-        void renderParticles(float elapsed_ms);
+        void updateParticlePositions(float elapsed_ms);
 
     private:
         glm::vec3 position;
@@ -159,7 +159,8 @@ namespace Particles {
         float particleLifespan;
         float particleSpeed;
 
-        unsigned int activeParticles;
+        // index into the ParticleEmitters data structure
+        unsigned long emitterId;
 
         void createParticles();
     };

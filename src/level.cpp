@@ -1,6 +1,7 @@
 #include "level.hpp"
 #include <iostream>
 #include "logger.hpp"
+#include "particle.hpp"
 
 bool Level::init(
     std::vector<std::vector<Model::MeshType>> levelArray,
@@ -80,6 +81,16 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
                 case 'V': {
                     row.push_back(Model::MeshType::GEYSER);
                     tileData.emplace_back(rowNumber, colNumber, 1000.0, INF);
+
+                    Particles::makeParticleEmitter(
+                            glm::vec3{colNumber, 0, rowNumber}, // position
+                            glm::vec3{0,1,0}, // direction
+                            1.0,    // spread
+                            0.1,  // width
+                            0.1,  // height
+                            20.0,   // lifespan
+                            5.0     // speed
+                    );
                     break;
                 }
 				default: {
