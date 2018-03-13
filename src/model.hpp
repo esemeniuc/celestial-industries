@@ -22,7 +22,9 @@ namespace Model {
         PHOTON_TOWER,
         TREE,
         GUN_TURRET,
-        BALL
+        BALL,
+        GEYSER,
+        PARTICLE,
     };
 
     extern std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> meshSources;
