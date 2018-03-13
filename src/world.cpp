@@ -356,13 +356,11 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 }
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
-//	logger(LogLevel::DEBUG) << "X-pos: " << xpos << ", Y-pos: " << ypos << '\n';
-//	camera.pan((int)xpos,(int) ypos);
+	camera.pan((int)xpos,(int) ypos);
 
 	int windowWidth;
 	int windowHeight;
 	glfwGetWindowSize(window, &windowWidth, &windowHeight);
-//    char debugMessage[10000];
 
 	int framebufferWidth, framebufferHeight;
 	glfwGetFramebufferSize(m_window, &framebufferWidth, &framebufferHeight);
@@ -389,15 +387,6 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 		glm::vec3 pointInWorld = camera.position + (t * directionVector);
         selectedTileCoordinates.rowCoord = (int) round(pointInWorld.z);
         selectedTileCoordinates.colCoord = (int) round(pointInWorld.x);
-
-//        snprintf(debugMessage, 10000, "FB mouse: %d, %d | Clipcoords: <%f, %f> | Camera surface coords: <%f, %f, %f> | Coordinates in world space: %f, %f, %f | Selected tile: <%d, %d>\n",
-//                 computedFbX, computedFbY,
-//                 clipCoordinates[0], clipCoordinates[1],
-//                 worldCoordinates.x, worldCoordinates.y, worldCoordinates.z,
-//                 pointInWorld.x, pointInWorld.y, pointInWorld.z,
-//                 selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord
-//        );
-//		logger(LogLevel::DEBUG) << debugMessage;
 	}
 
 
