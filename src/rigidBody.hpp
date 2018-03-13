@@ -32,13 +32,13 @@ enum class CollisionGeomType {
 
 class RigidBody {
 public:
+    RigidBody(glm::vec3 size = { 1,0,1 }, glm::vec3 position = { 0,0,0 }, glm::vec3 velocity = { 0,0,0 });
+
 	void updateVelocity(glm::vec3);
 
 	void setGravity(glm::vec3);
 
 	void updateForce(glm::vec3);
-
-	void setGeometryId(int);
 
 	void updateOrientation(glm::vec3);
 

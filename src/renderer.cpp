@@ -20,8 +20,6 @@ Renderer::Renderer(
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
     instancesData.stride = subObjects.size();
-
-    logger(LogLevel::INFO) << "stride " << instancesData.stride << " \n";
 }
 
 SubObject Renderer::loadSubObject(SubObjectSource source)

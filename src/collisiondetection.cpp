@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <map>
 
 namespace CollisionDetection {
     CollisionInfo CollisionDetection::movingBodyCollidesWithStatic(BoundingBox staticBox, BoundingBox movingBox, glm::vec3 staticPosition, glm::vec3 movingStartPosition, glm::vec3 movingEndPosition, float totalTime)
@@ -13,23 +14,45 @@ namespace CollisionDetection {
     {
         // Based off https://gamedev.stackexchange.com/questions/93035/whats-the-fastest-way-checking-if-two-moving-aabbs-intersect#93096
         // TODO: are their coordinates relative or not? this may affect results, but at least wont be subtle
+        a = normalizeBoundingBox(a);
+        b = normalizeBoundingBox(b);
+        BoundingBox difference = minkowskiDiff(a, b);
 
         BoundingBox rotatedA = rotateBoundingBoxAboutOrigin(a);
-        BoundingBox sum = minkowskiSum(rotatedA, b);
-        
-        glm::vec3 aVelocity = (aEnd - aStart) / totalTime;
-        glm::vec3 bVelocity = (bEnd - bStart) / totalTime;
+        //BoundingBox sum = minkowskiSum(rotatedA, b);
 
-        glm::vec3 relativeVelocity = aVelocity - bVelocity;
-        // using velocity as a vertex to then check it against the minkowski sum to see if there is a collision
+        glm::vec3 aVelocity = (aEnd - aStart);
+        glm::vec3 bVelocity = (bEnd - bStart);
+
+        glm::vec3 relativeVelocity = bVelocity-aVelocity;
+        //// using velocity as a vertex to then check it against the minkowski sum to see if there is a collision
         LineSegment segment = originToVertex(relativeVelocity); 
 
-        return segmentAABBCollision(segment, sum, totalTime);
+        return segmentAABBCollision(segment, difference, totalTime);
     }
 
-    CollisionInfo aabbMinkowskiCollisions(CollideableInstance a, CollideableInstance b, float totalTime)
+    CollisionInfo aabbMinkowskiCollisions(MovingBoundingBox a, MovingBoundingBox b, float totalTime)
     {
-        return aabbMinkowskiCollisions(a.box, b.box, a.start, a.end, b.start, b.end, totalTime);
+        return aabbMinkowskiCollisions(
+            a.box, b.box,
+            a.position, a.position+a.velocity*totalTime, 
+            b.position, b.position+b.velocity*totalTime, totalTime);
+    }
+
+    bool aabbsOverlap(BoundingBox a, BoundingBox b)
+    {
+        float abx = b.lowerCorner.x - a.upperCorner.x;
+        float bax = a.lowerCorner.x - b.upperCorner.x;
+        float aby = b.lowerCorner.z - a.upperCorner.z;
+        float bay = a.lowerCorner.z - b.upperCorner.z;
+        
+        if (abx > 0.0f || aby > 0.0f)
+            return false;
+        
+        if (bax > 0.0f || bay > 0.0f)
+            return false;
+        
+        return true;
     }
 
     BoundingBox normalizeBoundingBox(BoundingBox box)
@@ -52,6 +75,19 @@ namespace CollisionDetection {
         return normalizeBoundingBox(result);
     }
 
+    BoundingBox minkowskiDiff(BoundingBox a, BoundingBox b) {
+        BoundingBox result;
+        result.lowerCorner.x = a.lowerCorner.x - b.upperCorner.x;
+        result.upperCorner.z = a.upperCorner.z - b.lowerCorner.z;
+        float aWidth = a.upperCorner.x - a.lowerCorner.x;
+        float bWidth = b.upperCorner.x - b.lowerCorner.x;
+        result.upperCorner.x = result.lowerCorner.x + aWidth + bWidth;
+        float aHeight = a.upperCorner.z - a.lowerCorner.z;
+        float bHeight = b.upperCorner.z - b.lowerCorner.z;
+        result.lowerCorner.z = result.upperCorner.z - aHeight - bHeight;
+        return result;
+    }
+
     BoundingBox minkowskiSum(BoundingBox a, BoundingBox b)
     {
         BoundingBox result;
@@ -72,9 +108,111 @@ namespace CollisionDetection {
         };
     }
 
+    IntersectionCollisionInfo segmentsCollision1(LineSegment a, LineSegment b) {
+
+        // Lifted verbatim from http://alienryderflex.com/intersect/
+        float Ax = a.start.x;
+        float Ay = a.start.z; // using p0_y and not z so i can direclty compare to the SO code
+        float Bx = a.end.x;
+        float By = a.end.y;
+        float Cx = b.start.x;
+        float Cy = b.start.z;
+        float Dx = b.end.x;
+        float Dy = b.end.z;
+
+        float distAB, theCos, theSin, newX, ABpos;
+
+        IntersectionCollisionInfo NO = {
+            false, 0.0f,{ 0.0f,0.0f,0.0f }
+        };
+
+        //  Fail if either line segment is zero-length.
+        if (Ax == Bx && Ay == By || Cx == Dx && Cy == Dy) return NO;
+
+        //  Fail if the segments share an end-point.
+        if (Ax == Cx && Ay == Cy || Bx == Cx && By == Cy
+            || Ax == Dx && Ay == Dy || Bx == Dx && By == Dy) {
+            return NO;
+        }
+
+        //  (1) Translate the system so that point A is on the origin.
+        Bx -= Ax; By -= Ay;
+        Cx -= Ax; Cy -= Ay;
+        Dx -= Ax; Dy -= Ay;
+
+        //  Discover the length of segment A-B.
+        distAB = sqrt(Bx*Bx + By * By);
+
+        //  (2) Rotate the system so that point B is on the positive X axis.
+        theCos = Bx / distAB;
+        theSin = By / distAB;
+        newX = Cx * theCos + Cy * theSin;
+        Cy = Cy * theCos - Cx * theSin; Cx = newX;
+        newX = Dx * theCos + Dy * theSin;
+        Dy = Dy * theCos - Dx * theSin; Dx = newX;
+
+        //  Fail if segment C-D doesn't cross line A-B.
+        if (Cy<0. && Dy<0. || Cy >= 0. && Dy >= 0.) return NO;
+
+        //  (3) Discover the position of the intersection point along line A-B.
+        ABpos = Dx + (Cx - Dx)*Dy / (Dy - Cy);
+
+        //  Fail if segment C-D crosses line A-B outside of segment A-B.
+        if (ABpos<0. || ABpos>distAB) return NO;
+
+        //  (4) Apply the discovered position to line A-B in the original coordinate system.
+        float X = Ax + ABpos * theCos;
+        float Y = Ay + ABpos * theSin;
+
+        //  Success.
+        return {
+            true,
+            0,
+        { X,0,Y }
+        };
+    }
+
+    IntersectionCollisionInfo segmentsCollision2(LineSegment a, LineSegment b) {
+        // Copied from https://stackoverflow.com/a/1968345/848179
+        float p0_x = a.start.x;
+        float p0_y = a.start.z; // using p0_y and not z so i can direclty compare to the SO code
+        float p1_x = a.end.x;
+        float p1_y = a.end.y;
+        float p2_x = b.start.x;
+        float p2_y = b.start.z;
+        float p3_x = b.end.x;
+        float p3_y = b.end.z;
+
+        float i_x, i_y;
+
+        float s1_x, s1_y, s2_x, s2_y;
+        s1_x = p1_x - p0_x;     s1_y = p1_y - p0_y;
+        s2_x = p3_x - p2_x;     s2_y = p3_y - p2_y;
+
+        float s, t;
+        s = (-s1_y * (p0_x - p2_x) + s1_x * (p0_y - p2_y)) / (-s2_x * s1_y + s1_x * s2_y);
+        t = (s2_x * (p0_y - p2_y) - s2_y * (p0_x - p2_x)) / (-s2_x * s1_y + s1_x * s2_y);
+
+        if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
+        {
+            // Collision detected
+            i_x = p0_x + (t * s1_x);
+            i_y = p0_y + (t * s1_y);
+            return {
+                true,
+                t,
+            { i_x, 0, i_y }
+            };
+        }
+        return {
+            false, 0.0f,{ 0.0f,0.0f,0.0f }
+        };
+    }
+
     IntersectionCollisionInfo segmentsCollisionLeMothe(LineSegment a, LineSegment b)
     {
         // Based off https://stackoverflow.com/a/1968345/848179
+
         LineSegment segment;
         segment.start.x = a.end.x - a.start.x;
         segment.start.z = a.end.z - a.start.z;
@@ -95,6 +233,71 @@ namespace CollisionDetection {
         }
         return {
             false, 0.0f, {0.0f,0.0f,0.0f}
+        };
+    }
+
+    double weirdCrossProduct(glm::vec3 a, glm::vec3 b) {
+        return a.x*b.z - a.z*b.x;
+    }
+
+    IntersectionCollisionInfo segmentsCollision3(LineSegment l1, LineSegment l2) {
+        
+        // https://stackoverflow.com/a/14987452/848179 which itself is based off http://stackoverflow.com/a/565282/202451
+
+        glm::vec3 p = l1.start;
+        glm::vec3 q = l2.start;
+        glm::vec3 r = l1.end - l1.start;
+        glm::vec3 s = l2.end - l2.start;
+
+        float s_r_crossProduct = weirdCrossProduct(r, s);
+        float t = weirdCrossProduct(q-p, s) / s_r_crossProduct;
+        float u = weirdCrossProduct(q-p, r) / s_r_crossProduct;
+
+        IntersectionCollisionInfo NO = {
+            false, 0.0f,{ 0.0f,0.0f,0.0f }
+        };
+
+        if (t < 0 || t > 1.0 || u < 0 || u > 1.0)
+        {
+            return NO;
+        }
+        else
+        {
+            return {
+                true,
+                t,
+                p + (r * t)
+            };
+        }
+    }
+
+    // adapted from https://hamaluik.com/posts/swept-aabb-collision-using-minkowski-difference/
+    // which was adapted from https://github.com/pgkelley4/line-segments-intersect/blob/master/js/line-segments-intersect.js
+    // which was adapted from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+    IntersectionCollisionInfo segmentsIntersection(LineSegment a, LineSegment b) {
+        glm::vec3 r = a.end - a.start;
+        glm::vec3 s = b.end - b.start;
+
+        float numerator = glm::dot((b.start - a.start), r);
+        float denominator = glm::dot(r, s);
+
+        if (denominator == 0) {
+            return {
+                false,
+                0
+            };
+        }
+        float u = numerator / denominator;
+        float t = glm::dot((b.start - a.start), s) / denominator;
+        if ((t >= 0) && (t <= 1) && (u >= 0) && (u <= 1)) {
+            return {
+                true,
+                t
+            };
+        }
+        return {
+            false,
+            0
         };
     }
 
@@ -120,8 +323,8 @@ namespace CollisionDetection {
         IntersectionCollisionInfo collision;
         collision.collided = false;
         for (auto side : boxSides) {
-            IntersectionCollisionInfo newCollision = segmentsCollisionLeMothe(segment, side);
-            if (!collision.collided || newCollision.t < collision.t) {
+            IntersectionCollisionInfo newCollision = segmentsCollision3(segment, side);
+            if (!collision.collided || (newCollision.collided && newCollision.t < collision.t)) {
                 collision = newCollision;
             }
         }
@@ -183,20 +386,48 @@ namespace CollisionDetection {
         f.end = { 9.5, 0, 3.5 };
 
         std::array<CollideableInstance, 6> instances = {a,b,c,d,e,f};
+        std::map<int, char> nameMap = {
+            {0, 'A'}, {1, 'B'}, {2, 'C'}, {3, 'D'}, {4, 'E'}, {5, 'F'}
+        };
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                if (i != j) { // No need to test against self
+                    CollisionInfo collision = aabbMinkowskiCollisions(instances[i], instances[j], 1.0);
+                    if (collision.collided) {
+                        logger(LogLevel::INFO) << nameMap[i] << " collided with " << nameMap[j] << " at time [" << collision.time << '\n';
+                    }
+
+                }
+            }
+        }
+        logger(LogLevel::INFO) << "Trying with different bounding boxes \n";
         for (int i = 0; i < 6; i++) {
             instances[i].box.upperCorner = { 1, 0, 1 };
             instances[i].box.lowerCorner = { 0,0,0 };
+            instances[i].start -= glm::vec3(0.5, 0, 0.5);
+            instances[i].end -= glm::vec3(0.5, 0, 0.5);
         }
-        /*
-        Test collisions for A
-        */
         for (int i = 0; i < 6; i++) {
-            if (i != 0) { // No need to test against self
-                CollisionInfo collision = aabbMinkowskiCollisions(instances[0], instances[i], 1.0);
-                logger(LogLevel::INFO) << "Collision info [" << i << "]: collided?" << collision.collided << "\n";
+            for (int j = 0; j < 6; j++) {
+                if (i != j) { // No need to test against self
+                    CollisionInfo collision = aabbMinkowskiCollisions(instances[i], instances[j], 1.0);
+                    if (collision.collided) {
+                        logger(LogLevel::INFO) << nameMap[i] << " collided with " << nameMap[j] << " at time [" << collision.time << '\n';
+                    }
+
+                }
             }
         }
 
+        LineSegment segmentA = { { 0,0,0 }, { 1,0,1 } };
+        LineSegment segmentB = { { 0,0,1 }, { 1,0,0 } };
+        IntersectionCollisionInfo intersection = segmentsIntersection(segmentA, segmentB);
+        IntersectionCollisionInfo intersetcionLemoth = segmentsCollisionLeMothe(segmentA, segmentB);
+        IntersectionCollisionInfo intersection1 = segmentsCollision1(segmentA, segmentB);
+        IntersectionCollisionInfo intersection2 = segmentsCollision2(segmentA, segmentB);
+        IntersectionCollisionInfo intersection3 = segmentsCollision3(segmentA, segmentB);
+
+        logger(LogLevel::INFO) << "Tests done \n";
         return true;
     }
 

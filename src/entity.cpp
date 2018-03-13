@@ -22,6 +22,7 @@ void Entity::rotate(int modelIndex, float amount, glm::vec3 axis)
 void Entity::scale(int modelIndex, glm::vec3 scale)
 {
     this->geometryRenderer.scale(modelIndex, scale);
+    
 }
 
 void Entity::setModelMatrix(int modelIndex, glm::mat4 mat)
