@@ -349,64 +349,46 @@ namespace CollisionDetection {
         /*
         Test suite logic follows the following diagram: https://puu.sh/zFbw6/feb4333778.png
         */
-        CollideableInstance a;
+        MovingBoundingBox a;
         a.box.lowerCorner = { 1, 0, 4 };
         a.box.upperCorner = { 2, 0, 5 };
-        a.start = { 1.5, 0, 4.5 };
-        a.end = { 4.5, 0, 4.5 };
+        a.position = { 1.5, 0, 4.5 };
+        a.velocity = glm::vec3(4.5, 0, 4.5) - a.position;
 
-        CollideableInstance b;
+        MovingBoundingBox b;
         b.box.lowerCorner = { 3, 0, 5.5 };
         b.box.upperCorner = { 4, 0, 6.5 };
-        b.start = { 3.5, 0, 6 };
-        b.end = { 3.5, 0, 1.5 };
+        b.position = { 3.5, 0, 6 };
+        b.velocity = glm::vec3(3.5, 0, 1.5) - b.position;
 
-        CollideableInstance c;
+        MovingBoundingBox c;
         c.box.lowerCorner = { 1.5, 0, 2 };
         c.box.upperCorner = { 2.5, 0, 3 };
-        c.start = { 2, 0, 2.5 };
-        c.end = { 3.5, 0, 2.5 };
+        c.position = { 2, 0, 2.5 };
+        c.velocity = glm::vec3(3.5, 0, 2.5) - c.position;
 
-        CollideableInstance d;
+        MovingBoundingBox d;
         d.box.lowerCorner = { 9,0,4 };
         d.box.upperCorner = { 10,0,5 };
-        d.start = { 9.5, 0, 4.5 };
-        d.end = { 6.5, 0, 4.5 };
+        d.position = { 9.5, 0, 4.5 };
+        d.velocity = glm::vec3(6.5, 0, 4.5) - d.position;
 
-        CollideableInstance e;
+        MovingBoundingBox e;
         e.box.lowerCorner = { 6, 0, 3 };
         e.box.upperCorner = { 7, 0, 4 };
-        e.start = { 6.5, 0, 3.5 };
-        e.end = { 9.5, 0, 1.5 };
+        e.position = { 6.5, 0, 3.5 };
+        e.velocity = glm::vec3(9.5, 0, 1.5) - e.position;
 
-        CollideableInstance f;
+        MovingBoundingBox f;
         f.box.lowerCorner = { 6, 0, 1 };
         f.box.upperCorner = { 7, 0, 2 };
-        f.start = { 6.5, 0, 1.5 };
-        f.end = { 9.5, 0, 3.5 };
+        f.position = { 6.5, 0, 1.5 };
+        f.velocity = glm::vec3(9.5, 0, 3.5) - f.position;
 
-        std::array<CollideableInstance, 6> instances = {a,b,c,d,e,f};
+        std::array<MovingBoundingBox, 6> instances = {a,b,c,d,e,f};
         std::map<int, char> nameMap = {
             {0, 'A'}, {1, 'B'}, {2, 'C'}, {3, 'D'}, {4, 'E'}, {5, 'F'}
         };
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 6; j++) {
-                if (i != j) { // No need to test against self
-                    CollisionInfo collision = aabbMinkowskiCollisions(instances[i], instances[j], 1.0);
-                    if (collision.collided) {
-                        logger(LogLevel::INFO) << nameMap[i] << " collided with " << nameMap[j] << " at time [" << collision.time << '\n';
-                    }
-
-                }
-            }
-        }
-        logger(LogLevel::INFO) << "Trying with different bounding boxes \n";
-        for (int i = 0; i < 6; i++) {
-            instances[i].box.upperCorner = { 1, 0, 1 };
-            instances[i].box.lowerCorner = { 0,0,0 };
-            instances[i].start -= glm::vec3(0.5, 0, 0.5);
-            instances[i].end -= glm::vec3(0.5, 0, 0.5);
-        }
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 if (i != j) { // No need to test against self
