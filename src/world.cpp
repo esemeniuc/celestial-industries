@@ -116,9 +116,6 @@ bool World::init(glm::vec2 screen) {
 		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
 	}
 
-    // particle setup
-    Particles::InitializeParticleSystem();
-
 	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isn't being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
 	std::vector<std::vector<Model::MeshType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");

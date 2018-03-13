@@ -1,7 +1,3 @@
-//
-// Created by Peter Deltchev on 2018-03-10.
-//
-
 #ifndef PROJ_PARTICLE_H
 #define PROJ_PARTICLE_H
 
@@ -11,9 +7,7 @@
 #include "entity.hpp"
 
 namespace Particles {
-
     class Particle;
-    struct ParticleRule;
     class ParticleEmitter;
 
     void updateParticleStates(float elapsed_ms);
@@ -33,7 +27,7 @@ namespace Particles {
         void setMass(float mass);
         void setInfiniteMass();
         void setDamping(float damping);
-        void setEmitterId(int emitterId);
+        void setEmitterId(unsigned long emitterId);
         void setAge(float age);
         void setPosition(glm::vec3 position);
         void initializePosition(glm::vec3 position);
@@ -57,7 +51,7 @@ namespace Particles {
         }
 
     private:
-        int emitterId;
+        unsigned long emitterId;
         float age;
         float inverseMass;
 
@@ -72,48 +66,6 @@ namespace Particles {
 
         void resetParticle();
 
-    };
-
-    struct ParticleRule {
-        unsigned int type;
-
-        float minimumAge;
-
-        float maximumAge;
-
-        glm::vec3 minimumVelocity;
-
-        glm::vec3 maximumVelocity;
-
-        float damping;
-
-        struct Payload {
-            unsigned type;
-            unsigned count;
-        };
-
-        unsigned payloadCount;
-        Payload *payloads;
-
-        ParticleRule()
-                :
-                payloadCount(0),
-                payloads(NULL) {
-        }
-
-        void init(unsigned payloadCount) {
-            this->payloadCount = payloadCount;
-            payloads = new Payload[payloadCount];
-        }
-
-        ~ParticleRule() {
-            if (payloads != nullptr) delete[] payloads;
-        }
-
-        void setParameters(unsigned int type, float minimumAge, float maximumAge, const glm::vec3 &minimumVelocity,
-                           const glm::vec3 &maximumVelocity, float damping);
-
-        void create(Particle *particle, ParticleEmitter *emitter, const Particle *parent) const;
     };
 
 
@@ -163,8 +115,8 @@ namespace Particles {
         unsigned long emitterId;
 
         void createParticles();
+        void createParticle(Particle *particle) const;
     };
 
-    void InitializeParticleSystem();
 }
 #endif //PROJ_PARTICLE_H

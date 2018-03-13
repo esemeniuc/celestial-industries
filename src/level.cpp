@@ -83,12 +83,12 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
                     tileData.emplace_back(rowNumber, colNumber, 1000.0, INF);
 
                     Particles::makeParticleEmitter(
-                            glm::vec3{colNumber, 0, rowNumber}, // position
-                            glm::vec3{0,1,0}, // direction
+                            glm::vec3{colNumber, 0, rowNumber}, // emitter position
+                            glm::vec3{0,1,0}, // emitter direction
                             1.0,    // spread
-                            0.1,  // width
-                            0.1,  // height
-                            20.0,   // lifespan
+                            0.1,    // particle width
+                            0.1,    // particle height
+                            2.0,    // lifespan
                             5.0     // speed
                     );
                     break;
