@@ -26,15 +26,15 @@ namespace Particles {
         float getMass();
         void setMass(float mass);
         void setInfiniteMass();
-        void setDamping(float damping);
-        void setEmitterId(unsigned long emitterId);
-        void setAge(float age);
-        void setPosition(glm::vec3 position);
-        void initializePosition(glm::vec3 position);
+        void setDamping(float newDamping);
+        void setEmitterId(unsigned long newEmitterId);
+        void setAge(float newAge);
+        void setPosition(glm::vec3 newPosition);
+        void initializePosition(glm::vec3 newPosition);
         glm::vec3 getPosition() const;
-        void setVelocity(glm::vec3 velocity);
+        void setVelocity(glm::vec3 newVelocity);
         glm::vec3 getVelocity() const;
-        void setAcceleration(glm::vec3 acceleration);
+        void setAcceleration(glm::vec3 newAcceleration);
         glm::vec3 getAcceleration() const;
         void updatePosition(float timeDelta);
 
@@ -86,19 +86,19 @@ namespace Particles {
         );
 
         float getSpread() const;
-        void setSpread(float spread);
+        void setSpread(float newSpread);
         glm::vec3 getDirection() const;
-        void setDirection(glm::vec3 direction);
+        void setDirection(glm::vec3 newDirection);
         float getParticleWidth() const;
-        void setParticleWidth(float particleWidth);
+        void setParticleWidth(float newParticleWidth);
         float getParticleHeight() const;
-        void setParticleHeight(float particleHeight);
+        void setParticleHeight(float newParticleHeight);
         float getParticleLifespan() const;
-        void setParticleLifespan(float particleLifespan);
+        void setParticleLifespan(float newParticleLifespan);
         float getParticleSpeed() const;
-        void setParticleSpeed(float particleSpeed);
+        void setParticleSpeed(float newParticleSpeed);
         const glm::vec3 &getPosition() const;
-        void setPosition(const glm::vec3 &position);
+        void setPosition(const glm::vec3 &newPosition);
 
         void updateParticlePositions(float elapsed_ms);
 

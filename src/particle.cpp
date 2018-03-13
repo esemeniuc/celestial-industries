@@ -12,9 +12,9 @@ namespace Particles {
     std::random_device r;
     std::default_random_engine randomGenerator(r());
 
-    template<typename NumberType>
-    NumberType randomNumber(const NumberType minimum, const NumberType maximum) {
-        std::uniform_real_distribution<NumberType> distribution(minimum, maximum);
+    template<typename T>
+    T randomNumber(const T minimum, const T maximum) {
+        std::uniform_real_distribution<T> distribution(minimum, maximum);
         return distribution(randomGenerator);
     }
 
@@ -37,7 +37,10 @@ namespace Particles {
     }
 
     void Particle::setMass(float mass) {
-        assert(mass > 0);
+        if (mass <= 0){
+            throw "Particles must have a mass > 0! Did you mean to use setInfiniteMass()?\n";
+        }
+
         inverseMass = 1.0f / mass;
     }
 
@@ -45,10 +48,10 @@ namespace Particles {
         inverseMass = 0.0f;
     }
 
-/**
- *
- * @param timeDelta number in milliseconds
- */
+    /**
+     *
+     * @param timeDelta number in milliseconds
+     */
     void Particle::updatePosition(float timeDelta) {
         // internally, everything in the particle system is computed in terms of seconds.
         timeDelta *= 0.001;
@@ -56,7 +59,10 @@ namespace Particles {
 
         // TODO: consider removing the acceleration piece of this
 //    position += velocity*timeDelta + acceleration*timeDelta*timeDelta*0.5;
-        assert(timeDelta > 0.0);
+
+        if (timeDelta <= 0.0) {
+            throw "Particles can only be simulated forward in time! timeDelta must be > 0.\n";
+        }
 
         position += velocity * timeDelta;
         glm::vec3 newAcceleration = acceleration;
@@ -72,16 +78,16 @@ namespace Particles {
         }
     }
 
-    void Particle::setEmitterId(unsigned long emitterId) {
-        this->emitterId = emitterId;
+    void Particle::setEmitterId(unsigned long newEmitterId) {
+        this->emitterId = newEmitterId;
     }
 
-    void Particle::setAge(float age) {
-        this->age = age;
+    void Particle::setAge(float newAge) {
+        this->age = newAge;
     }
 
-    void Particle::setPosition(glm::vec3 position) {
-        this->position = position;
+    void Particle::setPosition(glm::vec3 newPosition) {
+        this->position = newPosition;
     }
 
     glm::vec3 Particle::getPosition() const {
@@ -89,29 +95,29 @@ namespace Particles {
     }
 
 
-    void Particle::setVelocity(glm::vec3 velocity) {
-        this->velocity = velocity;
+    void Particle::setVelocity(glm::vec3 newVelocity) {
+        this->velocity = newVelocity;
     }
 
     glm::vec3 Particle::getVelocity() const {
         return velocity;
     }
 
-    void Particle::setDamping(float damping) {
-        this->damping = damping;
+    void Particle::setDamping(float newDamping) {
+        this->damping = newDamping;
     }
 
-    void Particle::setAcceleration(glm::vec3 acceleration) {
-        this->acceleration = acceleration;
+    void Particle::setAcceleration(glm::vec3 newAcceleration) {
+        this->acceleration = newAcceleration;
     }
 
     glm::vec3 Particle::getAcceleration() const {
         return acceleration;
     }
 
-    void Particle::initializePosition(glm::vec3 position) {
-        initialPosition = position;
-        Particle::setPosition(position);
+    void Particle::initializePosition(glm::vec3 newPosition) {
+        initialPosition = newPosition;
+        Particle::setPosition(newPosition);
 
         initialVelocity = velocity;
         initialAcceleration = acceleration;
@@ -155,56 +161,56 @@ namespace Particles {
         return position;
     }
 
-    void ParticleEmitter::setPosition(const glm::vec3 &position) {
-        ParticleEmitter::position = position;
+    void ParticleEmitter::setPosition(const glm::vec3 &newPosition) {
+        ParticleEmitter::position = newPosition;
     }
 
     float ParticleEmitter::getSpread() const {
         return spread;
     }
 
-    void ParticleEmitter::setSpread(float spread) {
-        ParticleEmitter::spread = spread;
+    void ParticleEmitter::setSpread(float newSpread) {
+        ParticleEmitter::spread = newSpread;
     }
 
     float ParticleEmitter::getParticleWidth() const {
         return particleWidth;
     }
 
-    void ParticleEmitter::setParticleWidth(float particleWidth) {
-        ParticleEmitter::particleWidth = particleWidth;
+    void ParticleEmitter::setParticleWidth(float newParticleWidth) {
+        ParticleEmitter::particleWidth = newParticleWidth;
     }
 
     float ParticleEmitter::getParticleHeight() const {
         return particleHeight;
     }
 
-    void ParticleEmitter::setParticleHeight(float particleHeight) {
-        ParticleEmitter::particleHeight = particleHeight;
+    void ParticleEmitter::setParticleHeight(float newParticleHeight) {
+        ParticleEmitter::particleHeight = newParticleHeight;
     }
 
     float ParticleEmitter::getParticleLifespan() const {
         return particleLifespan;
     }
 
-    void ParticleEmitter::setParticleLifespan(float particleLifespan) {
-        ParticleEmitter::particleLifespan = particleLifespan;
+    void ParticleEmitter::setParticleLifespan(float newParticleLifespan) {
+        ParticleEmitter::particleLifespan = newParticleLifespan;
     }
 
     float ParticleEmitter::getParticleSpeed() const {
         return particleSpeed;
     }
 
-    void ParticleEmitter::setParticleSpeed(float particleSpeed) {
-        ParticleEmitter::particleSpeed = particleSpeed;
+    void ParticleEmitter::setParticleSpeed(float newParticleSpeed) {
+        ParticleEmitter::particleSpeed = newParticleSpeed;
     }
 
     glm::vec3 ParticleEmitter::getDirection() const {
         return direction;
     }
 
-    void ParticleEmitter::setDirection(glm::vec3 direction) {
-        ParticleEmitter::direction = direction;
+    void ParticleEmitter::setDirection(glm::vec3 newDirection) {
+        ParticleEmitter::direction = newDirection;
     }
 
     /**
@@ -261,6 +267,9 @@ namespace Particles {
     {
         // vertical positions less than 0 are invalid
         assert(position.y >= 0);
+        if (position.y < 0) {
+            throw "ParticleEmitters must be placed at a y-coordinate >= 0!\n";
+        }
 
         if (position.y == 0) {
             this->position.y += 0.01; // to avoid resetting a particle first-thing
