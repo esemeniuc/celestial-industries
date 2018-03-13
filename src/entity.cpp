@@ -49,3 +49,12 @@ void Entity::scale(glm::vec3 scale)
 {
     this->geometryRenderer.scale(scale);
 }
+
+glm::vec3 Entity::getPosition() {
+    return rigidBody.getPosition();
+}
+
+void Entity::setPosition(glm::vec3 position) {
+    rigidBody.updatePosition(position);
+    this->geometryRenderer.setModelMatrix(0, position);
+}
