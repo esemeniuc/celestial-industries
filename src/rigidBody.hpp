@@ -13,13 +13,6 @@
 #include "glm/gtx/transform.hpp"
 #include "glm/gtx/quaternion.hpp"
 
-// collision geometries
-struct BoundingBox {
-	//using two corners along the diagonal of box to describe it
-	glm::vec3 lowerCorner;
-	glm::vec3 upperCorner;
-};
-
 struct BoundingSphere {
 	double radius;
 	glm::vec3 center;
@@ -32,6 +25,8 @@ enum class CollisionGeomType {
 
 class RigidBody {
 public:
+    RigidBody(glm::vec3 size = { 1,0,1 }, glm::vec3 position = { 0,0,0 }, glm::vec3 velocity = { 0,0,0 });
+
 	void setVelocity(glm::vec3);
 
 	void setGravity(glm::vec3);

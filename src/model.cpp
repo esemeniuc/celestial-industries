@@ -17,6 +17,7 @@ namespace Model {
     };
 
     std::map<Model::MeshType, std::shared_ptr<Renderer>> meshRenderers;
+    CollisionDetector collisionDetector;
     
     Renderable createRenderable(MeshType type)
     {

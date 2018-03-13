@@ -45,8 +45,10 @@ add_executable(proj
 		src/building.cpp
 		src/particle.cpp
 		src/collisiondetection.cpp
+        src/collisiondetector.cpp
 		src/collisionResolver.cpp
 		src/rigidBody.cpp)
+
 target_compile_options(proj PUBLIC
 		-Wall
 		-Wpedantic

@@ -30,6 +30,7 @@ void Entity::scale(int modelIndex, glm::vec3 scale)
     // but I don't expect to have an entity being scaled multiple times
     // beyond when they are first loaded in our game world
     this->geometryRenderer.scale(modelIndex, scale);
+    
 }
 
 void Entity::setPosition(int modelIndex, glm::vec3 _pos)

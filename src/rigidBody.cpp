@@ -1,8 +1,16 @@
 #include "rigidBody.hpp"
+#include "collisiondetection.hpp"
+#include "model.hpp"
+
+RigidBody::RigidBody(glm::vec3 position, glm::vec3 size, glm::vec3 velocity)
+{
+    geometryId = Model::collisionDetector.createBoundingBox(position, size, velocity);
+}
 
 void RigidBody::setVelocity(glm::vec3 _velocity)
 {
     this->velocity = _velocity;
+    Model::collisionDetector.setVelocity(geometryId, _velocity);
 }
 
 void RigidBody::setGravity(glm::vec3 _gravity)
@@ -42,6 +50,7 @@ void RigidBody::setRotation(float angle, glm::vec3 axis)
 void RigidBody::setPosition(glm::vec3 _pos)
 {
     this->position = _pos;
+    Model::collisionDetector.setPosition(geometryId, _pos);
 }
 
 void RigidBody::setInverseMass(float invMass)
@@ -107,7 +116,7 @@ glm::vec3 RigidBody::getForce()
 
 void RigidBody::setCollisionGeometryType(CollisionGeomType _cg)
 {
-    this->cgType = _cg;
+    this->cgType = _cg; // Todo: doesnt actually affect bounding box
 }
 
 CollisionGeomType RigidBody::getCollisionGeometryType()

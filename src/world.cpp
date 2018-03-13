@@ -4,6 +4,7 @@
 #include <chrono>  // for high_resolution_clock
 #include "renderer.hpp"
 #include "world.hpp"
+#include "collisiondetection.hpp"
 #include "particle.hpp"
 
 // Same as static in c, local to compilation unit
