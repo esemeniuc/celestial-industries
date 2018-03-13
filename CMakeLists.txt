@@ -43,9 +43,9 @@ add_executable(proj
 		src/unit/genericunit.cpp
 		src/unit/unitgroup.cpp
 		src/building.cpp
-		src/particle.cpp)
+		src/particle.cpp
 		src/collisiondetection.cpp
-		collisionResolver.cpp
+		src/collisionResolver.cpp
 		src/rigidBody.cpp)
 target_compile_options(proj PUBLIC
 		-Wall
