@@ -62,9 +62,9 @@ namespace Particles {
 
 
         // is the particle out of bounds? reset it if yes
-//        if (age > particleRules[type].maximumAge || position.y <= 0) {
-//            resetParticle();
-//        }
+        if (age > particleRules[type].maximumAge || position.y <= 0) {
+            resetParticle();
+        }
     }
 
     void Particle::setType(int type) {
@@ -157,7 +157,7 @@ namespace Particles {
         firework->setDamping(damping);
 
         // TODO: revisit this
-        firework->setAcceleration({0, -0.05, 0});
+        firework->setAcceleration({0, -5, 0});
 
         // TODO: implement force accumulator
     }
@@ -228,6 +228,7 @@ namespace Particles {
 
             particle->updatePosition(elapsed_ms);
             particleEntity->setPosition(particle->getPosition());
+            particleEntity->scale(0, glm::vec3{0.1});
 
 //        glm::vec3 particlePosition = particleGraphics[i]->getPosition();
 //        glm::vec3 particleVelocity = particles[i].getVelocity();
@@ -239,14 +240,14 @@ namespace Particles {
 
     void ParticleSpawner::createParticles() {
         // create ~1000 particle objects
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 999; ++i) {
             particles.emplace_back();
             particleRules[0].create(&particles[i], nullptr);
             particles[i].initializePosition({20, 0, 20});
 
-            particleGraphics.push_back(std::make_shared<Entity>(Model::MeshType::BALL));
+            particleGraphics.push_back(std::make_shared<Entity>(Model::MeshType::GEYSER));
             particleGraphics[i]->translate(particles[i].getPosition());
-            particleGraphics[i]->scale(glm::vec3(0.1, 0.1, 0.1));
+//            particleGraphics[i]->scale(glm::vec3(0.001));
         }
     }
 
@@ -259,8 +260,8 @@ namespace Particles {
         particleRules.back().setParameters(
                 0, // type
                 0, 5, // age range
-                glm::vec3(-0.1, 8 * 0.1, -0.1), // min velocity
-                glm::vec3(0.1, 9 * 0.1, 0.1), // max velocity
+                glm::vec3(-2, 8, -2), // min velocity
+                glm::vec3(2, 9, 2), // max velocity
                 0.995 // damping
         );
     }

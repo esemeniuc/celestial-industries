@@ -55,5 +55,8 @@ glm::vec3 Entity::getPosition() {
 }
 
 void Entity::setPosition(glm::vec3 position) {
+    this->geometryRenderer.translate(-1.0f * rigidBody.getPosition());
     rigidBody.updatePosition(position);
+    this->geometryRenderer.translate(position);
+//    this->geometryRenderer.scale(glm::vec3(0.1));
 }
