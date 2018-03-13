@@ -7,7 +7,7 @@
 namespace CollisionDetection {
     CollisionInfo CollisionDetection::movingBodyCollidesWithStatic(BoundingBox staticBox, BoundingBox movingBox, glm::vec3 staticPosition, glm::vec3 movingStartPosition, glm::vec3 movingEndPosition, float totalTime)
     {
-        return aabbMinkowskiCollisions(staticBox, movingBox, staticPosition, staticPosition, movingStartPosition, movingEndPosition, totalTime);        
+        return aabbMinkowskiCollisions(staticBox, movingBox, staticPosition, staticPosition, movingStartPosition, movingEndPosition, totalTime);
     }
 
     CollisionInfo aabbMinkowskiCollisions(BoundingBox a, BoundingBox b, glm::vec3 aStart, glm::vec3 aEnd, glm::vec3 bStart, glm::vec3 bEnd, float totalTime)
@@ -24,9 +24,9 @@ namespace CollisionDetection {
         glm::vec3 aVelocity = (aEnd - aStart);
         glm::vec3 bVelocity = (bEnd - bStart);
 
-        glm::vec3 relativeVelocity = bVelocity-aVelocity;
+        glm::vec3 relativeVelocity = bVelocity - aVelocity;
         //// using velocity as a vertex to then check it against the minkowski sum to see if there is a collision
-        LineSegment segment = originToVertex(relativeVelocity); 
+        LineSegment segment = originToVertex(relativeVelocity);
 
         return segmentAABBCollision(segment, difference, totalTime);
     }
@@ -35,8 +35,8 @@ namespace CollisionDetection {
     {
         return aabbMinkowskiCollisions(
             a.box, b.box,
-            a.position, a.position+a.velocity*totalTime, 
-            b.position, b.position+b.velocity*totalTime, totalTime);
+            a.position, a.position + a.velocity*totalTime,
+            b.position, b.position + b.velocity*totalTime, totalTime);
     }
 
     bool aabbsOverlap(BoundingBox a, BoundingBox b)
@@ -45,13 +45,13 @@ namespace CollisionDetection {
         float bax = a.lowerCorner.x - b.upperCorner.x;
         float aby = b.lowerCorner.z - a.upperCorner.z;
         float bay = a.lowerCorner.z - b.upperCorner.z;
-        
+
         if (abx > 0.0f || aby > 0.0f)
             return false;
-        
+
         if (bax > 0.0f || bay > 0.0f)
             return false;
-        
+
         return true;
     }
 
@@ -103,7 +103,7 @@ namespace CollisionDetection {
     {
         // This is some rocket-science-heart-surgery level of complicated
         return {
-            {0,0,0},
+            { 0,0,0 },
             vertex
         };
     }
@@ -228,11 +228,11 @@ namespace CollisionDetection {
             return {
                 true,
                 t,
-                {a.start.x+t*segment.start.x, 0, a.start.z+t*segment.start.z}
+            { a.start.x + t * segment.start.x, 0, a.start.z + t * segment.start.z }
             };
         }
         return {
-            false, 0.0f, {0.0f,0.0f,0.0f}
+            false, 0.0f,{ 0.0f,0.0f,0.0f }
         };
     }
 
@@ -241,7 +241,7 @@ namespace CollisionDetection {
     }
 
     IntersectionCollisionInfo segmentsCollision3(LineSegment l1, LineSegment l2) {
-        
+
         // https://stackoverflow.com/a/14987452/848179 which itself is based off http://stackoverflow.com/a/565282/202451
 
         glm::vec3 p = l1.start;
@@ -250,8 +250,8 @@ namespace CollisionDetection {
         glm::vec3 s = l2.end - l2.start;
 
         float s_r_crossProduct = weirdCrossProduct(r, s);
-        float t = weirdCrossProduct(q-p, s) / s_r_crossProduct;
-        float u = weirdCrossProduct(q-p, r) / s_r_crossProduct;
+        float t = weirdCrossProduct(q - p, s) / s_r_crossProduct;
+        float u = weirdCrossProduct(q - p, r) / s_r_crossProduct;
 
         IntersectionCollisionInfo NO = {
             false, 0.0f,{ 0.0f,0.0f,0.0f }
@@ -319,7 +319,7 @@ namespace CollisionDetection {
         boxSides.push_back({ topLeft, box.upperCorner });
         boxSides.push_back({ box.upperCorner, bottomRight });
         boxSides.push_back({ bottomRight, box.lowerCorner });
-        
+
         IntersectionCollisionInfo collision;
         collision.collided = false;
         for (auto side : boxSides) {
@@ -385,9 +385,9 @@ namespace CollisionDetection {
         f.position = { 6.5, 0, 1.5 };
         f.velocity = glm::vec3(9.5, 0, 3.5) - f.position;
 
-        std::array<MovingBoundingBox, 6> instances = {a,b,c,d,e,f};
+        std::array<MovingBoundingBox, 6> instances = { a,b,c,d,e,f };
         std::map<int, char> nameMap = {
-            {0, 'A'}, {1, 'B'}, {2, 'C'}, {3, 'D'}, {4, 'E'}, {5, 'F'}
+            { 0, 'A' },{ 1, 'B' },{ 2, 'C' },{ 3, 'D' },{ 4, 'E' },{ 5, 'F' }
         };
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
@@ -401,8 +401,8 @@ namespace CollisionDetection {
             }
         }
 
-        LineSegment segmentA = { { 0,0,0 }, { 1,0,1 } };
-        LineSegment segmentB = { { 0,0,1 }, { 1,0,0 } };
+        LineSegment segmentA = { { 0,0,0 },{ 1,0,1 } };
+        LineSegment segmentB = { { 0,0,1 },{ 1,0,0 } };
         IntersectionCollisionInfo intersection = segmentsIntersection(segmentA, segmentB);
         IntersectionCollisionInfo intersetcionLemoth = segmentsCollisionLeMothe(segmentA, segmentB);
         IntersectionCollisionInfo intersection1 = segmentsCollision1(segmentA, segmentB);

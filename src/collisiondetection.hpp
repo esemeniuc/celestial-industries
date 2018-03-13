@@ -1,6 +1,5 @@
 #pragma once
 #include "common.hpp"
-#include "rigidBody.hpp"
 
 namespace CollisionDetection {
     struct MovingBoundingBox {
@@ -23,7 +22,7 @@ namespace CollisionDetection {
     struct LineSegment {
         glm::vec3 start, end;
     };
-    
+
     /**
     Returns a bool and a float between 0 and totalTime. If the boolean returned is true then there was a collision,
     and the float represents the time at which the collision occurs (between 0 and totalTime)
@@ -42,7 +41,7 @@ namespace CollisionDetection {
     BoundingBox normalizeBoundingBox(BoundingBox box);
 
     BoundingBox rotateBoundingBoxAboutOrigin(BoundingBox box);
-    
+
     BoundingBox minkowskiDiff(BoundingBox a, BoundingBox b);
 
     BoundingBox minkowskiSum(BoundingBox a, BoundingBox b);

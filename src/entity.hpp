@@ -42,15 +42,20 @@ public:
     // functions
     virtual void animate(float ms);
 
-    void translate(int modelIndex, glm::vec3 translation);
+    // Model index is the index of the model matrix to be updated.This is generally 0 as most models are made of 1 object and only have
+    // 1 model matrix.It may also be 0 because the first model matrix is usually the root of a renderable made of many objects.If you want
+    // to modify the model matrix of the 3rd element of your renderable(and all it's children in turn) you specify 2 (0 indexing).
+
+    void translate(int modelIndex, glm::vec3 translation);  
 
 	glm::vec3 getPosition();
 
 	void setPosition(glm::vec3 position);
 
 	void rotate(int modelIndex, float amount, glm::vec3 axis);
-
     void scale(int modelIndex, glm::vec3 scale);
+
+    void setPosition(int modelIndex, glm::vec3);
 
     void setModelMatrix(int modelIndex, glm::mat4 mat);
 
@@ -63,6 +68,8 @@ public:
     void rotate(float amount, glm::vec3 axis);
 
     void scale(glm::vec3 scale);
+
+    RigidBody getRigidBody();
 
 protected:
     Renderable geometryRenderer;
