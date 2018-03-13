@@ -1,5 +1,5 @@
 #pragma once
-#include <cmath.h>
+#include <cmath>
 #include "rigidBody.hpp"
 #include "config.hpp"
 
