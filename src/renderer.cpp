@@ -130,12 +130,12 @@ void Renderer::render(glm::mat4 viewProjection)
     // Setting shaders
     glUseProgram(shader->program);
 
-    glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, &viewProjection[0][0]);
-
     glBindBuffer(GL_UNIFORM_BUFFER, instancesDataBuffer);
     glUniformBlockBinding(shader->program, instanceDataAttribute, 2); // layout hardcoded in shader
     glBindBufferBase(GL_UNIFORM_BUFFER, 2, instancesDataBuffer);
     glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderInstancesData), &instancesData, GL_DYNAMIC_DRAW);
+
+    glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, &viewProjection[0][0]);
 
     for (size_t i = 0; i < subObjects.size(); i++) {
         for (const Mesh& mesh : subObjects[i].meshes) {
@@ -146,12 +146,12 @@ void Renderer::render(glm::mat4 viewProjection)
             glUniformBlockBinding(shader->program, materialUniformBlock, 1); // layout hardcoded in shader
             glBindBufferBase(GL_UNIFORM_BUFFER, 1, mesh.ubo);
 
-            glUniform1i(modelIndexUniform, i);
-
             if (mesh.material.hasDiffuseMap) {
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, mesh.material.diffuseMap->id);
             }
+
+            glUniform1i(modelIndexUniform, i);
 
             glDrawElementsInstanced(GL_TRIANGLES, mesh.numIndices, GL_UNSIGNED_INT, nullptr, instances.size());
         }
