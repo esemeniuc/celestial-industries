@@ -14,7 +14,7 @@
 #include "renderer.hpp"
 #include "model.hpp"
 #include "rigidBody.hpp"
-
+#include "gamepiece.hpp"
 
 class Entity {
 public:
@@ -46,7 +46,15 @@ public:
 
 	void scale(glm::vec3 scale);
 
-	Renderable geometryRenderer;//FIXME: HACK
+	//funcs
+	glm::vec3 getPosition() const {
+		return rigidBody.getPosition();
+	}
+
+
 protected:
-    RigidBody rigidBody;
+
+	GamePiece gamePiece;
+	RigidBody rigidBody;
+	Renderable geometryRenderer;
 };

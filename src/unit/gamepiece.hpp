@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <utility>
-#include "entity.hpp"
 #include "rigidBody.hpp"
 
 enum class GamePieceOwner {
@@ -16,7 +15,7 @@ enum class GamePieceType {
 
 class GamePiece {
 
-protected:
+public:
 	//members
 	const int initialHealth;
 	const int visionRange;
@@ -24,11 +23,7 @@ protected:
 	GamePieceType type = GamePieceType::NONE;
 	int currentHealth;
 	int value; //used for AI to prioritize targets
-	std::shared_ptr<Entity> entity; //for being drawn
 
-public:
-	//members
-	RigidBody rigidBody;
 
 
 	//constructors
@@ -44,21 +39,13 @@ public:
 			  value(value) {}
 
 	GamePiece(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceType type,
-			  int currentHealth, int value, std::shared_ptr<Entity> entity) : initialHealth(initialHealth),
+			  int currentHealth, int value) : initialHealth(initialHealth),
 																			  visionRange(visionRange),
 																			  owner(owner), type(type),
 																			  currentHealth(currentHealth),
-																			  value(value), entity(std::move(entity)) {}
+																			  value(value) {}
 
-	//funcs
-	glm::vec3 getPosition() const {
-		return rigidBody.getPosition();
-	}
 
-	void translate(glm::vec3 translation) {
-		entity->translate(translation); //for on screen
-		rigidBody.updatePosition(translation); //for game world state
-	}
 };
 
 

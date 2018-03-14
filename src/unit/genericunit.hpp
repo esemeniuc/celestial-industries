@@ -5,12 +5,7 @@
 #pragma once
 
 #include <vector>
-
-#define GLM_ENABLE_EXPERIMENTAL
-
-#include <glm/gtx/string_cast.hpp>
 #include "common.hpp"
-#include "entity.hpp"
 #include "pathfinder.hpp"
 #include "gamepiece.hpp"
 
@@ -20,7 +15,7 @@ enum class UnitState {
 
 
 //assumes we have position from entity class
-class GenericUnit : public GamePiece {
+class GenericUnit {
 private:
 
 
@@ -49,8 +44,6 @@ public:
 					currentEnergyLevel(50),
 					state(UnitState::IDLE),
 					GamePiece(100, 6, GamePieceOwner::NONE, GamePieceType::NONE, 50) {
-
-		entity = std::make_shared<Entity>(Model::MeshType::BALL);
 	}
 
 	GenericUnit(Model::MeshType _meshType) : initialEnergyLevel(50),
@@ -61,9 +54,7 @@ public:
 											 currentEnergyLevel(50),
 											 state(UnitState::IDLE),
 											 GamePiece(100, 6, GamePieceOwner::NONE, GamePieceType::NONE, 50) {
-
-		entity = std::make_shared<Entity>(_meshType);
-	}
+		}
 
 	GenericUnit(int _initialHealth,
 				int _initialEnergyLevel,
@@ -72,18 +63,14 @@ public:
 				int _attackSpeed,
 				int _movementSpeed,
 				int _visionRange,
-				int _unitValue,
-				GamePieceOwner _owner,
-				GamePieceType _type,
-				UnitState _state,
-				Model::MeshType _meshType) : initialEnergyLevel(_initialEnergyLevel),
+				int _unitValue
+				UnitState _state) : initialEnergyLevel(_initialEnergyLevel),
 											 attackDamage(_attackDamage),
 											 attackRange(_attackRange),
 											 attackSpeed(_attackSpeed),
 											 movementSpeed(_movementSpeed),
 											 currentEnergyLevel(_initialEnergyLevel),
-											 state(_state),
-											 GamePiece(_initialHealth, _visionRange, _owner, type, _unitValue) {
+											 state(_state) {
 	}
 
 	//gets the index into the targetPath vector
@@ -95,7 +82,7 @@ public:
 	std::pair<int, double> getInterpolationPercentage() {
 		double intermediateVal = (targetPathStartTimestamp / 1000) * movementSpeed;
 		int pathIndex = (int) intermediateVal;
-		double interpolationPercent = (intermediateVal - pathIndex);
+		double interpolationPercent = clamp<double>(0, intermediateVal - pathIndex, 1);
 
 		return {pathIndex, interpolationPercent};
 	}
@@ -133,6 +120,13 @@ public:
 //					  << "\tinterp= " << index.second << "\ttrow=" << transRow << "\ttcol= " << transCol << '\n';
 
 		}
+		else
+		{
+			glm::mat4 m = entity->getModelMatrix(0);
+
+			m[3][0] = targetPath.back().colCoord;
+			m[3][2] = targetPath.back().rowCoord;
+		}
 	}
 
 
@@ -156,11 +150,10 @@ class RangedUnit : public GenericUnit {
 public:
 
 
-	RangedUnit(Model::MeshType _meshType) : GenericUnit(100, 50, 10, 6, 1, 1, 6, 50,
+	RangedUnit() : GenericUnit(100, 50, 10, 6, 1, 1, 6, 50,
 														GamePieceOwner::PLAYER,
 														GamePieceType::OFFENSIVE,
-														UnitState::IDLE,
-														_meshType) {
+														UnitState::IDLE) {
 		logger(LogLevel::DEBUG) << "ranged unit built" << Logger::endl;
 	}
 
