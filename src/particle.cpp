@@ -137,8 +137,8 @@ namespace Particles {
         // given speed +/- variance governs the speeds that generated particles move at
         float variance = 0.2f;
         float speed = randomNumber<float>(
-                this->getParticleSpeed()*(1.0f + variance),
-                this->getParticleSpeed()*(1.0f - variance)
+                this->getParticleSpeed()*(1.0f - variance),
+                this->getParticleSpeed()*(1.0f + variance)
         );
 
         // TODO: pick vectors on the surface of a sphere here
@@ -289,7 +289,7 @@ namespace Particles {
 
             particle->updatePosition(elapsed_ms);
             particleEntity->setPosition(particle->getPosition());
-            particleEntity->scale(0, glm::vec3{0.1});
+            particleEntity->scale(0, glm::vec3{0.1f});
         }
     }
 

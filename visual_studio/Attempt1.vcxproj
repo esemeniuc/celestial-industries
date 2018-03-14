@@ -144,7 +144,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)/$(Configuration)/$(Platform)/</OutDir>
     <IntDir>$(ProjectDir)/tmp/$(Configuration)/$(Platform)/</IntDir>
-    <IncludePath>$(ProjectDir)..\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\src;$(ProjectDir)..\ext\gl3w\GL;$(IncludePath)</IncludePath>
+    <SourcePath>$(ProjectDir)..\ext\gl3w\GL;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <OutDir>$(ProjectDir)/$(Configuration)/$(Platform)</OutDir>
@@ -501,6 +502,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\ext\gl3w\GL\gl3w.cpp" />
     <ClCompile Include="..\src\collisiondetection.cpp" />
     <ClCompile Include="..\src\collisiondetector.cpp" />
     <ClCompile Include="..\src\collisionResolver.cpp" />
@@ -512,6 +514,7 @@
     <ClCompile Include="$(ProjectDir)..\src\common.cpp" />
     <ClCompile Include="$(ProjectDir)..\src\world.cpp" />
     <ClCompile Include="..\src\model.cpp" />
+    <ClCompile Include="..\src\particle.cpp" />
     <ClCompile Include="..\src\renderer.cpp" />
     <ClCompile Include="..\src\objloader.cpp" />
     <ClCompile Include="..\src\pathfinder.cpp" />
@@ -522,6 +525,8 @@
     <ClCompile Include="..\src\tile.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\ext\gl3w\GL\gl3w.h" />
+    <ClInclude Include="..\ext\gl3w\GL\glcorearb.h" />
     <ClInclude Include="..\src\camera.hpp" />
     <ClInclude Include="..\src\collisiondetection.hpp" />
     <ClInclude Include="..\src\collisiondetector.hpp" />
@@ -533,6 +538,7 @@
     <ClInclude Include="..\src\logger.hpp" />
     <ClInclude Include="..\src\loglevel.hpp" />
     <ClInclude Include="..\src\model.hpp" />
+    <ClInclude Include="..\src\particle.hpp" />
     <ClInclude Include="..\src\renderer.hpp" />
     <ClInclude Include="..\src\objloader.hpp" />
     <ClInclude Include="..\src\pathfinder.hpp" />
