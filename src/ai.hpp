@@ -42,6 +42,13 @@ class Ai {
 
 	int getValueOfPlayerUnits()
 	{
+//		for (auto& row : entityMap) {
+//			for (auto& col : row) {
+//				for (auto& entityInACell : col) {
+//					entityInACell.move(elapsed_ms);
+//				}
+//			}
+//		}
 	}
 
 	int const PRIORITIZE_CLOSER_ATTACKS = 2;

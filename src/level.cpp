@@ -120,7 +120,7 @@ bool Level::displayPath(const std::vector<Coord>& path) {
 	std::vector<std::shared_ptr<Tile>> tempRow;
 	tempRow.reserve(path.size());
 	for (const Coord& component : path) {
-		auto tile = std::make_shared<Tile>(Model::meshRenderers[(int)Model::MeshType::SAND_2]);
+		auto tile = std::make_shared<Tile>(Model::meshRenderers[Model::MeshType::SAND_2]);
 		tile->translate({component.colCoord, 0, component.rowCoord});
 		tempRow.push_back(tile);
 	}

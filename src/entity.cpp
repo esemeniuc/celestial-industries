@@ -1,8 +1,8 @@
 #include "entity.hpp"
 
-Entity::Entity() : geometryRenderer(Model::meshRenderers[(int) Model::MeshType::BALL]) {}
+Entity::Entity() : geometryRenderer(Model::meshRenderers[Model::MeshType::BALL]) {}
 
-Entity::Entity(Model::MeshType geometry) : geometryRenderer(Model::meshRenderers[(int) geometry]) {}
+Entity::Entity(Model::MeshType geometry) : geometryRenderer(Model::meshRenderers[geometry]) {}
 
 //example of using the animate function when overriding Entity
 void Entity::animate(float ms) {
