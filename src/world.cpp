@@ -137,7 +137,6 @@ bool World::init(glm::vec2 screen) {
 	}
 
 
-
 	//display a path
 	int startx = 12, startz = 27;
 	int targetx = 10, targetz = 10;

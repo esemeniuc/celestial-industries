@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <unordered_set>
+#include "global.hpp"
 #include "gameunit.hpp"
 #include "building.hpp"
 
@@ -40,22 +40,39 @@ class Ai {
 	std::vector<std::vector<UnitComp>> unitsSeen;
 	std::vector<std::vector<Building>> buildingsSeen;
 
-	int getValueOfPlayerUnits()
-	{
-//		for (auto& row : entityMap) {
-//			for (auto& col : row) {
-//				for (auto& entityInACell : col) {
-//					entityInACell.move(elapsed_ms);
-//				}
-//			}
-//		}
+	int playerUnitValue = 0;
+	int aiUnitValue = 0;
+	int playerBuildingValue = 0;
+	int aiBuildingValue = 0;
+
+
+	void updateValueOfUnits() {
+		playerUnitValue = 0;
+		aiUnitValue = 0;
+		for (auto& row : entityMap) {
+			for (auto& col : row) {
+				for (Entity& entityInACell : col) {
+					switch (entityInACell.aiComp.owner) {
+						case (GamePieceOwner::AI): {
+							aiUnitValue += entityInACell.aiComp.value;
+						}
+						case (GamePieceOwner::PLAYER): {
+							playerUnitValue += entityInACell.aiComp.value;
+						}
+						default: { //do nothing
+						}
+					}
+				}
+			}
+		}
 	}
 
 	int const PRIORITIZE_CLOSER_ATTACKS = 2;
 
 public:
-    Building* bestBuildingToAttack(std::list<Building> &buildings, Entity& entity);
-	Building* getHighestValuedBuilding(std::list<Building> &buildings);
+	Building* bestBuildingToAttack(std::list<Building>& buildings, Entity& entity);
+
+	Building* getHighestValuedBuilding(std::list<Building>& buildings);
 
 	Ai() {
 

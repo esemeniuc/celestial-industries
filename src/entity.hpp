@@ -30,7 +30,9 @@ class Entity {
 public:
 	//members
 	Renderable geometryRenderer;
-
+	AiComp aiComp;
+	UnitComp unitComp;
+	RigidBody rigidBody;
 
 	// constructors
 	Entity();
@@ -91,8 +93,4 @@ public:
 
 protected:
 
-	AiComp aiComp;
-	UnitComp unitComp;
-
-	RigidBody rigidBody;
 };
