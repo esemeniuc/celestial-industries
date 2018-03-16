@@ -2,8 +2,10 @@
 // Created by eric on 2/16/18.
 //
 #pragma once
-
 #include "loglevel.hpp"
+
+#define INF std::numeric_limits<float>::infinity()
+#define EPSILON 1e-9
 
 namespace Config {
 

@@ -12,9 +12,12 @@ namespace Model {
         { Model::MeshType::TREE,        { { "treeTile1.obj",   -1 } } },
         { Model::MeshType::BALL,        { { "ball.obj",        -1 } } },
         { Model::MeshType::GUN_TURRET,  { { "TurretBase.obj",  -1 },{ "TurretTop.obj", 0 },{ "TurretGunsLeft.obj", 1 },{ "TurretGunsRight.obj", 1 } } },
+        { Model::MeshType::GEYSER,      { { "sand1.obj",       -1 } } },
+        { Model::MeshType::PARTICLE,    { { "ball.obj",        -1 } } },
     };
 
     std::map<Model::MeshType, std::shared_ptr<Renderer>> meshRenderers;
+    CollisionDetector collisionDetector;
     
     Renderable createRenderable(MeshType type)
     {

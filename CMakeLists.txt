@@ -50,7 +50,7 @@ set(CUSTOM_INCLUDE_LIBS
 		)
 
 set(PROJ_SOURCES
-		ext/gl3w/GL/gl3w.c
+		ext/gl3w/GL/gl3w.cpp
 		src/ai.cpp
 		src/building.cpp
 		src/camera.cpp
@@ -73,7 +73,12 @@ set(PROJ_SOURCES
 		src/tile.cpp
 		src/world.cpp
 		src/unit/genericunit.cpp
-		src/unit/unitgroup.cpp)
+		src/building.cpp
+		src/particle.cpp
+		src/collisiondetection.cpp
+		src/collisiondetector.cpp
+		src/collisionResolver.cpp
+		src/rigidBody.cpp)
 
 add_library(libproj ${PROJ_SOURCES})
 target_compile_options(libproj PUBLIC ${CUSTOM_COMPILE_FLAGS})
