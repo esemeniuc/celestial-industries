@@ -1,8 +1,8 @@
 #pragma once
 
 #include "world.hpp"
-#include "logger.hpp"
 
 // Global
-extern Logger logger; //use extern so we share the logger in global.cpp with all other cpp files
 extern World world;
+
+extern std::vector<std::vector<std::vector<Entity>>> entityMap; //2d map of entities, where more than 1 entity can be in a

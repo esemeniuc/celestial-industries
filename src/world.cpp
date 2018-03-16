@@ -1,6 +1,7 @@
 // Header
 #include <chrono>  // for high_resolution_clock
 #include <unordered_set>
+#include <unit/unitmanager.hpp>
 #include "gameunit.hpp"
 #include "logger.hpp"
 #include "world.hpp"
@@ -24,11 +25,6 @@ World::World() {
 World::~World() = default;
 
 std::vector<std::vector<std::vector<Entity>>> entityMap; //2d map of entities, where more than 1 entity can be in a
-//std::vector<std::vector<std::vector<std::shared_ptr<Entity>>>> entityMap; //2d map of entities, where more than 1 entity can be in a
-
-std::shared_ptr<Entity> ballPointer;
-std::shared_ptr<Entity> ballPointer2;
-Entity* ball3;
 
 std::shared_ptr<Particles::ParticleEmitter> fireSpawner;
 
@@ -125,7 +121,7 @@ bool World::init(glm::vec2 screen) {
 					   Config::CAMERA_START_POSITION_Z};
 
 	level.init(levelArray, Model::meshRenderers);
-
+	UnitManager::init(levelArray.size(), levelArray.front().size());
 	// test different starting points for the AI
 	std::vector<std::vector<AStarNode>> costMap = level.getLevelTraversalCostMap();
 	//benchmark a*
@@ -141,10 +137,7 @@ bool World::init(glm::vec2 screen) {
 	}
 
 
-	entityMap.resize(levelArray.size());
-	for (size_t i = 0; i < levelArray.size(); i++) {
-		entityMap[i].resize(levelArray[i].size());
-	}
+
 	//display a path
 	int startx = 12, startz = 27;
 	int targetx = 10, targetz = 10;
@@ -172,12 +165,6 @@ bool World::init(glm::vec2 screen) {
 	temp3.translate({startz, 0, startx - 1});
 	temp3.setTargetPath(path);
 	entityMap[startx][startz].push_back(temp3);
-
-
-	ballPointer = std::make_shared<Entity>(Model::MeshType::BALL);
-	ballPointer2 = std::make_shared<Entity>(Model::MeshType::BALL);
-//	ballPointer2->setModelMatrix(0,{4,4,4});
-	ball3 = new Entity();
 
 
 	selectedTileCoordinates.rowCoord = (int) levelArray.size() / 2;
@@ -266,24 +253,14 @@ bool World::update(double elapsed_ms) {
 
 
 
-	for (auto& row : entityMap) {
-		for (auto& col : row) {
-			for (auto& entityInACell : col) {
-				entityInACell.move(elapsed_ms);
-			}
-		}
-	}
 
-	ballPointer->translate(glm::vec3(0.01, 0.0, 0.01));
-	ballPointer2->translate(glm::vec3(-0.01, 0.0, -0.01));
-//	ballPointer2->animate(elapsed_ms);
-	ball3->translate(glm::vec3(0.01, 0.01, 0.01));
 
 	for (const auto& turret : level.guntowers) {
 		turret->update(elapsed_ms);
 	}
 
 	Particles::updateParticleStates(elapsed_ms);
+	UnitManager::update(elapsed_ms);
 
 	return true;
 }

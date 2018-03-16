@@ -76,7 +76,7 @@ set(PROJ_SOURCES
 		src/world.cpp
 		src/unit/gamepiece.cpp
 		src/unit/gameunit.cpp
-		)
+		src/unit/unitmanager.cpp src/unit/unitmanager.hpp)
 
 add_library(libproj ${PROJ_SOURCES})
 target_compile_options(libproj PUBLIC ${CUSTOM_COMPILE_FLAGS})
