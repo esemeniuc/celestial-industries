@@ -6,8 +6,6 @@
 
 #include <vector>
 #include "common.hpp"
-#include "pathfinder.hpp"
-#include "gamepiece.hpp"
 
 enum class UnitState {
 	IDLE, RECHARGING, LOW_ENERGY, ATTACK, RETREAT, ACTION
@@ -15,7 +13,7 @@ enum class UnitState {
 
 
 //assumes we have position from entity class
-class GenericUnit {
+class GameUnit {
 public:
 
 	//immutable values
@@ -32,7 +30,7 @@ public:
 	double targetPathStartTimestamp; //needed to get delta time
 
 
-	GenericUnit() : initialEnergyLevel(50),
+	GameUnit() : initialEnergyLevel(50),
 					attackDamage(6),
 					attackRange(6),
 					attackSpeed(1),
@@ -41,16 +39,8 @@ public:
 					state(UnitState::IDLE){
 	}
 
-	GenericUnit(Model::MeshType _meshType) : initialEnergyLevel(50),
-											 attackDamage(6),
-											 attackRange(6),
-											 attackSpeed(1),
-											 movementSpeed(1),
-											 currentEnergyLevel(50),
-											 state(UnitState::IDLE){
-		}
 
-	GenericUnit(int _initialHealth,
+	GameUnit(int _initialHealth,
 				int _initialEnergyLevel,
 				int _attackDamage,
 				int _attackRange,
@@ -68,25 +58,16 @@ public:
 	}
 
 
-	bool inVisionRange(const AiInfo& _gamePiece) {
-//		return glm::length(glm::vec2(_gamePiece.getPosition() - rigidBody.getPosition())) <= visionRange;
-		return true;
-	}
-
-	bool inAttackRange(const AiInfo& _gamePiece) {
-//		return glm::length(glm::vec2(_gamePiece.getPosition() - rigidBody.getPosition())) <= attackRange;
-		return true;
-	}
 
 
 };
 
 //https://softwareengineering.stackexchange.com/questions/253704/when-is-type-testing-ok
-class RangedUnit : public GenericUnit {
+class RangedUnit : public GameUnit {
 
 public:
 
-	RangedUnit() : GenericUnit(100, 50, 10, 6, 1, 1, 6, 50,
+	RangedUnit() : GameUnit(100, 50, 10, 6, 1, 1, 6, 50,
 														UnitState::IDLE) {
 		logger(LogLevel::DEBUG) << "ranged unit built" << Logger::endl;
 	}

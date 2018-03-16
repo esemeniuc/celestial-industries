@@ -94,13 +94,13 @@ void Entity::setPositionFast(int modelIndex, glm::vec3 position) {
 }
 
 void Entity::setTargetPath(const std::vector<Coord>& targetPath) {
-	genericUnit.targetPathStartTimestamp = 0;
-	genericUnit.targetPath = targetPath;
+	gameUnit.targetPathStartTimestamp = 0;
+	gameUnit.targetPath = targetPath;
 }
 
 //returns a pathIndex and a 0.00 - 0.99 value to interpolate between steps in a path
 std::pair<int, double> Entity::getInterpolationPercentage() {
-	double intermediateVal = (genericUnit.targetPathStartTimestamp / 1000) * genericUnit.movementSpeed;
+	double intermediateVal = (gameUnit.targetPathStartTimestamp / 1000) * gameUnit.movementSpeed;
 	int pathIndex = (int) intermediateVal;
 	double interpolationPercent = clamp<double>(0, intermediateVal - pathIndex, 1);
 
@@ -112,12 +112,12 @@ float lerp(float v0, float v1, float t) {
 }
 
 void Entity::move(double elapsed_time) {
-	genericUnit.targetPathStartTimestamp += elapsed_time;
+	gameUnit.targetPathStartTimestamp += elapsed_time;
 
 	std::pair<int, double> index = getInterpolationPercentage(); //first is index into path, second is interp amount (0 to 1)
-	if (index.first < genericUnit.targetPath.size() - 1) {
-		Coord curr = genericUnit.targetPath[index.first];
-		Coord next = genericUnit.targetPath[index.first + 1];
+	if (index.first < (int)gameUnit.targetPath.size() - 1) {
+		Coord curr = gameUnit.targetPath[index.first];
+		Coord next = gameUnit.targetPath[index.first + 1];
 
 		double dRow = next.rowCoord - curr.rowCoord;
 		double dCol = next.colCoord - curr.colCoord;
@@ -135,6 +135,18 @@ void Entity::move(double elapsed_time) {
 //					  << "\tinterp= " << index.second << "\ttrow=" << transRow << "\ttcol= " << transCol << '\n';
 
 	} else {
-		setPositionFast(0, {genericUnit.targetPath.back().colCoord, 0, genericUnit.targetPath.back().rowCoord});
+		setPositionFast(0, {gameUnit.targetPath.back().colCoord, 0, gameUnit.targetPath.back().rowCoord});
 	}
+}
+
+glm::vec3 Entity::getPosition() const {
+	return rigidBody.getPosition();
+}
+
+bool Entity::inVisionRange(const Entity& other) {
+		return glm::length(glm::vec2(other.getPosition() - this->getPosition())) <= aiInfo.visionRange;
+}
+
+bool Entity::inAttackRange(const Entity& other) {
+	return glm::length(glm::vec2(other.getPosition() - this->getPosition())) <= gameUnit.attackRange;
 }

@@ -222,7 +222,7 @@ void Renderable::scale(glm::vec3 s, bool updateHierarchically)
 */
 void Renderable::setModelMatricesFromComputed()
 {
-    for (int modelIndex = 0; modelIndex < parent->subObjects.size(); modelIndex++)
+    for (size_t modelIndex = 0; modelIndex < parent->subObjects.size(); modelIndex++)
         parent->instances[id].matrixStack[modelIndex] = parent->getModelMatrix(id, modelIndex);
 }
 

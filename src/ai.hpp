@@ -5,7 +5,7 @@
 #pragma once
 
 #include <unordered_set>
-#include "genericunit.hpp"
+#include "gameunit.hpp"
 #include "building.hpp"
 
 //assume AI has goal to destroy main control building of player
@@ -37,7 +37,7 @@ patrol/scout what player is doing
 
 
 class Ai {
-	std::vector<std::vector<GenericUnit>> unitsSeen;
+	std::vector<std::vector<GameUnit>> unitsSeen;
 	std::vector<std::vector<Building>> buildingsSeen;
 
 	int getValueOfPlayerUnits()

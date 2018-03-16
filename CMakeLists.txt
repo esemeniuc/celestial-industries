@@ -71,7 +71,7 @@ set(PROJ_SOURCES
 		src/tile.cpp
 		src/world.cpp
 		src/unit/gamepiece.cpp
-		src/unit/genericunit.cpp
+		src/unit/gameunit.cpp
 		src/building.cpp
 		src/particle.cpp
 		src/collisiondetection.cpp

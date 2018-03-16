@@ -1,7 +1,7 @@
 // Header
 #include <chrono>  // for high_resolution_clock
 #include <unordered_set>
-#include "genericunit.hpp"
+#include "gameunit.hpp"
 #include "logger.hpp"
 #include "world.hpp"
 #include "collisiondetection.hpp"

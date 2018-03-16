@@ -5,11 +5,10 @@
 #include "objloader.hpp"
 
 // stlib
-#include <fstream> // stdout, stderr..
-#include <vector>
 #include <string>
-#include <sstream>
 #include <memory>
+#include <ostream>
+
 
 // glfw
 #define NOMINMAX
@@ -19,7 +18,6 @@
 
 // glm
 #include <glm/fwd.hpp>
-#include <ostream>
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 

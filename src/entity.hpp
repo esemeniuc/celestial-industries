@@ -5,7 +5,7 @@
 #include <sstream>
 #include <cstring>
 #include <map>
-#include <unit/genericunit.hpp>
+#include <unit/gameunit.hpp>
 
 // glm
 #include "glm/glm.hpp"
@@ -36,7 +36,6 @@ public:
 	Entity();
 
 	Entity(Model::MeshType geometry);
-
 
 
 	// functions
@@ -77,9 +76,7 @@ public:
 	RigidBody getRigidBody();
 
 	//funcs
-	glm::vec3 getPosition() const {
-		return rigidBody.getPosition();
-	}
+	glm::vec3 getPosition() const;
 
 	void setTargetPath(const std::vector<Coord>& targetPath);
 
@@ -87,10 +84,15 @@ public:
 
 	std::pair<int, double> getInterpolationPercentage();
 
+	bool inVisionRange(const Entity& other);
+
+	bool inAttackRange(const Entity& other);
+
+
 protected:
 
 	AiInfo aiInfo;
-	GenericUnit genericUnit;
-
+	GameUnit gameUnit;
+	
 	RigidBody rigidBody;
 };

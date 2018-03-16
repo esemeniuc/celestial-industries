@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "genericunit.hpp"
+#include "gameunit.hpp"
 
 //have groups knowing about their units, so the ai just manage the groups
 class UnitGroup //can be owned by player or ai

@@ -4,7 +4,7 @@
 
 //#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch.hpp"
-#include "genericunit.hpp"
+#include "gameunit.hpp"
 #include "world.hpp"
 #include "global.hpp"
 
@@ -13,8 +13,8 @@ TEST_CASE("Unit range is accurate", "[generic_unit]") {
 //	world.initMeshTypes(Model::meshSources);
 //	std::shared_ptr<Renderer> parent = world.meshRenderers[Model::MeshType::SAND_2];
 
-	GenericUnit genericUnit1;
-	GenericUnit genericUnit2;
+	Entity genericUnit1;
+	Entity genericUnit2;
 	std::cout << genericUnit2.getPosition().x << '\n';
 	std::cout << genericUnit2.getPosition().y << '\n';
 	std::cout << genericUnit2.getPosition().z << '\n';
