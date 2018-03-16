@@ -36,7 +36,7 @@ patrol/scout what player is doing
 //down a new building
 
 
-class Ai {
+namespace AiManager {
 	std::vector<std::vector<UnitComp>> unitsSeen;
 	std::vector<std::vector<Building>> buildingsSeen;
 
@@ -67,14 +67,37 @@ class Ai {
 		}
 	}
 
+	void updateValueOfBuildings() {
+		playerUnitValue = 0;
+		aiUnitValue = 0;
+		for (auto& row : entityMap) {
+			for (auto& col : row) {
+				for (Entity& entityInACell : col) {
+					switch (entityInACell.aiComp.owner) {
+						case (GamePieceOwner::AI): {
+							aiBuildingValue += entityInACell.aiComp.value;
+						}
+						case (GamePieceOwner::PLAYER): {
+							playerBuildingValue += entityInACell.aiComp.value;
+						}
+						default: { //do nothing
+						}
+					}
+				}
+			}
+		}
+	}
+
+	void update(double elapsed_ms)
+	{
+		updateValueOfUnits();
+		updateValueOfBuildings();
+	}
+
 	int const PRIORITIZE_CLOSER_ATTACKS = 2;
 
-public:
-	Building* bestBuildingToAttack(std::list<Building>& buildings, Entity& entity);
+	Building* bestBuildingToAttack(std::vector<Building>& buildings, Entity& entity);
 
-	Building* getHighestValuedBuilding(std::list<Building>& buildings);
+	Building* getHighestValuedBuilding(std::vector<Building>& buildings);
 
-	Ai() {
-
-	}
 };

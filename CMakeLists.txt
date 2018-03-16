@@ -50,7 +50,7 @@ set(CUSTOM_INCLUDE_LIBS
 
 set(PROJ_SOURCES
 		ext/gl3w/GL/gl3w.cpp
-		src/ai.cpp
+		src/aimanager.cpp
 		src/building.cpp
 		src/camera.cpp
 		src/collisiondetection.cpp

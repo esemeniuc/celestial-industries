@@ -2,10 +2,9 @@
 // Created by eric on 2/25/18.
 //
 
-#include <list>
-#include "ai.hpp"
+#include "aimanager.hpp"
 
-Building* Ai::bestBuildingToAttack(std::list<Building>& buildings, Entity& entity) {
+Building* AiManager::bestBuildingToAttack(std::vector<Building>& buildings, Entity& entity) {
     float bestAttackValue = -1;
     Building *building;
 
@@ -29,7 +28,7 @@ Building* Ai::bestBuildingToAttack(std::list<Building>& buildings, Entity& entit
     return building;
 }
 
-Building* Ai::getHighestValuedBuilding(std::list<Building>& buildings) {
+Building* AiManager::getHighestValuedBuilding(std::vector<Building>& buildings) {
     int highestValueSoFar = -1;
     Building *building;
 

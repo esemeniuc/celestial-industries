@@ -7,6 +7,7 @@
 #include "world.hpp"
 #include "collisiondetection.hpp"
 #include "particle.hpp"
+#include "aimanager.hpp"
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -238,19 +239,6 @@ bool World::update(double elapsed_ms) {
 		selectedTile->shouldDraw(false);
 	}
 
-	//do localized unit things eg attack retreat, target select
-//	for(auto entity : aiThings)
-//	{
-//		entity.aiComp.process();
-//	}
-//
-//	//do animation tings like move, draw animations etc
-//	for(auto entity : gamePieces)
-//	{
-//		entity.aiComp.process();
-//	}
-
-
 
 
 
@@ -259,6 +247,7 @@ bool World::update(double elapsed_ms) {
 	}
 
 	Particles::updateParticleStates(elapsed_ms);
+	AiManager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
 
 	return true;
