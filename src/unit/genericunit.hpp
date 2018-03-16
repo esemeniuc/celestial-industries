@@ -67,77 +67,18 @@ public:
 											 state(_state) {
 	}
 
-	//gets the index into the targetPath vector
-	int getPathIndex() {
-		return int((targetPathStartTimestamp / 1000) * movementSpeed);
-	}
 
-	//returns a pathIndex and a 0.00 - 0.99 value to interpolate between steps in a path
-	std::pair<int, double> getInterpolationPercentage() {
-		double intermediateVal = (targetPathStartTimestamp / 1000) * movementSpeed;
-		int pathIndex = (int) intermediateVal;
-		double interpolationPercent = clamp<double>(0, intermediateVal - pathIndex, 1);
-
-		return {pathIndex, interpolationPercent};
-	}
-
-	float lerp(float v0, float v1, float t) {
-		return v0 + t * (v1 - v0);
-	}
-
-	void move(double elapsed_time) {
-		targetPathStartTimestamp += elapsed_time;
-
-//		std::pair<int, double> index = getInterpolationPercentage(); //first is index into path, second is interp amount (0 to 1)
-//		if (index.first < targetPath.size() - 1) {
-//			Coord curr = targetPath[index.first];
-//			Coord next = targetPath[index.first + 1];
-//
-//			double dRow = next.rowCoord - curr.rowCoord;
-//			double dCol = next.colCoord - curr.colCoord;
-//
-////			double transRow = (dRow / (1000 / elapsed_time)) * movementSpeed;
-////			double transCol = (dCol / (1000 / elapsed_time)) * movementSpeed;
-////			translate({transCol, 0, transRow});
-//
-//			double transRow = curr.rowCoord + (dRow * index.second);
-//			double transCol = curr.colCoord + (dCol * index.second);
-//			glm::mat4 m = entity->getModelMatrix(0);
-//			m[3][0] = (float) transCol;
-//			m[3][2] = (float) transRow;
-//
-//			entity->geometryRenderer.setModelMatrix(0, m);
-////			std::cout << transRow << ' ' << transCol << '\n';
-////			std::cout << glm::to_string(m) << '\n';
-////			std::cout << "eft= " << elapsed_time << "\ttt = " << targetPathStartTimestamp << "\tindex= " << index.first
-////					  << "\tinterp= " << index.second << "\ttrow=" << transRow << "\ttcol= " << transCol << '\n';
-//
-//		}
-//		else
-//		{
-//			glm::mat4 m = entity->getModelMatrix(0);
-//
-//			m[3][0] = targetPath.back().colCoord;
-//			m[3][2] = targetPath.back().rowCoord;
-//			entity->geometryRenderer.setModelMatrix(0, m);
-//		}
-	}
-
-
-	bool inVisionRange(const GamePiece& _gamePiece) {
+	bool inVisionRange(const AiInfo& _gamePiece) {
 //		return glm::length(glm::vec2(_gamePiece.getPosition() - rigidBody.getPosition())) <= visionRange;
 		return true;
 	}
 
-	bool inAttackRange(const GamePiece& _gamePiece) {
+	bool inAttackRange(const AiInfo& _gamePiece) {
 //		return glm::length(glm::vec2(_gamePiece.getPosition() - rigidBody.getPosition())) <= attackRange;
 		return true;
 	}
 
-	void setTargetPath(const std::vector<Coord>& targetPath) {
-		targetPathStartTimestamp = 0;
-		GenericUnit::targetPath = targetPath;
-	}
+
 };
 
 //https://softwareengineering.stackexchange.com/questions/253704/when-is-type-testing-ok

@@ -12,6 +12,7 @@
 #include <GLFW/glfw3.h>
 
 namespace Model {
+
     enum class MeshType {
         SAND_1,
         SAND_2,
@@ -28,7 +29,7 @@ namespace Model {
     };
 
     extern std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> meshSources;
-    extern std::map<Model::MeshType, std::shared_ptr<Renderer>> meshRenderers;
+    extern std::vector<std::shared_ptr<Renderer>>meshRenderers;
     extern CollisionDetector collisionDetector;
     Renderable createRenderable(MeshType type);
 }

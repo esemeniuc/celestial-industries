@@ -13,7 +13,7 @@ enum class GamePieceType {
 };
 
 
-class GamePiece {
+class AiInfo {
 
 public:
 	//members
@@ -27,10 +27,10 @@ public:
 
 
 	//constructors
-	GamePiece() : initialHealth(100),
+	AiInfo() : initialHealth(100),
 				  visionRange(5) {}
 
-	GamePiece(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceType type, int value)
+	AiInfo(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceType type, int value)
 			: initialHealth(initialHealth),
 			  visionRange(visionRange),
 			  owner(owner),
@@ -38,7 +38,7 @@ public:
 			  currentHealth(initialHealth),
 			  value(value) {}
 
-	GamePiece(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceType type,
+	AiInfo(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceType type,
 			  int currentHealth, int value) : initialHealth(initialHealth),
 											  visionRange(visionRange),
 											  owner(owner), type(type),

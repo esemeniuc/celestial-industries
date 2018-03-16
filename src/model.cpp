@@ -1,4 +1,5 @@
 #include "model.hpp"
+#include <array>
 
 namespace Model {
     std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> meshSources = {
@@ -16,11 +17,11 @@ namespace Model {
         { Model::MeshType::PARTICLE,    { { "ball.obj",        -1 } } },
     };
 
-    std::map<Model::MeshType, std::shared_ptr<Renderer>> meshRenderers;
+    std::vector<std::shared_ptr<Renderer>> meshRenderers(meshSources.size());
     CollisionDetector collisionDetector;
     
     Renderable createRenderable(MeshType type)
     {
-        return Renderable(meshRenderers[type]);
+        return Renderable(meshRenderers[(int)type]);
     }
 }

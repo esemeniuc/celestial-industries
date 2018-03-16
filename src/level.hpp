@@ -52,7 +52,7 @@ public:
 	//funcs
 	bool init(
 			std::vector<std::vector<Model::MeshType>> levelArray,
-			std::map<Model::MeshType, std::shared_ptr<Renderer>> meshRenderers
+			std::vector<std::shared_ptr<Renderer>> meshRenderers
 	);
 
 	void update(float ms);

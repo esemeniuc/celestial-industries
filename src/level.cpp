@@ -1,11 +1,12 @@
-#include "level.hpp"
 #include <iostream>
+#include "global.hpp"
+#include "level.hpp"
 #include "logger.hpp"
 #include "particle.hpp"
 
 bool Level::init(
     std::vector<std::vector<Model::MeshType>> levelArray,
-    std::map<Model::MeshType, std::shared_ptr<Renderer>> meshRenderers
+    std::vector< std::shared_ptr<Renderer>> meshRenderers
 )
 {
     // So that re initializing will be the same as first initialization
@@ -16,7 +17,7 @@ bool Level::init(
 		std::vector<std::shared_ptr<Tile>> tileRow;
 		for (size_t j = 0; j < row.size(); j++) {
             Model::MeshType type = row[j];
-            auto renderer = meshRenderers[type];
+            auto renderer = meshRenderers[(int)type];
             std::shared_ptr<Tile> tilePointer;
             switch (type) {
             case Model::MeshType::GUN_TURRET: {
@@ -116,11 +117,14 @@ std::vector<std::vector<AStarNode>> Level::getLevelTraversalCostMap() {
 
 bool Level::displayPath(const std::vector<Coord>& path) {
 
+	std::vector<std::shared_ptr<Tile>> tempRow;
+	tempRow.reserve(path.size());
 	for (const Coord& component : path) {
-//		std::make_shared<Tile>(world levelmeshRenderers[Model::MeshType::SAND_2]);
-//		tile->translate({component.colCoord, 0, component.rowCoord});
-//		tiles.push_back({tile});
+		auto tile = std::make_shared<Tile>(Model::meshRenderers[(int)Model::MeshType::SAND_2]);
+		tile->translate({component.colCoord, 0, component.rowCoord});
+		tempRow.push_back(tile);
 	}
+	tiles.push_back(tempRow);
 
 	return true;
 }

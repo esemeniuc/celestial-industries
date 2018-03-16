@@ -112,7 +112,7 @@ unsigned int Renderer::getNextId()
     if (instances.size() + 1 > maxInstances / subObjects.size()) {
         throw "Too many instances! Increase maxInstances if you want to do this";
     }
-    return instances.size();
+    return (unsigned int)instances.size();
 }
 
 glm::mat4 Renderer::collapseMatrixVector(std::vector<glm::mat4> v)

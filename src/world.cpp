@@ -23,10 +23,12 @@ World::World() {
 
 World::~World() = default;
 
-std::vector<std::vector<std::vector<GenericUnit>>> entityMap; //2d map of entities, where more than 1 entity can be in a
+std::vector<std::vector<std::vector<Entity>>> entityMap; //2d map of entities, where more than 1 entity can be in a
+//std::vector<std::vector<std::vector<std::shared_ptr<Entity>>>> entityMap; //2d map of entities, where more than 1 entity can be in a
 
 std::shared_ptr<Entity> ballPointer;
 std::shared_ptr<Entity> ballPointer2;
+Entity* ball3;
 
 std::shared_ptr<Particles::ParticleEmitter> fireSpawner;
 
@@ -147,16 +149,17 @@ bool World::init(glm::vec2 screen) {
 	int startx = 12, startz = 27;
 	int targetx = 10, targetz = 10;
 	std::vector<Coord> path = AI::aStar::a_star(costMap, 1, startx, startz, targetx, targetz).second;
-	GenericUnit temp1;
-//	temp1.translate({startz, 0, startx - 1});
+	Entity temp1;
+	level.displayPath(path);
+	temp1.translate({startz, 0, startx - 1});
 	temp1.setTargetPath(path);
 	entityMap[startx][startz].push_back(temp1);
 
 	//wall example
 	startx = 19, startz = 40;
 	path = AI::aStar::a_star(costMap, 1, startx, startz, targetx, targetz).second;
-	GenericUnit temp2;
-//	temp2.translate({startz, 0, startx - 1});
+	Entity temp2;
+	temp2.translate({startz, 0, startx - 1});
 	temp2.setTargetPath(path);
 	entityMap[startx][startz].push_back(temp2);
 
@@ -165,16 +168,16 @@ bool World::init(glm::vec2 screen) {
 	//display a path
 	startx = 1, startz = 40;
 	path = AI::aStar::a_star(costMap, 1, startx, startz, targetx, targetz).second;
-	GenericUnit temp3;
-//	temp3.translate({startz, 0, startx - 1});
+	Entity temp3;
+	temp3.translate({startz, 0, startx - 1});
 	temp3.setTargetPath(path);
 	entityMap[startx][startz].push_back(temp3);
 
-//	Entity* ballPtr = new Entity(BALL);
 
 	ballPointer = std::make_shared<Entity>(Model::MeshType::BALL);
 	ballPointer2 = std::make_shared<Entity>(Model::MeshType::BALL);
 //	ballPointer2->setModelMatrix(0,{4,4,4});
+	ball3 = new Entity();
 
 
 	selectedTileCoordinates.rowCoord = (int) levelArray.size() / 2;
@@ -190,7 +193,7 @@ bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<Sub
 	for (auto source : sources) {
 		Model::MeshType tileType = source.first;
 		std::vector<SubObjectSource> objSources = source.second;
-		Model::meshRenderers[tileType] = std::make_shared<Renderer>(objShader, objSources);
+		Model::meshRenderers[(int)tileType] = std::make_shared<Renderer>(objShader, objSources);
 	}
 	return true;
 }
@@ -257,9 +260,10 @@ bool World::update(double elapsed_ms) {
 		}
 	}
 
-//	ballPointer->translate(glm::vec3(0.01, 0.0, 0.01));
-//	ballPointer2->translate(glm::vec3(-0.01, 0.0, -0.01));
+	ballPointer->translate(glm::vec3(0.01, 0.0, 0.01));
+	ballPointer2->translate(glm::vec3(-0.01, 0.0, -0.01));
 //	ballPointer2->animate(elapsed_ms);
+	ball3->translate(glm::vec3(0.01, 0.01, 0.01));
 
 	for (const auto& turret : level.guntowers) {
 		turret->update(elapsed_ms);
@@ -293,7 +297,7 @@ void World::draw() {
 	glm::mat4 projectionView = projection * view;
 
 	for (auto renderer : Model::meshRenderers) {
-		renderer.second->render(projectionView);
+		renderer->render(projectionView);
 	}
 
 
