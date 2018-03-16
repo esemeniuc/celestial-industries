@@ -16,10 +16,8 @@ enum class UnitState {
 
 //assumes we have position from entity class
 class GenericUnit {
-private:
+public:
 
-
-protected:
 	//immutable values
 	const int initialEnergyLevel;
 	const int attackDamage;
@@ -33,8 +31,6 @@ protected:
 	std::vector<Coord> targetPath;
 	double targetPathStartTimestamp; //needed to get delta time
 
-public:
-
 
 	GenericUnit() : initialEnergyLevel(50),
 					attackDamage(6),
@@ -42,8 +38,7 @@ public:
 					attackSpeed(1),
 					movementSpeed(15),
 					currentEnergyLevel(50),
-					state(UnitState::IDLE),
-					GamePiece(100, 6, GamePieceOwner::NONE, GamePieceType::NONE, 50) {
+					state(UnitState::IDLE){
 	}
 
 	GenericUnit(Model::MeshType _meshType) : initialEnergyLevel(50),
@@ -52,8 +47,7 @@ public:
 											 attackSpeed(1),
 											 movementSpeed(1),
 											 currentEnergyLevel(50),
-											 state(UnitState::IDLE),
-											 GamePiece(100, 6, GamePieceOwner::NONE, GamePieceType::NONE, 50) {
+											 state(UnitState::IDLE){
 		}
 
 	GenericUnit(int _initialHealth,
@@ -63,7 +57,7 @@ public:
 				int _attackSpeed,
 				int _movementSpeed,
 				int _visionRange,
-				int _unitValue
+				int _unitValue,
 				UnitState _state) : initialEnergyLevel(_initialEnergyLevel),
 											 attackDamage(_attackDamage),
 											 attackRange(_attackRange),
@@ -94,48 +88,50 @@ public:
 	void move(double elapsed_time) {
 		targetPathStartTimestamp += elapsed_time;
 
-		std::pair<int, double> index = getInterpolationPercentage(); //first is index into path, second is interp amount (0 to 1)
-		if (index.first < targetPath.size() - 1) {
-			Coord curr = targetPath[index.first];
-			Coord next = targetPath[index.first + 1];
-
-			double dRow = next.rowCoord - curr.rowCoord;
-			double dCol = next.colCoord - curr.colCoord;
-
-//			double transRow = (dRow / (1000 / elapsed_time)) * movementSpeed;
-//			double transCol = (dCol / (1000 / elapsed_time)) * movementSpeed;
-//			translate({transCol, 0, transRow});
-
-			double transRow = curr.rowCoord + (dRow * index.second);
-			double transCol = curr.colCoord + (dCol * index.second);
-			glm::mat4 m = entity->getModelMatrix(0);
-			m[3][0] = (float) transCol;
-			m[3][2] = (float) transRow;
-
-			entity->geometryRenderer.setModelMatrix(0, m);
-//			std::cout << transRow << ' ' << transCol << '\n';
-//			std::cout << glm::to_string(m) << '\n';
-//			std::cout << "eft= " << elapsed_time << "\ttt = " << targetPathStartTimestamp << "\tindex= " << index.first
-//					  << "\tinterp= " << index.second << "\ttrow=" << transRow << "\ttcol= " << transCol << '\n';
-
-		}
-		else
-		{
-			glm::mat4 m = entity->getModelMatrix(0);
-
-			m[3][0] = targetPath.back().colCoord;
-			m[3][2] = targetPath.back().rowCoord;
-			entity->geometryRenderer.setModelMatrix(0, m);
-		}
+//		std::pair<int, double> index = getInterpolationPercentage(); //first is index into path, second is interp amount (0 to 1)
+//		if (index.first < targetPath.size() - 1) {
+//			Coord curr = targetPath[index.first];
+//			Coord next = targetPath[index.first + 1];
+//
+//			double dRow = next.rowCoord - curr.rowCoord;
+//			double dCol = next.colCoord - curr.colCoord;
+//
+////			double transRow = (dRow / (1000 / elapsed_time)) * movementSpeed;
+////			double transCol = (dCol / (1000 / elapsed_time)) * movementSpeed;
+////			translate({transCol, 0, transRow});
+//
+//			double transRow = curr.rowCoord + (dRow * index.second);
+//			double transCol = curr.colCoord + (dCol * index.second);
+//			glm::mat4 m = entity->getModelMatrix(0);
+//			m[3][0] = (float) transCol;
+//			m[3][2] = (float) transRow;
+//
+//			entity->geometryRenderer.setModelMatrix(0, m);
+////			std::cout << transRow << ' ' << transCol << '\n';
+////			std::cout << glm::to_string(m) << '\n';
+////			std::cout << "eft= " << elapsed_time << "\ttt = " << targetPathStartTimestamp << "\tindex= " << index.first
+////					  << "\tinterp= " << index.second << "\ttrow=" << transRow << "\ttcol= " << transCol << '\n';
+//
+//		}
+//		else
+//		{
+//			glm::mat4 m = entity->getModelMatrix(0);
+//
+//			m[3][0] = targetPath.back().colCoord;
+//			m[3][2] = targetPath.back().rowCoord;
+//			entity->geometryRenderer.setModelMatrix(0, m);
+//		}
 	}
 
 
 	bool inVisionRange(const GamePiece& _gamePiece) {
-		return glm::length(glm::vec2(_gamePiece.getPosition() - rigidBody.getPosition())) <= visionRange;
+//		return glm::length(glm::vec2(_gamePiece.getPosition() - rigidBody.getPosition())) <= visionRange;
+		return true;
 	}
 
 	bool inAttackRange(const GamePiece& _gamePiece) {
-		return glm::length(glm::vec2(_gamePiece.getPosition() - rigidBody.getPosition())) <= attackRange;
+//		return glm::length(glm::vec2(_gamePiece.getPosition() - rigidBody.getPosition())) <= attackRange;
+		return true;
 	}
 
 	void setTargetPath(const std::vector<Coord>& targetPath) {
@@ -149,10 +145,7 @@ class RangedUnit : public GenericUnit {
 
 public:
 
-
 	RangedUnit() : GenericUnit(100, 50, 10, 6, 1, 1, 6, 50,
-														GamePieceOwner::PLAYER,
-														GamePieceType::OFFENSIVE,
 														UnitState::IDLE) {
 		logger(LogLevel::DEBUG) << "ranged unit built" << Logger::endl;
 	}

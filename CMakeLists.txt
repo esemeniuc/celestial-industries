@@ -75,35 +75,31 @@ set(PROJ_SOURCES
 		src/unit/genericunit.cpp
 		src/unit/unitgroup.cpp)
 
+add_library(libproj ${PROJ_SOURCES})
+target_compile_options(libproj PUBLIC ${CUSTOM_COMPILE_FLAGS})
+target_link_libraries(libproj PUBLIC ${CUSTOM_INCLUDE_LIBS})
+target_include_directories(libproj PUBLIC ${CUSTOM_INCLUDE_DIRS})
+
 set(TEST_SUITE_SOURCES
 		test/example.cpp
 		test/genericunit_test.cpp
 		)
 
-add_executable(proj
-		src/main.cpp
-		${PROJ_SOURCES})
-
-target_compile_options(proj PUBLIC ${CUSTOM_COMPILE_FLAGS})
+add_executable(proj src/main.cpp)
 
 if (APPLE)
-	target_link_libraries(proj "-framework CoreFoundation")
+	target_link_libraries(libproj "-framework CoreFoundation")
 endif ()
 
-target_include_directories(proj PUBLIC ${CUSTOM_INCLUDE_DIRS})
-target_link_libraries(proj ${CUSTOM_INCLUDE_LIBS})
+target_link_libraries(proj libproj)
 
 
 # Prepare "Catch" library for other executables
 set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/catch2/single_include)
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
-add_executable(test_suite
-		${PROJ_SOURCES}
-		${TEST_SUITE_SOURCES})
-target_compile_options(test_suite PUBLIC ${CUSTOM_COMPILE_FLAGS})
-target_include_directories(test_suite PUBLIC ${CUSTOM_INCLUDE_DIRS})
-target_link_libraries(test_suite Catch ${CUSTOM_INCLUDE_LIBS}) #so wecan run the "test_suite" binary from the build folder
+add_executable(test_suite ${TEST_SUITE_SOURCES})
+target_link_libraries(test_suite Catch libproj) #so wecan run the "test_suite" binary from the build folder
 
 # for ctest, you can run "ctest" in the build folder
 enable_testing(true)

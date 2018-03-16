@@ -27,8 +27,8 @@ public:
 
 
 	//constructors
-	GamePiece(const int initialHealth, const int visionRange) : initialHealth(initialHealth),
-																visionRange(visionRange) {}
+	GamePiece() : initialHealth(100),
+				  visionRange(5) {}
 
 	GamePiece(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceType type, int value)
 			: initialHealth(initialHealth),
@@ -40,10 +40,10 @@ public:
 
 	GamePiece(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceType type,
 			  int currentHealth, int value) : initialHealth(initialHealth),
-																			  visionRange(visionRange),
-																			  owner(owner), type(type),
-																			  currentHealth(currentHealth),
-																			  value(value) {}
+											  visionRange(visionRange),
+											  owner(owner), type(type),
+											  currentHealth(currentHealth),
+											  value(value) {}
 
 
 };

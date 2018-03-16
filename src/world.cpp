@@ -143,7 +143,7 @@ bool World::init(glm::vec2 screen) {
 	int targetx = 10, targetz = 10;
 	std::vector<Coord> path = AI::aStar::a_star(costMap, 1, startx, startz, targetx, targetz).second;
 	GenericUnit temp1;
-	temp1.translate({startz, 0, startx - 1});
+//	temp1.translate({startz, 0, startx - 1});
 	temp1.setTargetPath(path);
 	entityMap[startx][startz].push_back(temp1);
 
@@ -151,7 +151,7 @@ bool World::init(glm::vec2 screen) {
 	startx = 19, startz = 40;
 	path = AI::aStar::a_star(costMap, 1, startx, startz, targetx, targetz).second;
 	GenericUnit temp2;
-	temp2.translate({startz, 0, startx - 1});
+//	temp2.translate({startz, 0, startx - 1});
 	temp2.setTargetPath(path);
 	entityMap[startx][startz].push_back(temp2);
 
@@ -161,7 +161,7 @@ bool World::init(glm::vec2 screen) {
 	startx = 1, startz = 40;
 	path = AI::aStar::a_star(costMap, 1, startx, startz, targetx, targetz).second;
 	GenericUnit temp3;
-	temp3.translate({startz, 0, startx - 1});
+//	temp3.translate({startz, 0, startx - 1});
 	temp3.setTargetPath(path);
 	entityMap[startx][startz].push_back(temp3);
 
