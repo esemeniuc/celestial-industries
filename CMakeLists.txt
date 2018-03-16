@@ -53,6 +53,9 @@ set(PROJ_SOURCES
 		src/ai.cpp
 		src/building.cpp
 		src/camera.cpp
+		src/collisiondetection.cpp
+		src/collisiondetector.cpp
+		src/collisionResolver.cpp
 		src/config.hpp
 		src/common.cpp
 		src/entity.cpp
@@ -63,6 +66,7 @@ set(PROJ_SOURCES
 		src/model.cpp
 		src/objloader.cpp
 		src/pathfinder.cpp
+		src/particle.cpp
 		src/renderer.cpp
 		src/rigidBody.cpp
 		src/shader.cpp
@@ -72,12 +76,6 @@ set(PROJ_SOURCES
 		src/world.cpp
 		src/unit/gamepiece.cpp
 		src/unit/gameunit.cpp
-		src/building.cpp
-		src/particle.cpp
-		src/collisiondetection.cpp
-		src/collisiondetector.cpp
-		src/collisionResolver.cpp
-		src/rigidBody.cpp
 		)
 
 add_library(libproj ${PROJ_SOURCES})
