@@ -23,7 +23,6 @@ set(CUSTOM_COMPILE_FLAGS
 		-Wpedantic
 		-Wextra
 		-Wnull-dereference
-		-Wshadow
 		-Wformat=2
 		-Wno-comment
 		-Wno-unused-parameter
@@ -57,7 +56,6 @@ set(PROJ_SOURCES
 		src/config.hpp
 		src/common.cpp
 		src/entity.cpp
-		src/unit/gamepiece.cpp
 		src/global.cpp
 		src/global.hpp
 		src/level.cpp
@@ -72,13 +70,15 @@ set(PROJ_SOURCES
 		src/textureloader.cpp
 		src/tile.cpp
 		src/world.cpp
+		src/unit/gamepiece.cpp
 		src/unit/genericunit.cpp
 		src/building.cpp
 		src/particle.cpp
 		src/collisiondetection.cpp
 		src/collisiondetector.cpp
 		src/collisionResolver.cpp
-		src/rigidBody.cpp)
+		src/rigidBody.cpp
+		)
 
 add_library(libproj ${PROJ_SOURCES})
 target_compile_options(libproj PUBLIC ${CUSTOM_COMPILE_FLAGS})

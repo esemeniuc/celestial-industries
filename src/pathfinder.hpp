@@ -44,7 +44,5 @@ namespace AI {
 		static std::vector<Coord>
 		reconstruct_path(const std::unordered_map<AStarNode, AStarNode, aStarHasher>& came_from,
 						 const AStarNode& start, const AStarNode& goal);
-
-		static std::queue<std::pair<float, float>> createInterpolatedPath(const std::vector<Coord>& path);
-	};
+		};
 }

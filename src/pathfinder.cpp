@@ -105,8 +105,8 @@ namespace AI {
 		int goalRow = goalX / tileSize;
 		int goalCol = goalZ / tileSize;
 
-		AStarNode start = AStarNode(startRow, startCol, 10.0f, 0.0f);
-		AStarNode goal = AStarNode(goalRow, goalCol, 10.0f, INF);
+		AStarNode start = AStarNode(startRow, startCol, 10, 0);
+		AStarNode goal = AStarNode(goalRow, goalCol, 10, INF);
 
 		frontier.push(start);
 		came_from[start] = start;
@@ -147,23 +147,4 @@ namespace AI {
 		return {false, {}}; //false for bool because we didn't find a path
 	}
 
-	std::queue<std::pair<float, float>> AI::aStar::createInterpolatedPath(const std::vector<Coord>& path) {
-		std::queue<std::pair<float, float>> aStarPath;
-		//create interpolated moves for the ball
-		for (int i = 0; i < path.size() - 1; i++) {
-//		std::cout << path[i].rowCoord << '\t' << path[i].colCoord << '\n';
-
-			float stepSize = 3;
-			float dx = path[i + 1].rowCoord - path[i].rowCoord;
-			float dy = path[i + 1].colCoord - path[i].colCoord;
-			float transX = dx / stepSize;
-			float transY = dy / stepSize;
-
-			for (int k = 0; k < (int) stepSize; k++) {
-//			std::cout << transX << '\t' << transY << '\n';
-				aStarPath.emplace(transX, transY);
-			}
-		}
-		return aStarPath;
-	}
 }
