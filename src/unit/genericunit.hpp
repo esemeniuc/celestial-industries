@@ -113,7 +113,6 @@ public:
 			m[3][2] = (float) transRow;
 
 			entity->geometryRenderer.setModelMatrix(0, m);
-			entity->setModelMatrix(0, {transCol, 0, transRow});
 //			std::cout << transRow << ' ' << transCol << '\n';
 //			std::cout << glm::to_string(m) << '\n';
 //			std::cout << "eft= " << elapsed_time << "\ttt = " << targetPathStartTimestamp << "\tindex= " << index.first
@@ -126,6 +125,7 @@ public:
 
 			m[3][0] = targetPath.back().colCoord;
 			m[3][2] = targetPath.back().rowCoord;
+			entity->geometryRenderer.setModelMatrix(0, m);
 		}
 	}
 
