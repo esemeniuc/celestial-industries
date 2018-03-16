@@ -253,16 +253,16 @@ bool World::update(double elapsed_ms) {
 	}
 
 	//do localized unit things eg attack retreat, target select
-	for(auto entity : aiThings)
-	{
-		entity.aiComp.process();
-	}
-
-	//do animation tings like move, draw animations etc
-	for(auto entity : gamePieces)
-	{
-		entity.aiComp.process();
-	}
+//	for(auto entity : aiThings)
+//	{
+//		entity.aiComp.process();
+//	}
+//
+//	//do animation tings like move, draw animations etc
+//	for(auto entity : gamePieces)
+//	{
+//		entity.aiComp.process();
+//	}
 
 
 

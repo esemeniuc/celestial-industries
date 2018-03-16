@@ -37,12 +37,11 @@ patrol/scout what player is doing
 
 
 class Ai {
-	std::vector<std::vector<GameUnit>> unitsSeen;
+	std::vector<std::vector<UnitComp>> unitsSeen;
 	std::vector<std::vector<Building>> buildingsSeen;
 
 	int getValueOfPlayerUnits()
 	{
-		return 0;
 	}
 
 	int const PRIORITIZE_CLOSER_ATTACKS = 2;

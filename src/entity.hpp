@@ -91,8 +91,8 @@ public:
 
 protected:
 
-	AiInfo aiInfo;
-	GameUnit gameUnit;
-	
+	AiComp aiComp;
+	UnitComp unitComp;
+
 	RigidBody rigidBody;
 };

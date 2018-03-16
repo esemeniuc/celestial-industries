@@ -13,7 +13,7 @@ enum class UnitState {
 
 
 //assumes we have position from entity class
-class GameUnit {
+class UnitComp {
 public:
 
 	//immutable values
@@ -30,7 +30,7 @@ public:
 	double targetPathStartTimestamp; //needed to get delta time
 
 
-	GameUnit() : initialEnergyLevel(50),
+	UnitComp() : initialEnergyLevel(50),
 					attackDamage(6),
 					attackRange(6),
 					attackSpeed(1),
@@ -40,7 +40,7 @@ public:
 	}
 
 
-	GameUnit(int _initialHealth,
+	UnitComp(int _initialHealth,
 				int _initialEnergyLevel,
 				int _attackDamage,
 				int _attackRange,
@@ -63,11 +63,11 @@ public:
 };
 
 //https://softwareengineering.stackexchange.com/questions/253704/when-is-type-testing-ok
-class RangedUnit : public GameUnit {
+class RangedUnit : public UnitComp {
 
 public:
 
-	RangedUnit() : GameUnit(100, 50, 10, 6, 1, 1, 6, 50,
+	RangedUnit() : UnitComp(100, 50, 10, 6, 1, 1, 6, 50,
 														UnitState::IDLE) {
 		logger(LogLevel::DEBUG) << "ranged unit built" << Logger::endl;
 	}
