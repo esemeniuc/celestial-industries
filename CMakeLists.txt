@@ -88,7 +88,7 @@ set(TEST_SUITE_SOURCES
 		test/genericunit_test.cpp
 		)
 
-add_executable(proj src/main.cpp)
+add_executable(proj src/main.cpp) #main.cpp gets compile flags through PUBLIC flag of libproj
 
 if (APPLE)
 	target_link_libraries(libproj "-framework CoreFoundation")
@@ -102,7 +102,7 @@ set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/catch2/single_include)
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 add_executable(test_suite ${TEST_SUITE_SOURCES})
-target_link_libraries(test_suite Catch libproj) #so wecan run the "test_suite" binary from the build folder
+target_link_libraries(test_suite Catch libproj) #so we can run the "test_suite" binary from the build folder
 
 # for ctest, you can run "ctest" in the build folder
 enable_testing(true)
