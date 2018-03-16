@@ -83,6 +83,7 @@ set(TEST_SUITE_SOURCES
 add_executable(proj
 		src/main.cpp
 		${PROJ_SOURCES})
+
 target_compile_options(proj PUBLIC ${CUSTOM_COMPILE_FLAGS})
 
 if (APPLE)
@@ -97,11 +98,12 @@ target_link_libraries(proj ${CUSTOM_INCLUDE_LIBS})
 set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/catch2/single_include)
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
-add_executable(test_suite ${PROJ_SOURCES} ${TEST_SUITE_SOURCES})
+add_executable(test_suite
+		${PROJ_SOURCES}
+		${TEST_SUITE_SOURCES})
 target_compile_options(test_suite PUBLIC ${CUSTOM_COMPILE_FLAGS})
 target_include_directories(test_suite PUBLIC ${CUSTOM_INCLUDE_DIRS})
-target_link_libraries(test_suite Catch) #can run the "test_suite" binary from the build folder
-target_link_libraries(test_suite ${CUSTOM_INCLUDE_LIBS})
+target_link_libraries(test_suite Catch ${CUSTOM_INCLUDE_LIBS}) #so wecan run the "test_suite" binary from the build folder
 
 # for ctest, you can run "ctest" in the build folder
 enable_testing(true)
