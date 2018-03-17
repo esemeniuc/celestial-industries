@@ -1,5 +1,4 @@
 #include "model.hpp"
-#include <array>
 
 namespace Model {
     std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> meshSources = {
@@ -22,6 +21,6 @@ namespace Model {
     
     Renderable createRenderable(MeshType type)
     {
-        return Renderable(meshRenderers[(int)type]);
+        return Renderable(meshRenderers[type]);
     }
 }

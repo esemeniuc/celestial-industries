@@ -2,5 +2,5 @@
 // Created by eric on 2/26/18.
 //
 
-#include "gameunit.hpp"
+#include "unitcomp.hpp"
 

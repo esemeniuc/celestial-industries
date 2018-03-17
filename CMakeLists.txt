@@ -50,6 +50,7 @@ set(CUSTOM_INCLUDE_LIBS
 
 set(PROJ_SOURCES
 		ext/gl3w/GL/gl3w.cpp
+		src/aicomp.cpp
 		src/aimanager.cpp
 		src/building.cpp
 		src/camera.cpp
@@ -74,8 +75,7 @@ set(PROJ_SOURCES
 		src/textureloader.cpp
 		src/tile.cpp
 		src/world.cpp
-		src/unit/gamepiece.cpp
-		src/unit/gameunit.cpp
+		src/unit/unitcomp.cpp
 		src/unit/unitmanager.cpp src/unit/unitmanager.hpp)
 
 add_library(libproj ${PROJ_SOURCES})

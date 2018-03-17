@@ -5,7 +5,7 @@
 #include <sstream>
 #include <cstring>
 #include <map>
-#include <unit/gameunit.hpp>
+#include <unit/unitcomp.hpp>
 
 // glm
 #include "glm/glm.hpp"
@@ -15,7 +15,7 @@
 #include "renderer.hpp"
 #include "model.hpp"
 #include "rigidBody.hpp"
-#include "gamepiece.hpp"
+#include "aicomp.hpp"
 
 
 

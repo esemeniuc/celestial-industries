@@ -5,7 +5,7 @@
 #pragma once
 
 #include "global.hpp"
-#include "gameunit.hpp"
+#include "unitcomp.hpp"
 #include "building.hpp"
 
 //assume AI has goal to destroy main control building of player

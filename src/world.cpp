@@ -2,7 +2,7 @@
 #include <chrono>  // for high_resolution_clock
 #include <unordered_set>
 #include <unit/unitmanager.hpp>
-#include "gameunit.hpp"
+#include "unitcomp.hpp"
 #include "logger.hpp"
 #include "world.hpp"
 #include "collisiondetection.hpp"

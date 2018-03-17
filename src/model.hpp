@@ -1,8 +1,6 @@
 #pragma once
 #include <vector>
-#include <map>
 #include <utility>
-#include "objloader.hpp"
 #include "renderer.hpp"
 #include "collisiondetector.hpp"
 
