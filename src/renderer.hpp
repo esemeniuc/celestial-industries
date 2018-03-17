@@ -1,5 +1,6 @@
 #pragma once
 #include "common.hpp"
+#include "objloader.hpp"
 #include "shader.hpp"
 
 // A Mesh is a collection of a VertexBuffer and an IndexBuffer. A VAO

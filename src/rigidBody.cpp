@@ -2,9 +2,9 @@
 #include "collisiondetection.hpp"
 #include "model.hpp"
 
-RigidBody::RigidBody(glm::vec3 position, glm::vec3 size, glm::vec3 velocity)
+RigidBody::RigidBody(glm::vec3 _size, glm::vec3 _position, glm::vec3 _velocity)
 {
-    geometryId = Model::collisionDetector.createBoundingBox(position, size, velocity);
+    geometryId = Model::collisionDetector.createBoundingBox(_position, _size, _velocity);
 }
 
 void RigidBody::setVelocity(glm::vec3 _velocity)

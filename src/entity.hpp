@@ -75,6 +75,8 @@ public:
 
 	void setTargetPath(const std::vector<Coord>& targetPath);
 
+	void moveTo(int x, int z);
+
 	void move(double elapsed_time);
 
 	std::pair<int, double> getInterpolationPercentage();

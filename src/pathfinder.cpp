@@ -9,7 +9,7 @@ namespace AI {
 		AStarNode current = goal;
 		std::vector<Coord> path;
 		while (current != start) {
-			path.emplace_back(current.rowCoord, current.colCoord);
+			path.emplace_back(current.colCoord, current.rowCoord);
 			current = came_from.at(current); //use at() to satisfy const constraint
 		}
 //		path.emplace_back(start.rowCoord, start.colCoord);
@@ -92,11 +92,11 @@ namespace AI {
 		/* hash table that helps us keep track of how we reached a tile node
 		using a key of its predecessor node in the path*/
 		std::unordered_map<AStarNode, AStarNode, aStarHasher> came_from;
-		came_from.reserve(graph.size() * graph[0].size());
+		came_from.reserve(graph.size() * graph.front().size());
 
 		// cost associated with a path up to a certain node
 		std::unordered_map<AStarNode, double, aStarHasher> cost_so_far;
-		cost_so_far.reserve(graph.size() * graph[0].size());
+		cost_so_far.reserve(graph.size() * graph.front().size());
 
 		// check which tiles the given positions lie in
 		// TODO: check coordinate signs ( -Z as opposed to +Z for tile positions)
@@ -105,8 +105,8 @@ namespace AI {
 		int goalRow = goalX / tileSize;
 		int goalCol = goalZ / tileSize;
 
-		AStarNode start = AStarNode(startRow, startCol, 10, 0);
-		AStarNode goal = AStarNode(goalRow, goalCol, 10, INF);
+		AStarNode start = AStarNode(startCol, startRow, 10, 0);
+		AStarNode goal = AStarNode(goalCol, goalRow, 10, INF);
 
 		frontier.push(start);
 		came_from[start] = start;

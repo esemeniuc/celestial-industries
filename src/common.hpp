@@ -2,24 +2,29 @@
 
 #include "config.hpp"
 #include "logger.hpp"
-#include "objloader.hpp"
 
 // stlib
-#include <string>
 #include <memory>
 #include <ostream>
+#include <string>
+#include <vector>
 
 
 // glfw
 #define NOMINMAX
-
 #include <gl3w.h>
 #include <GLFW/glfw3.h>
 
 // glm
-#include <glm/fwd.hpp>
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+
+//ignore warnings from glm string_cast
+#pragma GCC diagnostic push // save diagnostic state
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#define GLM_ENABLE_EXPERIMENTAL //for string printing
+#include "glm/gtx/string_cast.hpp"
+#pragma GCC diagnostic pop
 
 // Simple utility macros to avoid mistyping directory name, name has to be a string literal
 // audio_path("audio.ogg") -> data/audio/audio.ogg

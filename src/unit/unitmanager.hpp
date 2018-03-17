@@ -5,8 +5,8 @@
 
 namespace UnitManager {
 
-	void init(size_t levelWidth, size_t levelHeight) {
-		entityMap = std::vector<std::vector<std::vector<Entity>>>(levelWidth, std::vector<std::vector<Entity>>(levelHeight));
+	void init(size_t levelHeight, size_t levelWidth) {
+		entityMap = std::vector<std::vector<std::vector<Entity>>>(levelHeight, std::vector<std::vector<Entity>>(levelWidth));
 	}
 
 

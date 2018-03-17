@@ -25,8 +25,6 @@ World::World() {
 
 World::~World() = default;
 
-std::vector<std::vector<std::vector<Entity>>> entityMap; //2d map of entities, where more than 1 entity can be in a
-
 std::shared_ptr<Particles::ParticleEmitter> fireSpawner;
 
 
@@ -115,7 +113,7 @@ bool World::init(glm::vec2 screen) {
 	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isn't being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
 
-	std::vector<std::vector<Model::MeshType>> levelArray = level.levelLoader(
+	levelArray = level.levelLoader(
 			pathBuilder({"data", "levels"}) + "level1.txt");
 
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
@@ -124,13 +122,13 @@ bool World::init(glm::vec2 screen) {
 	level.init(levelArray, Model::meshRenderers);
 	UnitManager::init(levelArray.size(), levelArray.front().size());
 	// test different starting points for the AI
-	std::vector<std::vector<AStarNode>> costMap = level.getLevelTraversalCostMap();
+	aiCostMap = level.getLevelTraversalCostMap();
 	//benchmark a*
 	{
 		auto start = std::chrono::high_resolution_clock::now();
-		AI::aStar::a_star(costMap, 1, 19, 1, 11, 25);
-		AI::aStar::a_star(costMap, 1, 1, 1, 11, 25);
-		AI::aStar::a_star(costMap, 1, 1, 39, 11, 25);
+		AI::aStar::a_star(aiCostMap, 1, 19, 1, 11, 25);
+		AI::aStar::a_star(aiCostMap, 1, 1, 1, 11, 25);
+		AI::aStar::a_star(aiCostMap, 1, 1, 39, 11, 25);
 		auto finish = std::chrono::high_resolution_clock::now();
 
 		std::chrono::duration<double> elapsed = finish - start;
@@ -139,36 +137,31 @@ bool World::init(glm::vec2 screen) {
 
 
 	//display a path
-	int startx = 12, startz = 27;
+	int startx = 25, startz = 11;
 	int targetx = 10, targetz = 10;
-	std::vector<Coord> path = AI::aStar::a_star(costMap, 1, startx, startz, targetx, targetz).second;
 	Entity temp1;
-	level.displayPath(path);
-	temp1.translate({startz, 0, startx - 1});
-	temp1.setTargetPath(path);
-	entityMap[startx][startz].push_back(temp1);
+	temp1.translate({startx, 0, startz});
+	temp1.moveTo(targetx, targetz);
+	entityMap[startz][startx].push_back(temp1);
+
 
 	//wall example
-	startx = 19, startz = 40;
-	path = AI::aStar::a_star(costMap, 1, startx, startz, targetx, targetz).second;
+	startx = 39, startz = 19;
 	Entity temp2;
-	temp2.translate({startz, 0, startx - 1});
-	temp2.setTargetPath(path);
-	entityMap[startx][startz].push_back(temp2);
-
+	temp2.translate({startx, 0, startz});
+	temp2.moveTo(targetx, targetz);
+	entityMap[startz][startx].push_back(temp2);
 
 	//mining tower example
-	//display a path
-	startx = 1, startz = 40;
-	path = AI::aStar::a_star(costMap, 1, startx, startz, targetx, targetz).second;
+	startx = 39, startz = 1;
 	Entity temp3;
-	temp3.translate({startz, 0, startx - 1});
-	temp3.setTargetPath(path);
-	entityMap[startx][startz].push_back(temp3);
+	temp3.translate({startx, 0, startz});
+	temp3.moveTo(targetx, targetz);
+	entityMap[startz][startx].push_back(temp3);
 
 
-	selectedTileCoordinates.rowCoord = (int) levelArray.size() / 2;
-	selectedTileCoordinates.colCoord = (int) levelArray.size() / 2;
+	selectedTileCoordinates.rowCoord = level.getLevelSize().rowCoord / 2;
+	selectedTileCoordinates.colCoord = level.getLevelSize().colCoord / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 
 	return true;
@@ -180,7 +173,7 @@ bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<Sub
 	for (auto source : sources) {
 		Model::MeshType tileType = source.first;
 		std::vector<SubObjectSource> objSources = source.second;
-		Model::meshRenderers[(int)tileType] = std::make_shared<Renderer>(objShader, objSources);
+		Model::meshRenderers[tileType] = std::make_shared<Renderer>(objShader, objSources);
 	}
 	return true;
 }
@@ -238,9 +231,6 @@ bool World::update(double elapsed_ms) {
 		selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 		selectedTile->shouldDraw(false);
 	}
-
-
-
 
 	for (const auto& turret : level.guntowers) {
 		turret->update(elapsed_ms);
@@ -378,7 +368,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 }
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
-	camera.pan((int)xpos,(int) ypos);
+	camera.pan((int) xpos, (int) ypos);
 
 	int windowWidth;
 	int windowHeight;
@@ -408,8 +398,8 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 
 	if (t > 0) {
 		glm::vec3 pointInWorld = camera.position + (t * directionVector);
-        selectedTileCoordinates.rowCoord = (int) round(pointInWorld.z);
-        selectedTileCoordinates.colCoord = (int) round(pointInWorld.x);
+		selectedTileCoordinates.rowCoord = (int) round(pointInWorld.z);
+		selectedTileCoordinates.colCoord = (int) round(pointInWorld.x);
 	}
 
 

@@ -1,4 +1,5 @@
 #include "entity.hpp"
+#include "global.hpp" //for pathfinding stuff
 
 Entity::Entity() : geometryRenderer(Model::meshRenderers[Model::MeshType::BALL]) {}
 
@@ -98,24 +99,29 @@ void Entity::setTargetPath(const std::vector<Coord>& targetPath) {
 	unitComp.targetPath = targetPath;
 }
 
+void Entity::moveTo(int x, int z) {
+	setTargetPath(AI::aStar::a_star(aiCostMap, 1, (int) rigidBody.getPosition().z, (int) rigidBody.getPosition().x, x,
+									z).second);
+
+}
+
 //returns a pathIndex and a 0.00 - 0.99 value to interpolate between steps in a path
 std::pair<int, double> Entity::getInterpolationPercentage() {
 	double intermediateVal = (unitComp.targetPathStartTimestamp / 1000) * unitComp.movementSpeed;
 	int pathIndex = (int) intermediateVal;
 	double interpolationPercent = clamp<double>(0, intermediateVal - pathIndex, 1);
-
 	return {pathIndex, interpolationPercent};
 }
 
-float lerp(float v0, float v1, float t) {
-	return v0 + t * (v1 - v0);
-}
-
 void Entity::move(double elapsed_time) {
+	if (unitComp.targetPath.empty()) {
+		return;
+	}
+
 	unitComp.targetPathStartTimestamp += elapsed_time;
 
 	std::pair<int, double> index = getInterpolationPercentage(); //first is index into path, second is interp amount (0 to 1)
-	if (index.first < (int)unitComp.targetPath.size() - 1) {
+	if (index.first < (int) unitComp.targetPath.size() - 1) {
 		Coord curr = unitComp.targetPath[index.first];
 		Coord next = unitComp.targetPath[index.first + 1];
 
@@ -128,14 +134,18 @@ void Entity::move(double elapsed_time) {
 
 		double transRow = curr.rowCoord + (dRow * index.second);
 		double transCol = curr.colCoord + (dCol * index.second);
-		setPositionFast(0, {transCol, 0, transRow});
+		glm::vec3 newPos = {transRow, 0, transCol};
+		setPositionFast(0, newPos);
+		rigidBody.setPosition(newPos);
 //			std::cout << transRow << ' ' << transCol << '\n';
 //			std::cout << glm::to_string(m) << '\n';
 //			std::cout << "eft= " << elapsed_time << "\ttt = " << targetPathStartTimestamp << "\tindex= " << index.first
 //					  << "\tinterp= " << index.second << "\ttrow=" << transRow << "\ttcol= " << transCol << '\n';
 
 	} else {
-		setPositionFast(0, {unitComp.targetPath.back().colCoord, 0, unitComp.targetPath.back().rowCoord});
+		glm::vec3 newPos = {unitComp.targetPath.back().rowCoord, 0, unitComp.targetPath.back().colCoord};
+		setPositionFast(0, newPos);
+		rigidBody.setPosition(newPos);
 	}
 }
 
@@ -144,7 +154,7 @@ glm::vec3 Entity::getPosition() const {
 }
 
 bool Entity::inVisionRange(const Entity& other) {
-		return glm::length(glm::vec2(other.getPosition() - this->getPosition())) <= aiComp.visionRange;
+	return glm::length(glm::vec2(other.getPosition() - this->getPosition())) <= aiComp.visionRange;
 }
 
 bool Entity::inAttackRange(const Entity& other) {

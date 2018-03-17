@@ -5,8 +5,8 @@
 #include "particle.hpp"
 
 bool Level::init(
-    std::vector<std::vector<Model::MeshType>> levelArray,
-    std::vector< std::shared_ptr<Renderer>> meshRenderers
+    std::vector<std::vector<Model::MeshType>>& levelArray,
+    std::vector< std::shared_ptr<Renderer>>& meshRenderers
 )
 {
     // So that re initializing will be the same as first initialization
@@ -17,7 +17,7 @@ bool Level::init(
 		std::vector<std::shared_ptr<Tile>> tileRow;
 		for (size_t j = 0; j < row.size(); j++) {
             Model::MeshType type = row[j];
-            auto renderer = meshRenderers[(int)type];
+            auto renderer = meshRenderers[type];
             std::shared_ptr<Tile> tilePointer;
             switch (type) {
             case Model::MeshType::GUN_TURRET: {
@@ -67,21 +67,21 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 			switch (tile) {
 				case '#': {
 					row.push_back(Model::MeshType::TREE);
-					tileData.emplace_back(rowNumber, colNumber, 1000.0, INF);
+					tileData.emplace_back(colNumber, rowNumber, 1000.0, INF);
 					break;
 				}
 				case ' ': {
 					row.push_back(Model::MeshType::SAND_1);
-					tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
+					tileData.emplace_back(colNumber, rowNumber, 10.0, INF);
 					break;
 				}
-                case 'G':
-                    row.push_back(Model::MeshType::GUN_TURRET);
-                    tileData.emplace_back(rowNumber, colNumber, 1000, INF);
-                    break;
-                case 'V': {
-                    row.push_back(Model::MeshType::GEYSER);
-                    tileData.emplace_back(rowNumber, colNumber, 1000.0, INF);
+				case 'G':
+					row.push_back(Model::MeshType::GUN_TURRET);
+					tileData.emplace_back(colNumber, rowNumber, 1000.0, INF);
+					break;
+				case 'V': {
+					row.push_back(Model::MeshType::GEYSER);
+					tileData.emplace_back(colNumber, rowNumber, 1000.0, INF);
 
                     Particles::makeParticleEmitter(
                             glm::vec3{colNumber, 0, rowNumber}, // emitter position
@@ -96,7 +96,7 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
                 }
 				default: {
 					row.push_back(Model::MeshType::SAND_2);
-					tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
+					tileData.emplace_back(colNumber, rowNumber, 10.0, INF);
 					break;
 				}
 			}
@@ -127,4 +127,8 @@ bool Level::displayPath(const std::vector<Coord>& path) {
 	tiles.push_back(tempRow);
 
 	return true;
+}
+
+Coord Level::getLevelSize() const {
+	return Coord(levelArray.size(), levelArray.front().size());
 }

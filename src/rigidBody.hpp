@@ -25,7 +25,7 @@ enum class CollisionGeomType {
 
 class RigidBody {
 public:
-    RigidBody(glm::vec3 size = { 1,0,1 }, glm::vec3 position = { 0,0,0 }, glm::vec3 velocity = { 0,0,0 });
+    RigidBody(glm::vec3 _size = { 1,0,1 }, glm::vec3 _position = { 0,0,0 }, glm::vec3 _velocity = { 0,0,0 });
 
 	void setVelocity(glm::vec3);
 
