@@ -64,12 +64,12 @@ public:
 
 	void update() {
 
-		if (Health == 100 && triggerL == false && triggerR == false && triggerM
-																	   == false) {
-			statePassive = true;
-			stateAggressive = false;
-			stateDefensive = false;
-		}
+//		if (Health == 100 && triggerL == false && triggerR == false && triggerM
+//																	   == false) {
+//			statePassive = true;
+//			stateAggressive = false;
+//			stateDefensive = false;
+//		}
 
 	}
 };

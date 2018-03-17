@@ -75,8 +75,8 @@ set(PROJ_SOURCES
 		src/textureloader.cpp
 		src/tile.cpp
 		src/world.cpp
-		src/unit/unitcomp.cpp
-		src/unit/unitmanager.cpp src/unit/unitmanager.hpp)
+		src/unitcomp.cpp
+		src/unitmanager.cpp src/unitmanager.hpp)
 
 add_library(libproj ${PROJ_SOURCES})
 target_compile_options(libproj PUBLIC ${CUSTOM_COMPILE_FLAGS})
