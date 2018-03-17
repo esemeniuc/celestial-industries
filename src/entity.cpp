@@ -101,7 +101,7 @@ void Entity::setTargetPath(const std::vector<Coord>& targetPath) {
 
 void Entity::moveTo(int x, int z) {
 	setTargetPath(AI::aStar::a_star(aiCostMap, 1, (int) rigidBody.getPosition().x, (int) rigidBody.getPosition().z, x,
-									z).second);
+									z).second); //might need fixing with respect to int start positions
 
 }
 
@@ -137,14 +137,9 @@ void Entity::move(double elapsed_time) {
 		double transRow = curr.rowCoord + (dRow * index.second);
 		double transCol = curr.colCoord + (dCol * index.second);
 		glm::vec3 newPos = {transCol, 0, transRow};
-		setPositionFast(0, newPos);
-		rigidBody.setPosition(newPos);
-//			std::cout << transRow << ' ' << transCol << '\n';
-//			std::cout << glm::to_string(m) << '\n';
-//			std::cout << "eft= " << elapsed_time << "\ttt = " << targetPathStartTimestamp << "\tindex= " << index.first
-//					  << "\tinterp= " << index.second << "\ttrow=" << transRow << "\ttcol= " << transCol << '\n';
-
-	} else {
+		setPositionFast(0, newPos); //for rendering
+		rigidBody.setPosition(newPos); //for phys
+	} else { //move to the last coord in the path
 		glm::vec3 newPos = {unitComp.targetPath.back().colCoord, 0, unitComp.targetPath.back().rowCoord};
 		setPositionFast(0, newPos);
 		rigidBody.setPosition(newPos);

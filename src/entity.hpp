@@ -1,21 +1,15 @@
 #pragma once
 
-#include <cassert>
-#include <cmath>
-#include <sstream>
-#include <cstring>
-#include <map>
-#include <unit/unitcomp.hpp>
-
 // glm
 #include "glm/glm.hpp"
 
 // custom headers
-#include "objloader.hpp"
-#include "renderer.hpp"
-#include "model.hpp"
-#include "rigidBody.hpp"
+
 #include "aicomp.hpp"
+#include "model.hpp"
+#include "renderer.hpp"
+#include "rigidBody.hpp"
+#include "unit/unitcomp.hpp"
 
 
 
