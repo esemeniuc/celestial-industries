@@ -15,9 +15,13 @@ namespace UnitManager {
 			for (auto& col : row) {
 				for (auto& entityInACell : col) {
 					entityInACell.move(elapsed_ms);
+					entityInACell.unitComp.update();
 				}
 			}
 		}
+
+
+
 	}
 
 };
