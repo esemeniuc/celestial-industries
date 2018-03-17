@@ -20,7 +20,7 @@ if(CCACHE_PROGRAM)
 endif()
 
 add_executable(proj
-		ext/gl3w/GL/gl3w.c
+		ext/gl3w/GL/gl3w.cpp
 		src/ai.cpp
 		src/building.cpp
 		src/camera.cpp
