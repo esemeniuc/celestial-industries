@@ -18,13 +18,6 @@
 #include "gamepiece.hpp"
 
 
-enum class EntityOwner {
-	NONE, PLAYER, AI
-};
-
-enum class EntityType {
-	NONE, NON_ATTACKING, DEFENSIVE_PASSIVE, DEFENSIVE_ACTIVE, OFFENSIVE
-};
 
 class Entity {
 public:

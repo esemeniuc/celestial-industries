@@ -46,52 +46,39 @@ namespace AiManager {
 	int aiBuildingValue = 0;
 
 
-	void updateValueOfUnits() {
-		playerUnitValue = 0;
+	void updateValueOfEntities() {
 		aiUnitValue = 0;
+		playerUnitValue = 0;
+		aiBuildingValue = 0;
+		playerBuildingValue = 0;
 		for (auto& row : entityMap) {
 			for (auto& col : row) {
 				for (Entity& entityInACell : col) {
-					switch (entityInACell.aiComp.owner) {
-						case (GamePieceOwner::AI): {
+					if (entityInACell.aiComp.type == GamePieceType::UNIT_NON_ATTACKING ||
+						entityInACell.aiComp.type == GamePieceType::UNIT_DEFENSIVE_ACTIVE ||
+						entityInACell.aiComp.type == GamePieceType::UNIT_OFFENSIVE) {
+						if (entityInACell.aiComp.owner == GamePieceOwner::AI) {
 							aiUnitValue += entityInACell.aiComp.value;
-						}
-						case (GamePieceOwner::PLAYER): {
+						} else if (entityInACell.aiComp.owner == GamePieceOwner::PLAYER) {
 							playerUnitValue += entityInACell.aiComp.value;
 						}
-						default: { //do nothing
-						}
-					}
-				}
-			}
-		}
-	}
-
-	void updateValueOfBuildings() {
-		playerUnitValue = 0;
-		aiUnitValue = 0;
-		for (auto& row : entityMap) {
-			for (auto& col : row) {
-				for (Entity& entityInACell : col) {
-					switch (entityInACell.aiComp.owner) {
-						case (GamePieceOwner::AI): {
+					} else if (entityInACell.aiComp.type == GamePieceType::BUILDING_NON_ATTACKING ||
+							   entityInACell.aiComp.type == GamePieceType::BUILDING_DEFENSIVE_PASSIVE ||
+							   entityInACell.aiComp.type == GamePieceType::BUILDING_DEFENSIVE_ACTIVE) {
+						if (entityInACell.aiComp.owner == GamePieceOwner::AI) {
 							aiBuildingValue += entityInACell.aiComp.value;
-						}
-						case (GamePieceOwner::PLAYER): {
+						} else if (entityInACell.aiComp.owner == GamePieceOwner::PLAYER) {
 							playerBuildingValue += entityInACell.aiComp.value;
 						}
-						default: { //do nothing
-						}
 					}
 				}
 			}
 		}
 	}
 
-	void update(double elapsed_ms)
-	{
-		updateValueOfUnits();
-		updateValueOfBuildings();
+
+	void update(double elapsed_ms) {
+		updateValueOfEntities();
 	}
 
 	int const PRIORITIZE_CLOSER_ATTACKS = 2;
