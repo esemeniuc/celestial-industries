@@ -31,8 +31,6 @@ struct SubObjectSource {
     int parentMesh;
 };
 
-std::pair<bool, std::shared_ptr<std::vector<Mesh>>> objToMesh(OBJ::Data obj);
-
 class Renderer {
     std::shared_ptr<Shader> shader;
     glm::mat4 collapseMatrixVector(std::vector<glm::mat4> v);
