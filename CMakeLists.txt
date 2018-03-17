@@ -80,9 +80,10 @@ set(PROJ_SOURCES
 
 add_library(libproj ${PROJ_SOURCES})
 target_compile_options(libproj PUBLIC ${CUSTOM_COMPILE_FLAGS})
-#target_link_libraries(libproj PUBLIC ${CUSTOM_INCLUDE_LIBS})
 if (APPLE)
 	target_link_libraries(libproj PUBLIC ${CUSTOM_INCLUDE_LIBS} "-framework CoreFoundation")
+else()
+	target_link_libraries(libproj PUBLIC ${CUSTOM_INCLUDE_LIBS})
 endif ()
 target_include_directories(libproj PUBLIC ${CUSTOM_INCLUDE_DIRS})
 
