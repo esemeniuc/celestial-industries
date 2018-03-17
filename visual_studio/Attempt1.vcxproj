@@ -204,7 +204,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\ext\glm;$(ProjectDir)..\src;$(ProjectDir)\..\ext\glfw\include;$(ProjectDir)\..\ext\gl3w;$(ProjectDir)\..\ext\stb_image;$(ProjectDir)\..\ext\sdl\include\SDL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\ext\glm;$(ProjectDir)..\src;$(ProjectDir)\..\ext\glfw\include;$(ProjectDir)\..\ext\gl3w;$(ProjectDir)\..\ext\stb_image;$(ProjectDir)\..\ext\sdl\include\SDL;$(ProjectDir)..\src\unit;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -508,6 +508,7 @@
     <ClCompile Include="..\src\collisionResolver.cpp" />
     <ClCompile Include="..\src\entity.cpp" />
     <ClCompile Include="..\src\camera.cpp" />
+    <ClCompile Include="..\src\global.cpp" />
     <ClCompile Include="..\src\level.cpp" />
     <ClCompile Include="..\src\logger.cpp" />
     <ClCompile Include="..\src\main.cpp" />
@@ -534,6 +535,7 @@
     <ClInclude Include="..\src\common.hpp" />
     <ClInclude Include="..\src\config.hpp" />
     <ClInclude Include="..\src\entity.hpp" />
+    <ClInclude Include="..\src\global.hpp" />
     <ClInclude Include="..\src\level.hpp" />
     <ClInclude Include="..\src\logger.hpp" />
     <ClInclude Include="..\src\loglevel.hpp" />
