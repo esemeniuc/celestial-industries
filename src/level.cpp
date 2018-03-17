@@ -129,7 +129,7 @@ bool Level::displayPath(const std::vector<Coord>& path) {
 	return true;
 }
 
-//returns size in w by h
+//returns size in h by w
 Coord Level::getLevelSize() const {
-	return Coord(levelArray.front().size(), levelArray.size());
+	return Coord(levelArray.size(), levelArray.front().size());
 }

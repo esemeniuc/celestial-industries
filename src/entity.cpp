@@ -132,6 +132,8 @@ void Entity::move(double elapsed_time) {
 //			double transCol = (dCol / (1000 / elapsed_time)) * movementSpeed;
 //			translate({transCol, 0, transRow});
 
+		//TODO: add entityMap updating if we change cells
+
 		double transRow = curr.rowCoord + (dRow * index.second);
 		double transCol = curr.colCoord + (dCol * index.second);
 		glm::vec3 newPos = {transCol, 0, transRow};
