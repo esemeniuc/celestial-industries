@@ -80,7 +80,10 @@ set(PROJ_SOURCES
 
 add_library(libproj ${PROJ_SOURCES})
 target_compile_options(libproj PUBLIC ${CUSTOM_COMPILE_FLAGS})
-target_link_libraries(libproj PUBLIC ${CUSTOM_INCLUDE_LIBS})
+#target_link_libraries(libproj PUBLIC ${CUSTOM_INCLUDE_LIBS})
+if (APPLE)
+	target_link_libraries(libproj PUBLIC ${CUSTOM_INCLUDE_LIBS} "-framework CoreFoundation")
+endif ()
 target_include_directories(libproj PUBLIC ${CUSTOM_INCLUDE_DIRS})
 
 set(TEST_SUITE_SOURCES
@@ -90,9 +93,7 @@ set(TEST_SUITE_SOURCES
 
 add_executable(proj src/main.cpp) #main.cpp gets compile flags through PUBLIC flag of libproj
 
-if (APPLE)
-	target_link_libraries(libproj "-framework CoreFoundation")
-endif ()
+
 
 target_link_libraries(proj libproj)
 
