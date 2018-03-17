@@ -12,6 +12,7 @@
 
 // glfw
 #define NOMINMAX
+
 #include <gl3w.h>
 #include <GLFW/glfw3.h>
 
@@ -22,8 +23,10 @@
 //ignore warnings from glm string_cast
 #pragma GCC diagnostic push // save diagnostic state
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
-#define GLM_ENABLE_EXPERIMENTAL //for string printing
+#define GLM_ENABLE_EXPERIMENTAL //for string printing for glm vec and mat
+
 #include "glm/gtx/string_cast.hpp"
+
 #pragma GCC diagnostic pop
 
 // Simple utility macros to avoid mistyping directory name, name has to be a string literal
@@ -69,11 +72,11 @@ auto inline end(std::shared_ptr<T> ptr) -> typename T::iterator {
 }
 
 struct Coord {
-	int rowCoord, colCoord;
+	int colCoord, rowCoord;
 
 	Coord() = default;
 
-	Coord(int _rowCoord, int _colCoord) : rowCoord(_rowCoord), colCoord(_colCoord) {}
+	Coord(int _colCoord, int _rowCoord) : colCoord(_colCoord), rowCoord(_rowCoord) {}
 
 	bool operator==(const Coord& rhs) const {
 		return rowCoord == rhs.rowCoord &&
@@ -81,7 +84,7 @@ struct Coord {
 	}
 
 	friend std::ostream& operator<<(std::ostream& os, const Coord& coord) {
-		os << "rowCoord: " << coord.rowCoord << " colCoord: " << coord.colCoord;
+		os << "colCoord: " << coord.colCoord << " rowCoord: " << coord.rowCoord;
 		return os;
 	}
 };

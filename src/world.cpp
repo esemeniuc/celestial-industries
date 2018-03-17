@@ -123,18 +123,6 @@ bool World::init(glm::vec2 screen) {
 	UnitManager::init(levelArray.size(), levelArray.front().size());
 	// test different starting points for the AI
 	aiCostMap = level.getLevelTraversalCostMap();
-	//benchmark a*
-	{
-		auto start = std::chrono::high_resolution_clock::now();
-		AI::aStar::a_star(aiCostMap, 1, 19, 1, 11, 25);
-		AI::aStar::a_star(aiCostMap, 1, 1, 1, 11, 25);
-		AI::aStar::a_star(aiCostMap, 1, 1, 39, 11, 25);
-		auto finish = std::chrono::high_resolution_clock::now();
-
-		std::chrono::duration<double> elapsed = finish - start;
-		std::cout << "Elapsed time: " << elapsed.count() << " s\n";
-	}
-
 
 	//display a path
 	int startx = 25, startz = 11;

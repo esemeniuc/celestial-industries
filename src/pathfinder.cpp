@@ -37,7 +37,7 @@ namespace AI {
 	aStar::getNeighbors(const std::vector<std::vector<AStarNode>>& graph, AStarNode& currentPos,
 						AStarNode& goal) {
 		int numOfRows = (int) graph.size();
-		int numOfColumns = (int) graph[0].size();
+		int numOfColumns = (int) graph.front().size();
 		int row = currentPos.rowCoord;
 		int col = currentPos.colCoord;
 		int goalRow = goal.rowCoord;
@@ -100,10 +100,10 @@ namespace AI {
 
 		// check which tiles the given positions lie in
 		// TODO: check coordinate signs ( -Z as opposed to +Z for tile positions)
-		int startRow = startX / tileSize; //floating point numbers get floored when stored in ints
-		int startCol = startZ / tileSize;
-		int goalRow = goalX / tileSize;
-		int goalCol = goalZ / tileSize;
+		int startRow = startZ / tileSize; //floating point numbers get floored when stored in ints
+		int startCol = startX / tileSize;
+		int goalRow = goalZ / tileSize;
+		int goalCol = goalX / tileSize;
 
 		AStarNode start = AStarNode(startCol, startRow, 10, 0);
 		AStarNode goal = AStarNode(goalCol, goalRow, 10, INF);

@@ -100,7 +100,7 @@ void Entity::setTargetPath(const std::vector<Coord>& targetPath) {
 }
 
 void Entity::moveTo(int x, int z) {
-	setTargetPath(AI::aStar::a_star(aiCostMap, 1, (int) rigidBody.getPosition().z, (int) rigidBody.getPosition().x, x,
+	setTargetPath(AI::aStar::a_star(aiCostMap, 1, (int) rigidBody.getPosition().x, (int) rigidBody.getPosition().z, x,
 									z).second);
 
 }
@@ -134,7 +134,7 @@ void Entity::move(double elapsed_time) {
 
 		double transRow = curr.rowCoord + (dRow * index.second);
 		double transCol = curr.colCoord + (dCol * index.second);
-		glm::vec3 newPos = {transRow, 0, transCol};
+		glm::vec3 newPos = {transCol, 0, transRow};
 		setPositionFast(0, newPos);
 		rigidBody.setPosition(newPos);
 //			std::cout << transRow << ' ' << transCol << '\n';
@@ -143,7 +143,7 @@ void Entity::move(double elapsed_time) {
 //					  << "\tinterp= " << index.second << "\ttrow=" << transRow << "\ttcol= " << transCol << '\n';
 
 	} else {
-		glm::vec3 newPos = {unitComp.targetPath.back().rowCoord, 0, unitComp.targetPath.back().colCoord};
+		glm::vec3 newPos = {unitComp.targetPath.back().colCoord, 0, unitComp.targetPath.back().rowCoord};
 		setPositionFast(0, newPos);
 		rigidBody.setPosition(newPos);
 	}
