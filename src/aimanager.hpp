@@ -37,14 +37,13 @@ patrol/scout what player is doing
 
 
 namespace AiManager {
-	std::vector<std::vector<UnitComp>> unitsSeen;
-	std::vector<std::vector<Building>> buildingsSeen;
+	std::vector<std::shared_ptr<Entity>> unitsSeen;
+	std::vector<std::shared_ptr<Entity>> buildingsSeen;
 
 	int playerUnitValue = 0;
 	int aiUnitValue = 0;
 	int playerBuildingValue = 0;
 	int aiBuildingValue = 0;
-
 
 	void updateValueOfEntities() {
 		aiUnitValue = 0;
@@ -73,9 +72,9 @@ namespace AiManager {
 	}
 
 	int size = 5;
+
 	//assume we make 1 action per frame for simplicity
-	void findNextBestAction()
-	{
+	void findNextBestAction() {
 		//generate tree of things to attack
 //		for()
 //
@@ -110,8 +109,46 @@ namespace AiManager {
 
 	int const PRIORITIZE_CLOSER_ATTACKS = 2;
 
-	Building* bestBuildingToAttack(std::vector<Building>& buildings, Entity& entity);
+	std::shared_ptr<Entity>
+	bestBuildingToAttack(std::vector<std::shared_ptr<Entity>>& buildings, Entity& entity) {
+		float bestAttackValue = -1;
+		std::shared_ptr<Entity> building;
 
-	Building* getHighestValuedBuilding(std::vector<Building>& buildings);
+		if (buildings.size() <= 0) {
+			// TODO: take care of case where length of building list passed in is 0
+		}
 
+		for (auto& currentBuilding : buildings) {
+			int buildingValue = currentBuilding->aiComp.value;
+
+			float distanceToBuilding = 0;//getDistanceBetweenEntities(currentBuilding, entity); //fixme to revert
+
+			float attackValue = buildingValue - (distanceToBuilding * PRIORITIZE_CLOSER_ATTACKS);
+
+			if (attackValue > bestAttackValue) {
+				bestAttackValue = attackValue;
+				building = currentBuilding;
+			}
+		}
+
+		return building;
+	}
+
+	std::shared_ptr<Entity> getHighestValuedBuilding(std::vector<std::shared_ptr<Entity>>& buildings) {
+		int highestValueSoFar = -1;
+		std::shared_ptr<Entity> building;
+
+		if (buildings.size() <= 0) {
+			// TODO: take care of case where length of building list passed in is 0
+		}
+
+		for (auto& currentBuilding : buildings) {
+			if (currentBuilding->aiComp.value > highestValueSoFar) {
+				highestValueSoFar = currentBuilding->aiComp.value;
+				building = currentBuilding;
+			}
+		}
+
+		return building;
+	}
 };
