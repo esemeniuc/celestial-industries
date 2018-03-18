@@ -1,4 +1,5 @@
 #pragma once
+#include <set>
 #include <memory>
 #include "world.hpp"
 
@@ -10,3 +11,6 @@ extern std::vector<std::shared_ptr<Entity>> entityMap;
 extern std::vector<std::vector<Model::MeshType>> levelArray;
 
 extern std::vector<std::vector<AStarNode>> aiCostMap; //ai should be able to see the level traversal costs
+
+extern std::set<std::shared_ptr<Entity>> unitSeenByAI;
+extern std::set<std::shared_ptr<Entity>> unitOwnedByAI;

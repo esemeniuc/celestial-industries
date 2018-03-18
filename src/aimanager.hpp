@@ -52,17 +52,17 @@ namespace AiManager {
 		aiBuildingValue = 0;
 		playerBuildingValue = 0;
 		for (auto& entityInACell : entityMap) {
-			if (entityInACell->aiComp.type == GamePieceType::UNIT_NON_ATTACKING ||
-				entityInACell->aiComp.type == GamePieceType::UNIT_DEFENSIVE_ACTIVE ||
-				entityInACell->aiComp.type == GamePieceType::UNIT_OFFENSIVE) {
+			if (entityInACell->aiComp.type == GamePieceClass::UNIT_NON_ATTACKING ||
+				entityInACell->aiComp.type == GamePieceClass::UNIT_DEFENSIVE_ACTIVE ||
+				entityInACell->aiComp.type == GamePieceClass::UNIT_OFFENSIVE) {
 				if (entityInACell->aiComp.owner == GamePieceOwner::AI) {
 					aiUnitValue += entityInACell->aiComp.value;
 				} else if (entityInACell->aiComp.owner == GamePieceOwner::PLAYER) {
 					playerUnitValue += entityInACell->aiComp.value;
 				}
-			} else if (entityInACell->aiComp.type == GamePieceType::BUILDING_NON_ATTACKING ||
-					   entityInACell->aiComp.type == GamePieceType::BUILDING_DEFENSIVE_PASSIVE ||
-					   entityInACell->aiComp.type == GamePieceType::BUILDING_DEFENSIVE_ACTIVE) {
+			} else if (entityInACell->aiComp.type == GamePieceClass::BUILDING_NON_ATTACKING ||
+					   entityInACell->aiComp.type == GamePieceClass::BUILDING_DEFENSIVE_PASSIVE ||
+					   entityInACell->aiComp.type == GamePieceClass::BUILDING_DEFENSIVE_ACTIVE) {
 				if (entityInACell->aiComp.owner == GamePieceOwner::AI) {
 					aiBuildingValue += entityInACell->aiComp.value;
 				} else if (entityInACell->aiComp.owner == GamePieceOwner::PLAYER) {
@@ -72,6 +72,37 @@ namespace AiManager {
 		}
 	}
 
+	int size = 5;
+	//assume we make 1 action per frame for simplicity
+	void findNextBestAction()
+	{
+		//generate tree of things to attack
+		for()
+
+		std::vector<bool> visited(size);
+		int start = 0;
+		//traverse tree with bfs
+		visited[start] = true;
+		std::queue<action> queue;
+		queue.push(start); //start from q, try to get to p, if so output yes
+		while (!queue.empty()) {
+			action u = queue.front();
+			queue.pop();
+
+			if (u == p) {
+				printf("yes\n"); //we reached p from q, meaning p is higher rated than q
+				flag = 1;
+				break; //skip the rest as we already outputted
+			}
+			for (int v : adj[u]) {
+				if (!visited[v]) {
+					visited[v] = true;
+					queue.push(v);
+				}
+			}
+		}
+
+	}
 
 	void update(double elapsed_ms) {
 		updateValueOfEntities();
