@@ -7,6 +7,7 @@
 #include "config.hpp"
 #include "tile.hpp"
 #include "model.hpp"
+#include "particle.hpp"
 
 #define INF std::numeric_limits<float>::infinity()
 
@@ -49,6 +50,7 @@ public:
 	// Using a shared pointer to a tile allows us to actually have derived classes in there as well.
 	std::vector<std::vector<std::shared_ptr<Tile>>> tiles; // we can add the time dimension when we get there
 	std::vector<std::shared_ptr<GunTowerTile>> guntowers;
+	std::vector<std::shared_ptr<Particles::ParticleEmitter>> emitters;
 
 	//funcs
 	bool init(
@@ -60,7 +62,7 @@ public:
 
 	bool displayPath(const std::vector<Coord>& levelArray);
 
-	std::vector<std::vector<Model::MeshType>> levelLoader(const std::string& levelTextFile);
+	std::vector<std::vector<Model::MeshType>> levelLoader(const std::string& levelTextFile, std::shared_ptr<Shader> particleShader);
 
 	std::vector<std::vector<AStarNode>> getLevelTraversalCostMap();
 

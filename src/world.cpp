@@ -105,7 +105,14 @@ bool World::init(glm::vec2 screen) {
 		return false;
 	}
 
-	if (!initMeshTypes(Model::meshSources)) {
+	particleShader = std::make_shared<Shader>();
+    if (!objShader->load_from_file(shader_path("particles.vs.glsl"), shader_path("particles.fs.glsl"))) {
+        logger(LogLevel::ERR) << "Failed to load particle shader!" << '\n';
+        return false;
+    }
+
+
+	if(!initMeshTypes(Model::meshSources)) {
 		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
 	}
 
@@ -210,6 +217,10 @@ bool World::update(double elapsed_ms) {
 		turret->update(elapsed_ms);
 	}
 
+    for (const auto& emitter : level.emitters) {
+        emitter->update(elapsed_ms);
+    }
+
 	Particles::updateParticleStates(elapsed_ms);
 	AiManager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
@@ -241,6 +252,10 @@ void World::draw() {
 
 	for (auto renderer : Model::meshRenderers) {
 		renderer->render(projectionView);
+	}
+
+	for (auto emitter : level.emitters) {
+		emitter->render(projectionView, camera.position);
 	}
 
 

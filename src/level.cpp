@@ -47,7 +47,7 @@ void Level::update(float ms)
     }
 }
 
-std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& levelTextFile) {
+std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& levelTextFile, std::shared_ptr<Shader> particleShader) {
 	std::ifstream level(levelTextFile);
 	std::string line;
 	std::vector<std::vector<Model::MeshType>> levelData;
@@ -134,15 +134,17 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 					row.push_back(Model::MeshType::GEYSER);
 					tileData.emplace_back(colNumber, rowNumber, 1000.0, INF);
 
-                    Particles::makeParticleEmitter(
+					auto emitter = std::make_shared<Particles::ParticleEmitter>(
                             glm::vec3{colNumber, 0, rowNumber}, // emitter position
                             glm::vec3{0,1,0}, // emitter direction
                             1.0,    // spread
                             0.1,    // particle width
                             0.1,    // particle height
                             2.0,    // lifespan
-                            5.0     // speed
+                            5.0,    // speed
+                            particleShader
                     );
+					emitters.push_back(emitter);
                     break;
                 }
 				default: {

@@ -18,7 +18,8 @@ namespace Particles {
             float particleWidth,
             float particleHeight,
             float particleLifespan,
-            float particleSpeed
+            float particleSpeed,
+            std::shared_ptr<Shader> shader
     );
 
     class Particle {
@@ -75,15 +76,10 @@ namespace Particles {
         ParticleEmitter(const ParticleEmitter &) = delete;
         ParticleEmitter(const ParticleEmitter &&) = delete;
 
-        ParticleEmitter(
-                const glm::vec3 &position,
-                const glm::vec3 &direction,
-                float spread,
-                float particleWidth,
-                float particleHeight,
-                float particleLifespan,
-                float particleSpeed
-        );
+        // TODO: see if the final argument being implicitly optional can be fixed
+        ParticleEmitter(const glm::vec3 &position, const glm::vec3 &direction, float spread,
+                                float particleWidth, float particleHeight, float particleLifespan,
+                                float particleSpeed, std::shared_ptr<Shader> shader);
 
         float getSpread() const;
         void setSpread(float newSpread);
@@ -102,7 +98,21 @@ namespace Particles {
 
         void updateParticlePositions(float elapsed_ms);
 
+        void update(float elapsed_ms);
+        void render(glm::mat4 viewProjection, glm::vec3 cameraPosition);
+
     private:
+        // For rendering state
+        GLuint vao;
+        GLuint vbo;
+        GLuint ibo;
+        GLuint particleInstancesData;
+        std::shared_ptr<Shader> shader;
+        GLuint positionAttribute;
+        GLuint textureCoordinateAttribute;
+        GLuint timeElapsedUniform;
+        GLuint modelViewProjectionUniform;
+
         glm::vec3 position;
         glm::vec3 direction;
         float spread;
@@ -111,11 +121,14 @@ namespace Particles {
         float particleLifespan;
         float particleSpeed;
 
+        float ageInMilliseconds;
+
         // index into the ParticleEmitters data structure
         unsigned long emitterId;
 
         void createParticles();
         void createParticle(Particle *particle) const;
+
     };
 
 }
