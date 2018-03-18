@@ -9,6 +9,10 @@ namespace UnitManager {
 		entityMap = std::vector<std::vector<std::vector<Entity>>>(levelHeight, std::vector<std::vector<Entity>>(levelWidth));
 	}
 
+	void removeEntity(const Entity& entity)
+	{
+
+	}
 
 	void update(double elapsed_ms) {
 		for (auto& row : entityMap) {

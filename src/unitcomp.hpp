@@ -15,13 +15,11 @@ enum class UnitState {
 //assumes we have position from entity class
 class UnitComp {
 public:
-
-	//immutable values
-	const int initialEnergyLevel;
-	const int attackDamage;
-	const int attackRange; //range in tiles
-	const int attackSpeed; //attacks per second
-	const int movementSpeed; //units per second, maybe make non const later for energy effects
+	int initialEnergyLevel;
+	int attackDamage;
+	int attackRange; //range in tiles
+	int attackSpeed; //attacks per second
+	int movementSpeed; //units per second, maybe make non const later for energy effects
 
 	//mutable values
 	int currentEnergyLevel;
@@ -71,6 +69,18 @@ public:
 //			stateDefensive = false;
 //		}
 
+	}
+
+	bool operator==(const UnitComp& rhs) const {
+		return initialEnergyLevel == rhs.initialEnergyLevel &&
+			   attackDamage == rhs.attackDamage &&
+			   attackRange == rhs.attackRange &&
+			   attackSpeed == rhs.attackSpeed &&
+			   movementSpeed == rhs.movementSpeed &&
+			   currentEnergyLevel == rhs.currentEnergyLevel &&
+			   state == rhs.state &&
+			   targetPath == rhs.targetPath &&
+			   targetPathStartTimestamp == rhs.targetPathStartTimestamp;
 	}
 };
 

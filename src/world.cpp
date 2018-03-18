@@ -132,19 +132,17 @@ bool World::init(glm::vec2 screen) {
 	entityMap[startz][startx].push_back(temp1);
 
 
-	//wall example
-	startx = 39, startz = 19;
-	Entity temp2;
-	temp2.translate({startx, 0, startz});
-	temp2.moveTo(targetx, targetz);
-	entityMap[startz][startx].push_back(temp2);
-
-	//mining tower example
-	startx = 39, startz = 1;
-	Entity temp3;
-	temp3.translate({startx, 0, startz});
-	temp3.moveTo(targetx, targetz);
-	entityMap[startz][startx].push_back(temp3);
+//	startx = 39, startz = 19;
+//	Entity temp2;
+//	temp2.translate({startx, 0, startz});
+//	temp2.moveTo(targetx, targetz);
+//	entityMap[startz][startx].push_back(temp2);
+//
+//	startx = 39, startz = 1;
+//	Entity temp3;
+//	temp3.translate({startx, 0, startz});
+//	temp3.moveTo(targetx, targetz);
+//	entityMap[startz][startx].push_back(temp3);
 
 
 	selectedTileCoordinates.rowCoord = level.getLevelSize().rowCoord / 2;

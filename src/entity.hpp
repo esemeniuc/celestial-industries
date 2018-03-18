@@ -16,6 +16,7 @@
 class Entity {
 public:
 	//members
+	Coord entityMapCoords = {0,0};
 	Renderable geometryRenderer;
 	AiComp aiComp;
 	UnitComp unitComp;
@@ -64,7 +65,6 @@ public:
 
 	RigidBody getRigidBody();
 
-	//funcs
 	glm::vec3 getPosition() const;
 
 	void setTargetPath(const std::vector<Coord>& targetPath);
@@ -79,6 +79,7 @@ public:
 
 	bool inAttackRange(const Entity& other);
 
+	bool operator==(const Entity& rhs) const;
 
 protected:
 

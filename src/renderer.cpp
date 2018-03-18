@@ -260,3 +260,8 @@ void Renderable::setModelMatrix(int modelIndex, glm::vec3 translation, float ang
     parent->instances[id].matrixStack[modelIndex] = model;
     parent->updateModelMatrixStack(id, updateHierarchically);
 }
+
+bool Renderable::operator==(const Renderable& rhs) const {
+	return parent == rhs.parent &&
+		   id == rhs.id;
+}

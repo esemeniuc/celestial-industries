@@ -66,6 +66,8 @@ public:
 
 	long getGeometryId();
 
+	bool operator==(const RigidBody& rhs) const;
+
 protected:
 	// this is 1/mass, a better representation that 
 	// allows us to work with 0 and infinite masses

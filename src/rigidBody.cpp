@@ -133,3 +133,15 @@ long RigidBody::getGeometryId()
 {
     return this->geometryId;
 }
+
+bool RigidBody::operator==(const RigidBody& rhs) const {
+	return inverseMass == rhs.inverseMass &&
+		   dampingFactor == rhs.dampingFactor &&
+		   velocity == rhs.velocity &&
+		   gravity == rhs.gravity &&
+		   appliedForce == rhs.appliedForce &&
+		   position == rhs.position &&
+		   rotation == rhs.rotation &&
+		   cgType == rhs.cgType &&
+		   geometryId == rhs.geometryId;
+}

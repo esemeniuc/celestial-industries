@@ -53,6 +53,8 @@ Entity::setModelMatrix(int modelIndex, glm::vec3 translation, float angle, glm::
 }
 
 void Entity::translate(glm::vec3 translation) {
+	this->entityMapCoords.colCoord = (int) translation.x;
+	this->entityMapCoords.rowCoord = (int) translation.z;
 	this->geometryRenderer.translate(translation);
 	this->rigidBody.setPosition(this->rigidBody.getPosition() + translation);
 }
@@ -82,8 +84,10 @@ void Entity::setPosition(glm::vec3 position) {
 	this->geometryRenderer.setModelMatrix(0, position);
 }
 
-//only sets translation, everything else is preserved
+//only sets unit to its new position (in world coords), everything else is preserved
 void Entity::setPositionFast(int modelIndex, glm::vec3 position) {
+	entityMapCoords.colCoord = (int) position.x;
+	entityMapCoords.rowCoord = (int) position.z;
 	rigidBody.setPosition(position);
 
 	glm::mat4 m = getModelMatrix(modelIndex);
@@ -132,11 +136,26 @@ void Entity::move(double elapsed_time) {
 //			double transCol = (dCol / (1000 / elapsed_time)) * movementSpeed;
 //			translate({transCol, 0, transRow});
 
-		//TODO: add entityMap updating if we change cells
+		double destCol = curr.colCoord + (dCol * index.second);
+		double destRow = curr.rowCoord + (dRow * index.second);
 
-		double transRow = curr.rowCoord + (dRow * index.second);
-		double transCol = curr.colCoord + (dCol * index.second);
-		glm::vec3 newPos = {transCol, 0, transRow};
+		//TODO: add entityMap updating if we change cells
+		//check if we changed position
+		int currentCol = (int) rigidBody.getPosition().x;
+		int currentRow = (int) rigidBody.getPosition().z;
+		int targetCol = (int) destCol;
+		int targetRow = (int) destRow;
+
+		//push to new location
+		if (targetCol != currentCol || targetRow != currentRow) {
+			auto& cell = entityMap[entityMapCoords.rowCoord][entityMapCoords.colCoord];
+//			entityMap[targetRow][targetCol].push_back(*this);
+			Entity e;
+			cell.erase(std::remove(cell.begin(), cell.end(), e), cell.end()); //erase from old location
+		}
+//		printf("ccol: %d crow: %d, tcol: %lf trow: %lf\n", currentCol, currentRow, destCol, destRow);
+
+		glm::vec3 newPos = {destCol, 0, destRow};
 		setPositionFast(0, newPos); //for rendering
 		rigidBody.setPosition(newPos); //for phys
 	} else { //move to the last coord in the path
@@ -156,4 +175,12 @@ bool Entity::inVisionRange(const Entity& other) {
 
 bool Entity::inAttackRange(const Entity& other) {
 	return glm::length(glm::vec2(other.getPosition() - this->getPosition())) <= unitComp.attackRange;
+}
+
+bool Entity::operator==(const Entity& rhs) const {
+	return entityMapCoords == rhs.entityMapCoords &&
+		   geometryRenderer == rhs.geometryRenderer &&
+		   aiComp == rhs.aiComp &&
+		   unitComp == rhs.unitComp &&
+		   rigidBody == rhs.rigidBody;
 }

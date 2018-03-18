@@ -126,4 +126,6 @@ public:
     void scale(glm::vec3 scale, bool updateHierarchically = true);
 
 	virtual ~Renderable() {};
+
+	bool operator==(const Renderable& rhs) const;
 };

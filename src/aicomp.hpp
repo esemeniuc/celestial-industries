@@ -15,18 +15,17 @@ class AiComp {
 
 public:
 	//members
-	const int initialHealth;
-	const int visionRange;
+	int initialHealth = 100;
+	int visionRange = 5;
 	GamePieceOwner owner = GamePieceOwner::NONE;
 	GamePieceType type = GamePieceType::NONE;
-	int currentHealth;
+	int currentHealth = initialHealth;
 	int value; //used for AI to prioritize targets
 
 
 
 	//constructors
-	AiComp() : initialHealth(100),
-				  visionRange(5) {}
+	AiComp() {}
 
 	AiComp(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceType type, int value)
 			: initialHealth(initialHealth),
@@ -44,6 +43,14 @@ public:
 											  value(value) {}
 
 
+	bool operator==(const AiComp& rhs) const {
+		return initialHealth == rhs.initialHealth &&
+			   visionRange == rhs.visionRange &&
+			   owner == rhs.owner &&
+			   type == rhs.type &&
+			   currentHealth == rhs.currentHealth &&
+			   value == rhs.value;
+	}
 };
 
 
