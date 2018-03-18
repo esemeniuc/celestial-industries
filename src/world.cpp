@@ -114,7 +114,7 @@ bool World::init(glm::vec2 screen) {
     }
 
 	particleShader = std::make_shared<Shader>();
-    if (!objShader->load_from_file(shader_path("particles.vs.glsl"), shader_path("particles.fs.glsl"))) {
+    if (!particleShader->load_from_file(shader_path("particles.vs.glsl"), shader_path("particles.fs.glsl"))) {
         logger(LogLevel::ERR) << "Failed to load particle shader!" << '\n';
         return false;
     }
@@ -269,7 +269,7 @@ void World::draw() {
 		renderer.second->render(projectionView);
 	}
 
-	for (auto emitter : level.emitters) {
+	for (const auto &emitter : level.emitters) {
 		emitter->render(projectionView, camera.position);
 	}
 

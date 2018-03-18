@@ -310,9 +310,11 @@ namespace Particles {
 
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6*sizeof(int), &vertexIndices, GL_STATIC_DRAW);
 
+        auto temp1 = glGetAttribLocation(shader->program, "position");
+        auto temp2 = glGetAttribLocation(shader->program, "textureCoordinate");
 
-        positionAttribute = static_cast<GLuint>(glGetAttribLocation(shader->program, "position"));
-        textureCoordinateAttribute = static_cast<GLuint>(glGetAttribLocation(shader->program, "textureCoordinate"));
+        positionAttribute = static_cast<GLuint>(temp1);
+        textureCoordinateAttribute = static_cast<GLuint>(temp2);
 
         glEnableVertexAttribArray(positionAttribute);
         glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*) 0);
@@ -378,10 +380,10 @@ namespace Particles {
         glBindVertexArray(vao);
 
         // pass parameters into the shader
-        glm::mat4 modelViewProjection = viewProjection * glm::translate(glm::mat4(1.0f), cameraPosition);
+        glm::mat4 modelViewProjection = viewProjection; //glm::translate(glm::mat4(1.0f), cameraPosition);
         glUniformMatrix4fv(modelViewProjectionUniform, 1, GL_FALSE, &modelViewProjection[0][0]);
         glUniform1f(timeElapsedUniform, ageInMilliseconds);
 
-        glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, 10);
+        glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, 10000);
     }
 }

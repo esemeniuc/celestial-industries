@@ -35,6 +35,7 @@ void main() {
     float particleAge = mod(timeElapsedSinceStart, 5000.0);
 
     vec3 particlePosition = initialPosition +
+                            position +
                             initialVelocity*particleAge +
                             0.5 * acceleration * particleAge * particleAge;
 
