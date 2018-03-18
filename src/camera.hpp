@@ -25,7 +25,7 @@ public:
 	glm::vec2 mouseScroll;
 	glm::vec3 direction;
 	glm::vec3 position; //gets overwritten in world.cpp
-	glm::vec3 angle = {0, -M_PI / 4, 0}; //pi/4 for isomorphic view
+	glm::vec3 angle = {M_PI, -M_PI / 4, 0}; //pi/4 for isomorphic view
 	glm::vec3 verticalVector; // Note: This is what is typically referred to as "up" for the viewer
 	glm::vec3 horizontalVector;
 	glm::mat4 view;

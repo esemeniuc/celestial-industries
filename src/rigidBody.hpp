@@ -1,4 +1,5 @@
 #pragma once
+
 #include <cassert>
 #include <cmath>
 #include <sstream>
@@ -25,7 +26,7 @@ enum class CollisionGeomType {
 
 class RigidBody {
 public:
-    RigidBody(glm::vec3 size = { 1,0,1 }, glm::vec3 position = { 0,0,0 }, glm::vec3 velocity = { 0,0,0 });
+	RigidBody(glm::vec3 _position = {0, 0, 0}, glm::vec3 _size = {1, 0, 1}, glm::vec3 _velocity = {0, 0, 0});
 
 	void setVelocity(glm::vec3);
 
@@ -39,25 +40,25 @@ public:
 
 	void setPosition(glm::vec3);
 
-    void setInverseMass(float);
+	void setInverseMass(float);
 
-    void setMass(float);
+	void setMass(float);
 
-    void setDampingFactor(float);
+	void setDampingFactor(float);
 
-    void setCollisionGeometryType(CollisionGeomType);
+	void setCollisionGeometryType(CollisionGeomType);
 
-	glm::vec3 getPosition();
+	glm::vec3 getPosition() const;
 
-    float getRotation(glm::vec3);
+	float getRotation(glm::vec3);
 
-    float getInverseMass();
+	float getInverseMass();
 
-    float getMass();
+	float getMass();
 
-    float getDampingFactor();
+	float getDampingFactor();
 
-    glm::vec3 getForce();
+	glm::vec3 getForce();
 
 	CollisionGeomType getCollisionGeometryType();
 
@@ -65,15 +66,17 @@ public:
 
 	long getGeometryId();
 
+	bool operator==(const RigidBody& rhs) const;
+
 protected:
 	// this is 1/mass, a better representation that 
-    // allows us to work with 0 and infinite masses
-    float inverseMass; 
+	// allows us to work with 0 and infinite masses
+	float inverseMass;
 
-    // velocity damping factor used to simulate
-    // drag and friction forces in the real world
+	// velocity damping factor used to simulate
+	// drag and friction forces in the real world
 
-    float dampingFactor = 0.995;
+	float dampingFactor = 0.995;
 
 	glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f);

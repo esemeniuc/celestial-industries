@@ -12,60 +12,25 @@ find_package(SDL2_mixer REQUIRED)
 find_package(glfw3 REQUIRED)
 add_subdirectory(ext/glm)
 
-
 find_program(CCACHE_PROGRAM ccache)
-if(CCACHE_PROGRAM)
+if (CCACHE_PROGRAM)
 	# Support Unix Makefiles and Ninja
 	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
-endif()
+endif ()
 
-add_executable(proj
-		ext/gl3w/GL/gl3w.cpp
-		src/ai.cpp
-		src/building.cpp
-		src/camera.cpp
-		src/config.hpp
-		src/common.cpp
-		src/entity.cpp
-		src/level.cpp
-		src/logger.cpp
-		src/main.cpp
-		src/model.cpp
-		src/objloader.cpp
-		src/pathfinder.cpp
-		src/renderer.cpp
-		src/rigidBody.cpp
-		src/shader.cpp
-		src/skybox.cpp
-		src/textureloader.cpp
-		src/tile.cpp
-		src/world.cpp
-		src/unit/genericunit.cpp
-		src/unit/unitgroup.cpp
-		src/building.cpp
-		src/particle.cpp
-		src/collisiondetection.cpp
-        src/collisiondetector.cpp
-		src/collisionResolver.cpp
-		src/rigidBody.cpp)
 
-target_compile_options(proj PUBLIC
+set(CUSTOM_COMPILE_FLAGS
 		-Wall
 		-Wpedantic
 		-Wextra
 		-Wnull-dereference
-		-Wshadow
 		-Wformat=2
 		-Wno-comment
 		-Wno-unused-parameter
-		-ggdb)
+		-ggdb
+		)
 
-if (APPLE)
-	target_link_libraries(proj "-framework CoreFoundation")
-endif ()
-
-
-target_include_directories(proj PUBLIC
+set(CUSTOM_INCLUDE_DIRS
 		src
 		src/unit
 		ext/gl3w
@@ -75,7 +40,7 @@ target_include_directories(proj PUBLIC
 		${SDL2_MIXER_INCLUDE_DIRS}
 		)
 
-target_link_libraries(proj
+set(CUSTOM_INCLUDE_LIBS
 		OpenGL::GL
 		glfw
 		glm
@@ -84,19 +49,63 @@ target_link_libraries(proj
 		${SDL2_MIXER_LIBRARIES}
 		)
 
+set(PROJ_SOURCES
+		ext/gl3w/GL/gl3w.cpp
+		src/aicomp.cpp
+		src/aimanager.cpp
+		src/building.cpp
+		src/camera.cpp
+		src/collisiondetection.cpp
+		src/collisiondetector.cpp
+		src/collisionResolver.cpp
+		src/config.hpp
+		src/common.cpp
+		src/entity.cpp
+		src/global.cpp
+		src/global.hpp
+		src/level.cpp
+		src/logger.cpp
+		src/model.cpp
+		src/objloader.cpp
+		src/pathfinder.cpp
+		src/particle.cpp
+		src/renderer.cpp
+		src/rigidBody.cpp
+		src/shader.cpp
+		src/skybox.cpp
+		src/textureloader.cpp
+		src/tile.cpp
+		src/world.cpp
+		src/unitcomp.cpp
+		src/unitmanager.cpp src/unitmanager.hpp)
+
+add_library(libproj ${PROJ_SOURCES})
+target_compile_options(libproj PUBLIC ${CUSTOM_COMPILE_FLAGS})
+if (APPLE)
+	target_link_libraries(libproj PUBLIC ${CUSTOM_INCLUDE_LIBS} "-framework CoreFoundation")
+else()
+	target_link_libraries(libproj PUBLIC ${CUSTOM_INCLUDE_LIBS})
+endif ()
+target_include_directories(libproj PUBLIC ${CUSTOM_INCLUDE_DIRS})
+
+set(TEST_SUITE_SOURCES
+		test/example.cpp
+		test/genericunit_test.cpp
+		)
+
+add_executable(proj src/main.cpp) #main.cpp gets compile flags through PUBLIC flag of libproj
+
+
+
+target_link_libraries(proj libproj)
+
 
 # Prepare "Catch" library for other executables
 set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/catch2/single_include)
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
-
-# Make test executable
-set(TEST_SOURCES
-		test/example.cpp
-		)
-
-add_executable(test_suite ${TEST_SOURCES})
-target_link_libraries(test_suite Catch) #can run the "test_suite" binary from the build folder
+add_executable(test_suite ${TEST_SUITE_SOURCES})
+target_link_libraries(test_suite Catch libproj) #so we can run the "test_suite" binary from the build folder
 
 # for ctest, you can run "ctest" in the build folder
 enable_testing(true)

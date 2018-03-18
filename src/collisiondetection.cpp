@@ -5,7 +5,7 @@
 #include <map>
 
 namespace CollisionDetection {
-    CollisionInfo CollisionDetection::movingBodyCollidesWithStatic(BoundingBox staticBox, BoundingBox movingBox, glm::vec3 staticPosition, glm::vec3 movingStartPosition, glm::vec3 movingEndPosition, float totalTime)
+	CollisionInfo movingBodyCollidesWithStatic(BoundingBox staticBox, BoundingBox movingBox, glm::vec3 staticPosition, glm::vec3 movingStartPosition, glm::vec3 movingEndPosition, float totalTime)
     {
         return aabbMinkowskiCollisions(staticBox, movingBox, staticPosition, staticPosition, movingStartPosition, movingEndPosition, totalTime);
     }

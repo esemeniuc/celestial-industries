@@ -1,24 +1,24 @@
-#include "common.hpp"
-
-// stlib
 #include <vector>
 #include <sstream>
 #include <string>
 #include <iostream>
 
+#include "common.hpp"
+
 // Our stuff
+Logger logger;
 
 char separator()
 {
 	return '/';
 }
 
-std::vector<std::string> splitString(std::string input, const char seperator) {
+std::vector<std::string> splitString(std::string input, const char separator) {
 	std::vector<std::string> result;
 	std::string segment;
 	std::stringstream inputStream;
 	inputStream << input;
-	while (std::getline(inputStream, segment, seperator)) {
+	while (std::getline(inputStream, segment, separator)) {
 		result.push_back(segment);
 	}
 	return result;

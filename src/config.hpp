@@ -17,21 +17,7 @@ namespace Config {
 	constexpr const char* SYSTEM_LOG_FILE_PATH = "debug.log";
 	const int CAMERA_START_POSITION_X = 20;
 	const int CAMERA_START_POSITION_Y = 20;
-	const int CAMERA_START_POSITION_Z = -15;
-    
-    // Note: this must be equalt to the value in the shader, otherwise weird things will eventually happen probably
+	const int CAMERA_START_POSITION_Z = 30;
+    // Note: this must be equal to the value in the shader, otherwise weird things will eventually happen probably
     const unsigned int MAX_TOTAL_SUBOBJECTS_PER_RENDERER = 1000; // If you change this and not the shader you are a bad person
-
-	enum class MeshType {
-		SAND_1,
-		SAND_2,
-		SAND_3,
-		WALL,
-		BRICK_CUBE,
-		MINING_TOWER,
-		PHOTON_TOWER,
-		TREE,
-		GUN_TURRET,
-		BALL
-	};
 }

@@ -4,6 +4,7 @@
 #include <ostream> //for overloaded << operator
 #include <map>
 #include "common.hpp"
+#include "config.hpp"
 #include "tile.hpp"
 #include "model.hpp"
 
@@ -21,7 +22,7 @@ struct AStarNode {
 
 	AStarNode() = default;
 
-	AStarNode(int _rowCoord, int _colCoord, int _movementCost, float _fScore) : rowCoord(_rowCoord),
+	AStarNode(int _colCoord, int _rowCoord, int _movementCost, float _fScore) : rowCoord(_rowCoord),
 																				colCoord(_colCoord),
 																				movementCost(_movementCost),
 																				fScore(_fScore) {}
@@ -47,11 +48,12 @@ public:
 	//members
 	// Using a shared pointer to a tile allows us to actually have derived classes in there as well.
 	std::vector<std::vector<std::shared_ptr<Tile>>> tiles; // we can add the time dimension when we get there
+	std::vector<std::shared_ptr<GunTowerTile>> guntowers;
 
 	//funcs
 	bool init(
-			std::vector<std::vector<Model::MeshType>> levelArray,
-			std::map<Model::MeshType, std::shared_ptr<Renderer>> meshRenderers
+			std::vector<std::vector<Model::MeshType>>& levelArray,
+			std::vector<std::shared_ptr<Renderer>>& meshRenderers
 	);
 
 	void update(float ms);
@@ -62,7 +64,7 @@ public:
 
 	std::vector<std::vector<AStarNode>> getLevelTraversalCostMap();
 
-    std::vector<std::shared_ptr<GunTowerTile>> guntowers;
+	Coord getLevelSize() const;
 
 private:
 	//members

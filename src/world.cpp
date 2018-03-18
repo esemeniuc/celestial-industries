@@ -1,16 +1,15 @@
 // Header
-#include "world.hpp"
-#include "logger.hpp"
 #include <chrono>  // for high_resolution_clock
-#include "renderer.hpp"
+#include "unitmanager.hpp"
+#include "unitcomp.hpp"
+#include "logger.hpp"
 #include "world.hpp"
 #include "collisiondetection.hpp"
 #include "particle.hpp"
+#include "aimanager.hpp"
 
 // Same as static in c, local to compilation unit
 namespace {
-//	const size_t TILE_WIDTH = 10;
-
 	namespace {
 		void glfw_err_cb(int error, const char* desc) {
 			fprintf(stderr, "%d: %s", error, desc);
@@ -25,14 +24,6 @@ World::World() {
 
 World::~World() = default;
 
-
-//TODO: remove me
-std::shared_ptr<Entity> ballPointer;
-std::shared_ptr<Entity> ballPointer2;
-std::pair<bool, std::vector<Coord>> path;
-#include <queue>
-std::queue<Coord> pathq;
-
 std::shared_ptr<Particles::ParticleEmitter> fireSpawner;
 
 
@@ -43,7 +34,7 @@ bool World::init(glm::vec2 screen) {
 	// Core Opengl 3.
 	glfwSetErrorCallback(glfw_err_cb);
 	if (!glfwInit()) {
-		fprintf(stderr, "Failed to initialize GLFW");
+		logger(LogLevel::ERR) << "Failed to initialize GLFW\n";
 		return false;
 	}
 
@@ -86,18 +77,18 @@ bool World::init(glm::vec2 screen) {
 	//-------------------------------------------------------------------------
 	// Loading music and sounds
 	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-		fprintf(stderr, "Failed to initialize SDL Audio");
+		logger(LogLevel::ERR) << "Failed to initialize SDL Audio\n";
 		return false;
 	}
 
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
-		fprintf(stderr, "Failed to open audio device");
+		logger(LogLevel::ERR) << "Failed to open audio device\n";
 		return false;
 	}
 
 	// setup skybox
-	bool skyboxLoaded = loadSkybox("skybox.obj", "skybox");
-	if (!skyboxLoaded) {
+	if (!loadSkybox("skybox.obj", "skybox")) {
+		logger(LogLevel::ERR) << "Failed to open skybox\n";
 		return false;
 	}
 
@@ -106,63 +97,70 @@ bool World::init(glm::vec2 screen) {
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
 
-	// Load shader for default meshSources
-    objShader = std::make_shared<Shader>();
-    if (!objShader->load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl"))) {
-        logger(LogLevel::ERR) << "Failed to load obj shader!" << '\n';
-        return false;
-    }
 
-	if(!initMeshTypes(Model::meshSources)){
+	// Load shader for default meshSources
+	objShader = std::make_shared<Shader>();
+	if (!objShader->load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl"))) {
+		logger(LogLevel::ERR) << "Failed to load obj shader!" << '\n';
+		return false;
+	}
+
+	if (!initMeshTypes(Model::meshSources)) {
 		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
 	}
 
 	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isn't being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
-	std::vector<std::vector<Model::MeshType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
 
-	size_t mapSize = levelArray.size();
+	levelArray = level.levelLoader(
+			pathBuilder({"data", "levels"}) + "level1.txt");
+
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
 
 	level.init(levelArray, Model::meshRenderers);
-
+	UnitManager::init(levelArray.size(), levelArray.front().size());
 	// test different starting points for the AI
-	std::vector<std::vector<AStarNode>> costMap = level.getLevelTraversalCostMap();
-	auto start = std::chrono::high_resolution_clock::now();
-    // commented out due to hard coded locations on variable levels
-	//AI::aStar::a_star(costMap, 1, 19, 1, 11, 25);
-	//AI::aStar::a_star(costMap, 1, 1, 1, 11, 25);
-	//AI::aStar::a_star(costMap, 1, 1, 39, 11, 25);
-	auto finish = std::chrono::high_resolution_clock::now();
-
-	std::chrono::duration<double> elapsed = finish - start;
-	std::cout << "Elapsed time: " << elapsed.count() << " s\n";
-
-    ballPointer = std::make_shared<Entity>(Model::MeshType::BALL);
-    ballPointer2 = std::make_shared<Entity>(Model::MeshType::BALL);
+	aiCostMap = level.getLevelTraversalCostMap();
 
 	//display a path
-	//std::pair<bool, std::vector<Coord>> path =
-	//		AI::aStar::a_star(costMap, 1, 12, 27, (int) mapSize / 2, (int) mapSize / 2);
-	//level.displayPath(path.second);
-	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
-	selectedTileCoordinates.colCoord = (int) mapSize / 2;
+	int startx = 25, startz = 11;
+	int targetx = 10, targetz = 10;
+	auto temp1 = std::make_shared<Entity>();
+	temp1->translate({startx, 0, startz});
+	temp1->moveTo(targetx, targetz);
+	entityMap.push_back(temp1);
+
+
+	startx = 39, startz = 19;
+	auto temp2 = std::make_shared<Entity>();
+	temp2->translate({startx, 0, startz});
+	temp2->moveTo(targetx, targetz);
+	entityMap.push_back(temp2);
+
+	startx = 39, startz = 1;
+	auto temp3 = std::make_shared<Entity>();
+	temp3->translate({startx, 0, startz});
+	temp3->moveTo(targetx, targetz);
+	entityMap.push_back(temp3);
+
+
+	selectedTileCoordinates.rowCoord = level.getLevelSize().rowCoord / 2;
+	selectedTileCoordinates.colCoord = level.getLevelSize().colCoord / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
-    	
+
 	return true;
 }
 
-bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources)
-{
-    // All the models come from the same place
-    std::string path = pathBuilder({ "data", "models" });
-    for (auto source : sources) {
-        Model::MeshType tileType = source.first;
-        std::vector<SubObjectSource> objSources  = source.second;
-        Model::meshRenderers[tileType] = std::make_shared<Renderer>(objShader, objSources);
-    }
-    return true;
+bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources) {
+	// All the models come from the same place
+	std::string path = pathBuilder({"data", "models"});
+	for (auto source : sources) {
+		Model::MeshType tileType = source.first;
+		std::vector<SubObjectSource> objSources = source.second;
+		Model::meshRenderers[tileType] = std::make_shared<Renderer>(objShader, objSources);
+	}
+	return true;
 }
 
 // skybox
@@ -201,33 +199,31 @@ void World::destroy() {
 // Update our game world
 float total_time = 0.0f;
 
-bool World::update(float elapsed_ms) {
+bool World::update(double elapsed_ms) {
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
 	camera.update(elapsed_ms);
 	total_time += elapsed_ms;
-    selectedTile->shouldDraw(true);
+	selectedTile->shouldDraw(true);
 
 	if (
-            selectedTileCoordinates.rowCoord >= 0 &&
-            (unsigned long) selectedTileCoordinates.rowCoord < level.getLevelTraversalCostMap().size() &&
-            selectedTileCoordinates.colCoord >= 0 &&
-            (unsigned long) selectedTileCoordinates.colCoord < level.getLevelTraversalCostMap()[0].size()
-        ) {
+			selectedTileCoordinates.rowCoord >= 0 &&
+			(unsigned long) selectedTileCoordinates.rowCoord < level.getLevelTraversalCostMap().size() &&
+			selectedTileCoordinates.colCoord >= 0 &&
+			(unsigned long) selectedTileCoordinates.colCoord < level.getLevelTraversalCostMap()[0].size()
+			) {
 
-        selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
-        selectedTile->shouldDraw(false);
+		selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
+		selectedTile->shouldDraw(false);
 	}
 
-    ballPointer->translate(glm::vec3(0.01, 0.0, 0.01));
-    ballPointer2->translate(glm::vec3(-0.01, 0.0, -0.01));
-    ballPointer2->animate(elapsed_ms);
-
-    for (const auto& turret : level.guntowers) {
-        turret->update(elapsed_ms);
-    }
+	for (const auto& turret : level.guntowers) {
+		turret->update(elapsed_ms);
+	}
 
 	Particles::updateParticleStates(elapsed_ms);
+	AiManager::update(elapsed_ms);
+	UnitManager::update(elapsed_ms);
 
 	return true;
 }
@@ -255,7 +251,7 @@ void World::draw() {
 	glm::mat4 projectionView = projection * view;
 
 	for (auto renderer : Model::meshRenderers) {
-		renderer.second->render(projectionView);
+		renderer->render(projectionView);
 	}
 
 
@@ -357,7 +353,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 }
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
-	camera.pan((int)xpos,(int) ypos);
+	camera.pan((int) xpos, (int) ypos);
 
 	int windowWidth;
 	int windowHeight;
@@ -366,28 +362,29 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 	int framebufferWidth, framebufferHeight;
 	glfwGetFramebufferSize(m_window, &framebufferWidth, &framebufferHeight);
 
-	int computedFbX = (float) xpos/(float) windowWidth * (float) framebufferWidth;
-	int computedFbY = (float) ypos/(float) windowHeight* (float) framebufferHeight;
+	int computedFbX = (float) xpos / (float) windowWidth * (float) framebufferWidth;
+	int computedFbY = (float) ypos / (float) windowHeight * (float) framebufferHeight;
 
-	glm::vec2 windowCoordinates{ computedFbX, computedFbY };
-	glm::vec2 viewport{ framebufferWidth, framebufferHeight };
-	glm::vec4 clipCoordinates{ windowCoordinates / viewport * 2.0f - glm::vec2{ 1.0f }, -1.0f, 1.0f };
+	glm::vec2 windowCoordinates{computedFbX, computedFbY};
+	glm::vec2 viewport{framebufferWidth, framebufferHeight};
+	glm::vec4 clipCoordinates{windowCoordinates / viewport * 2.0f - glm::vec2{1.0f}, -1.0f, 1.0f};
 	clipCoordinates[1] *= -1.0;
-	glm::mat4 clipWorldMatrix{ glm::inverse(camera.getProjectionMatrix(windowWidth, windowHeight) * camera.getViewMatrix()) };
-	glm::vec4 unprojectedWorldCoordinates{ clipWorldMatrix * clipCoordinates };
-	glm::vec3 worldCoordinates{ glm::vec3{ unprojectedWorldCoordinates } / unprojectedWorldCoordinates.w };
+	glm::mat4 clipWorldMatrix{
+			glm::inverse(camera.getProjectionMatrix(windowWidth, windowHeight) * camera.getViewMatrix())};
+	glm::vec4 unprojectedWorldCoordinates{clipWorldMatrix * clipCoordinates};
+	glm::vec3 worldCoordinates{glm::vec3{unprojectedWorldCoordinates} / unprojectedWorldCoordinates.w};
 
 	glm::vec3 directionVector = worldCoordinates - camera.position;
-	glm::vec3 planeNormalVector = {0,1,0};
-	glm::vec3 planePoint = {0,0,0};
+	glm::vec3 planeNormalVector = {0, 1, 0};
+	glm::vec3 planePoint = {0, 0, 0};
 
 	float planeDotDirection = glm::dot(planeNormalVector, directionVector);
 	float t = glm::dot(planeNormalVector, (planePoint - camera.position)) / planeDotDirection;
 
 	if (t > 0) {
 		glm::vec3 pointInWorld = camera.position + (t * directionVector);
-        selectedTileCoordinates.rowCoord = (int) round(pointInWorld.z);
-        selectedTileCoordinates.colCoord = (int) round(pointInWorld.x);
+		selectedTileCoordinates.rowCoord = (int) round(pointInWorld.z);
+		selectedTileCoordinates.colCoord = (int) round(pointInWorld.x);
 	}
 
 

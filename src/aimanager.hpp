@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include <unordered_set>
-#include "genericunit.hpp"
-#include "building.h"
+#include "global.hpp"
+#include "unitcomp.hpp"
+#include "building.hpp"
 
 //assume AI has goal to destroy main control building of player
 /*we do the tree thing like alla suggested
@@ -36,23 +36,51 @@ patrol/scout what player is doing
 //down a new building
 
 
-class Ai {
-	std::vector<std::vector<GenericUnit>> unitsSeen;
+namespace AiManager {
+	std::vector<std::vector<UnitComp>> unitsSeen;
 	std::vector<std::vector<Building>> buildingsSeen;
 
-	int getValueOfPlayerUnits()
-	{
-		return 0;
+	int playerUnitValue = 0;
+	int aiUnitValue = 0;
+	int playerBuildingValue = 0;
+	int aiBuildingValue = 0;
+
+
+	void updateValueOfEntities() {
+		aiUnitValue = 0;
+		playerUnitValue = 0;
+		aiBuildingValue = 0;
+		playerBuildingValue = 0;
+		for (auto& entityInACell : entityMap) {
+			if (entityInACell->aiComp.type == GamePieceType::UNIT_NON_ATTACKING ||
+				entityInACell->aiComp.type == GamePieceType::UNIT_DEFENSIVE_ACTIVE ||
+				entityInACell->aiComp.type == GamePieceType::UNIT_OFFENSIVE) {
+				if (entityInACell->aiComp.owner == GamePieceOwner::AI) {
+					aiUnitValue += entityInACell->aiComp.value;
+				} else if (entityInACell->aiComp.owner == GamePieceOwner::PLAYER) {
+					playerUnitValue += entityInACell->aiComp.value;
+				}
+			} else if (entityInACell->aiComp.type == GamePieceType::BUILDING_NON_ATTACKING ||
+					   entityInACell->aiComp.type == GamePieceType::BUILDING_DEFENSIVE_PASSIVE ||
+					   entityInACell->aiComp.type == GamePieceType::BUILDING_DEFENSIVE_ACTIVE) {
+				if (entityInACell->aiComp.owner == GamePieceOwner::AI) {
+					aiBuildingValue += entityInACell->aiComp.value;
+				} else if (entityInACell->aiComp.owner == GamePieceOwner::PLAYER) {
+					playerBuildingValue += entityInACell->aiComp.value;
+				}
+			}
+		}
+	}
+
+
+	void update(double elapsed_ms) {
+		updateValueOfEntities();
 	}
 
 	int const PRIORITIZE_CLOSER_ATTACKS = 2;
 
-public:
-    Building* bestBuildingToAttack(std::list<Building> &buildings, Entity& entity);
-	Building* getHighestValuedBuilding(std::list<Building> &buildings);
-    float getDistanceBetweenEntities(Entity& entity1, Entity& entity2);
+	Building* bestBuildingToAttack(std::vector<Building>& buildings, Entity& entity);
 
-	Ai() {
+	Building* getHighestValuedBuilding(std::vector<Building>& buildings);
 
-	}
 };

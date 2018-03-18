@@ -27,8 +27,7 @@
 // glfw
 #include "GLFW/glfw3.h"
 
-
-// Container for all our entities and game logic. Individual rendering / update is 
+// Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
 class World {
 public:
@@ -46,7 +45,7 @@ public:
 	void destroy();
 
 	// Steps the game ahead by ms milliseconds
-	bool update(float ms);
+	bool update(double ms);
 
 	// Renders our scene
 	void draw();
@@ -90,12 +89,12 @@ private:
 
 	bool loadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder);
 
+	bool initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources);
+
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
 	void on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
-
-    bool initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources);
 };

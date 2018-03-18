@@ -2,10 +2,9 @@
 // Created by eric on 2/25/18.
 //
 
-#include <list>
-#include "ai.hpp"
+#include "aimanager.hpp"
 
-Building* Ai::bestBuildingToAttack(std::list<Building>& buildings, Entity& entity) {
+Building* AiManager::bestBuildingToAttack(std::vector<Building>& buildings, Entity& entity) {
     float bestAttackValue = -1;
     Building *building;
 
@@ -15,7 +14,9 @@ Building* Ai::bestBuildingToAttack(std::list<Building>& buildings, Entity& entit
 
     for (auto& currentBuilding : buildings) {
         int buildingValue = currentBuilding.buildingValue;
-        float distanceToBuilding = 0; //getDistanceBetweenEntities(currentBuilding, entity);
+
+        float distanceToBuilding = 0;//getDistanceBetweenEntities(currentBuilding, entity); //fixme to revert
+
         float attackValue = buildingValue - (distanceToBuilding * PRIORITIZE_CLOSER_ATTACKS);
 
         if (attackValue > bestAttackValue) {
@@ -27,7 +28,7 @@ Building* Ai::bestBuildingToAttack(std::list<Building>& buildings, Entity& entit
     return building;
 }
 
-Building* Ai::getHighestValuedBuilding(std::list<Building>& buildings) {
+Building* AiManager::getHighestValuedBuilding(std::vector<Building>& buildings) {
     int highestValueSoFar = -1;
     Building *building;
 
@@ -44,13 +45,3 @@ Building* Ai::getHighestValuedBuilding(std::list<Building>& buildings) {
 
     return building;
 }
-
-//float Ai::getDistanceBetweenEntities(Entity &entity1, Entity &entity2) {
-//    glm::vec3 p1 = entity1.getPosition();
-//    glm::vec3 p2 = entity2.getPosition();
-//
-//    // Ignore z coordinate.
-//    float diffY = p1.y - p2.y;
-//    float diffX = p1.x - p2.x;
-//    return sqrt((diffY * diffY) + (diffX * diffX));
-//}

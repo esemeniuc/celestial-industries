@@ -1,11 +1,12 @@
-#include "level.hpp"
 #include <iostream>
+#include "global.hpp"
+#include "level.hpp"
 #include "logger.hpp"
 #include "particle.hpp"
 
 bool Level::init(
-    std::vector<std::vector<Model::MeshType>> levelArray,
-    std::map<Model::MeshType, std::shared_ptr<Renderer>> meshRenderers
+    std::vector<std::vector<Model::MeshType>>& levelArray,
+    std::vector< std::shared_ptr<Renderer>>& meshRenderers
 )
 {
     // So that re initializing will be the same as first initialization
@@ -66,21 +67,21 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 			switch (tile) {
 				case '#': {
 					row.push_back(Model::MeshType::TREE);
-					tileData.emplace_back(rowNumber, colNumber, 1000.0, INF);
+					tileData.emplace_back(colNumber, rowNumber, 1000.0, INF);
 					break;
 				}
 				case ' ': {
 					row.push_back(Model::MeshType::SAND_1);
-					tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
+					tileData.emplace_back(colNumber, rowNumber, 10.0, INF);
 					break;
 				}
-                case 'G':
-                    row.push_back(Model::MeshType::GUN_TURRET);
-                    tileData.emplace_back(rowNumber, colNumber, 1000, INF);
-                    break;
-                case 'V': {
-                    row.push_back(Model::MeshType::GEYSER);
-                    tileData.emplace_back(rowNumber, colNumber, 1000.0, INF);
+				case 'G':
+					row.push_back(Model::MeshType::GUN_TURRET);
+					tileData.emplace_back(colNumber, rowNumber, 1000.0, INF);
+					break;
+				case 'V': {
+					row.push_back(Model::MeshType::GEYSER);
+					tileData.emplace_back(colNumber, rowNumber, 1000.0, INF);
 
                     Particles::makeParticleEmitter(
                             glm::vec3{colNumber, 0, rowNumber}, // emitter position
@@ -95,7 +96,7 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
                 }
 				default: {
 					row.push_back(Model::MeshType::SAND_2);
-					tileData.emplace_back(rowNumber, colNumber, 10.0, INF);
+					tileData.emplace_back(colNumber, rowNumber, 10.0, INF);
 					break;
 				}
 			}
@@ -116,15 +117,19 @@ std::vector<std::vector<AStarNode>> Level::getLevelTraversalCostMap() {
 
 bool Level::displayPath(const std::vector<Coord>& path) {
 
-//	for (const Coord& component : path) {
-//		std::vector<std::shared_ptr<Tile>> tileRow;
-//        auto renderer = meshRenderers[TileType::SAND_2];
-//        std::shared_ptr<Tile> tile = std::make_shared<Tile>(renderer);
-//
-//		tile->translate({component.colCoord, 0, component.rowCoord});
-//		tileRow.push_back(tile);
-//		tiles.push_back(tileRow);
-//	}
+	std::vector<std::shared_ptr<Tile>> tempRow;
+	tempRow.reserve(path.size());
+	for (const Coord& component : path) {
+		auto tile = std::make_shared<Tile>(Model::meshRenderers[Model::MeshType::SAND_2]);
+		tile->translate({component.colCoord, 0, component.rowCoord});
+		tempRow.push_back(tile);
+	}
+	tiles.push_back(tempRow);
 
 	return true;
+}
+
+//returns size in h by w
+Coord Level::getLevelSize() const {
+	return Coord(levelArray.size(), levelArray.front().size());
 }

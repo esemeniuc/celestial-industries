@@ -2,9 +2,9 @@
 #include "collisiondetection.hpp"
 #include "model.hpp"
 
-RigidBody::RigidBody(glm::vec3 position, glm::vec3 size, glm::vec3 velocity)
+RigidBody::RigidBody(glm::vec3 _position, glm::vec3 _size, glm::vec3 _velocity)
 {
-    geometryId = Model::collisionDetector.createBoundingBox(position, size, velocity);
+    geometryId = Model::collisionDetector.createBoundingBox(_position, _size, _velocity);
 }
 
 void RigidBody::setVelocity(glm::vec3 _velocity)
@@ -70,7 +70,7 @@ void RigidBody::setDampingFactor(float damping)
     this->dampingFactor = damping;
 }
 
-glm::vec3 RigidBody::getPosition()
+glm::vec3 RigidBody::getPosition() const
 {
     return position;
 }
@@ -132,4 +132,16 @@ glm::vec3 RigidBody::getVelocity()
 long RigidBody::getGeometryId()
 {
     return this->geometryId;
+}
+
+bool RigidBody::operator==(const RigidBody& rhs) const {
+	return inverseMass == rhs.inverseMass &&
+		   dampingFactor == rhs.dampingFactor &&
+		   velocity == rhs.velocity &&
+		   gravity == rhs.gravity &&
+		   appliedForce == rhs.appliedForce &&
+		   position == rhs.position &&
+		   rotation == rhs.rotation &&
+		   cgType == rhs.cgType &&
+		   geometryId == rhs.geometryId;
 }

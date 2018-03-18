@@ -9,10 +9,13 @@ namespace AI {
 		AStarNode current = goal;
 		std::vector<Coord> path;
 		while (current != start) {
-			path.emplace_back(current.rowCoord, current.colCoord);
+			path.emplace_back(current.colCoord, current.rowCoord);
 			current = came_from.at(current); //use at() to satisfy const constraint
 		}
+//		path.emplace_back(start.rowCoord, start.colCoord);
+
 		std::reverse(path.begin(), path.end());
+
 		return path;
 	}
 
@@ -27,14 +30,14 @@ namespace AI {
 	float aStar::l2_norm(const AStarNode& startNode, const AStarNode& goal) {
 		int rowDiff = startNode.rowCoord - goal.rowCoord;
 		int colDiff = startNode.colCoord - goal.colCoord;
-		return (float)std::sqrt((rowDiff * rowDiff) + (colDiff * colDiff));
+		return (float) std::sqrt((rowDiff * rowDiff) + (colDiff * colDiff));
 	}
 
 	std::vector<AStarNode>
 	aStar::getNeighbors(const std::vector<std::vector<AStarNode>>& graph, AStarNode& currentPos,
 						AStarNode& goal) {
 		int numOfRows = (int) graph.size();
-		int numOfColumns = (int) graph[0].size();
+		int numOfColumns = (int) graph.front().size();
 		int row = currentPos.rowCoord;
 		int col = currentPos.colCoord;
 		int goalRow = goal.rowCoord;
@@ -49,28 +52,28 @@ namespace AI {
 		// check if we can move forward a column
 		const float OBSTACLE_COST = 1000.0;
 		if ((col != numOfColumns - 1) && (((row == goalRow) && (col + 1 == goalCol)) ||
-			graph[row][col + 1].movementCost < OBSTACLE_COST)) {
+										  graph[row][col + 1].movementCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row][col + 1]);
 		}
 
 		// check if we can move backward a column
 		// costOfBackwardMove = std::get<2>(graph[row][col - 1]);
 		if ((col != 0) && (((row == goalRow) && (col - 1 == goalCol)) ||
-			graph[row][col - 1].movementCost < OBSTACLE_COST)) {
+						   graph[row][col - 1].movementCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row][col - 1]);
 		}
 
 		// check if we can move up a row
 		// costOfUpMove = std::get<2>(graph[row][col + 1]);
 		if ((row != 0) && (((row - 1 == goalRow) && (col == goalCol)) ||
-			graph[row - 1][col].movementCost < OBSTACLE_COST)) {
+						   graph[row - 1][col].movementCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row - 1][col]);
 		}
 
 		// check if we can move down a row
 		// costOfDownMove = std::get<2>(graph[row][col + 1]);
 		if ((row != numOfRows - 1) && (((row + 1 == goalRow) && (col == goalCol)) ||
-			graph[row + 1][col].movementCost < OBSTACLE_COST)) {
+									   graph[row + 1][col].movementCost < OBSTACLE_COST)) {
 			neighbors.push_back(graph[row + 1][col]);
 		}
 
@@ -89,21 +92,21 @@ namespace AI {
 		/* hash table that helps us keep track of how we reached a tile node
 		using a key of its predecessor node in the path*/
 		std::unordered_map<AStarNode, AStarNode, aStarHasher> came_from;
-		came_from.reserve(graph.size() * graph[0].size());
+		came_from.reserve(graph.size() * graph.front().size());
 
 		// cost associated with a path up to a certain node
 		std::unordered_map<AStarNode, double, aStarHasher> cost_so_far;
-		cost_so_far.reserve(graph.size() * graph[0].size());
+		cost_so_far.reserve(graph.size() * graph.front().size());
 
 		// check which tiles the given positions lie in
 		// TODO: check coordinate signs ( -Z as opposed to +Z for tile positions)
-		int startRow = startX / tileSize; //floating point numbers get floored when stored in ints
-		int startCol = startZ / tileSize;
-		int goalRow = goalX / tileSize;
-		int goalCol = goalZ / tileSize;
+		int startRow = startZ / tileSize; //floating point numbers get floored when stored in ints
+		int startCol = startX / tileSize;
+		int goalRow = goalZ / tileSize;
+		int goalCol = goalX / tileSize;
 
-        AStarNode start = AStarNode(startRow, startCol, 10.0f, 0.0f);
-        AStarNode goal = AStarNode(goalRow, goalCol, 10.0f, INF);
+		AStarNode start = AStarNode(startCol, startRow, 10, 0);
+		AStarNode goal = AStarNode(goalCol, goalRow, 10, INF);
 
 		frontier.push(start);
 		came_from[start] = start;
@@ -143,4 +146,5 @@ namespace AI {
 
 		return {false, {}}; //false for bool because we didn't find a path
 	}
+
 }

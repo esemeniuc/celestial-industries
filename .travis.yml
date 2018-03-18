@@ -16,12 +16,6 @@ script:
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run -it --volume `pwd`:/home/ci/ cwaffles/ci-build /bin/sh -c "mkdir build && cd build && cmake .. && make -j4 && cd .. && build/test_suite"; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir build && cd build && cmake .. && make -j4 && cd .. && build/test_suite; fi
 
-before_deploy:
-  # Set up git user name and tag this commit
-  - git config --local user.name "travis-bot"
-  - git config --local user.email "travis@travis.com"
-  - git tag "$(date +'%Y-%m-%d_%H-%M-%S')_build_${TRAVIS_OS_NAME}" ${TRAVIS_COMMIT};
-
 deploy:
   provider: releases
   api_key:
@@ -30,4 +24,4 @@ deploy:
   skip_cleanup: true
   on:
     repo: esemeniuc/celestial-industries
-    all_branches: true
+    tags: true

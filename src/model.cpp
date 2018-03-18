@@ -16,7 +16,7 @@ namespace Model {
         { Model::MeshType::PARTICLE,    { { "ball.obj",        -1 } } },
     };
 
-    std::map<Model::MeshType, std::shared_ptr<Renderer>> meshRenderers;
+    std::vector<std::shared_ptr<Renderer>> meshRenderers(meshSources.size());
     CollisionDetector collisionDetector;
     
     Renderable createRenderable(MeshType type)
