@@ -123,7 +123,6 @@ void Entity::move(double elapsed_time) {
 	}
 
 	unitComp.targetPathStartTimestamp += elapsed_time;
-
 	std::pair<int, double> index = getInterpolationPercentage(); //first is index into path, second is interp amount (0 to 1)
 	if (index.first < (int) unitComp.targetPath.size() - 1) {
 		Coord curr = unitComp.targetPath[index.first];
@@ -138,22 +137,6 @@ void Entity::move(double elapsed_time) {
 
 		double destCol = curr.colCoord + (dCol * index.second);
 		double destRow = curr.rowCoord + (dRow * index.second);
-
-		//TODO: add entityMap updating if we change cells
-		//check if we changed position
-		int currentCol = (int) rigidBody.getPosition().x;
-		int currentRow = (int) rigidBody.getPosition().z;
-		int targetCol = (int) destCol;
-		int targetRow = (int) destRow;
-
-		//push to new location
-		if (targetCol != currentCol || targetRow != currentRow) {
-			auto& cell = entityMap[entityMapCoords.rowCoord][entityMapCoords.colCoord];
-//			entityMap[targetRow][targetCol].push_back(*this);
-			Entity e;
-			cell.erase(std::remove(cell.begin(), cell.end(), e), cell.end()); //erase from old location
-		}
-//		printf("ccol: %d crow: %d, tcol: %lf trow: %lf\n", currentCol, currentRow, destCol, destRow);
 
 		glm::vec3 newPos = {destCol, 0, destRow};
 		setPositionFast(0, newPos); //for rendering

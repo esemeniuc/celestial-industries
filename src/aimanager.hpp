@@ -51,26 +51,22 @@ namespace AiManager {
 		playerUnitValue = 0;
 		aiBuildingValue = 0;
 		playerBuildingValue = 0;
-		for (auto& row : entityMap) {
-			for (auto& col : row) {
-				for (Entity& entityInACell : col) {
-					if (entityInACell.aiComp.type == GamePieceType::UNIT_NON_ATTACKING ||
-						entityInACell.aiComp.type == GamePieceType::UNIT_DEFENSIVE_ACTIVE ||
-						entityInACell.aiComp.type == GamePieceType::UNIT_OFFENSIVE) {
-						if (entityInACell.aiComp.owner == GamePieceOwner::AI) {
-							aiUnitValue += entityInACell.aiComp.value;
-						} else if (entityInACell.aiComp.owner == GamePieceOwner::PLAYER) {
-							playerUnitValue += entityInACell.aiComp.value;
-						}
-					} else if (entityInACell.aiComp.type == GamePieceType::BUILDING_NON_ATTACKING ||
-							   entityInACell.aiComp.type == GamePieceType::BUILDING_DEFENSIVE_PASSIVE ||
-							   entityInACell.aiComp.type == GamePieceType::BUILDING_DEFENSIVE_ACTIVE) {
-						if (entityInACell.aiComp.owner == GamePieceOwner::AI) {
-							aiBuildingValue += entityInACell.aiComp.value;
-						} else if (entityInACell.aiComp.owner == GamePieceOwner::PLAYER) {
-							playerBuildingValue += entityInACell.aiComp.value;
-						}
-					}
+		for (auto& entityInACell : entityMap) {
+			if (entityInACell->aiComp.type == GamePieceType::UNIT_NON_ATTACKING ||
+				entityInACell->aiComp.type == GamePieceType::UNIT_DEFENSIVE_ACTIVE ||
+				entityInACell->aiComp.type == GamePieceType::UNIT_OFFENSIVE) {
+				if (entityInACell->aiComp.owner == GamePieceOwner::AI) {
+					aiUnitValue += entityInACell->aiComp.value;
+				} else if (entityInACell->aiComp.owner == GamePieceOwner::PLAYER) {
+					playerUnitValue += entityInACell->aiComp.value;
+				}
+			} else if (entityInACell->aiComp.type == GamePieceType::BUILDING_NON_ATTACKING ||
+					   entityInACell->aiComp.type == GamePieceType::BUILDING_DEFENSIVE_PASSIVE ||
+					   entityInACell->aiComp.type == GamePieceType::BUILDING_DEFENSIVE_ACTIVE) {
+				if (entityInACell->aiComp.owner == GamePieceOwner::AI) {
+					aiBuildingValue += entityInACell->aiComp.value;
+				} else if (entityInACell->aiComp.owner == GamePieceOwner::PLAYER) {
+					playerBuildingValue += entityInACell->aiComp.value;
 				}
 			}
 		}

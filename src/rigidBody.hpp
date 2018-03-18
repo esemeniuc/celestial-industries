@@ -88,5 +88,5 @@ protected:
 	CollisionGeomType cgType;
 
 	// id number of the geometry
-	int geometryId = 0;
+	int geometryId;
 };
