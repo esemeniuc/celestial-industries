@@ -18,6 +18,7 @@ if (CCACHE_PROGRAM)
 	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
 endif ()
 
+
 set(CUSTOM_COMPILE_FLAGS
 		-Wall
 		-Wpedantic
