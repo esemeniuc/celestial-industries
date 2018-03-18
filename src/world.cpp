@@ -6,6 +6,7 @@
 #include "world.hpp"
 #include "collisiondetection.hpp"
 #include "particle.hpp"
+#include "ui.hpp"
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -34,6 +35,8 @@ std::pair<bool, std::vector<Coord>> path;
 std::queue<Coord> pathq;
 
 std::shared_ptr<Particles::ParticleEmitter> fireSpawner;
+
+UI ui;
 
 
 // World initialization
@@ -258,6 +261,8 @@ void World::draw() {
 		renderer.second->render(projectionView);
 	}
 
+    // Render the UI
+	ui.render();
 
 	// make skybox rotate by 0.001 * pi/4 radians around y axis, every frame
 //	float y_rotation = 0.005 * glm::quarter_pi<float>();
