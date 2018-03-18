@@ -113,13 +113,20 @@ bool World::init(glm::vec2 screen) {
         return false;
     }
 
+	particleShader = std::make_shared<Shader>();
+    if (!objShader->load_from_file(shader_path("particles.vs.glsl"), shader_path("particles.fs.glsl"))) {
+        logger(LogLevel::ERR) << "Failed to load particle shader!" << '\n';
+        return false;
+    }
+
+
 	if(!initMeshTypes(Model::meshSources)){
 		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
 	}
 
 	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isn't being shared
 	// thats a big enough change to merit its own ticket in milestone 2 though
-	std::vector<std::vector<Model::MeshType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
+	std::vector<std::vector<Model::MeshType>> levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt", particleShader);
 
 	size_t mapSize = levelArray.size();
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
@@ -227,6 +234,10 @@ bool World::update(float elapsed_ms) {
         turret->update(elapsed_ms);
     }
 
+    for (const auto& emitter : level.emitters) {
+        emitter->update(elapsed_ms);
+    }
+
 	Particles::updateParticleStates(elapsed_ms);
 
 	return true;
@@ -256,6 +267,10 @@ void World::draw() {
 
 	for (auto renderer : Model::meshRenderers) {
 		renderer.second->render(projectionView);
+	}
+
+	for (auto emitter : level.emitters) {
+		emitter->render(projectionView, camera.position);
 	}
 
 

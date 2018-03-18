@@ -2,6 +2,13 @@
 #include "common.hpp"
 #include "shader.hpp"
 
+struct TexturedVertex {
+    TexturedVertex() = delete;
+
+    glm::vec3 position;
+    glm::vec2 textureCoordinate;
+};
+
 // A Mesh is a collection of a VertexBuffer and an IndexBuffer. A VAO
 // represents a Vertex Array Object and is the container for 1 or more Vertex Buffers and 
 // an Index Buffer

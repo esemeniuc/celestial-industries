@@ -234,7 +234,8 @@ namespace Particles {
             float particleWidth,
             float particleHeight,
             float particleLifespan,
-            float particleSpeed
+            float particleSpeed,
+            std::shared_ptr<Shader> shader
     ) {
         auto emitter = std::make_shared<ParticleEmitter>(
                 position,
@@ -243,9 +244,9 @@ namespace Particles {
                 particleWidth,
                 particleHeight,
                 particleLifespan,
-                particleSpeed
+                particleSpeed,
+                shader
         );
-        particleEmitters.push_back(emitter);
         return emitter;
     }
 
@@ -256,27 +257,89 @@ namespace Particles {
             float particleWidth,
             float particleHeight,
             float particleLifespan,
-            float particleSpeed
-    ) : position(position),
-        direction(direction),
-        spread(spread),
-        particleWidth(particleWidth),
-        particleHeight(particleHeight),
-        particleLifespan(particleLifespan),
-        particleSpeed(particleSpeed)
+            float particleSpeed,
+            std::shared_ptr<Shader> shader) :
+
+            position(position),
+            direction(direction),
+            spread(spread),
+            particleWidth(particleWidth),
+            particleHeight(particleHeight),
+            particleLifespan(particleLifespan),
+            particleSpeed(particleSpeed),
+            ageInMilliseconds(0),
+            shader(shader)
     {
-        // vertical positions less than 0 are invalid
-        assert(position.y >= 0);
-        if (position.y < 0) {
-            throw "ParticleEmitters must be placed at a y-coordinate >= 0!\n";
-        }
+        // generate VAO to link VBO and VIO
+        glGenVertexArrays(1, &vao);
+        glBindVertexArray(vao);
 
-        if (position.y == 0) {
-            this->position.y += 0.01; // to avoid resetting a particle first-thing
-        }
+        // generate VBO to store the triangle vertices
+        glGenBuffers(1, &vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-        this->emitterId = particleEmitters.size();
-        this->createParticles();
+        glm::vec3 topLeftCorner     = glm::vec3(-0.5f * particleWidth, 0.5f * particleHeight, 0);
+        glm::vec3 topRightCorner    = glm::vec3(0.5f * particleWidth,  0.5f * particleHeight, 0);
+        glm::vec3 bottomLeftCorner  = glm::vec3(-0.5f * particleWidth, -0.5f * particleHeight, 0);
+        glm::vec3 bottomRightCorner = glm::vec3(0.5f * particleWidth,  -0.5f * particleHeight, 0);
+
+        TexturedVertex vertices[4] = {
+                // top left corner
+                {{-0.5f * particleWidth, 0.5f * particleHeight, 0}, {0, 1}},
+                // top right corner
+                {{0.5f * particleWidth,  0.5f * particleHeight, 0}, {1, 1}},
+                // bottom left corner
+                {{-0.5f * particleWidth, -0.5f * particleHeight, 0}, {0, 0}},
+                // bottom right corner
+                {{0.5f * particleWidth,  -0.5f * particleHeight, 0}, {1, 0}}
+        };
+
+        glBufferData(GL_ARRAY_BUFFER, 4*sizeof(TexturedVertex), &vertices, GL_STATIC_DRAW);
+
+        // generate the IBO
+        glGenBuffers(1, &ibo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+
+        // triangles with their vertices in counterclockwise order
+        int vertexIndices[6] = {
+                // triangle 1
+                0, 2, 3,
+                // triangle 2
+                0, 3, 1
+        };
+
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6*sizeof(int), &vertexIndices, GL_STATIC_DRAW);
+
+
+        positionAttribute = static_cast<GLuint>(glGetAttribLocation(shader->program, "position"));
+        textureCoordinateAttribute = static_cast<GLuint>(glGetAttribLocation(shader->program, "textureCoordinate"));
+
+        glEnableVertexAttribArray(positionAttribute);
+        glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*) 0);
+
+        glEnableVertexAttribArray(textureCoordinateAttribute);
+        glVertexAttribPointer(textureCoordinateAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*) sizeof(glm::vec3));
+
+        timeElapsedUniform = static_cast<GLuint>(glGetUniformLocation(shader->program, "timeElapsedSinceStart"));
+        modelViewProjectionUniform = static_cast<GLuint>(glGetUniformLocation(shader->program, "modelViewProjection"));
+
+        // prevent clobbering of our VAO
+        glBindVertexArray(0);
+
+        // OLD code
+        // TODO: remove it
+//        // vertical positions less than 0 are invalid
+//        assert(position.y >= 0);
+//        if (position.y < 0) {
+//            throw "ParticleEmitters must be placed at a y-coordinate >= 0!\n";
+//        }
+//
+//        if (position.y == 0) {
+//            this->position.y += 0.01; // to avoid resetting a particle first-thing
+//        }
+//
+//        this->emitterId = particleEmitters.size();
+//        this->createParticles();
     }
 
     void ParticleEmitter::updateParticlePositions(float elapsed_ms) {
@@ -304,5 +367,21 @@ namespace Particles {
             particleGraphics.push_back(std::make_shared<Entity>(Model::MeshType::PARTICLE));
             particleGraphics[i]->translate(particles[i].getPosition());
         }
+    }
+
+    void ParticleEmitter::update(float elapsed_ms) {
+        ageInMilliseconds += elapsed_ms;
+    }
+
+    void ParticleEmitter::render(glm::mat4 viewProjection, glm::vec3 cameraPosition) {
+        glUseProgram(shader->program);
+        glBindVertexArray(vao);
+
+        // pass parameters into the shader
+        glm::mat4 modelViewProjection = viewProjection * glm::translate(glm::mat4(1.0f), cameraPosition);
+        glUniformMatrix4fv(modelViewProjectionUniform, 1, GL_FALSE, &modelViewProjection[0][0]);
+        glUniform1f(timeElapsedUniform, ageInMilliseconds);
+
+        glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, 10);
     }
 }
