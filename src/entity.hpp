@@ -16,7 +16,6 @@
 class Entity {
 public:
 	//members
-	Coord entityMapCoords = {0,0};
 	Renderable geometryRenderer;
 	AiComp aiComp;
 	UnitComp unitComp;

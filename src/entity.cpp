@@ -53,8 +53,6 @@ Entity::setModelMatrix(int modelIndex, glm::vec3 translation, float angle, glm::
 }
 
 void Entity::translate(glm::vec3 translation) {
-	this->entityMapCoords.colCoord = (int) translation.x;
-	this->entityMapCoords.rowCoord = (int) translation.z;
 	this->geometryRenderer.translate(translation);
 	this->rigidBody.setPosition(this->rigidBody.getPosition() + translation);
 }
@@ -86,8 +84,6 @@ void Entity::setPosition(glm::vec3 position) {
 
 //only sets unit to its new position (in world coords), everything else is preserved
 void Entity::setPositionFast(int modelIndex, glm::vec3 position) {
-	entityMapCoords.colCoord = (int) position.x;
-	entityMapCoords.rowCoord = (int) position.z;
 	rigidBody.setPosition(position);
 
 	glm::mat4 m = getModelMatrix(modelIndex);
@@ -161,8 +157,7 @@ bool Entity::inAttackRange(const Entity& other) {
 }
 
 bool Entity::operator==(const Entity& rhs) const {
-	return entityMapCoords == rhs.entityMapCoords &&
-		   geometryRenderer == rhs.geometryRenderer &&
+	return geometryRenderer == rhs.geometryRenderer &&
 		   aiComp == rhs.aiComp &&
 		   unitComp == rhs.unitComp &&
 		   rigidBody == rhs.rigidBody;
