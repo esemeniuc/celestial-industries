@@ -269,10 +269,6 @@ void World::draw() {
 		renderer.second->render(projectionView);
 	}
 
-	for (const auto &emitter : level.emitters) {
-		emitter->render(projectionView, camera.position);
-	}
-
 
 	// make skybox rotate by 0.001 * pi/4 radians around y axis, every frame
 //	float y_rotation = 0.005 * glm::quarter_pi<float>();
@@ -281,6 +277,9 @@ void World::draw() {
 	m_skybox.getCameraPosition(camera.position);
 	m_skybox.draw(projection * view * m_skybox.getModelMatrix());
 
+	for (const auto &emitter : level.emitters) {
+		emitter->render(projectionView, camera.position);
+	}
 	// Presenting
 	glfwSwapBuffers(m_window);
 }

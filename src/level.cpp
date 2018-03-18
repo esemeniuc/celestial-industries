@@ -52,6 +52,11 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 	std::vector<std::vector<Model::MeshType>> levelData;
 	std::vector<Model::MeshType> row;
 	std::vector<AStarNode> tileData;
+	std::shared_ptr<Texture> particleTexture = std::make_shared<Texture>();
+	particleTexture->load_from_file(textures_path("turtle.png"));
+	if (!particleTexture->is_valid()) {
+		throw "Particle texture failed to load!";
+	}
 
 	if (!level.is_open()) {
 		logger(LogLevel::ERR) << "Failed to open level data file '" << levelTextFile << "'\n";
@@ -86,11 +91,12 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
                             glm::vec3{colNumber, 0, rowNumber}, // emitter position
                             glm::vec3{0,1,0}, // emitter direction
                             1.0,    // spread
-                            0.1,    // particle width
-                            0.1,    // particle height
+                            0.5,    // particle width
+                            0.5,    // particle height
                             2.0,    // lifespan
                             5.0,    // speed
-                            particleShader
+                            particleShader,
+							particleTexture
                     );
 					emitters.push_back(emitter);
                     break;

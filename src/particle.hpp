@@ -77,9 +77,9 @@ namespace Particles {
         ParticleEmitter(const ParticleEmitter &&) = delete;
 
         // TODO: see if the final argument being implicitly optional can be fixed
-        ParticleEmitter(const glm::vec3 &position, const glm::vec3 &direction, float spread,
-                                float particleWidth, float particleHeight, float particleLifespan,
-                                float particleSpeed, std::shared_ptr<Shader> shader);
+        ParticleEmitter(const glm::vec3 &position, const glm::vec3 &direction, float spread, float particleWidth,
+                        float particleHeight, float particleLifespan, float particleSpeed, std::shared_ptr<Shader> shader,
+                        std::shared_ptr<Texture> texture);
 
         float getSpread() const;
         void setSpread(float newSpread);
@@ -108,6 +108,7 @@ namespace Particles {
         GLuint ibo;
         GLuint particleInstancesData;
         std::shared_ptr<Shader> shader;
+        std::shared_ptr<Texture> texture;
         GLuint positionAttribute;
         GLuint textureCoordinateAttribute;
         GLuint timeElapsedUniform;
