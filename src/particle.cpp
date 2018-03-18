@@ -235,7 +235,8 @@ namespace Particles {
             float particleHeight,
             float particleLifespan,
             float particleSpeed,
-            std::shared_ptr<Shader> shader
+            std::shared_ptr<Shader> shader,
+            std::shared_ptr<Texture> texture
     ) {
         auto emitter = std::make_shared<ParticleEmitter>(
                 position,
@@ -245,20 +246,15 @@ namespace Particles {
                 particleHeight,
                 particleLifespan,
                 particleSpeed,
-                shader
+                shader,
+                texture
         );
         return emitter;
     }
 
-    ParticleEmitter::ParticleEmitter(
-            const glm::vec3 &position,
-            const glm::vec3 &direction,
-            float spread,
-            float particleWidth,
-            float particleHeight,
-            float particleLifespan,
-            float particleSpeed,
-            std::shared_ptr<Shader> shader) :
+    ParticleEmitter::ParticleEmitter(const glm::vec3 &position, const glm::vec3 &direction, float spread, float particleWidth,
+                                         float particleHeight, float particleLifespan, float particleSpeed, std::shared_ptr<Shader> shader,
+                                         std::shared_ptr<Texture> texture) :
 
             position(position),
             direction(direction),
@@ -268,7 +264,8 @@ namespace Particles {
             particleLifespan(particleLifespan),
             particleSpeed(particleSpeed),
             ageInMilliseconds(0),
-            shader(shader)
+            shader(shader),
+            texture(texture)
     {
         // generate VAO to link VBO and VIO
         glGenVertexArrays(1, &vao);
@@ -277,11 +274,6 @@ namespace Particles {
         // generate VBO to store the triangle vertices
         glGenBuffers(1, &vbo);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-        glm::vec3 topLeftCorner     = glm::vec3(-0.5f * particleWidth, 0.5f * particleHeight, 0);
-        glm::vec3 topRightCorner    = glm::vec3(0.5f * particleWidth,  0.5f * particleHeight, 0);
-        glm::vec3 bottomLeftCorner  = glm::vec3(-0.5f * particleWidth, -0.5f * particleHeight, 0);
-        glm::vec3 bottomRightCorner = glm::vec3(0.5f * particleWidth,  -0.5f * particleHeight, 0);
 
         TexturedVertex vertices[4] = {
                 // top left corner
@@ -380,10 +372,23 @@ namespace Particles {
         glBindVertexArray(vao);
 
         // pass parameters into the shader
-        glm::mat4 modelViewProjection = viewProjection; //glm::translate(glm::mat4(1.0f), cameraPosition);
+//        glm::vec3 directionToCamera = cameraPosition - position;
+//        glm::mat4 rotationMatrix = glm::lookAt(glm::vec3(0), cameraPosition, glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), position);
+
+        glm::mat4 modelViewProjection = viewProjection * modelMatrix;
+
         glUniformMatrix4fv(modelViewProjectionUniform, 1, GL_FALSE, &modelViewProjection[0][0]);
         glUniform1f(timeElapsedUniform, ageInMilliseconds);
 
-        glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, 10000);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture->id);
+
+        glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, 50000);
+
+        glDisable(GL_BLEND);
     }
 }
