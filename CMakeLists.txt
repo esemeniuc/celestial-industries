@@ -77,7 +77,7 @@ set(PROJ_SOURCES
 		src/tile.cpp
 		src/world.cpp
 		src/unitcomp.cpp
-		src/unitmanager.cpp src/unitmanager.hpp)
+		src/unitmanager.cpp src/unitmanager.hpp src/unitfactory.cpp src/unitfactory.hpp src/buildingfactory.cpp src/buildingfactory.hpp)
 
 add_library(libproj ${PROJ_SOURCES})
 target_compile_options(libproj PUBLIC ${CUSTOM_COMPILE_FLAGS})
