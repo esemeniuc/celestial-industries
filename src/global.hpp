@@ -6,7 +6,8 @@
 // Global
 extern World world;
 
-extern std::vector<std::shared_ptr<Entity>> entityMap;
+extern std::vector<std::shared_ptr<Entity>> unitMap;
+extern std::vector<std::shared_ptr<Entity>> buildingMap;
 
 extern std::vector<std::vector<Model::MeshType>> levelArray;
 

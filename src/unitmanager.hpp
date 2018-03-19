@@ -7,17 +7,17 @@
 namespace UnitManager {
 
 	void init(size_t levelHeight, size_t levelWidth) {
-		entityMap.reserve(levelHeight * levelWidth);
+		unitMap.reserve(levelHeight * levelWidth);
 	}
 
-	void removeEntity(const std::shared_ptr<Entity> entity) {
-		entityMap.erase(std::remove(entityMap.begin(), entityMap.end(), entity), entityMap.end());
+	void removeUnit(const std::shared_ptr<Entity>& unit) {
+		unitMap.erase(std::remove(unitMap.begin(), unitMap.end(), unit), unitMap.end());
 	}
 
 	void update(double elapsed_ms) {
-		for (auto& entityInACell : entityMap) {
-			entityInACell->move(elapsed_ms);
-			entityInACell->unitComp.update();
+		for (auto& unit : unitMap) {
+			unit->move(elapsed_ms);
+			unit->unitComp.update();
 		}
 	}
 

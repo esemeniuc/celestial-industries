@@ -1,6 +1,7 @@
 #pragma once
 
 #include "entity.hpp"
+#include "global.hpp"
 
 namespace Building {
 
@@ -17,8 +18,6 @@ namespace Building {
 
 	std::shared_ptr<Entity> spawn(BuildingType buildingType, glm::vec3 spawnLocation, GamePieceOwner owner) {
 		std::shared_ptr<Entity> e = std::make_shared<Entity>();
-		e->setPosition(spawnLocation);
-		e->aiComp.owner = owner;
 
 		switch (buildingType) {
 			case (BuildingType::SUPPLY_DEPOT): {
@@ -29,7 +28,7 @@ namespace Building {
 				e->aiComp.value = 100;
 
 				e->unitComp.state = UnitState::NONE;
-				return e;
+				break;
 			}
 			case (BuildingType::REFINERY): {
 				e->aiComp.initialHealth = 500;
@@ -39,7 +38,7 @@ namespace Building {
 				e->aiComp.value = 75;
 
 				e->unitComp.state = UnitState::NONE;
-				return e;
+				break;
 			}
 			case (BuildingType::GUN_TURRET): {
 				e->aiComp.initialHealth = 250;
@@ -49,7 +48,7 @@ namespace Building {
 				e->aiComp.value = 100;
 
 				e->unitComp.state = UnitState::NONE;
-				return e;
+				break;
 			}
 			case (BuildingType::COMMAND_CENTER): {
 				e->aiComp.initialHealth = 1500;
@@ -59,12 +58,14 @@ namespace Building {
 				e->aiComp.value = 400;
 
 				e->unitComp.state = UnitState::NONE;
-				return e;
+				break;
 			}
 		}
+
+		buildingMap.push_back(e);
+		e->setPosition(spawnLocation);
+		e->aiComp.owner = owner;
+		return e;
 	}
 
-
-};
-
-
+}

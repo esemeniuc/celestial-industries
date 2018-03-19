@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "entity.hpp"
+#include "global.hpp"
 
 namespace Unit {
 
@@ -14,8 +15,6 @@ namespace Unit {
 
 	std::shared_ptr<Entity> spawn(UnitType unitName, glm::vec3 spawnLocation, GamePieceOwner owner) {
 		std::shared_ptr<Entity> e = std::make_shared<Entity>();
-		e->setPosition(spawnLocation);
-		e->aiComp.owner = owner;
 
 		switch (unitName) {
 			case (UnitType::TANK): {
@@ -34,7 +33,7 @@ namespace Unit {
 				e->unitComp.movementSpeed = 2;
 				e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
 				e->unitComp.state = UnitState::IDLE;
-				return e;
+				break;
 			}
 			case (UnitType::ZEALOT): {
 				e->geometryRenderer = Model::meshRenderers[Model::PHOTON_TOWER];//FIXME: use real thing
@@ -52,7 +51,7 @@ namespace Unit {
 				e->unitComp.movementSpeed = 3;
 				e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
 				e->unitComp.state = UnitState::IDLE;
-				return e;
+				break;
 			}
 			case (UnitType::MARINE): {
 				e->geometryRenderer = Model::meshRenderers[Model::PHOTON_TOWER];//FIXME: use real thing
@@ -70,7 +69,7 @@ namespace Unit {
 				e->unitComp.movementSpeed = 3;
 				e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
 				e->unitComp.state = UnitState::IDLE;
-				return e;
+				break;
 			}
 			case (UnitType::SPHERICAL_DEATH): {
 				e->geometryRenderer = Model::meshRenderers[Model::BALL];
@@ -88,12 +87,14 @@ namespace Unit {
 				e->unitComp.movementSpeed = 5;
 				e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
 				e->unitComp.state = UnitState::IDLE;
-				return e;
+				break;
 			}
 		}
+
+		unitMap.push_back(e);
+		e->setPosition(spawnLocation);
+		e->aiComp.owner = owner;
+		return e;
 	}
 
-
-};
-
-
+}

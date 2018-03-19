@@ -50,23 +50,19 @@ namespace AiManager {
 		playerUnitValue = 0;
 		aiBuildingValue = 0;
 		playerBuildingValue = 0;
-		for (auto& entityInACell : entityMap) {
-			if (entityInACell->aiComp.type == GamePieceClass::UNIT_NON_ATTACKING ||
-				entityInACell->aiComp.type == GamePieceClass::UNIT_DEFENSIVE_ACTIVE ||
-				entityInACell->aiComp.type == GamePieceClass::UNIT_OFFENSIVE) {
-				if (entityInACell->aiComp.owner == GamePieceOwner::AI) {
-					aiUnitValue += entityInACell->aiComp.value;
-				} else if (entityInACell->aiComp.owner == GamePieceOwner::PLAYER) {
-					playerUnitValue += entityInACell->aiComp.value;
-				}
-			} else if (entityInACell->aiComp.type == GamePieceClass::BUILDING_NON_ATTACKING ||
-					   entityInACell->aiComp.type == GamePieceClass::BUILDING_DEFENSIVE_PASSIVE ||
-					   entityInACell->aiComp.type == GamePieceClass::BUILDING_DEFENSIVE_ACTIVE) {
-				if (entityInACell->aiComp.owner == GamePieceOwner::AI) {
-					aiBuildingValue += entityInACell->aiComp.value;
-				} else if (entityInACell->aiComp.owner == GamePieceOwner::PLAYER) {
-					playerBuildingValue += entityInACell->aiComp.value;
-				}
+		for (auto& unit : unitMap) {
+			if (unit->aiComp.owner == GamePieceOwner::AI) {
+				aiUnitValue += unit->aiComp.value;
+			} else if (unit->aiComp.owner == GamePieceOwner::PLAYER) {
+				playerUnitValue += unit->aiComp.value;
+			}
+		}
+
+		for (auto& building : buildingMap) {
+			if (building->aiComp.owner == GamePieceOwner::AI) {
+				aiBuildingValue += building->aiComp.value;
+			} else if (building->aiComp.owner == GamePieceOwner::PLAYER) {
+				playerBuildingValue += building->aiComp.value;
 			}
 		}
 	}

@@ -109,9 +109,6 @@ bool World::init(glm::vec2 screen) {
 		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
 	}
 
-	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isn't being shared
-	// thats a big enough change to merit its own ticket in milestone 2 though
-
 	levelArray = level.levelLoader(
 			pathBuilder({"data", "levels"}) + "level1.txt");
 
@@ -128,17 +125,14 @@ bool World::init(glm::vec2 screen) {
 	int targetx = 10, targetz = 10;
 	auto temp1 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
 	temp1->moveTo(targetx, targetz);
-	entityMap.push_back(temp1);
 
 	startx = 39, startz = 19;
 	auto temp2 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
 	temp2->moveTo(targetx, targetz);
-	entityMap.push_back(temp2);
 
 	startx = 39, startz = 1;
 	auto temp3 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
 	temp3->moveTo(targetx, targetz);
-	entityMap.push_back(temp3);
 
 	selectedTileCoordinates.rowCoord = level.getLevelSize().rowCoord / 2;
 	selectedTileCoordinates.colCoord = level.getLevelSize().colCoord / 2;
