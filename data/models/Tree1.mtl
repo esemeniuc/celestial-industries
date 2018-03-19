@@ -1,18 +1,13 @@
 # Made using Asset Forge (www.assetforge.io) version 1.3 
 
-newmtl golfBuilding (Instance) (Instance)
+newmtl customMaterial2 (Instance)
 Ka 0.000000 0.000000 0.000000 
-Kd 0.690011 0.3907986 0.0710923 
+Kd 0.3301188 0.6999847 0.207875 
 Ks 0.330000 0.330000 0.330000 
+map_Kd Textures/customMaterial2 (Instance).png
 
-newmtl golfBorder (Instance) (Instance)
+newmtl woodDark (Instance) (Instance)
 Ka 0.000000 0.000000 0.000000 
-Kd 0.1930454 0.9000226 0.114549 
+Kd 0.641 0.4216356 0.2934355 
 Ks 0.330000 0.330000 0.330000 
-
-newmtl _defaultMat (Instance) (Instance)
-Ka 0.000000 0.000000 0.000000 
-Kd 1 1 1 
-Ks 0.330000 0.330000 0.330000 
-map_Kd Textures/_defaultMat (Instance) (Instance).png
 
