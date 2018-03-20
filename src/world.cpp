@@ -7,6 +7,7 @@
 #include "collisiondetection.hpp"
 #include "particle.hpp"
 #include "aimanager.hpp"
+#include "attackManger.hpp"
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -127,6 +128,7 @@ bool World::init(glm::vec2 screen) {
 	int startx = 25, startz = 11;
 	int targetx = 10, targetz = 10;
 	auto temp1 = std::make_shared<Entity>();
+    temp1->aiComp.type = GamePieceType::UNIT_OFFENSIVE;
 	temp1->translate({startx, 0, startz});
 	temp1->moveTo(targetx, targetz);
 	entityMap.push_back(temp1);
@@ -134,12 +136,14 @@ bool World::init(glm::vec2 screen) {
 
 	startx = 39, startz = 19;
 	auto temp2 = std::make_shared<Entity>();
+    temp2->aiComp.type = GamePieceType::UNIT_OFFENSIVE;
 	temp2->translate({startx, 0, startz});
 	temp2->moveTo(targetx, targetz);
 	entityMap.push_back(temp2);
 
 	startx = 39, startz = 1;
 	auto temp3 = std::make_shared<Entity>();
+    temp3->aiComp.type = GamePieceType::UNIT_OFFENSIVE;
 	temp3->translate({startx, 0, startz});
 	temp3->moveTo(targetx, targetz);
 	entityMap.push_back(temp3);
@@ -224,6 +228,7 @@ bool World::update(double elapsed_ms) {
 	Particles::updateParticleStates(elapsed_ms);
 	AiManager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
+	AttackManager::update(elapsed_ms);
 
 	return true;
 }

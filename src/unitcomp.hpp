@@ -30,7 +30,7 @@ public:
 
 	UnitComp() : initialEnergyLevel(50),
 				 attackDamage(6),
-				 attackRange(6),
+				 attackRange(1), // TODO: change to more resonable number like 5 later.
 				 attackSpeed(1),
 				 movementSpeed(15),
 				 currentEnergyLevel(50),
