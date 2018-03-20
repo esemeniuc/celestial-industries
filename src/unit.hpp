@@ -91,10 +91,15 @@ namespace Unit {
 			}
 		}
 
-		unitMap.push_back(e);
 		e->setPosition(spawnLocation);
 		e->aiComp.owner = owner;
+
+		if (owner == GamePieceOwner::PLAYER) {
+			playerUnits.push_back(e);
+
+		} else if (owner == GamePieceOwner::AI) {
+			aiUnits.push_back(e);
+		}
 		return e;
 	}
-
 }

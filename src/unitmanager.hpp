@@ -7,17 +7,29 @@
 namespace UnitManager {
 
 	void init(size_t levelHeight, size_t levelWidth) {
-		unitMap.reserve(levelHeight * levelWidth);
+		playerUnits.reserve(levelHeight * levelWidth);
+		aiUnits.reserve(levelHeight * levelWidth);
 	}
 
 	void removeUnit(const std::shared_ptr<Entity>& unit) {
-		unitMap.erase(std::remove(unitMap.begin(), unitMap.end(), unit), unitMap.end());
+		if (unit->aiComp.owner == GamePieceOwner::PLAYER) {
+			playerUnits.erase(std::remove(playerUnits.begin(), playerUnits.end(), unit), playerUnits.end());
+
+		} else if (unit->aiComp.owner == GamePieceOwner::AI) {
+			aiUnits.erase(std::remove(aiUnits.begin(), aiUnits.end(), unit), aiUnits.end());
+		}
 	}
 
 	void update(double elapsed_ms) {
-		for (auto& unit : unitMap) {
-			unit->move(elapsed_ms);
-			unit->unitComp.update();
+		for (auto& playerUnit : playerUnits) {
+			playerUnit->unitComp.update();
+			playerUnit->move(elapsed_ms);
+		}
+
+
+		for (auto& aiUnit : aiUnits) {
+			aiUnit->unitComp.update();
+			aiUnit->move(elapsed_ms);
 		}
 	}
 

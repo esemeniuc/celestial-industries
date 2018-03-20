@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <set>
 #include "global.hpp"
 #include "unitcomp.hpp"
 #include "building.hpp"
@@ -37,8 +38,6 @@ patrol/scout what player is doing
 
 
 namespace AiManager {
-	std::vector<std::shared_ptr<Entity>> unitsSeen;
-	std::vector<std::shared_ptr<Entity>> buildingsSeen;
 
 	int playerUnitValue = 0;
 	int aiUnitValue = 0;
@@ -50,7 +49,7 @@ namespace AiManager {
 		playerUnitValue = 0;
 		aiBuildingValue = 0;
 		playerBuildingValue = 0;
-		for (auto& unit : unitMap) {
+		for (auto& unit : playerUnits) {
 			if (unit->aiComp.owner == GamePieceOwner::AI) {
 				aiUnitValue += unit->aiComp.value;
 			} else if (unit->aiComp.owner == GamePieceOwner::PLAYER) {
@@ -100,7 +99,23 @@ namespace AiManager {
 	}
 
 	void update(double elapsed_ms) {
-//		updateValueOfEntities();
+		updateValueOfEntities();
+
+		playerUnitsSeenByAI.clear();//this is a hack because its slow, we need some removal proceedure
+		aiUnitsSeenByPlayer.clear();
+
+		for (auto& playerUnit : playerUnits) {
+
+			for (auto& aiUnit : aiUnits) {
+				if (playerUnit->canSee(aiUnit)) {
+					playerUnitsSeenByAI.insert(aiUnit);
+				}
+
+				if (aiUnit->canSee(playerUnit)) {
+					aiUnitsSeenByPlayer.insert(playerUnit);
+				}
+			}
+		}
 	}
 
 	int const PRIORITIZE_CLOSER_ATTACKS = 2;
@@ -147,4 +162,4 @@ namespace AiManager {
 
 		return building;
 	}
-};
+}
