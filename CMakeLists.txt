@@ -93,7 +93,7 @@ set(TEST_SUITE_SOURCES
 		test/genericunit_test.cpp
 		)
 
-add_executable(proj src/main.cpp) #main.cpp gets compile flags through PUBLIC flag of libproj
+add_executable(proj src/main.cpp src/attackManger.cpp src/attackManger.hpp) #main.cpp gets compile flags through PUBLIC flag of libproj
 
 
 
