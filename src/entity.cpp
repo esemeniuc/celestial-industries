@@ -77,6 +77,11 @@ glm::vec3 Entity::getPosition() {
 	return rigidBody.getPosition();
 }
 
+
+Coord Entity::getPositionInt() {
+	return {(int)rigidBody.getPosition().x, (int)rigidBody.getPosition().z};
+}
+
 void Entity::setPosition(glm::vec3 position) {
 	rigidBody.setPosition(position);
 	this->geometryRenderer.setModelMatrix(0, position);

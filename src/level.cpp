@@ -4,47 +4,42 @@
 #include "logger.hpp"
 #include "particle.hpp"
 
-bool Level::init(
-    std::vector<std::vector<Model::MeshType>>& levelArray,
-    std::vector< std::shared_ptr<Renderer>>& meshRenderers
-)
-{
-    // So that re initializing will be the same as first initialization
+bool Level::init(const std::vector<std::shared_ptr<Renderer>>& meshRenderers) {
+	// So that re initializing will be the same as first initialization
 	tiles.clear();
 
 	for (size_t i = 0; i < levelArray.size(); i++) {
 		std::vector<Model::MeshType> row = levelArray[i];
 		std::vector<std::shared_ptr<Tile>> tileRow;
 		for (size_t j = 0; j < row.size(); j++) {
-            Model::MeshType type = row[j];
-            auto renderer = meshRenderers[type];
-            std::shared_ptr<Tile> tilePointer;
-            switch (type) {
-            case Model::MeshType::GUN_TURRET: {
-                auto turret = std::make_shared<GunTowerTile>(renderer);
-                guntowers.push_back(turret);
-                tilePointer = turret;
-                break;
-            }
-            default:
-                tilePointer = std::make_shared<Tile>(renderer);
-            }
+			Model::MeshType type = row[j];
+			auto renderer = meshRenderers[type];
+			std::shared_ptr<Tile> tilePointer;
+			switch (type) {
+				case Model::MeshType::GUN_TURRET: {
+					auto turret = std::make_shared<GunTowerTile>(renderer);
+					guntowers.push_back(turret);
+					tilePointer = turret;
+					break;
+				}
+				default:
+					tilePointer = std::make_shared<Tile>(renderer);
+			}
 			// TODO: Standardize tile size and resize the model to be the correct size
-            tilePointer->translate({ j, 0, i });
-            tileRow.push_back(tilePointer);
+			tilePointer->translate({j, 0, i});
+			tileRow.push_back(tilePointer);
 		}
-        tiles.push_back(tileRow);
+		tiles.push_back(tileRow);
 	}
 	return true;
 }
 
-void Level::update(float ms)
-{
-    for (auto& row : tiles) {
-        for (auto& tile : row) {
-            tile->update(ms);
-        }
-    }
+void Level::update(float ms) {
+	for (auto& row : tiles) {
+		for (auto& tile : row) {
+			tile->update(ms);
+		}
+	}
 }
 
 std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& levelTextFile) {
@@ -83,17 +78,17 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 					row.push_back(Model::MeshType::GEYSER);
 					tileData.emplace_back(colNumber, rowNumber, 1000.0, INF);
 
-                    Particles::makeParticleEmitter(
-                            glm::vec3{colNumber, 0, rowNumber}, // emitter position
-                            glm::vec3{0,1,0}, // emitter direction
-                            1.0,    // spread
-                            0.1,    // particle width
-                            0.1,    // particle height
-                            2.0,    // lifespan
-                            5.0     // speed
-                    );
-                    break;
-                }
+					Particles::makeParticleEmitter(
+							glm::vec3{colNumber, 0, rowNumber}, // emitter position
+							glm::vec3{0, 1, 0}, // emitter direction
+							1.0,    // spread
+							0.1,    // particle width
+							0.1,    // particle height
+							2.0,    // lifespan
+							5.0     // speed
+					);
+					break;
+				}
 				default: {
 					row.push_back(Model::MeshType::SAND_2);
 					tileData.emplace_back(colNumber, rowNumber, 10.0, INF);
@@ -127,9 +122,4 @@ bool Level::displayPath(const std::vector<Coord>& path) {
 	tiles.push_back(tempRow);
 
 	return true;
-}
-
-//returns size in h by w
-Coord Level::getLevelSize() const {
-	return Coord(levelArray.size(), levelArray.front().size());
 }

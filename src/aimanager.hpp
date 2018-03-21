@@ -36,6 +36,22 @@ patrol/scout what player is doing
 //also the commander ai will still be line of sight based as well i think, because that way it wont attack you the moment you place
 //down a new building
 
+//to do
+//make scouting value function
+//make visibility map
+//calculate how much is seen
+//want 50% of area seen in last 10 secs
+
+
+
+//make deny value function
+
+//make attack value function
+
+
+
+
+
 
 namespace AiManager {
 
@@ -43,18 +59,51 @@ namespace AiManager {
 	int aiUnitValue = 0;
 	int playerBuildingValue = 0;
 	int aiBuildingValue = 0;
+	int percentageSeen = 0;
 
+	std::vector<std::vector<uint32_t>> visibilityMap; //stores the last seen time of each cell by ai
+
+	void init(size_t levelHeight, size_t levelWidth) {
+		visibilityMap = std::vector<std::vector<uint32_t>>(levelHeight, std::vector<uint32_t>(levelWidth));
+	}
+
+	void updateVisibilityMap() {
+		//FIXME:hacky to just reset every time
+		visibilityMap = std::vector<std::vector<uint32_t>>(world.levelHeight, std::vector<uint32_t>(world.levelWidth));
+
+		int cellsVisible = 0;
+		for (auto& unit : aiUnits) {
+			size_t radius = (size_t) unit->aiComp.visionRange;
+			size_t xMin = std::max<size_t>(0, (size_t) unit->getPositionInt().colCoord - radius);
+			size_t xMax = std::min<size_t>(world.levelWidth, (size_t) unit->getPositionInt().colCoord + radius);
+			size_t yMin = std::max<size_t>(0, (size_t) unit->getPositionInt().colCoord - radius);
+			size_t yMax = std::min<size_t>(world.levelWidth, (size_t) unit->getPositionInt().colCoord + radius);
+
+			for (size_t i = yMin; i < yMax; ++i) {
+				for (size_t j = xMin; j < xMax; ++j) {
+					if (i * i + j * j <= radius * radius && visibilityMap[i][j] == 0) {
+						visibilityMap[i][j] = 1;//we can see it
+						cellsVisible++;
+					}
+				}
+			}
+		}
+
+		percentageSeen = cellsVisible / (int) (world.levelHeight * world.levelWidth);
+	}
+
+	//calculates the values of ai and player units and buildings
 	void updateValueOfEntities() {
 		aiUnitValue = 0;
 		playerUnitValue = 0;
 		aiBuildingValue = 0;
 		playerBuildingValue = 0;
 		for (auto& unit : playerUnits) {
-			if (unit->aiComp.owner == GamePieceOwner::AI) {
-				aiUnitValue += unit->aiComp.value;
-			} else if (unit->aiComp.owner == GamePieceOwner::PLAYER) {
-				playerUnitValue += unit->aiComp.value;
-			}
+			playerUnitValue += unit->aiComp.value;
+		}
+
+		for (auto& unit : aiUnits) {
+			aiUnitValue += unit->aiComp.value;
 		}
 
 		for (auto& building : buildingMap) {
@@ -68,11 +117,20 @@ namespace AiManager {
 
 	int size = 5;
 
+
 	//assume we make 1 action per frame for simplicity
 	void findNextBestAction() {
-		//generate tree of things to attack
-//		for()
+
+//		//generate tree of things to attack
 //
+//
+//
+//		//try denying geysers
+//
+//
+//		//try attacking
+//
+//		//traverse tree
 //		std::vector<bool> visited(size);
 //		int start = 0;
 //		//traverse tree with bfs
@@ -98,9 +156,8 @@ namespace AiManager {
 
 	}
 
-	void update(double elapsed_ms) {
-		updateValueOfEntities();
-
+//updates the state trackers of what units the ai has seen
+	void updateUnitsSeen() {
 		playerUnitsSeenByAI.clear();//this is a hack because its slow, we need some removal proceedure
 		aiUnitsSeenByPlayer.clear();
 
@@ -117,6 +174,16 @@ namespace AiManager {
 			}
 		}
 	}
+
+
+	void update(double elapsed_ms) {
+		updateValueOfEntities();
+		updateVisibilityMap();
+
+		updateUnitsSeen();
+
+	}
+
 
 	int const PRIORITIZE_CLOSER_ATTACKS = 2;
 

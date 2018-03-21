@@ -38,6 +38,8 @@ public:
 
 	glm::vec3 getPosition();
 
+	Coord getPositionInt();
+
 	void setPosition(glm::vec3 position);
 
 	void setPositionFast(int modelIndex, glm::vec3 position);

@@ -106,17 +106,20 @@ bool World::init(glm::vec2 screen) {
 	}
 
 	if (!initMeshTypes(Model::meshSources)) {
-		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
+		logger(LogLevel::ERR) << "Failed to initialize renderers\n";
 	}
 
-	levelArray = level.levelLoader(
-			pathBuilder({"data", "levels"}) + "level1.txt");
+	levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
+	level.init(Model::meshRenderers);
 
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
 
-	level.init(levelArray, Model::meshRenderers);
-	UnitManager::init(levelArray.size(), levelArray.front().size());
+	this->levelHeight = levelArray.size();
+	this->levelWidth = levelArray.front().size();
+
+	UnitManager::init(levelHeight, levelWidth);
+	AiManager::init(levelHeight, levelWidth);
 	// test different starting points for the AI
 	aiCostMap = level.getLevelTraversalCostMap();
 
@@ -134,8 +137,8 @@ bool World::init(glm::vec2 screen) {
 	auto temp3 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
 	temp3->moveTo(targetx, targetz);
 
-	selectedTileCoordinates.rowCoord = level.getLevelSize().rowCoord / 2;
-	selectedTileCoordinates.colCoord = level.getLevelSize().colCoord / 2;
+	selectedTileCoordinates.rowCoord = levelWidth / 2;
+	selectedTileCoordinates.colCoord = levelHeight / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 
 	return true;

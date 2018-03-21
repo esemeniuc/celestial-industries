@@ -51,10 +51,7 @@ public:
 	std::vector<std::shared_ptr<GunTowerTile>> guntowers;
 
 	//funcs
-	bool init(
-			std::vector<std::vector<Model::MeshType>>& levelArray,
-			std::vector<std::shared_ptr<Renderer>>& meshRenderers
-	);
+	bool init(const std::vector<std::shared_ptr<Renderer>>& meshRenderers);
 
 	void update(float ms);
 
@@ -63,8 +60,6 @@ public:
 	std::vector<std::vector<Model::MeshType>> levelLoader(const std::string& levelTextFile);
 
 	std::vector<std::vector<AStarNode>> getLevelTraversalCostMap();
-
-	Coord getLevelSize() const;
 
 private:
 	//members
