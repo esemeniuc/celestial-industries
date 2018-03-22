@@ -27,9 +27,9 @@ namespace Unit {
 				e->aiComp.value = 150 + 125;
 
 				e->unitComp.initialEnergyLevel = 50;
-				e->unitComp.attackDamage = 50;
+				e->unitComp.attackDamage = 30;
 				e->unitComp.attackRange = 5;
-				e->unitComp.attackSpeed = 0;
+				e->unitComp.attackSpeed = 1;
 				e->unitComp.movementSpeed = 30;
 				e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
 				e->unitComp.state = UnitState::IDLE;
@@ -83,7 +83,7 @@ namespace Unit {
 				e->unitComp.initialEnergyLevel = 50;
 				e->unitComp.attackDamage = 10;
 				e->unitComp.attackRange = 1;
-				e->unitComp.attackSpeed = 0;
+				e->unitComp.attackSpeed = 1;
 				e->unitComp.movementSpeed = 5;
 				e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
 				e->unitComp.state = UnitState::IDLE;
