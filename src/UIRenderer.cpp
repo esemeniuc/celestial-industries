@@ -12,13 +12,13 @@ UIRenderer::UIRenderer(std::shared_ptr<Shader> shader, std::shared_ptr<Texture> 
 
     TexturedVertex vertices[4] = {
             // top left corner
-            {{-0.5f * 10.0f, 0.5f * 10.0f, 0}, {0, 1}},
+            {{-0.5f * 1.0f, 0.5f * 1.0f, 0}, {0, 1}},
             // top right corner
-            {{0.5f * 10.0f,  0.5f * 10.0f, 0}, {1, 1}},
+            {{0.5f * 1.0f,  0.5f * 1.0f, 0}, {1, 1}},
             // bottom left corner
-            {{-0.5f * 10.0f, -0.5f * 10.0f, 0}, {0, 0}},
+            {{-0.5f * 1.0f, -0.5f * 1.0f, 0}, {0, 0}},
             // bottom right corner
-            {{0.5f * 10.0f,  -0.5f * 10.0f, 0}, {1, 0}}
+            {{0.5f * 1.0f,  -0.5f * 1.0f, 0}, {1, 0}}
     };
 
 
