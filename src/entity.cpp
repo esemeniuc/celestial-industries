@@ -162,3 +162,16 @@ bool Entity::operator==(const Entity& rhs) const {
 		   unitComp == rhs.unitComp &&
 		   rigidBody == rhs.rigidBody;
 }
+
+void Entity::takeAttack(Entity& attackingEntity, double elapsed_ms) {
+    // reduce health
+    int damagePerSecond = attackingEntity.unitComp.attackDamage * attackingEntity.unitComp.attackSpeed;
+    int damageToDoThisFrame = damagePerSecond *= (elapsed_ms / 1000);
+
+    aiComp.currentHealth -= damageToDoThisFrame;
+}
+
+void Entity::attack(Entity& entityToAttack, double elapsed_ms) {
+    unitComp.state = UnitState::ATTACK;
+    entityToAttack.takeAttack(*this, elapsed_ms);
+}

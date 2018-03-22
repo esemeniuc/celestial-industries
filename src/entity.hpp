@@ -38,6 +38,10 @@ public:
 
 	glm::vec3 getPosition();
 
+    void attack(Entity& entityToAttack, double elapsed_ms);
+
+    void takeAttack(Entity& attackingEntity, double elapsed_ms);
+
 	void setPosition(glm::vec3 position);
 
 	void setPositionFast(int modelIndex, glm::vec3 position);

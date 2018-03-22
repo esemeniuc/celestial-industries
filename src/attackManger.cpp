@@ -6,11 +6,9 @@
 
 // entity1 attacks entity2 for elapsed_ms amount of time.
 void AttackManager::attackEntity(Entity &entity1, Entity &entity2, double elapsed_ms) {
-    entity1.unitComp.state = UnitState::ATTACK;
+    entity1.attack(entity2, elapsed_ms);
 
-    int damagePerSecondEntity1 = entity1.unitComp.attackDamage * entity1.unitComp.attackSpeed;
-    int damageToDo = damagePerSecondEntity1 *= (elapsed_ms / 1000);
-    entity2.aiComp.currentHealth -= damageToDo;
+
 
     if (entity1.aiComp.currentHealth <= 0) {
         removeEntity(entity2);
@@ -33,7 +31,6 @@ void AttackManager::update(double elapsed_ms) {
         if (entity->aiComp.type != GamePieceType::NONE) {
             allEntities.push_back(*entity);
         }
-
     }
 
     logger(LogLevel::INFO) << "Number of entities found: " << allEntities.size() << " \n";

@@ -16,6 +16,9 @@ namespace UnitManager {
 
 	void update(double elapsed_ms) {
 		for (auto& entityInACell : entityMap) {
+			if (entityInACell->aiComp.currentHealth <= 0) {
+				//removeEntity();
+			}
 			entityInACell->move(elapsed_ms);
 			entityInACell->unitComp.update();
 		}
