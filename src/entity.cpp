@@ -152,7 +152,7 @@ bool Entity::canSee(std::shared_ptr<Entity> other) {
 	return glm::length(glm::vec2(other->getPosition() - this->getPosition())) <= aiComp.visionRange;
 }
 
-bool Entity::inAttackRange(std::shared_ptr<Entity> other) {
+bool Entity::inAttackRange(Entity other) {
 	return glm::length(glm::vec2(other->getPosition() - this->getPosition())) <= unitComp.attackRange;
 }
 
@@ -172,6 +172,17 @@ void Entity::takeAttack(Entity& attackingEntity, double elapsed_ms) {
 }
 
 void Entity::attack(Entity& entityToAttack, double elapsed_ms) {
+    if (unitComp.state != UnitState::ATTACK) {
+        // Already attacking something else, nothing to do, return.
+        return;
+    }
+
     unitComp.state = UnitState::ATTACK;
     entityToAttack.takeAttack(*this, elapsed_ms);
+
+    // Check to see if attack is done.
+    // Set state to non-attacking state if attack is done (other entity is killed)
+    if (entityToAttack.aiComp.currentHealth <= 0) {
+        unitComp.state = UnitState::IDLE;
+    }
 }

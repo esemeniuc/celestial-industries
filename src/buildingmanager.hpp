@@ -14,7 +14,9 @@ namespace BuildingManager {
 
 	void update(double elapsed_ms) {
 		for (auto& building : buildingMap) {
-			//do some updating here
+			if (building.get()->aiComp.currentHealth <= 0) {
+				removeBuilding(building);
+			}
 		}
 	}
 

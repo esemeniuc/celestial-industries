@@ -80,7 +80,7 @@ public:
 
 	bool canSee(std::shared_ptr<Entity> other);
 
-	bool inAttackRange(std::shared_ptr<Entity> other);
+	bool inAttackRange(Entity other);
 
 	bool operator==(const Entity& rhs) const;
 

@@ -24,12 +24,19 @@ namespace UnitManager {
 		for (auto& playerUnit : playerUnits) {
 			playerUnit->unitComp.update();
 			playerUnit->move(elapsed_ms);
+			if (playerUnit.get()->aiComp.currentHealth <= 0) {
+				removeUnit(playerUnit);
+				logger << "Friendly Entity " << "Died!";
+			}
 		}
-
 
 		for (auto& aiUnit : aiUnits) {
 			aiUnit->unitComp.update();
 			aiUnit->move(elapsed_ms);
+			if (aiUnit.get()->aiComp.currentHealth <= 0) {
+				removeUnit(aiUnit);
+				logger << "AI Entity " << "Died!";
+			}
 		}
 	}
 
