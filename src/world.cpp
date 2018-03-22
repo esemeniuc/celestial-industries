@@ -129,7 +129,7 @@ bool World::init(glm::vec2 screen) {
 	temp1->moveTo(targetx, targetz);
 
 	startx = 39, startz = 19;
-	auto temp2 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	auto temp2 = Unit::spawn(Unit::UnitType::TANK, {startx, 0, startz}, GamePieceOwner::AI);
 	temp2->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
 	temp2->moveTo(targetx, targetz);
 

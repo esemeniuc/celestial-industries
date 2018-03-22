@@ -28,7 +28,7 @@ namespace Unit {
 
 				e->unitComp.initialEnergyLevel = 50;
 				e->unitComp.attackDamage = 50;
-				e->unitComp.attackRange = 10;
+				e->unitComp.attackRange = 5;
 				e->unitComp.attackSpeed = 1;
 				e->unitComp.movementSpeed = 2;
 				e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
