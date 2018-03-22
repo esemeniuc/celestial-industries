@@ -102,7 +102,6 @@ void Entity::setTargetPath(const std::vector<Coord>& targetPath) {
 void Entity::moveTo(int x, int z) {
 	setTargetPath(AI::aStar::a_star(aiCostMap, 1, (int) rigidBody.getPosition().x, (int) rigidBody.getPosition().z, x,
 									z).second); //might need fixing with respect to int start positions
-
 }
 
 //returns a pathIndex and a 0.00 - 0.99 value to interpolate between steps in a path

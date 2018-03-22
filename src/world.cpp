@@ -128,15 +128,18 @@ bool World::init(glm::vec2 screen) {
 	temp1->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
 	temp1->moveTo(targetx, targetz);
 
+
 	startx = 39, startz = 19;
 	auto temp2 = Unit::spawn(Unit::UnitType::TANK, {startx, 0, startz}, GamePieceOwner::AI);
 	temp2->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
-	temp2->moveTo(targetx, targetz);
+	//temp2->moveTo(targetx, targetz);
 
 	startx = 39, startz = 1;
 	auto temp3 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
 	temp3->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
-	temp3->moveTo(targetx, targetz);
+	//temp3->moveTo(targetx, targetz);
+
+	AttackManager::registerTargetUnit(temp2, temp1);
 
 	selectedTileCoordinates.rowCoord = level.getLevelSize().rowCoord / 2;
 	selectedTileCoordinates.colCoord = level.getLevelSize().colCoord / 2;
@@ -218,6 +221,7 @@ bool World::update(double elapsed_ms) {
 	AiManager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
 	AttackManager::update(elapsed_ms);
+
 
 	return true;
 }

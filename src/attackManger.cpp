@@ -4,6 +4,10 @@
 
 #include "attackManger.hpp"
 
+void AttackManager::registerTargetUnit(std::shared_ptr<Entity> unit1, std::shared_ptr<Entity> unit2) {
+    unitTargetMap.insert( {unit1, unit2} );
+}
+
 void AttackManager::update(double elapsed_ms) {
     std::vector<std::shared_ptr<Entity>> allEntities;
 
@@ -57,9 +61,10 @@ void AttackManager::update(double elapsed_ms) {
         }
     }
 
-
-
     for (auto& entity : allEntities) {
         entity->unitComp.state = UnitState::IDLE;
     }
+
+
+
 }
