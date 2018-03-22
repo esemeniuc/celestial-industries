@@ -67,6 +67,7 @@ namespace AiManager {
 		visibilityMap = std::vector<std::vector<uint32_t>>(levelHeight, std::vector<uint32_t>(levelWidth));
 	}
 
+
 	void updateVisibilityMap() {
 		//FIXME:hacky to just reset every time
 		visibilityMap = std::vector<std::vector<uint32_t>>(world.levelHeight, std::vector<uint32_t>(world.levelWidth));
@@ -117,42 +118,73 @@ namespace AiManager {
 
 	int size = 5;
 
+	//returns the number of newly found cells during scouting by placing a unit at (x,z)
+	int getNumberOfNewCellsIfScout(int x, int y, int radius) {
+		int newCellsFound = 0;
+		for (auto& unit : aiUnits) {
+			int xMin = std::max(0, x - radius);
+			int xMax = std::min((int) world.levelWidth, x + radius);
+			int yMin = std::max(0, y - radius);
+			int yMax = std::min((int) world.levelHeight, y + radius);
+
+			for (int i = yMin; i < yMax; ++i) {
+				for (int j = xMin; j < xMax; ++j) {
+					if (i * i + j * j <= radius * radius && visibilityMap[i][j] == 0) {
+						newCellsFound++;
+					}
+				}
+			}
+		}
+
+		return newCellsFound;
+	}
+
+	//returns value in [0..1] range if we place a unit at (x,z)
+	float getScoutValue(int startX, int startY, int targetX, int targetY, int radius) {
+		float percentageNotSeen = 1 - percentageSeen;
+		return percentageNotSeen * getNumberOfNewCellsIfScout(targetX, targetY, radius);
+	}
+
+	void bestScoutValue() {
+		float runningBestValue = 0;
+		std::shared_ptr<Entity> bestUnitToScoutWith;
+		for (auto& unit : aiUnits) {
+			int x = unit->getPositionInt().colCoord;
+			int z = unit->getPositionInt().rowCoord;
+			int radius = unit->aiComp.visionRange;
+			float calculatedVal = getScoutValue(x, z, radius);
+			if (calculatedVal > runningBestValue) {
+				runningBestValue = calculatedVal;
+			}
+		}
+	}
 
 	//assume we make 1 action per frame for simplicity
-	void findNextBestAction() {
+	void findBestScoutLocation() {
 
-//		//generate tree of things to attack
-//
-//
-//
-//		//try denying geysers
-//
-//
-//		//try attacking
-//
-//		//traverse tree
-//		std::vector<bool> visited(size);
-//		int start = 0;
-//		//traverse tree with bfs
-//		visited[start] = true;
-//		std::queue<action> queue;
-//		queue.push(start); //start from q, try to get to p, if so output yes
-//		while (!queue.empty()) {
-//			action u = queue.front();
-//			queue.pop();
-//
-//			if (u == p) {
-//				printf("yes\n"); //we reached p from q, meaning p is higher rated than q
-//				flag = 1;
-//				break; //skip the rest as we already outputted
-//			}
-//			for (int v : adj[u]) {
-//				if (!visited[v]) {
-//					visited[v] = true;
-//					queue.push(v);
-//				}
-//			}
-//		}
+		//traverse tree
+		visibilityMap = std::vector<std::vector<bool>>(world.levelHeight, std::vector<uint32_t>(world.levelWidth));
+		int start = 0;
+		//traverse tree with bfs
+		visited[start] = true;
+		std::queue<action> queue;
+		queue.push(start); //start from q, try to get to p, if so output yes
+		while (!queue.empty()) {
+			action u = queue.front();
+			queue.pop();
+
+			if (u == p) {
+				printf("yes\n"); //we reached p from q, meaning p is higher rated than q
+				flag = 1;
+				break; //skip the rest as we already outputted
+			}
+			for (int v : adj[u]) {
+				if (!visited[v]) {
+					visited[v] = true;
+					queue.push(v);
+				}
+			}
+		}
 
 	}
 
@@ -179,7 +211,6 @@ namespace AiManager {
 	void update(double elapsed_ms) {
 		updateValueOfEntities();
 		updateVisibilityMap();
-
 		updateUnitsSeen();
 
 	}
