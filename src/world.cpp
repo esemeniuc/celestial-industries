@@ -120,6 +120,13 @@ bool World::init(glm::vec2 screen) {
     }
 
 
+	uiShader = std::make_shared<Shader>();
+    if (!uiShader->load_from_file(shader_path("ui.vs.glsl"), shader_path("ui.fs.glsl"))) {
+        logger(LogLevel::ERR) << "Failed to load UI shader!" << '\n';
+        return false;
+    }
+
+
 	if(!initMeshTypes(Model::meshSources)){
 		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
 	}
@@ -156,7 +163,10 @@ bool World::init(glm::vec2 screen) {
 	selectedTileCoordinates.rowCoord = (int) mapSize / 2;
 	selectedTileCoordinates.colCoord = (int) mapSize / 2;
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
-    	
+
+    // init the UI
+    ui.reset(new UIRenderer(uiShader));
+
 	return true;
 }
 
@@ -280,6 +290,10 @@ void World::draw() {
 	for (const auto &emitter : level.emitters) {
 		emitter->render(projectionView, camera.position);
 	}
+
+    // UI
+    ui->render(projectionView);
+
 	// Presenting
 	glfwSwapBuffers(m_window);
 }

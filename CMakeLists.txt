@@ -47,7 +47,7 @@ add_executable(proj
 		src/collisiondetection.cpp
         src/collisiondetector.cpp
 		src/collisionResolver.cpp
-		src/rigidBody.cpp)
+		src/rigidBody.cpp src/UIRenderer.cpp src/UIRenderer.hpp)
 
 target_compile_options(proj PUBLIC
 		-Wall

@@ -26,6 +26,7 @@
 
 // glfw
 #include "GLFW/glfw3.h"
+#include "UIRenderer.hpp"
 
 
 // Container for all our entities and game logic. Individual rendering / update is 
@@ -75,6 +76,10 @@ private:
 
 	// Particle things
 	std::shared_ptr<Shader> particleShader;
+
+	// UI things
+	std::shared_ptr<Shader> uiShader;
+    std::unique_ptr<UIRenderer> ui;
 
 	// C++ rng
 	std::default_random_engine m_rng;
