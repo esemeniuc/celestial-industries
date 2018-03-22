@@ -30,6 +30,9 @@ public:
 	// functions
 	virtual void animate(float ms);
 
+	// Soft deletes the entity (actual data will only be removed once there are no refference to Entity or the game closes or someone calls the destructor
+	void softDelete();
+
 	// Model index is the index of the model matrix to be updated.This is generally 0 as most models are made of 1 object and only have
 	// 1 model matrix.It may also be 0 because the first model matrix is usually the root of a renderable made of many objects.If you want
 	// to modify the model matrix of the 3rd element of your renderable(and all it's children in turn) you specify 2 (0 indexing).

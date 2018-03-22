@@ -11,6 +11,7 @@ struct BoundingBox {
 
 namespace CollisionDetection {
     struct MovingBoundingBox {
+		bool removed = false;
         BoundingBox box;
         glm::vec3 velocity;
         glm::vec3 position;

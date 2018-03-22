@@ -70,9 +70,13 @@ bool World::init(glm::vec2 screen) {
 	auto scroll_offset_redirect = [](GLFWwindow* wnd, double _0, double _1) {
 		((World*) glfwGetWindowUserPointer(wnd))->on_mouse_scroll(wnd, _0, _1);
 	};
+	auto mouse_button_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2) {
+		((World*)glfwGetWindowUserPointer(wnd))->on_mouse_button(wnd, _0, _1, _2);
+	};
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
 	glfwSetScrollCallback(m_window, scroll_offset_redirect);
+	glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
 	//-------------------------------------------------------------------------
 	// Loading music and sounds
@@ -147,7 +151,6 @@ bool World::init(glm::vec2 screen) {
 
 	selectedTileCoordinates.rowCoord = level.getLevelSize().rowCoord / 2;
 	selectedTileCoordinates.colCoord = level.getLevelSize().colCoord / 2;
-	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 
 	return true;
 }
@@ -204,7 +207,6 @@ bool World::update(double elapsed_ms) {
 	glfwGetFramebufferSize(m_window, &w, &h);
 	camera.update(elapsed_ms);
 	total_time += elapsed_ms;
-	selectedTile->shouldDraw(true);
 
 	if (
 			selectedTileCoordinates.rowCoord >= 0 &&
@@ -213,8 +215,7 @@ bool World::update(double elapsed_ms) {
 			(unsigned long) selectedTileCoordinates.colCoord < level.getLevelTraversalCostMap()[0].size()
 			) {
 
-		selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
-		selectedTile->shouldDraw(false);
+		level.tileCursor->setPosition({ selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord });
 	}
 
 	for (const auto& turret : level.guntowers) {
@@ -392,5 +393,18 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 
 void World::on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset) {
 	camera.mouseScroll = glm::vec2(xoffset, yoffset);
+}
+
+void World::on_mouse_button(GLFWwindow * window, int button, int action, int mods)
+{
+	glm::vec3 coords = { selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord };
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+		bool success = level.placeTile(Model::MeshType::GUN_TURRET, coords);
+		logger(LogLevel::INFO) << "Right click detected with return " << success << '\n';
+	}
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		bool success = level.placeEntity(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, coords);
+		logger(LogLevel::INFO) << "Left click detected with return " << success << '\n';
+	}
 }
 

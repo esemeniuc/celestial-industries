@@ -1,0 +1,30 @@
+# Made using Asset Forge (1.3)
+
+:models
+Vehicles/detail_bumper[(-1, 0.1, 0.05);(0.0, 90.0, 0.0);(1.1, 1.0, 1.0);detail_bumper_8;tire]
+Vehicles/detail_bumper[(1, 0.1, 0.05);(0.0, 270.0, 0.0);(1.1, 1.0, 1.0);detail_bumper_9;tire]
+Vehicles/wheel_colored[(0, 0.1, -0.35);(0.0, 180.0, 0.0);(1.0, 0.4, 0.5);wheel_colored_12;tire+_defaultMat+blueSteel]
+Vehicles/detail_spoiler[(0, 0.2, -0.4);(0.0, 0.0, 0.0);(1.0, 1.0, 1.0);detail_spoiler_14;blueSteel]
+Aircraft/engine_intake[(0, 0.3, 0.15);(0.0, 0.0, 0.0);(1.0, 1.0, 0.9);engine_intake_15;blueSteel+_defaultMat+black]
+Aircraft/air_ventLarge[(0, 0.5, 0.6);(270.0, 180.0, 0.0);(0.6, 1.0, 0.3);air_ventLarge_16;black+_defaultMat]
+Vehicles/detail_antenna[(-0.2, 0.8, 0.3);(0.0, 180.0, 0.0);(1.0, 0.3, 1.0);detail_antenna_17;tire]
+Aircraft/glass_high[(0, 0.4, -0.5);(0.0, 0.0, 0.0);(1.0, 1.0, 1.0);glass_high_18;glass]
+Vehicles/wheel_colored[(0, 0.1, 0.05);(0.0, 180.0, 0.0);(1.0, 0.4, 0.5);wheel_colored_35;tire+_defaultMat+blueSteel]
+Vehicles/wheel_colored[(0, 0.1, 0.45);(0.0, 180.0, 0.0);(1.0, 0.4, 0.5);wheel_colored_36;tire+_defaultMat+blueSteel]
+Vehicles/wheel_colored[(0, 0.1, -0.35);(0.0, 0.0, 0.0);(1.0, 0.4, 0.5);wheel_colored_37;tire+_defaultMat+blueSteel]
+Vehicles/wheel_colored[(0, 0.1, 0.05);(0.0, 0.0, 0.0);(1.0, 0.4, 0.5);wheel_colored_38;tire+_defaultMat+blueSteel]
+Vehicles/wheel_colored[(0, 0.1, 0.45);(0.0, 0.0, 0.0);(1.0, 0.4, 0.5);wheel_colored_39;tire+_defaultMat+blueSteel]
+
+:materials
+tire[RGBA(0.298, 0.314, 0.365, 1.000);]
+_defaultMat[RGBA(1.000, 1.000, 1.000, 1.000);]
+blueSteel[RGBA(0.729, 0.000, 0.000, 1.000);]
+black[RGBA(0.267, 0.267, 0.267, 1.000);]
+glass[RGBA(0.298, 0.314, 0.365, 1.000);]
+bladeSecondary[RGBA(0.945, 0.674, 0.266, 1.000);]
+blade[RGBA(0.106, 0.200, 0.186, 1.000);]
+light[RGBA(1.000, 1.000, 1.000, 1.000);]
+
+:textures
+
+:extra

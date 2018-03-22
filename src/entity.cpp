@@ -10,6 +10,12 @@ void Entity::animate(float ms) {
 	this->geometryRenderer.scale(glm::vec3(1.01, 1.01, 1.01)); //default implementation for demo purposes
 }
 
+void Entity::softDelete()
+{
+	geometryRenderer.removeSelf();
+	// TODO: AI Comp, Unit Comp soft deletes
+}
+
 void Entity::translate(int modelIndex, glm::vec3 translation) {
 	// when an entity is translated, translate both the geometry being rendered
 	// and the (invisible) collision geometry with it

@@ -7,6 +7,7 @@
 #include "config.hpp"
 #include "tile.hpp"
 #include "model.hpp"
+#include "entity.hpp"
 
 #define INF std::numeric_limits<float>::infinity()
 
@@ -47,9 +48,9 @@ class Level {
 public:
 	//members
 	// Using a shared pointer to a tile allows us to actually have derived classes in there as well.
-	std::vector<std::vector<std::shared_ptr<Tile>>> tiles; // we can add the time dimension when we get there
+	std::vector<std::shared_ptr<Tile>> tiles; // we can add the time dimension when we get there
 	std::vector<std::shared_ptr<GunTowerTile>> guntowers;
-
+	std::shared_ptr<Tile> tileCursor;
 	//funcs
 	bool init(
 			std::vector<std::vector<Model::MeshType>>& levelArray,
@@ -64,11 +65,24 @@ public:
 
 	std::vector<std::vector<AStarNode>> getLevelTraversalCostMap();
 
+	// Places a tile, replaceing anything there before. If the tile is larger than standard specify the width and height.
+	// The location reffer's to the tile's top left corner (0,0,0) being the minimum accepted. The location is NOT the center of the tile.
+	bool placeTile(Model::MeshType type, glm::vec3 location, unsigned int width=1, unsigned int height=1);
+
+	bool placeEntity(Model::MeshType type, glm::vec3 location);
+
+	std::shared_ptr<Tile> tileFromMeshType(Model::MeshType type);
+
+	std::shared_ptr<Entity> entityFromMeshType(Model::MeshType type);
+
 	Coord getLevelSize() const;
 
 private:
 	//members
 	std::vector<std::vector<AStarNode>> levelTraversalCostMap;
+
+	// Indexable using MeshType enum
+	std::map<Model::MeshType, std::pair<double, float>> tileToCost;
 
 	//funcs
 };

@@ -22,15 +22,17 @@ void CollisionDetector::findCollisions(float elapsed_ms)
     // O(n^2) lol
     for (int i = 0; i < boxes.size(); i++) {
         collisions[i].clear();
-        for (int j = 0; j < boxes.size(); j++) {
-            if (i != j) {
-                CollisionDetection::CollisionInfo collision = CollisionDetection::aabbMinkowskiCollisions(boxes[i], boxes[j], elapsed_ms);
-                if (collision.collided) {
-                    // TODO: Currently only tracks the time of collision, not anything else
-                    collisions[i].push_back(collision);
-                }
-            }
-        }
+		if (!boxes[i].removed) {
+			for (int j = 0; j < boxes.size(); j++) {
+				if (i != j && !boxes[j].removed) {
+					CollisionDetection::CollisionInfo collision = CollisionDetection::aabbMinkowskiCollisions(boxes[i], boxes[j], elapsed_ms);
+					if (collision.collided) {
+						// TODO: Currently only tracks the time of collision, not anything else
+						collisions[i].push_back(collision);
+					}
+				}
+			}
+		}
     }
 }
 
@@ -59,4 +61,9 @@ void CollisionDetector::setVelocity(int id, glm::vec3 velocity)
 void CollisionDetector::setPosition(int id, glm::vec3 position)
 {
     boxes[id].position = position;
+}
+
+void CollisionDetector::remove(int id)
+{
+	boxes[id].removed = true;
 }
