@@ -38,7 +38,7 @@ public:
 
 	glm::vec3 getPosition();
 
-    void attack(Entity& entityToAttack, double elapsed_ms);
+    void attack(std::shared_ptr<Entity> entityToAttack, double elapsed_ms);
 
     void takeAttack(Entity& attackingEntity, double elapsed_ms);
 
@@ -78,9 +78,9 @@ public:
 
 	std::pair<int, double> getInterpolationPercentage();
 
-	bool canSee(std::shared_ptr<Entity> other);
+	bool canSee(const std::shared_ptr<Entity> other);
 
-	bool inAttackRange(Entity other);
+	bool inAttackRange(const std::shared_ptr<Entity> other);
 
 	bool operator==(const Entity& rhs) const;
 

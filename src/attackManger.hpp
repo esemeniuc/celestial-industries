@@ -6,9 +6,7 @@
 #include "global.hpp"
 
 namespace AttackManager {
+    std::vector<std::shared_ptr<Entity>> allEntities;
 
-    void removeEntity(Entity &entity);
-    void attackEntity(Entity &entity1, Entity &entity2, double elapsed_ms);
     void update(double elapsed_ms);
-
 };
