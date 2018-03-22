@@ -1,7 +1,8 @@
 #include "UIRenderer.hpp"
 
-UIRenderer::UIRenderer(std::shared_ptr<Shader> shader) :
-    shader(shader)
+UIRenderer::UIRenderer(std::shared_ptr<Shader> shader, std::shared_ptr<Texture> texture) :
+    shader(shader),
+    texture(texture)
 {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
@@ -11,13 +12,13 @@ UIRenderer::UIRenderer(std::shared_ptr<Shader> shader) :
 
     TexturedVertex vertices[4] = {
             // top left corner
-            {{-0.5f * 10.0f, 0.5f, 0}, {0, 1}},
+            {{-0.5f * 10.0f, 0.5f * 10.0f, 0}, {0, 1}},
             // top right corner
-            {{0.5f * 10.0f,  0.5f, 0}, {1, 1}},
+            {{0.5f * 10.0f,  0.5f * 10.0f, 0}, {1, 1}},
             // bottom left corner
-            {{-0.5f * 10.0f, -0.5f, 0}, {0, 0}},
+            {{-0.5f * 10.0f, -0.5f * 10.0f, 0}, {0, 0}},
             // bottom right corner
-            {{0.5f * 10.0f,  -0.5f, 0}, {1, 0}}
+            {{0.5f * 10.0f,  -0.5f * 10.0f, 0}, {1, 0}}
     };
 
 
@@ -33,7 +34,6 @@ UIRenderer::UIRenderer(std::shared_ptr<Shader> shader) :
             // triangle 2
             0, 3, 1
     };
-
 
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6*sizeof(int), &vertexIndices, GL_STATIC_DRAW);
 
@@ -57,10 +57,21 @@ UIRenderer::UIRenderer(std::shared_ptr<Shader> shader) :
 }
 
 void UIRenderer::render(glm::mat4 viewProjection) {
-    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
+    glUseProgram(shader->program);
+    glBindVertexArray(vao);
+
+    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(1, 1, 1));
     glm::mat4 modelViewProjection = viewProjection * modelMatrix;
 
-    glUniformMatrix4fv(modelViewProjectionUniform, 1, GL_FALSE, &modelMatrix[0][0]);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture->id);
+
+    glUniformMatrix4fv(modelViewProjectionUniform, 1, GL_FALSE, &modelViewProjection[0][0]);
 
     glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, 1);
+
+    glDisable(GL_BLEND);
 }

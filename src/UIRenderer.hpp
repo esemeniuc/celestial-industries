@@ -12,7 +12,7 @@
 class UIRenderer {
 public:
     UIRenderer() = delete;
-    UIRenderer(std::shared_ptr<Shader> shader);
+    UIRenderer(std::shared_ptr<Shader> shader, std::shared_ptr<Texture> texture);
 
     void render(glm::mat4 viewProjection);
 private:

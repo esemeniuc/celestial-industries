@@ -13,5 +13,5 @@ void main() {
     // gl_InstanceID;
     textureCoordinateFromVertexShader = textureCoordinate;
 
-    gl_Position = modelViewProjection * vec4(position, 1.0);
+    gl_Position = modelViewProjection * vec4(1.0, 1.0, 1.0, 1.0);
 }

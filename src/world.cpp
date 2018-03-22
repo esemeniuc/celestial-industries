@@ -165,7 +165,12 @@ bool World::init(glm::vec2 screen) {
 	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
 
     // init the UI
-    ui.reset(new UIRenderer(uiShader));
+	std::shared_ptr<Texture> uiTexture = std::make_shared<Texture>();
+	uiTexture->load_from_file(textures_path("turtle.png"));
+	if (!uiTexture->is_valid()) {
+		throw "UI texture failed to load!";
+	}
+    ui.reset(new UIRenderer(uiShader, uiTexture));
 
 	return true;
 }
