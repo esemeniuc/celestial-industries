@@ -11,32 +11,35 @@ namespace UnitManager {
 		aiUnits.reserve(levelHeight * levelWidth);
 	}
 
-	void removeUnit(const std::shared_ptr<Entity>& unit) {
-		if (unit->aiComp.owner == GamePieceOwner::PLAYER) {
-			playerUnits.erase(std::remove(playerUnits.begin(), playerUnits.end(), unit), playerUnits.end());
-
-		} else if (unit->aiComp.owner == GamePieceOwner::AI) {
-			aiUnits.erase(std::remove(aiUnits.begin(), aiUnits.end(), unit), aiUnits.end());
+	bool isDead( std::shared_ptr<Entity>& unit) //THIS IS A TERRIBLE HACK, FIXME
+	{
+		if(unit->aiComp.currentHealth <= 0)
+		{
+			unit->translate({999,999,999});
 		}
+		return unit->aiComp.currentHealth <= 0;
+	}
+
+	void removeDead() {
+		std::cout << "before: " << playerUnits.size() << '\n';
+		playerUnits.erase(std::remove_if(playerUnits.begin(), playerUnits.end(), isDead), playerUnits.end());
+		std::cout << "after: " << playerUnits.size() << '\n';
+		aiUnits.erase(std::remove_if(aiUnits.begin(), aiUnits.end(), isDead), aiUnits.end());
+
 	}
 
 	void update(double elapsed_ms) {
+		removeDead();
 		for (auto& playerUnit : playerUnits) {
-			playerUnit->unitComp.update();
-			playerUnit->move(elapsed_ms);
-			if (playerUnit.get()->aiComp.currentHealth <= 0) {
-				removeUnit(playerUnit);
-				logger << "Friendly Entity " << "Died!";
-			}
+			logger << "current HEALTH: " << playerUnit->aiComp.currentHealth << '\n';
+				playerUnit->unitComp.update();
+				playerUnit->move(elapsed_ms);
+				//logger << "Friendly Entity " << "Died!";
 		}
 
 		for (auto& aiUnit : aiUnits) {
 			aiUnit->unitComp.update();
 			aiUnit->move(elapsed_ms);
-			if (aiUnit.get()->aiComp.currentHealth <= 0) {
-				removeUnit(aiUnit);
-				logger << "AI Entity " << "Died!";
-			}
 		}
 	}
 

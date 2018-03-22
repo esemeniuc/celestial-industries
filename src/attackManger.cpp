@@ -5,6 +5,7 @@
 #include "attackManger.hpp"
 
 void AttackManager::update(double elapsed_ms) {
+    std::vector<std::shared_ptr<Entity>> allEntities;
 
     for (std::shared_ptr<Entity> entity : aiUnits) {
         allEntities.push_back(entity);
@@ -24,7 +25,10 @@ void AttackManager::update(double elapsed_ms) {
         for (std::shared_ptr<Entity> entity2 : allEntities) {
             if (entity1->inAttackRange(entity2)) {
                 // Entity1 attacks entity2 for elapsed_ms amount of time.
+                //logger << "New attack Started!";
                 entity1->attack(entity2, elapsed_ms);
+            } else {
+                //logger << "Entity Not in range or already attacking!";
             }
         }
     }

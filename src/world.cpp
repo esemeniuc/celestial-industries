@@ -7,6 +7,7 @@
 #include "particle.hpp"
 #include "aimanager.hpp"
 #include "unit.hpp"
+#include "attackManger.hpp"
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -124,14 +125,17 @@ bool World::init(glm::vec2 screen) {
 	int startx = 25, startz = 11;
 	int targetx = 10, targetz = 10;
 	auto temp1 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	temp1->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
 	temp1->moveTo(targetx, targetz);
 
 	startx = 39, startz = 19;
 	auto temp2 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	temp2->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
 	temp2->moveTo(targetx, targetz);
 
 	startx = 39, startz = 1;
 	auto temp3 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	temp3->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
 	temp3->moveTo(targetx, targetz);
 
 	selectedTileCoordinates.rowCoord = level.getLevelSize().rowCoord / 2;
@@ -213,6 +217,7 @@ bool World::update(double elapsed_ms) {
 	Particles::updateParticleStates(elapsed_ms);
 	AiManager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
+	AttackManager::update(elapsed_ms);
 
 	return true;
 }

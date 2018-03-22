@@ -6,7 +6,5 @@
 #include "global.hpp"
 
 namespace AttackManager {
-    std::vector<std::shared_ptr<Entity>> allEntities;
-
     void update(double elapsed_ms);
 };

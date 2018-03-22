@@ -83,7 +83,7 @@ namespace Unit {
 				e->unitComp.initialEnergyLevel = 50;
 				e->unitComp.attackDamage = 10;
 				e->unitComp.attackRange = 1;
-				e->unitComp.attackSpeed = 10;
+				e->unitComp.attackSpeed = 2;
 				e->unitComp.movementSpeed = 5;
 				e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
 				e->unitComp.state = UnitState::IDLE;
