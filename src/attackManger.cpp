@@ -19,17 +19,24 @@ void AttackManager::update(double elapsed_ms) {
         allEntities.push_back(entity);
     }
 
-    logger(LogLevel::INFO) << "Number of entities found: " << allEntities.size() << " \n";
-
+    logger(LogLevel::DEBUG) << "Number of entities found: " << allEntities.size() << " \n";
+    logger << "MS passed: " << elapsed_ms << '\n';
     for (std::shared_ptr<Entity> entity1 : allEntities) {
         for (std::shared_ptr<Entity> entity2 : allEntities) {
+            // Don't attack yourself check.
+            if (entity1 == entity2) continue;
+
             if (entity1->inAttackRange(entity2)) {
                 // Entity1 attacks entity2 for elapsed_ms amount of time.
-                //logger << "New attack Started!";
+                logger << "New attack Started!\n";
                 entity1->attack(entity2, elapsed_ms);
             } else {
-                //logger << "Entity Not in range or already attacking!";
+                logger << "Entity Not in range or already attacking!\n";
             }
         }
+    }
+
+    for (auto& entity : allEntities) {
+        entity->unitComp.state = UnitState::IDLE;
     }
 }

@@ -166,17 +166,17 @@ bool Entity::operator==(const Entity& rhs) const {
 void Entity::takeAttack(Entity& attackingEntity, double elapsed_ms) {
     // reduce health
     int damagePerSecond = attackingEntity.unitComp.attackDamage * attackingEntity.unitComp.attackSpeed;
-    int damageToDoThisFrame = damagePerSecond * (elapsed_ms / 1000);
+    float damageToDoThisFrame = damagePerSecond * (elapsed_ms / 1000);
 
     aiComp.currentHealth -= damageToDoThisFrame;
 }
 
 void Entity::attack(std::shared_ptr<Entity> entityToAttack, double elapsed_ms) {
-//    if (unitComp.state == UnitState::ATTACK) {
-//		logger << 'already attacking';
-//        // Already attacking something else, nothing to do, return.
-//        return;
-//    }
+    if (unitComp.state == UnitState::ATTACK) {
+		logger << 'already attacking this frame';
+        // Already attacking something else, nothing to do, return.
+        return;
+    }
 
 	logger << " 1 attack done" << '\n';
 

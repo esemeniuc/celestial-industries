@@ -15,7 +15,7 @@ namespace UnitManager {
 	{
 		if(unit->aiComp.currentHealth <= 0)
 		{
-			unit->translate({999,999,999});
+			//unit->translate({999,999,999});
 		}
 		return unit->aiComp.currentHealth <= 0;
 	}
@@ -25,7 +25,6 @@ namespace UnitManager {
 		playerUnits.erase(std::remove_if(playerUnits.begin(), playerUnits.end(), isDead), playerUnits.end());
 		std::cout << "after: " << playerUnits.size() << '\n';
 		aiUnits.erase(std::remove_if(aiUnits.begin(), aiUnits.end(), isDead), aiUnits.end());
-
 	}
 
 	void update(double elapsed_ms) {

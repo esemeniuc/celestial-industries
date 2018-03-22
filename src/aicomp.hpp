@@ -19,7 +19,7 @@ public:
 	int visionRange = 5;
 	GamePieceOwner owner = GamePieceOwner::NONE;
 	GamePieceClass type = GamePieceClass::NONE;
-	int currentHealth = initialHealth;
+	float currentHealth = initialHealth;
 	int value; //used for AI to prioritize targets
 
 
