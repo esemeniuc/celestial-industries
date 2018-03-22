@@ -221,7 +221,6 @@ bool World::update(double elapsed_ms) {
         emitter->update(elapsed_ms);
     }
 
-	Particles::updateParticleStates(elapsed_ms);
 	AiManager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
 
