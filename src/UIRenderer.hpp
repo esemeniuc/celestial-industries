@@ -23,7 +23,6 @@ private:
     std::shared_ptr<Texture> texture;
     GLuint positionAttribute;
     GLuint textureCoordinateAttribute;
-    GLuint timeElapsedUniform;
     GLuint modelViewProjectionUniform;
 };
 

@@ -4,6 +4,7 @@ uniform mat4 modelViewProjection;
 
 in vec3 position;
 in vec2 textureCoordinate;
+
 out vec2 textureCoordinateFromVertexShader;
 
 

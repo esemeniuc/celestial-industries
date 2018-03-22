@@ -63,13 +63,14 @@ void UIRenderer::render(glm::mat4 viewProjection) {
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(1, 1, 1));
     glm::mat4 modelViewProjection = viewProjection * modelMatrix;
 
+    glUniformMatrix4fv(modelViewProjectionUniform, 1, GL_FALSE, &modelViewProjection[0][0]);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture->id);
 
-    glUniformMatrix4fv(modelViewProjectionUniform, 1, GL_FALSE, &modelViewProjection[0][0]);
 
     glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, 1);
 
