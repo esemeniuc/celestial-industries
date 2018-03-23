@@ -242,6 +242,8 @@ void initUnitFromMeshType(std::shared_ptr<Entity> e, Model::MeshType type, GameP
 		e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
 		e->unitComp.state = UnitState::IDLE;
 		break;
+	default:
+		throw "Un initializeable unit encountered in initUnitFromMeshType";
 	}
 
 	e->aiComp.owner = owner;
