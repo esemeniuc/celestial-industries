@@ -77,7 +77,7 @@ set(PROJ_SOURCES
 		src/tile.cpp
 		src/world.cpp
 		src/unitcomp.cpp
-		src/unitmanager.cpp src/unitmanager.hpp src/unit.cpp src/unit.hpp src/building.cpp src/building.hpp)
+		src/unitmanager.cpp src/unitmanager.hpp src/unit.cpp src/unit.hpp src/building.cpp src/building.hpp src/attackManger.cpp)
 
 add_library(libproj ${PROJ_SOURCES})
 target_compile_options(libproj PUBLIC ${CUSTOM_COMPILE_FLAGS})
@@ -93,7 +93,7 @@ set(TEST_SUITE_SOURCES
 		test/genericunit_test.cpp
 		)
 
-add_executable(proj src/main.cpp src/attackManger.cpp src/attackManger.hpp) #main.cpp gets compile flags through PUBLIC flag of libproj
+add_executable(proj src/main.cpp) #main.cpp gets compile flags through PUBLIC flag of libproj
 
 
 
