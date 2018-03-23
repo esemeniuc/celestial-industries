@@ -67,9 +67,9 @@ public:
 
 	// Places a tile, replaceing anything there before. If the tile is larger than standard specify the width and height.
 	// The location reffer's to the tile's top left corner (0,0,0) being the minimum accepted. The location is NOT the center of the tile.
-	bool placeTile(Model::MeshType type, glm::vec3 location, unsigned int width=1, unsigned int height=1);
+	std::shared_ptr<Tile> placeTile(Model::MeshType type, glm::vec3 location, unsigned int width=1, unsigned int height=1);
 
-	bool placeEntity(Model::MeshType type, glm::vec3 location);
+	std::shared_ptr<Entity> placeEntity(Model::MeshType type, glm::vec3 location);
 
 	std::shared_ptr<Tile> tileFromMeshType(Model::MeshType type);
 

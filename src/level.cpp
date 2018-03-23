@@ -106,7 +106,7 @@ std::vector<std::vector<AStarNode>> Level::getLevelTraversalCostMap() {
 	return this->levelTraversalCostMap;
 }
 
-bool Level::placeTile(Model::MeshType type, glm::vec3 location, unsigned int width, unsigned int height)
+std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location, unsigned int width, unsigned int height)
 {
 	Coord levelDimensions = getLevelSize();
 	int levelWidth = levelDimensions.rowCoord;
@@ -136,15 +136,15 @@ bool Level::placeTile(Model::MeshType type, glm::vec3 location, unsigned int wid
 	std::shared_ptr<Tile> newTile = tileFromMeshType(type);
 	newTile->setPosition(location);
 	tiles.push_back(newTile);
-	return true;
+	return newTile;
 }
 
-bool Level::placeEntity(Model::MeshType type, glm::vec3 location)
+std::shared_ptr<Entity> Level::placeEntity(Model::MeshType type, glm::vec3 location)
 {
 	std::shared_ptr<Entity> entity = entityFromMeshType(type);
 	entity->setPosition(location);
 	entities.push_back(entity);
-	return true;
+	return entity;
 }
 
 std::shared_ptr<Tile> Level::tileFromMeshType(Model::MeshType type)
