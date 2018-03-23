@@ -27,7 +27,6 @@ namespace Model {
 			BALL,
 			GUN_TURRET,
 			GEYSER,
-			PARTICLE,
 			WATER,
 			GRASS,
 			HROAD,
