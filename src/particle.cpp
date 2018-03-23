@@ -2,6 +2,14 @@
 #include "particle.hpp"
 
 namespace Particles {
+    const glm::vec3 &ParticleEmitter::getPosition() const {
+        return position;
+    }
+
+    void ParticleEmitter::setPosition(const glm::vec3 &newPosition) {
+        ParticleEmitter::position = newPosition;
+    }
+
     float ParticleEmitter::getSpread() const {
         return spread;
     }
@@ -50,12 +58,25 @@ namespace Particles {
         ParticleEmitter::direction = newDirection;
     }
 
+    /**
+     * Creates a new ParticleEmitter, an object in the world that emits a continuous-looking
+     * stream of particles. Use this, not the ParticleEmitter class's constructor, to create
+     * them.
+     *
+     * @param position xyz-coordinates to place the emitter on. y must be >= 0.
+     * @param direction unit vector giving the direction that particles are emitted into
+     * @param spread how far particles may vary from the direction vector
+     * @param particleWidth width of a particle graphic
+     * @param particleHeight height of a particle graphic
+     * @param particleLifespan how long a particle may exist before being reset and respawned
+     * @param particleSpeed how quickly this emitter's particles move
+     * @param shader
+     * @param texture
+     */
     ParticleEmitter::ParticleEmitter(const glm::vec3 &position, const glm::vec3 &direction, float spread, float particleWidth,
-                                         float particleHeight, float particleLifespan, float particleSpeed, std::shared_ptr<Shader> shader,
-                                         std::shared_ptr<Texture> texture) :
+                                     float particleHeight, float particleLifespan, float particleSpeed, std::shared_ptr<Shader> shader,
+                                     std::shared_ptr<Texture> texture) :
 
-            shader(shader),
-            texture(texture),
             position(position),
             direction(direction),
             spread(spread),
@@ -63,7 +84,9 @@ namespace Particles {
             particleHeight(particleHeight),
             particleLifespan(particleLifespan),
             particleSpeed(particleSpeed),
-            ageInMilliseconds(0)
+            ageInMilliseconds(0),
+            shader(shader),
+            texture(texture)
     {
         // generate VAO to link VBO and VIO
         glGenVertexArrays(1, &vao);
