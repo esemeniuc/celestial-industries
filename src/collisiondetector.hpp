@@ -25,5 +25,8 @@ public:
     void setVelocity(int id, glm::vec3 velocity);
     void setPosition(int id, glm::vec3 position);
 
+	// Todo: Currently just a soft delete - cant rearrange everything without invalidating IDs
+	void remove(int id);
+
     // TODO add methods to scale and rotate
 };
