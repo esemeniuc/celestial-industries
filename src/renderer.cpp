@@ -11,6 +11,7 @@ Renderer::Renderer(
     }
 
     instanceDataAttribute = glGetUniformBlockIndex(shader->program, "InstancesData");
+	normalMatricesAttribute = glGetUniformBlockIndex(shader->program, "normalMatricesData");
 
 
     glGenBuffers(1, &instancesDataBuffer);
@@ -19,7 +20,13 @@ Renderer::Renderer(
     glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderInstancesData), NULL, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+	glGenBuffers(1, &normalMatricesAttribute);
+	glBindBuffer(GL_UNIFORM_BUFFER, normalMatricesAttribute);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 3, normalMatricesAttribute);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderNormalMatrixData), NULL, GL_DYNAMIC_DRAW);
+
     instancesData.stride = subObjects.size();
+	normalMatricesData.stride = 1;
 }
 
 SubObject Renderer::loadSubObject(SubObjectSource source)
