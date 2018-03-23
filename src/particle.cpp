@@ -1,5 +1,4 @@
 #include <cmath>
-#include <utility>
 #include "particle.hpp"
 
 namespace Particles {
