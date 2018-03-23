@@ -20,6 +20,7 @@ public:
 	RigidBody rigidBody;
 
 	std::shared_ptr<Entity> target;
+	glm::vec3 targetPosition = { 0.0f, 0.0f, 0.0f };
 	float attackingCooldown;
 
 	// constructors
@@ -69,6 +70,8 @@ public:
 	void rotateXZ(float amount);
 
 	void setRotationXZ(float amount);
+
+	void setRotationXZ(int modelIndex, float amount);
 
 	void scale(glm::vec3 scale);
 

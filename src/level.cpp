@@ -143,6 +143,7 @@ bool Level::placeEntity(Model::MeshType type, glm::vec3 location)
 {
 	std::shared_ptr<Entity> entity = entityFromMeshType(type);
 	entity->setPosition(location);
+	entities.push_back(entity);
 	return true;
 }
 
@@ -159,6 +160,8 @@ std::shared_ptr<Tile> Level::tileFromMeshType(Model::MeshType type)
 std::shared_ptr<Entity> Level::entityFromMeshType(Model::MeshType type)
 {
 	switch (type) {
+	case Model::MeshType::FRIENDLY_RANGED_UNIT:
+		return std::make_shared<TurretUnit>(type, 2);
 	default:
 		return std::make_shared<Entity>(type);
 	}

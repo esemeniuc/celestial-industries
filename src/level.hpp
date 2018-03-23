@@ -49,7 +49,7 @@ public:
 	//members
 	// Using a shared pointer to a tile allows us to actually have derived classes in there as well.
 	std::vector<std::shared_ptr<Tile>> tiles; // we can add the time dimension when we get there
-	std::vector<std::shared_ptr<GunTowerTile>> guntowers;
+	std::vector<std::shared_ptr<Entity>> entities;
 	std::shared_ptr<Tile> tileCursor;
 	//funcs
 	bool init(

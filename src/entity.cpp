@@ -73,13 +73,21 @@ void Entity::rotate(float amount, glm::vec3 axis) {
 void Entity::rotateXZ(float amount)
 {
 	angle += amount;
-	rotate(amount, { 1.0f, 0.0f, 0.0f });
+	rotate(amount, { 0.0f, 1.0f, 0.0f });
 }
 
 void Entity::setRotationXZ(float amount)
 {
-	rotate(amount - angle, { 1.0f, 0.0f, 0.0f });
+	rotate(amount - angle, { 0.0f, 1.0f, 0.0f });
 	angle = amount;
+}
+
+void Entity::setRotationXZ(int modelIndex, float amount)
+{
+	//rotate(modelIndex, amount - angle, { 0.0f, 1.0f, 0.0f });
+	setModelMatrix(modelIndex, glm::rotate(glm::mat4(1.0f), amount, { 0.0f,1.0f,0.0f }));
+	angle = amount;
+
 }
 
 void Entity::scale(glm::vec3 scale) {
@@ -140,6 +148,7 @@ void Entity::move(double elapsed_time) {
 
 	unitComp.targetPathStartTimestamp += elapsed_time;
 	std::pair<int, double> index = getInterpolationPercentage(); //first is index into path, second is interp amount (0 to 1)
+	glm::vec3 newPos;
 	if (index.first < (int) unitComp.targetPath.size() - 1) {
 		Coord curr = unitComp.targetPath[index.first];
 		Coord next = unitComp.targetPath[index.first + 1];
@@ -156,14 +165,15 @@ void Entity::move(double elapsed_time) {
 		double destCol = curr.colCoord + (dCol * index.second);
 		double destRow = curr.rowCoord + (dRow * index.second);
 
-		glm::vec3 newPos = {destCol, 0, destRow};
-		setPositionFast(0, newPos); //for rendering
-		rigidBody.setPosition(newPos); //for phys
+		newPos = {destCol, 0, destRow};
 	} else { //move to the last coord in the path
-		glm::vec3 newPos = {unitComp.targetPath.back().colCoord, 0, unitComp.targetPath.back().rowCoord};
-		setPositionFast(0, newPos);
-		rigidBody.setPosition(newPos);
+		newPos = {unitComp.targetPath.back().colCoord, 0, unitComp.targetPath.back().rowCoord};
 	}
+
+	// TODO: Split this in calculate and update so this can do collisions
+
+	setPositionFast(0, newPos); //for rendering
+	rigidBody.setPosition(newPos); //for phys
 }
 
 glm::vec3 Entity::getPosition() const {
@@ -198,20 +208,47 @@ void Entity::attack(std::shared_ptr<Entity> other)
 	}
 }
 
+float vectorAngleXZ(glm::vec3 v) {
+	// https://stackoverflow.com/questions/6247153/angle-from-2d-unit-vector
+	//if (v.x == 0) {
+	//	if (v.z > 0)
+	//		return 90.0f;
+	//	if (v.z == 0)
+	//		return 0.0f;
+	//	return 270.0f;
+	//}
+	//if (v.z == 0) {
+	//	if (v.x >= 0)
+	//		return 0.0f;
+	//	return 180.0f;
+	//}
+	//float angle = atanf(v.z / v.x)*(180.0f/ M_PI);
+	//if (v.x < 0 && v.z < 0)
+	//	return 180.0f + angle;
+	//if (v.x < 0)
+	//	return 180.0f + angle;
+	//if (v.z < 0)
+	//	return 360.0f + angle;
+	glm::vec3 xUnit = glm::vec3(1.0f, 0.0f, 0.0f);
+	v = glm::normalize(v);
+	return glm::acos(glm::dot(v, xUnit))*(180.0f / M_PI);	
+}
+
+
 void TurretUnit::animate(float ms)
 {
 	attackingCooldown -= ms;
 	if (unitComp.currentEnergyLevel <= 0)softDelete();
 	// Face the turret to the entity we're attacking
 	if (target != nullptr) {
-		glm::vec3 dir = target->getPosition() - getPosition();
-		float turretAngle = atan2(dir.x, dir.z);
-		float angleInDegrees = turretAngle * 180.0f / M_PI;
-		float amountToRotate = angleInDegrees - turretAngle - angle;
-		rotate(turretIndex, amountToRotate, { 1.0f, 0.0, 0.0 });
-		turretAngle = angleInDegrees;
+		targetPosition = target->getPosition();
 	}
-	else {
-		rotate(turretIndex, 0, { 1.0f, 0.0, 0.0 });
-	}
+	glm::vec3 dir = glm::normalize(targetPosition - getPosition());
+	float turretAngle = vectorAngleXZ(dir);
+	float turretAngle2 = std::atan2(dir.z, dir.x);
+	float angleInDegrees = 180 - turretAngle2 * 180.0f / M_PI;
+	glm::vec3 xUnit = glm::vec3(1.0f, 0.0f, 0.0f);
+	glm::vec3 crossProduct = glm::cross(dir, xUnit);
+	float crossProductDegrees = crossProduct.y * 180.0f / M_PI;
+	setRotationXZ(turretIndex, turretAngle);
 }

@@ -220,18 +220,15 @@ bool World::update(double elapsed_ms) {
 		level.tileCursor->setPosition({ selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord });
 	}
 
-	for (const auto& turret : level.guntowers) {
-		turret->update(elapsed_ms);
-	}
-
 	Particles::updateParticleStates(elapsed_ms);
 	AiManager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
-	for (const auto& entity : entities) {
+	for (const auto& entity : level.entities) {
+		//entity->targetPosition = level.tileCursor->position;
 		entity->animate(elapsed_ms);
 	}
-	for (const auto& turret : turretUnits) {
-		turret->animate(elapsed_ms);
+	for (const auto& tile : level.tiles) {
+		tile->update(elapsed_ms);
 	}
 	return true;
 }
@@ -410,13 +407,8 @@ void World::on_mouse_button(GLFWwindow * window, int button, int action, int mod
 		logger(LogLevel::INFO) << "Right click detected with return " << success << '\n';
 	}
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		std::shared_ptr<TurretUnit> unit = std::make_shared<TurretUnit>(Model::MeshType::FRIENDLY_RANGED_UNIT, 2);
-		turretUnits.push_back(unit);
-		entities.push_back(unit);
-		unit->target = std::shared_ptr<Entity>(lastPlaced);
-		lastPlaced = unit;
-		//bool success = level.placeEntity(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, coords);
-		logger(LogLevel::INFO) << "Left click detected with return " << '\n';
+		bool success = level.placeEntity(Model::MeshType::FRIENDLY_RANGED_UNIT, coords);
+		logger(LogLevel::INFO) << "Left click detected with return " << success << '\n';
 	}
 }
 
