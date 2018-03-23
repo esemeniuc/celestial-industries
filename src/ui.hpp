@@ -1,7 +1,3 @@
-//
-// Created by Peter Deltchev on 2018-03-17.
-//
-
 #ifndef PROJ_UI_HPP
 #define PROJ_UI_HPP
 
@@ -10,7 +6,6 @@
 
 class UI {
 private:
-    std::vector<int> buildingSelections;
     std::vector<int> buildingSelections;
 
 public:
