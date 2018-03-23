@@ -1,0 +1,15 @@
+# Made using Asset Forge (1.3)
+
+:models
+Western/porch_floor_center[(0, 0, 0);(0.0, 0.0, 0.0);(1.0, 1.0, 1.0);porch_floor_center_26;wood+wood]
+Primitives/cylinder_hollow[(-0.05, 0.8, 0);(90.0, 0.0, 0.0);(1.0, 0.1, 1.0);cylinder_hollow_29;customMaterial3]
+
+:materials
+wood[RGBA(0.882, 0.617, 0.400, 1.000);]
+woodDark[RGBA(0.641, 0.422, 0.293, 1.000);]
+_defaultMat[RGBA(1.000, 1.000, 1.000, 1.000);]
+customMaterial3[RGBA(0.179, 0.450, 0.630, 1.000);simpleMaze]
+
+:textures
+
+:extra

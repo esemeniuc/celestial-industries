@@ -66,7 +66,7 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 		for (const char tile : line) {
 			switch (tile) {
 				case '#': {
-					row.push_back(Model::MeshType::TREE);
+					row.push_back(Model::MeshType::HROAD);
 					tileData.emplace_back(colNumber, rowNumber, 1000.0, INF);
 					break;
 				}
@@ -75,11 +75,62 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 					tileData.emplace_back(colNumber, rowNumber, 10.0, INF);
 					break;
 				}
-				case 'G':
-					row.push_back(Model::MeshType::GUN_TURRET);
+				case '\'': {
+					row.push_back(Model::MeshType::SAND_2);
+					tileData.emplace_back(colNumber, rowNumber, 10.0, INF);
+					break;
+				}
+				case '.': {
+					row.push_back(Model::MeshType::SAND_3);
+					tileData.emplace_back(colNumber, rowNumber, 10.0, INF);
+					break;
+				}
+				case ';': {
+					row.push_back(Model::MeshType::SAND_4);
+					tileData.emplace_back(colNumber, rowNumber, 10.0, INF);
+					break;
+				}
+				case ',': {
+					row.push_back(Model::MeshType::SAND_5);
+					tileData.emplace_back(colNumber, rowNumber, 10.0, INF);
+					break;
+				}
+				case 'T': {
+					row.push_back(Model::MeshType::TREE);
 					tileData.emplace_back(colNumber, rowNumber, 1000.0, INF);
 					break;
+				}
+				case 'Y': {
+					row.push_back(Model::MeshType::YELLOWTREE);
+					tileData.emplace_back(colNumber, rowNumber, 1000.0, INF);
+					break;
+				}
+				case 'R': {
+					row.push_back(Model::MeshType::REDTREE);
+					tileData.emplace_back(colNumber, rowNumber, 1000.0, INF);
+					break;
+				}
+				case 'W': {
+					row.push_back(Model::MeshType::WATER);
+					tileData.emplace_back(colNumber, rowNumber, 1000.0, INF);
+					break;
+				}
+				case 'G': {
+					row.push_back(Model::MeshType::GRASS);
+					tileData.emplace_back(colNumber, rowNumber, 10.0, INF);
+					break;
+				}
+				case 'H': {
+					row.push_back(Model::MeshType::HROAD);
+					tileData.emplace_back(colNumber, rowNumber, 10.0, INF);
+					break;
+				}
 				case 'V': {
+					row.push_back(Model::MeshType::VROAD);
+					tileData.emplace_back(colNumber, rowNumber, 10.0, INF);
+					break;
+				}
+				case 'P': {
 					row.push_back(Model::MeshType::GEYSER);
 					tileData.emplace_back(colNumber, rowNumber, 1000.0, INF);
 
