@@ -1,0 +1,10 @@
+R      red tree
+Y      yellow tree
+H      horizontal road
+V      verticle road
+G      grass
+T      green tree
+#      edge
+'      sand
+,      sand
+space  sand
