@@ -1,5 +1,6 @@
 #include <algorithm>
 #include "camera.hpp"
+#include "global.hpp"
 
 
 void Camera::update(float ms) {
@@ -57,9 +58,9 @@ glm::mat4 Camera::getViewMatrix() {
 //delta get set to 0 on every update() call
 void Camera::pan(int x, int y) {
 	int leftBound = panDetectionWidth;
-	int rightBound = Config::WINDOW_WIDTH - panDetectionWidth;
+	int rightBound = world.getWindowSize().first - panDetectionWidth;
 	int topBound = panDetectionWidth; //top border
-	int botBound = Config::WINDOW_HEIGHT - panDetectionWidth; //bottom border
+	int botBound = world.getWindowSize().second - panDetectionWidth; //bottom border
 	if (x <= leftBound) { //handles NW, SW, and W cases
 		if (y <= topBound) {
 			deltaY = 1;
