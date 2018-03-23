@@ -26,7 +26,7 @@ Renderer::Renderer(
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderNormalMatrixData), NULL, GL_DYNAMIC_DRAW);
 
     instancesData.stride = subObjects.size();
-	normalMatricesData.stride = 1;
+	normalMatricesData.stride = subObjects.size();
 }
 
 SubObject Renderer::loadSubObject(SubObjectSource source)
