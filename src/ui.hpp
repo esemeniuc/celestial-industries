@@ -23,7 +23,6 @@
 
 class UI {
 public:
-
     UI() = delete;
     UI(UI&) = delete;
     UI(UI&&) = delete;
@@ -42,6 +41,20 @@ public:
      * @param windowSize
      */
     void recomputeLayout(glm::vec2 windowSize);
+
+    /**
+     *
+     * @param mouseCoordinates
+     * @return true if the UI "caught" the mouse click
+     */
+//    bool processMouseClick(glm::vec2 mouseCoordinates);
+
+    /**
+     * Changes the UI state based on the given keycode
+     * @param keyCode
+     * @return true if the UI "caught" the mouse click
+     */
+    bool processKeyboardEvent(int keyCode);
 
 private:
 //    std::vector<UIControl> controls;

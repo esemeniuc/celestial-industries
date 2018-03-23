@@ -359,6 +359,10 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 
 	// Tile selection controls:
 	if (action == GLFW_RELEASE) {
+		if (key == GLFW_KEY_Z || key == GLFW_KEY_X) {
+			ui->processKeyboardEvent(key);
+		}
+
 		if (key == GLFW_KEY_I) {
 			move_cursor_up();
 		}

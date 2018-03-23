@@ -96,3 +96,20 @@ void UI::recomputeLayout(glm::vec2 windowSize) {
     ));
 
 }
+
+bool UI::processKeyboardEvent(int keyCode) {
+    switch (keyCode) {
+        case GLFW_KEY_Z:
+            // change to move unit mode
+            break;
+
+        case GLFW_KEY_X:
+            // change to target unit mode
+            break;
+        default:
+            // no-op
+            break;
+    }
+
+    return false;
+}
