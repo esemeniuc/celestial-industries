@@ -38,6 +38,9 @@ SubObject Renderer::loadSubObject(SubObjectSource source)
     viewProjectionUniform = glGetUniformLocation(shader->program, "vp");
     modelIndexUniform = glGetUniformLocation(shader->program, "modelIndex");
     materialUniformBlock = glGetUniformBlockIndex(shader->program, "MaterialInfo");
+	normalMatrixUniformBlock = glGetUniformBlockIndex(shader->program, "normalMatrixInfo");
+	viewMatrixUniform = glGetUniformLocation(shader->program, "viewMatrix");
+
 
     // Getting attribute locations
     positionAttribute = glGetAttribLocation(shader->program, "in_position");
@@ -130,7 +133,7 @@ glm::mat4 Renderer::collapseMatrixVector(std::vector<glm::mat4> v)
     return result;
 }
 
-void Renderer::render(glm::mat4 viewProjection)
+void Renderer::render(glm::mat4 viewProjection, glm::mat4 viewMatrix)
 {
     // Setting shaders
     glUseProgram(shader->program);
@@ -140,6 +143,13 @@ void Renderer::render(glm::mat4 viewProjection)
     glBindBufferBase(GL_UNIFORM_BUFFER, 2, instancesDataBuffer);
     glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderInstancesData), &instancesData, GL_DYNAMIC_DRAW);
 
+	// compute normal matrices for use in lighting computations in the shader
+	for (size_t i = 0; i < maxInstances; i++) {
+		// glm offer another function inverseTranspose, but I opted to use this for now
+		normalMatricesData.normalMatrix[i] = glm::transpose(glm::inverse(instancesData.modelMatrices[i] * viewMatrix));
+	}
+
+	// bind normal matrices data structure to a uniform buffer and send to shader
 	glBindBuffer(GL_UNIFORM_BUFFER, normalMatricesBuffer);
 	glUniformBlockBinding(shader->program, normalMatricesAttribute, 3); // layout hardcoded in shader
 	glBindBufferBase(GL_UNIFORM_BUFFER, 3, normalMatricesBuffer);

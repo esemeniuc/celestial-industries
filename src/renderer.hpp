@@ -43,13 +43,13 @@ public:
     );
     SubObject loadSubObject(SubObjectSource source);
     unsigned int getNextId();
-    void render(glm::mat4 viewProjection);
+    void render(glm::mat4 viewProjection, glm::mat4 viewMatrix);
     void updateModelMatrixStack(unsigned int modelIndex, bool updateHierarchically=true);
     glm::mat4 getModelMatrix(unsigned int id, unsigned int modelIndex);
 private:
     // TODO: replace with uniform buffers
-	GLuint viewProjectionUniform, modelIndexUniform, instanceDataAttribute, materialUniformBlock, positionAttribute;
-	GLuint texcoordAttribute, normalAttribute, instancesDataBuffer, normalMatricesAttribute, normalMatricesBuffer;
+	GLuint viewProjectionUniform, viewMatrixUniform, modelIndexUniform, instanceDataAttribute, materialUniformBlock, positionAttribute;
+	GLuint normalMatrixUniformBlock, texcoordAttribute, normalAttribute, instancesDataBuffer, normalMatricesAttribute, normalMatricesBuffer;
     static const unsigned int maxInstances = Config::MAX_TOTAL_SUBOBJECTS_PER_RENDERER;
 
     struct ShaderInstancesData {
