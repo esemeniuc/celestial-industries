@@ -49,7 +49,7 @@ public:
 private:
     // TODO: replace with uniform buffers
 	GLuint viewProjectionUniform, modelIndexUniform, instanceDataAttribute, materialUniformBlock, positionAttribute;
-	GLuint texcoordAttribute, normalAttribute, instancesDataBuffer, normalMatricesAttribute;
+	GLuint texcoordAttribute, normalAttribute, instancesDataBuffer, normalMatricesAttribute, normalMatricesBuffer;
     static const unsigned int maxInstances = Config::MAX_TOTAL_SUBOBJECTS_PER_RENDERER;
 
     struct ShaderInstancesData {

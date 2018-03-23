@@ -20,9 +20,9 @@ Renderer::Renderer(
     glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderInstancesData), NULL, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	glGenBuffers(1, &normalMatricesAttribute);
-	glBindBuffer(GL_UNIFORM_BUFFER, normalMatricesAttribute);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 3, normalMatricesAttribute);
+	glGenBuffers(1, &normalMatricesBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, normalMatricesBuffer);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 3, normalMatricesBuffer);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderNormalMatrixData), NULL, GL_DYNAMIC_DRAW);
 
     instancesData.stride = subObjects.size();
@@ -139,6 +139,11 @@ void Renderer::render(glm::mat4 viewProjection)
     glUniformBlockBinding(shader->program, instanceDataAttribute, 2); // layout hardcoded in shader
     glBindBufferBase(GL_UNIFORM_BUFFER, 2, instancesDataBuffer);
     glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderInstancesData), &instancesData, GL_DYNAMIC_DRAW);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, normalMatricesBuffer);
+	glUniformBlockBinding(shader->program, normalMatricesAttribute, 3); // layout hardcoded in shader
+	glBindBufferBase(GL_UNIFORM_BUFFER, 3, normalMatricesBuffer);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderNormalMatrixData), &normalMatricesData, GL_DYNAMIC_DRAW);
 
     glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, &viewProjection[0][0]);
 
