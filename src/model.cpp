@@ -2,6 +2,12 @@
 
 namespace Model {
     std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> meshSources = {
+		{ Model::MeshType::ENEMY_SPIKE_UNIT,		{ { "enemySpikeUnit.obj",				-1 } } },
+		{ Model::MeshType::ENEMY_RANGED_LINE_UNIT,	{ { "enemyRangedLineUnit.obj",			-1 } } },
+		{ Model::MeshType::ENEMY_RANGED_RADIUS_UNIT,{ { "enemyRangeRadiusUnitBase.obj",	-1 },{ "enemyRangeRadiusUnitTop.obj", 0} } },
+		{ Model::MeshType::FRIENDLY_FIRE_UNIT,		{ { "friendlyFireUnit.obj",				-1 } } },
+		{ Model::MeshType::FRIENDLY_RANGED_UNIT,	{ { "friendlyRangedUnitBase.obj",		-1 },{ "friendlyRangedUnitPillar.obj", 0 } ,{ "friendlyRangedUnitTop.obj", 1 } } },
+		{ Model::MeshType::TILE_CURSOR,				{ { "tileSelector.obj",					-1 } } },
         { Model::MeshType::SAND_1,      { { "sand1.obj",       -1 } } },
         { Model::MeshType::SAND_2,      { { "sand1.obj",       -1 } } },
         { Model::MeshType::SAND_3,      { { "sand1.obj",       -1 } } },
@@ -24,7 +30,7 @@ namespace Model {
     };
 	
     std::vector<std::shared_ptr<Renderer>> meshRenderers(meshSources.size());
-    CollisionDetector collisionDetector;
+	CollisionDetector collisionDetector;
     
     Renderable createRenderable(MeshType type)
     {
