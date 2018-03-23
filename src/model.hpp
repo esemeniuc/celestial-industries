@@ -15,13 +15,17 @@ namespace Model {
 			SAND_1,
 			SAND_2,
 			SAND_3,
+			SAND_4,
+			SAND_5,
 			WALL,
 			BRICK_CUBE,
 			MINING_TOWER,
 			PHOTON_TOWER,
 			TREE,
-			GUN_TURRET,
+			YELLOWTREE,
+			REDTREE,
 			BALL,
+			GUN_TURRET,
 			GEYSER,
 			PARTICLE,
 			TILE_CURSOR,
@@ -30,8 +34,11 @@ namespace Model {
 			ENEMY_RANGED_RADIUS_UNIT,
 			FRIENDLY_FIRE_UNIT,
 			FRIENDLY_RANGED_UNIT,
+			WATER,
+			GRASS,
+			HROAD,
+			VROAD,
 		};
-
 
     extern std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> meshSources;
     extern std::vector<std::shared_ptr<Renderer>>meshRenderers;

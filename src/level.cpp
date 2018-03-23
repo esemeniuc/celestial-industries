@@ -33,6 +33,11 @@ void Level::update(float ms)
     }
 }
 
+AStarNode nodeFromCost(int row, int col, std::pair<double, float> cost) {
+	// TODO: Why are we giving this stuff doubles instead of ints?
+	return AStarNode(col, row, cost.first, cost.second);
+}
+
 std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& levelTextFile) {
 	std::ifstream level(levelTextFile);
 	std::string line;
@@ -40,11 +45,22 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 	std::vector<Model::MeshType> row;
 	std::vector<AStarNode> tileData;
 
-	tileToCost[Model::MeshType::TREE] = { 1000.0, INF };
-	tileToCost[Model::MeshType::SAND_1] = { 10.0, INF };
-	tileToCost[Model::MeshType::GUN_TURRET] = { 1000.0, INF };
-	tileToCost[Model::MeshType::GEYSER] = { 1000.0, INF };
-	tileToCost[Model::MeshType::SAND_2] = { 10.0, INF };
+	// Needed to properly update cost map when placeing tiles 
+	tileToCost = {
+		{Model::MeshType::HROAD, { 1000.0, INF }},
+		{Model::MeshType::SAND_1, { 10.0, INF }},
+		{Model::MeshType::SAND_2, { 10.0, INF }},
+		{Model::MeshType::SAND_3, { 10.0, INF }},
+		{Model::MeshType::SAND_4, { 10.0, INF }},
+		{Model::MeshType::SAND_5, { 10.0, INF }},
+		{Model::MeshType::TREE, {1000.0, INF}},
+		{Model::MeshType::REDTREE, {1000.0, INF}},
+		{Model::MeshType::WATER, {1000.0, INF}},
+		{Model::MeshType::GRASS, {10.0, INF}},
+		{Model::MeshType::HROAD, {10.0, INF}},
+		{Model::MeshType::VROAD, {10.0, INF}},
+		{Model::MeshType::GEYSER, {1000.0, INF}}
+	};
 
 	if (!level.is_open()) {
 		logger(LogLevel::ERR) << "Failed to open level data file '" << levelTextFile << "'\n";
@@ -58,22 +74,73 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 		for (const char tile : line) {
 			switch (tile) {
 				case '#': {
-					row.push_back(Model::MeshType::TREE);
-					tileData.emplace_back(colNumber, rowNumber, tileToCost[Model::MeshType::TREE].first, tileToCost[Model::MeshType::TREE].second);
+					row.push_back(Model::MeshType::HROAD);
+					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::HROAD]));
 					break;
 				}
 				case ' ': {
 					row.push_back(Model::MeshType::SAND_1);
-					tileData.emplace_back(colNumber, rowNumber, tileToCost[Model::MeshType::SAND_1].first, tileToCost[Model::MeshType::SAND_1].second);
+					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::SAND_1]));
 					break;
 				}
-				case 'G':
-					row.push_back(Model::MeshType::GUN_TURRET);
-					tileData.emplace_back(colNumber, rowNumber, tileToCost[Model::MeshType::GUN_TURRET].first, tileToCost[Model::MeshType::GUN_TURRET].second);
+				case '\'': {
+					row.push_back(Model::MeshType::SAND_2);
+					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::SAND_2]));
 					break;
+				}
+				case '.': {
+					row.push_back(Model::MeshType::SAND_3);
+					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::SAND_3]));
+					break;
+				}
+				case ';': {
+					row.push_back(Model::MeshType::SAND_4);
+					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::SAND_4]));
+					break;
+				}
+				case ',': {
+					row.push_back(Model::MeshType::SAND_5);
+					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::SAND_5]));
+					break;
+				}
+				case 'T': {
+					row.push_back(Model::MeshType::TREE);
+					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::TREE]));
+					break;
+				}
+				case 'Y': {
+					row.push_back(Model::MeshType::YELLOWTREE);
+					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::YELLOWTREE]));
+					break;
+				}
+				case 'R': {
+					row.push_back(Model::MeshType::REDTREE);
+					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::REDTREE]));
+					break;
+				}
+				case 'W': {
+					row.push_back(Model::MeshType::WATER);
+					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::WATER]));
+					break;
+				}
+				case 'G': {
+					row.push_back(Model::MeshType::GRASS);
+					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::GRASS]));
+					break;
+				}
+				case 'H': {
+					row.push_back(Model::MeshType::HROAD);
+					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::HROAD]));
+					break;
+				}
 				case 'V': {
+					row.push_back(Model::MeshType::VROAD);
+					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::VROAD]));
+					break;
+				}
+				case 'P': {
 					row.push_back(Model::MeshType::GEYSER);
-					tileData.emplace_back(colNumber, rowNumber, tileToCost[Model::MeshType::GEYSER].first, tileToCost[Model::MeshType::GEYSER].second);
+					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::GEYSER]));
 
                     Particles::makeParticleEmitter(
                             glm::vec3{colNumber, 0, rowNumber}, // emitter position
@@ -88,7 +155,7 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
                 }
 				default: {
 					row.push_back(Model::MeshType::SAND_2);
-					tileData.emplace_back(colNumber, rowNumber, tileToCost[Model::MeshType::SAND_2].first, tileToCost[Model::MeshType::SAND_2].second);
+					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::SAND_2]));
 					break;
 				}
 			}
@@ -124,12 +191,12 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 			&& tiles[i]->position.z < location.z + height
 		) {
 			tiles[i]->softDelete();
-			// TODO: Actually remove the tiles lol
+			// TODO: Actually remove the tiles lol (memory is still allocated)
 		}
 	}
 
 	for (unsigned int x = location.x; x < location.x + width; x++) {
-		for (unsigned int y = location.y; y < location.y + height; y++) {
+		for (unsigned int y = location.z; y < location.z + height; y++) {
 			levelTraversalCostMap[y][x] = AStarNode(x, y, tileToCost[type].first, tileToCost[type].second);
 		}
 	}
@@ -139,11 +206,60 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 	return newTile;
 }
 
-std::shared_ptr<Entity> Level::placeEntity(Model::MeshType type, glm::vec3 location)
+// Sets AI comp and Unit comp
+void initUnitFromMeshType(std::shared_ptr<Entity> e, Model::MeshType type, GamePieceOwner owner) {
+	switch (type) {
+	case Model::MeshType::FRIENDLY_FIRE_UNIT:
+	case Model::MeshType::ENEMY_SPIKE_UNIT:
+		e->aiComp.initialHealth = 160;
+		e->aiComp.visionRange = 8;
+		e->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
+		e->aiComp.currentHealth = e->aiComp.initialHealth;
+		e->aiComp.value = 100;
+
+		e->unitComp.initialEnergyLevel = 50;
+		e->unitComp.attackDamage = 10;
+		e->unitComp.attackRange = 1;
+		e->unitComp.attackSpeed = 5;
+		e->unitComp.movementSpeed = 3;
+		e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
+		e->unitComp.state = UnitState::IDLE;
+		break;
+	case Model::MeshType::FRIENDLY_RANGED_UNIT:
+	case Model::MeshType::ENEMY_RANGED_RADIUS_UNIT:
+	case Model::MeshType::ENEMY_RANGED_LINE_UNIT:
+		e->aiComp.initialHealth = 45;
+		e->aiComp.visionRange = 8;
+		e->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
+		e->aiComp.currentHealth = e->aiComp.initialHealth;
+		e->aiComp.value = 50;
+
+		e->unitComp.initialEnergyLevel = 50;
+		e->unitComp.attackDamage = 6;
+		e->unitComp.attackRange = 5;
+		e->unitComp.attackSpeed = 5;
+		e->unitComp.movementSpeed = 3;
+		e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
+		e->unitComp.state = UnitState::IDLE;
+		break;
+	}
+
+	e->aiComp.owner = owner;
+
+	if (owner == GamePieceOwner::PLAYER) {
+		playerUnits.push_back(e);
+
+	}
+	else if (owner == GamePieceOwner::AI) {
+		aiUnits.push_back(e);
+	}
+}
+
+std::shared_ptr<Entity> Level::placeEntity(Model::MeshType type, glm::vec3 location, GamePieceOwner owner)
 {
 	std::shared_ptr<Entity> entity = entityFromMeshType(type);
 	entity->setPosition(location);
-	entities.push_back(entity);
+	initUnitFromMeshType(entity, type, owner);
 	return entity;
 }
 

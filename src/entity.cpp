@@ -197,10 +197,11 @@ bool Entity::operator==(const Entity& rhs) const {
 
 void Entity::attack(std::shared_ptr<Entity> other)
 {
-	if (target == nullptr) {
+	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
 		target = other;
 		return;
 	}
+	// http://www.cplusplus.com/reference/memory/shared_ptr/operators/
 	if (target == other && attackingCooldown <= 0 ) {
 		// Attack!
 		other->unitComp.currentEnergyLevel -= unitComp.attackDamage;
@@ -240,7 +241,7 @@ void TurretUnit::animate(float ms)
 	attackingCooldown -= ms;
 	if (unitComp.currentEnergyLevel <= 0)softDelete();
 	// Face the turret to the entity we're attacking
-	if (target != nullptr) {
+	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
 		targetPosition = target->getPosition();
 	}
 	glm::vec3 dir = glm::normalize(targetPosition - getPosition());

@@ -114,7 +114,7 @@ bool World::init(glm::vec2 screen) {
 	}
 
 	levelArray = level.levelLoader(
-			pathBuilder({"data", "levels"}) + "level1.txt");
+			pathBuilder({"data", "levels"}) + "GameLevel1.txt");
 
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
@@ -212,12 +212,25 @@ bool World::update(double elapsed_ms) {
 	Particles::updateParticleStates(elapsed_ms);
 	AiManager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
-	for (const auto& entity : level.entities) {
-		//entity->targetPosition = level.tileCursor->position;
-		entity->animate(elapsed_ms);
-	}
 	for (const auto& tile : level.tiles) {
 		tile->update(elapsed_ms);
+	}
+	if (m_dist(m_rng) < 0.005) {
+		int row = m_dist(m_rng)*level.getLevelSize().rowCoord;
+		int col = m_dist(m_rng)*level.getLevelSize().colCoord;
+		if (level.getLevelTraversalCostMap()[col][row].movementCost < 50.0f) {
+			glm::vec3 pos = glm::vec3(row, 0, col);
+			float unitRand = m_dist(m_rng);
+			if (unitRand < 0.33) {
+				level.placeEntity(Model::MeshType::ENEMY_SPIKE_UNIT, pos, GamePieceOwner::AI);
+			}
+			else if (unitRand < 0.66) {
+				level.placeEntity(Model::MeshType::ENEMY_RANGED_LINE_UNIT, pos, GamePieceOwner::AI);
+			}
+			else {
+				level.placeEntity(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, pos, GamePieceOwner::AI);
+			}
+		}
 	}
 	return true;
 }
@@ -390,12 +403,17 @@ void World::on_mouse_button(GLFWwindow * window, int button, int action, int mod
 {
 	glm::vec3 coords = { selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord };
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-		bool success = level.placeTile(Model::MeshType::GUN_TURRET, coords);
-		logger(LogLevel::INFO) << "Right click detected with return " << success << '\n';
+		level.placeTile(Model::MeshType::GUN_TURRET, coords);
+		logger(LogLevel::INFO) << "Right click detected " << '\n';
 	}
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		bool success = level.placeEntity(Model::MeshType::FRIENDLY_RANGED_UNIT, coords);
-		logger(LogLevel::INFO) << "Left click detected with return " << success << '\n';
+		if (m_dist(m_rng) < 0.5) {
+			level.placeEntity(Model::MeshType::FRIENDLY_RANGED_UNIT, coords, GamePieceOwner::PLAYER);
+		}
+		else {
+			level.placeEntity(Model::MeshType::FRIENDLY_FIRE_UNIT, coords, GamePieceOwner::PLAYER);
+		}
+		logger(LogLevel::INFO) << "Left click detected " << '\n';
 	}
 }
 

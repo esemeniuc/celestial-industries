@@ -47,24 +47,19 @@ void GunTowerTile::update(float ms)
         }
     }
     else {
-        if (timeCounter > 4000) {
-            explode({ 0,1,0 });
-        }
-        else {
-            float period = 50;
-            glm::vec3 gunDisplacement = { 0.0, 0.0, 0.1 };
-            float amountToMove = sin(timeCounter / period);
-			geometryRenderer.setModelMatrix(
-                2,
-                gunDisplacement*amountToMove + glm::vec3({ 0.0, 0.0, 0.1 })
-            );
-			geometryRenderer.setModelMatrix(
-                3,
-                -gunDisplacement * amountToMove + glm::vec3({ 0.0, 0.0, 0.1 })
-            );
+        float period = 50;
+        glm::vec3 gunDisplacement = { 0.0, 0.0, 0.1 };
+        float amountToMove = sin(timeCounter / period);
+		geometryRenderer.setModelMatrix(
+            2,
+            gunDisplacement*amountToMove + glm::vec3({ 0.0, 0.0, 0.1 })
+        );
+		geometryRenderer.setModelMatrix(
+            3,
+            -gunDisplacement * amountToMove + glm::vec3({ 0.0, 0.0, 0.1 })
+        );
 
-			geometryRenderer.rotate(1, ms / 1000, { 0,1,0 });
-        }
+		geometryRenderer.rotate(1, ms / 1000, { 0,1,0 });
     }
 }
 
