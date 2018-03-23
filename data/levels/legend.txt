@@ -7,4 +7,5 @@ T      green tree
 #      edge
 '      sand
 ,      sand
+.      sand
 space  sand
