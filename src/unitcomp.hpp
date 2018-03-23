@@ -30,9 +30,9 @@ public:
 
 	UnitComp() : initialEnergyLevel(50),
 				 attackDamage(1),
-				 attackRange(1), // TODO: change to more resonable number like 5 later.
+				 attackRange(5),
 				 attackSpeed(1),
-				 movementSpeed(50),  // TODO: change to more resonable number
+				 movementSpeed(10),
 				 currentEnergyLevel(50),
 				 state(UnitState::IDLE) {
 	}
