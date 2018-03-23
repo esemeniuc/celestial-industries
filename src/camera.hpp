@@ -19,7 +19,7 @@ public:
 	const float moveSpeed = 0.05f;
 	const float rotateSpeed = 0.005f;
 	const float zoomSpeed = 1.0f;
-	const int panDetectionWidth = 40; //in pixels
+	const int panDetectionWidth = 30; //in pixels
 	const float mousePanSensitivity = 0.01f;
 
 	glm::vec2 mouseScroll;
