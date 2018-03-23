@@ -1,0 +1,13 @@
+# Made using Asset Forge (www.assetforge.io) version 1.3 
+
+newmtl golfBuilding (Instance) (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.5799928 0.5001231 0.4147828 
+Ks 0.330000 0.330000 0.330000 
+map_Kd Textures/golfBuilding (Instance) (Instance).png
+
+newmtl golfBorder (Instance) (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.6399888 0.4583973 0.03490849 
+Ks 0.330000 0.330000 0.330000 
+

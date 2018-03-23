@@ -145,3 +145,18 @@ bool RigidBody::operator==(const RigidBody& rhs) const {
 		   cgType == rhs.cgType &&
 		   geometryId == rhs.geometryId;
 }
+
+void RigidBody::removeSelf()
+{
+	Model::collisionDetector.remove(geometryId);
+}
+
+std::vector<CollisionDetection::CollisionInfo> RigidBody::getAllCollisions()
+{
+	return Model::collisionDetector.getAllCollisions(geometryId);
+}
+
+CollisionDetection::CollisionInfo RigidBody::getFirstCollision()
+{
+	return Model::collisionDetector.getFirstCollision(geometryId);
+}

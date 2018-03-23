@@ -1,6 +1,7 @@
 #pragma once
 
 #include "renderer.hpp"
+#include "model.hpp"
 
 #include <random>
 
@@ -9,11 +10,16 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 // The base class for every tile in the game
-class Tile : public Renderable
+class Tile
 {
 public:
-    Tile(std::shared_ptr<Renderer> _parent) : Renderable(_parent) {};
+    Tile(Model::MeshType geometry);
 	virtual void update(float ms);
+	void translate(glm::vec3 v);
+	void setPosition(glm::vec3 v);
+	Renderable geometryRenderer;
+	glm::vec3 position;
+	void softDelete();
 private:
 	void setCost(float);
 	float getCost();
@@ -35,7 +41,7 @@ private:
     std::uniform_real_distribution<double> randomDistribution; // default 0..1
 
 public:
-    GunTowerTile(std::shared_ptr<Renderer> _parent);
+    GunTowerTile();
     void update(float ms) override;
     void explode(glm::vec3 dir);
 

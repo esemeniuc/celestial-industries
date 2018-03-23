@@ -38,37 +38,11 @@ namespace Unit {
 			case (UnitType::ZEALOT): {
 				e->geometryRenderer = Model::meshRenderers[Model::PHOTON_TOWER];//FIXME: use real thing
 
-				e->aiComp.initialHealth = 160;
-				e->aiComp.visionRange = 8;
-				e->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
-				e->aiComp.currentHealth = e->aiComp.initialHealth;
-				e->aiComp.value = 100;
-
-				e->unitComp.initialEnergyLevel = 50;
-				e->unitComp.attackDamage = 10;
-				e->unitComp.attackRange = 1;
-				e->unitComp.attackSpeed = 5;
-				e->unitComp.movementSpeed = 3;
-				e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
-				e->unitComp.state = UnitState::IDLE;
-				break;
+				
 			}
 			case (UnitType::MARINE): {
 				e->geometryRenderer = Model::meshRenderers[Model::PHOTON_TOWER];//FIXME: use real thing
 
-				e->aiComp.initialHealth = 45;
-				e->aiComp.visionRange = 8;
-				e->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
-				e->aiComp.currentHealth = e->aiComp.initialHealth;
-				e->aiComp.value = 50;
-
-				e->unitComp.initialEnergyLevel = 50;
-				e->unitComp.attackDamage = 6;
-				e->unitComp.attackRange = 5;
-				e->unitComp.attackSpeed = 5;
-				e->unitComp.movementSpeed = 3;
-				e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
-				e->unitComp.state = UnitState::IDLE;
 				break;
 			}
 			case (UnitType::SPHERICAL_DEATH): {

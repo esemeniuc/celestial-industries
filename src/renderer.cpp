@@ -107,6 +107,14 @@ SubObject Renderer::loadSubObject(SubObjectSource source)
     };
 }
 
+void Renderer::deleteInstance(unsigned int id)
+{
+	instances[id].shouldDraw = false;
+	for (int i = 0; i < subObjects.size(); i++) {
+		instancesData.modelMatrices[subObjects.size()*id + i] = glm::mat4(0.0f); // Hacky way to make the whole object just a dimensionless point
+	}
+}
+
 unsigned int Renderer::getNextId()
 {
     if (instances.size() + 1 > maxInstances / subObjects.size()) {
@@ -158,20 +166,22 @@ void Renderer::render(glm::mat4 viewProjection)
 
 void Renderer::updateModelMatrixStack(unsigned int instanceIndex, bool updateHierarchically)
 {
-    for (size_t i = 0; i < subObjects.size(); i++) {
-        if (updateHierarchically) {
-            std::vector<glm::mat4> modelMatrices;
-            int modelIndex = i;
-            while (modelIndex != -1) {
-                modelMatrices.push_back(instances[instanceIndex].matrixStack[modelIndex]);
-                modelIndex = subObjects[modelIndex].parentMesh;
-            }
-            instancesData.modelMatrices[instanceIndex*subObjects.size() + i] = collapseMatrixVector(modelMatrices);
-        }
-        else {
-            instancesData.modelMatrices[instanceIndex*subObjects.size() + i] = instances[instanceIndex].matrixStack[i];
-        }
-    }
+	if (instances[instanceIndex].shouldDraw) {
+		for (size_t i = 0; i < subObjects.size(); i++) {
+			if (updateHierarchically) {
+				std::vector<glm::mat4> modelMatrices;
+				int modelIndex = i;
+				while (modelIndex != -1) {
+					modelMatrices.push_back(instances[instanceIndex].matrixStack[modelIndex]);
+					modelIndex = subObjects[modelIndex].parentMesh;
+				}
+				instancesData.modelMatrices[instanceIndex*subObjects.size() + i] = collapseMatrixVector(modelMatrices);
+			}
+			else {
+				instancesData.modelMatrices[instanceIndex*subObjects.size() + i] = instances[instanceIndex].matrixStack[i];
+			}
+		}
+	}
 }
 
 glm::mat4 Renderer::getModelMatrix(unsigned int id, unsigned int modelIndex)
@@ -195,7 +205,7 @@ Renderable::Renderable(std::shared_ptr<Renderer> initParent)
     });
 }
 
-void Renderable::shouldDraw(bool val)
+void Renderable::shouldUpdate(bool val)
 {
     parent->instances[id].shouldDraw = val;
 }
@@ -215,6 +225,11 @@ void Renderable::scale(glm::vec3 s, bool updateHierarchically)
 {
     scale(0, s);
     parent->updateModelMatrixStack(id, updateHierarchically);
+}
+
+void Renderable::removeSelf()
+{
+	parent->deleteInstance(id);
 }
 
 /*

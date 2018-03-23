@@ -11,6 +11,7 @@ struct BoundingBox {
 
 namespace CollisionDetection {
     struct MovingBoundingBox {
+		bool removed = false;
         BoundingBox box;
         glm::vec3 velocity;
         glm::vec3 position;
@@ -45,6 +46,8 @@ namespace CollisionDetection {
     CollisionInfo aabbMinkowskiCollisions(MovingBoundingBox a, MovingBoundingBox b, float totalTime);
 
     bool aabbsOverlap(BoundingBox a, BoundingBox b);
+
+	bool aabbsOverlap(MovingBoundingBox a, MovingBoundingBox b);
 
     BoundingBox normalizeBoundingBox(BoundingBox box);
 

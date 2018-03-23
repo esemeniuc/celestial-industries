@@ -25,6 +25,8 @@ public:
 	int currentEnergyLevel;
 	UnitState state;
 	std::vector<Coord> targetPath;
+	glm::vec3 velocity;
+	glm::vec3 nextPos;
 	double targetPathStartTimestamp; //needed to get delta time
 
 

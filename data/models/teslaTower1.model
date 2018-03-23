@@ -1,0 +1,23 @@
+# Made using Asset Forge (1.3)
+
+:models
+Western/porch_floor_center[(-0.5, 0, 0.5);(0.0, 0.0, 0.0);(2.0, 1.0, 2.0);porch_floor_center_31;customMaterial5+customMaterial5]
+Primitives/cylinder_hollow[(-0.5, 0.2, 0.5);(0.0, 0.0, 0.0);(1.0, 0.1, 1.0);cylinder_hollow_33;customMaterial5]
+Primitives/cylinder_hollow[(-0.5, 0.5, 0.5);(0.0, 0.0, 0.0);(0.9, 0.1, 0.9);cylinder_hollow_34;customMaterial5]
+Primitives/cylinder_hollow[(-0.5, 0.8, 0.5);(0.0, 0.0, 0.0);(0.7, 0.1, 0.8);cylinder_hollow_35;customMaterial5]
+Primitives/cylinder_hollow[(-0.5, 1.1, 0.5);(0.0, 0.0, 0.0);(0.6, 0.1, 0.6);cylinder_hollow_36;customMaterial5]
+Primitives/cylinder_hollow[(-0.5, 1.4, 0.5);(0.0, 0.0, 0.0);(0.4, 0.1, 0.4);cylinder_hollow_37;customMaterial5]
+Primitives/sphere_vertex[(-0.5, 1.5, 0.5);(0.0, 0.0, 0.0);(0.8, 0.8, 0.8);sphere_vertex_39;customMaterial5]
+Primitives/cylinder_vertex[(-0.5, 0, 0.5);(0.0, 0.0, 0.0);(0.4, 1.4, 0.4);cylinder_vertex_40;_defaultMat]
+
+:materials
+wood[RGBA(0.882, 0.579, 0.402, 1.000);]
+woodDark[RGBA(0.641, 0.422, 0.293, 1.000);]
+_defaultMat[RGBA(1.000, 1.000, 1.000, 1.000);]
+customMaterial2[RGBA(0.460, 0.011, 0.011, 1.000);hexagon]
+customMaterial3[RGBA(1.000, 1.000, 1.000, 1.000);]
+customMaterial5[RGBA(0.271, 0.316, 0.720, 1.000);simplePolygons]
+
+:textures
+
+:extra

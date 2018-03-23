@@ -55,6 +55,17 @@ namespace CollisionDetection {
         return true;
     }
 
+	// A static collision check
+	bool aabbsOverlap(MovingBoundingBox a, MovingBoundingBox b) {
+		BoundingBox aBox = a.box;
+		aBox.lowerCorner += a.position;
+		aBox.upperCorner += a.position;
+		BoundingBox bBox = b.box;
+		bBox.lowerCorner += b.position;
+		bBox.upperCorner += b.position;
+		return aabbsOverlap(aBox, bBox);
+	}
+
     BoundingBox normalizeBoundingBox(BoundingBox box)
     {
         BoundingBox result;
@@ -324,7 +335,7 @@ namespace CollisionDetection {
         collision.collided = false;
         for (auto side : boxSides) {
             IntersectionCollisionInfo newCollision = segmentsCollision3(segment, side);
-            if (!collision.collided || (newCollision.collided && newCollision.t < collision.t)) {
+            if ((!collision.collided && newCollision.collided) || (newCollision.collided && newCollision.t < collision.t)) {
                 collision = newCollision;
             }
         }

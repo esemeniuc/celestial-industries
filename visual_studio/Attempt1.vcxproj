@@ -549,6 +549,9 @@
     <ClInclude Include="..\src\skybox.hpp" />
     <ClInclude Include="..\src\textureloader.hpp" />
     <ClInclude Include="..\src\tile.hpp" />
+    <ClInclude Include="..\src\unit.hpp" />
+    <ClInclude Include="..\src\unitcomp.hpp" />
+    <ClInclude Include="..\src\unitmanager.hpp" />
     <ClInclude Include="..\src\world.hpp" />
   </ItemGroup>
   <ItemGroup>

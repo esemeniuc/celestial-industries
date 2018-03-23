@@ -1,0 +1,42 @@
+# Made using Asset Forge (1.3)
+
+:models
+Buildings/roof_flat[(-1, 0, -1);(0.0, 0.0, 0.0);(3.0, 1.0, 3.0);roof_flat_49;lightStone+customMaterial9]
+Primitives/cylinder_vertex[(-1.8, 0, -1.7);(0.0, 0.0, 0.0);(0.6, 1.0, 0.6);cylinder_vertex_51;black]
+Primitives/cylinder_hollow[(-1, 0, -1);(0.0, 0.0, 0.0);(1.0, 1.5, 1.0);cylinder_hollow_65;blueSteel]
+Primitives/sphere_dome[(-1, 1.5, -1);(0.0, 0.0, 0.0);(1.0, 1.0, 1.0);sphere_dome_66;blueSteel]
+City/detail_airSmall[(-1.7, 1, -1.7);(0.0, 0.0, 0.0);(0.7, 0.7, 0.7);detail_airSmall_71;woodDark+customMaterial13]
+Primitives/cylinder_vertex[(-1.8, 0, -0.9);(0.0, 0.0, 0.0);(0.6, 1.0, 0.6);cylinder_vertex_74;black]
+City/detail_airSmall[(-1.7, 1, -0.9);(0.0, 0.0, 0.0);(0.7, 0.7, 0.7);detail_airSmall_75;woodDark+customMaterial13]
+Primitives/cylinder_vertex[(-1.8, 0, -0.1);(0.0, 0.0, 0.0);(0.6, 1.0, 0.6);cylinder_vertex_76;black]
+City/detail_airSmall[(-1.7, 1, -0.1);(0.0, 0.0, 0.0);(0.7, 0.7, 0.7);detail_airSmall_77;woodDark+customMaterial13]
+City/detail_airSmall[(-0.4, 1, -1.7);(0.0, 180.0, 0.0);(0.7, 0.7, 0.7);detail_airSmall_78;woodDark+customMaterial13]
+Primitives/cylinder_vertex[(-0.2, 0, -1.7);(0.0, 0.0, 0.0);(0.6, 1.0, 0.6);cylinder_vertex_79;black]
+Primitives/cylinder_vertex[(-0.2, 0, -0.9);(0.0, 0.0, 0.0);(0.6, 1.0, 0.6);cylinder_vertex_80;black]
+City/detail_airSmall[(-0.4, 1, -0.9);(0.0, 180.0, 0.0);(0.7, 0.7, 0.7);detail_airSmall_81;woodDark+customMaterial13]
+City/detail_airSmall[(-0.4, 1, -0.1);(0.0, 180.0, 0.0);(0.7, 0.7, 0.7);detail_airSmall_82;woodDark+customMaterial13]
+Primitives/cylinder_vertex[(-0.2, 0, -0.1);(0.0, 0.0, 0.0);(0.6, 1.0, 0.6);cylinder_vertex_83;black]
+Western/ladder[(-1, 0, -1.5);(0.0, 90.0, 0.0);(1.0, 1.6, 0.8);ladder_86;customMaterial11]
+Western/ladder[(-1, 0, -0.5);(0.0, 90.0, 0.0);(1.0, 1.6, 0.8);ladder_87;customMaterial11]
+
+:materials
+border[RGBA(0.884, 0.960, 0.198, 1.000);]
+bricks[RGBA(0.886, 0.467, 0.341, 1.000);]
+_defaultMat[RGBA(1.000, 1.000, 1.000, 1.000);simpleZigzag]
+stone[RGBA(0.078, 0.530, 0.055, 1.000);]
+lightStone[RGBA(0.030, 0.135, 0.380, 1.000);striping]
+woodDark[RGBA(0.641, 0.422, 0.293, 1.000);simpleCheckers]
+wood[RGBA(0.882, 0.579, 0.402, 1.000);]
+black[RGBA(0.589, 0.596, 0.600, 1.000);]
+customMaterial8[RGBA(0.601, 0.660, 0.072, 1.000);simplePolygons]
+customMaterial9[RGBA(0.660, 0.200, 0.200, 1.000);]
+glass[RGBA(0.298, 0.365, 0.365, 1.000);]
+customMaterial11[RGBA(0.110, 0.012, 0.012, 1.000);]
+customMaterial12[RGBA(0.426, 0.990, 0.957, 1.000);]
+customMaterial13[RGBA(0.830, 0.126, 0.126, 1.000);simpleMaze]
+blueSteel[RGBA(0.141, 0.565, 0.831, 1.000);hexagon]
+darkStone[RGBA(0.431, 0.431, 0.478, 1.000);]
+
+:textures
+
+:extra
