@@ -180,12 +180,12 @@ glm::vec3 Entity::getPosition() const {
 	return rigidBody.getPosition();
 }
 
-bool Entity::inVisionRange(const Entity& other) {
-	return glm::length(glm::vec2(other.getPosition() - this->getPosition())) <= aiComp.visionRange;
+bool Entity::canSee(std::shared_ptr<Entity> other) {
+	return glm::length(glm::vec2(other->getPosition() - this->getPosition())) <= aiComp.visionRange;
 }
 
-bool Entity::inAttackRange(const Entity& other) {
-	return glm::length(glm::vec2(other.getPosition() - this->getPosition())) <= unitComp.attackRange;
+bool Entity::inAttackRange(std::shared_ptr<Entity> other) {
+	return glm::length(glm::vec2(other->getPosition() - this->getPosition())) <= unitComp.attackRange;
 }
 
 bool Entity::operator==(const Entity& rhs) const {
