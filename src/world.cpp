@@ -113,7 +113,7 @@ bool World::init(glm::vec2 screen) {
 	// thats a big enough change to merit its own ticket in milestone 2 though
 
 	levelArray = level.levelLoader(
-			pathBuilder({"data", "levels"}) + "level1.txt");
+			pathBuilder({"data", "levels"}) + "GameLevel1.txt");
 
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
