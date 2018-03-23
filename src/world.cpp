@@ -109,7 +109,8 @@ bool World::init(glm::vec2 screen) {
 		logger(LogLevel::ERR) << "Failed to initialize renderers\n";
 	}
 
-	levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "level1.txt");
+	levelArray = level.levelLoader(
+			pathBuilder({"data", "levels"}) + "GameLevel1.txt");
 	level.init(Model::meshRenderers);
 
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,

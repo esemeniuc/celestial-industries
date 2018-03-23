@@ -1,0 +1,12 @@
+# Made using Asset Forge (www.assetforge.io) version 1.3 
+
+newmtl customMaterial2 (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.32 0.32 0.32 
+Ks 0.330000 0.330000 0.330000 
+
+newmtl customMaterial3 (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.98 0.98 0.249 
+Ks 0.330000 0.330000 0.330000 
+

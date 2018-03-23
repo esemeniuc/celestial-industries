@@ -1,0 +1,18 @@
+# Made using Asset Forge (www.assetforge.io) version 1.3 
+
+newmtl customMaterial3 (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.073 0.71 0.105 
+Ks 0.330000 0.330000 0.330000 
+map_Kd Textures/customMaterial3 (Instance).png
+
+newmtl woodDark (Instance) (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.46 0.293 0.195 
+Ks 0.330000 0.330000 0.330000 
+
+newmtl customMaterial5 (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.5999914 0.5497483 0.09818064 
+Ks 0.330000 0.330000 0.330000 
+
