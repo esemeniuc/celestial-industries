@@ -150,7 +150,7 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 					auto emitter = std::make_shared<Particles::ParticleEmitter>(
                             glm::vec3{rowNumber, 0, colNumber}, // emitter position
                             glm::vec3{0,1,0}, // emitter direction
-                            1.0f,    // spread
+                            0.8f,    // spread
                             0.5f,    // particle width
                             0.5f,    // particle height
                             2.0f,    // lifespan
