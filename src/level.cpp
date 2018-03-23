@@ -178,10 +178,6 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 	Coord levelDimensions = getLevelSize();
 	int levelWidth = levelDimensions.rowCoord;
 	int levelHeight = levelDimensions.colCoord;
-	if (location.x < 0 || location.x + width > levelWidth)
-		return false;
-	if (location.z < 0 || location.z + height > levelHeight)
-		return false;
 
 	for (size_t i = 0; i < tiles.size(); i++) {
 		if (

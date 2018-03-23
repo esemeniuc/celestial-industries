@@ -407,6 +407,13 @@ void World::on_mouse_button(GLFWwindow * window, int button, int action, int mod
 {
 	glm::vec3 coords = { selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord };
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+		Coord levelDimensions = level.getLevelSize();
+		int levelWidth = levelDimensions.rowCoord;
+		int levelHeight = levelDimensions.colCoord;
+		if (coords.x < 0 || coords.x + 1 > levelWidth)
+			return;
+		if (coords.z < 0 || coords.z + 1 > levelHeight)
+			return;
 		level.placeTile(Model::MeshType::GUN_TURRET, coords);
 		logger(LogLevel::INFO) << "Right click detected " << '\n';
 	}
