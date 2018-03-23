@@ -1,4 +1,5 @@
 #include <cmath>
+#include <utility>
 #include "particle.hpp"
 
 namespace Particles {
@@ -86,7 +87,7 @@ namespace Particles {
             particleSpeed(particleSpeed),
             ageInMilliseconds(0),
             shader(shader),
-            texture(texture)
+            texture(std::move(texture))
     {
         // generate VAO to link VBO and VIO
         glGenVertexArrays(1, &vao);

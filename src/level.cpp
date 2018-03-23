@@ -140,13 +140,13 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 					tileData.emplace_back(colNumber, rowNumber, 1000.0, INF);
 
 					auto emitter = std::make_shared<Particles::ParticleEmitter>(
-                            glm::vec3{colNumber, 0, rowNumber}, // emitter position
+                            glm::vec3{rowNumber, 0, colNumber}, // emitter position
                             glm::vec3{0,1,0}, // emitter direction
-                            1.0,    // spread
-                            0.5,    // particle width
-                            0.5,    // particle height
-                            2.0,    // lifespan
-                            5.0,    // speed
+                            1.0f,    // spread
+                            0.5f,    // particle width
+                            0.5f,    // particle height
+                            2.0f,    // lifespan
+                            5.0f,    // speed
                             particleShader,
 							particleTexture
                     );
