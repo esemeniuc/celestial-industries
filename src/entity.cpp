@@ -9,7 +9,13 @@ Entity::Entity(Model::MeshType geometry) : geometryRenderer(Model::meshRenderers
 //example of using the animate function when overriding Entity
 void Entity::animate(float ms) {
 	attackingCooldown -= ms;
-	this->geometryRenderer.scale(glm::vec3(1.01, 1.01, 1.01)); //default implementation for demo purposes
+	if (rigidBody.getAllCollisions().size() == 0) {
+		translate(rigidBody.getVelocity()*ms);
+	}
+	else {
+		CollisionDetection::CollisionInfo collision = rigidBody.getFirstCollision();
+		translate(rigidBody.getVelocity()*ms);
+	}
 }
 
 void Entity::softDelete()
