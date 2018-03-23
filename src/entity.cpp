@@ -14,7 +14,7 @@ void Entity::animate(float ms) {
 	}
 	else {
 		CollisionDetection::CollisionInfo collision = rigidBody.getFirstCollision();
-		translate(rigidBody.getVelocity()*ms);
+		translate(rigidBody.getVelocity()*collision.time);
 	}
 }
 

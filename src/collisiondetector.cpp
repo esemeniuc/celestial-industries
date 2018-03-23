@@ -11,6 +11,7 @@ int CollisionDetector::createBoundingBox(glm::vec3 position, glm::vec3 size, glm
     result.box.lowerCorner = position - size / 2.0f;
     result.box.upperCorner = position + size / 2.0f;
     result.velocity = velocity;
+	result.removed = false;
     int id = boxes.size();
     boxes.push_back(result);
     collisions.push_back({});
@@ -25,9 +26,19 @@ void CollisionDetector::findCollisions(float elapsed_ms)
 		if (!boxes[i].removed) {
 			for (int j = 0; j < boxes.size(); j++) {
 				if (i != j && !boxes[j].removed) {
+					// Detect moving collisions
 					CollisionDetection::CollisionInfo collision = CollisionDetection::aabbMinkowskiCollisions(boxes[i], boxes[j], elapsed_ms);
 					if (collision.collided) {
 						// TODO: Currently only tracks the time of collision, not anything else
+						collisions[i].push_back(collision);
+					}
+
+					// Static collisions
+					if (CollisionDetection::aabbsOverlap(boxes[i], boxes[j])) {
+						CollisionDetection::CollisionInfo collision = {
+							true,
+							0.0f
+						};
 						collisions[i].push_back(collision);
 					}
 				}

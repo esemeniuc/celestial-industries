@@ -212,8 +212,12 @@ bool World::update(double elapsed_ms) {
 	Particles::updateParticleStates(elapsed_ms);
 	AiManager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
+	Model::collisionDetector.findCollisions(elapsed_ms);
 	for (const auto& tile : level.tiles) {
 		tile->update(elapsed_ms);
+	}
+	for (const auto& entity : playerUnits) {
+		entity->animate(elapsed_ms);
 	}
 	if (m_dist(m_rng) < 0.005) {
 		int row = m_dist(m_rng)*level.getLevelSize().rowCoord;
@@ -414,6 +418,11 @@ void World::on_mouse_button(GLFWwindow * window, int button, int action, int mod
 			level.placeEntity(Model::MeshType::FRIENDLY_FIRE_UNIT, coords, GamePieceOwner::PLAYER);
 		}
 		logger(LogLevel::INFO) << "Left click detected " << '\n';
+	}
+	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
+		for (const auto& entity : playerUnits) {
+			entity->rigidBody.setVelocity((coords - entity->rigidBody.getPosition())/5000.0f);
+		}
 	}
 }
 

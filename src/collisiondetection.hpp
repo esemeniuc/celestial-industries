@@ -47,6 +47,8 @@ namespace CollisionDetection {
 
     bool aabbsOverlap(BoundingBox a, BoundingBox b);
 
+	bool aabbsOverlap(MovingBoundingBox a, MovingBoundingBox b);
+
     BoundingBox normalizeBoundingBox(BoundingBox box);
 
     BoundingBox rotateBoundingBoxAboutOrigin(BoundingBox box);
