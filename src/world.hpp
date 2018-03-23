@@ -26,6 +26,7 @@
 
 // glfw
 #include "GLFW/glfw3.h"
+#include "ui.hpp"
 
 // Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
@@ -73,6 +74,10 @@ private:
 
 	// Particle things
 	std::shared_ptr<Shader> particleShader;
+
+    // UI things
+	std::shared_ptr<Shader> uiShader;
+    std::shared_ptr<UI> ui;
 
 	// C++ rng
 	std::default_random_engine m_rng;

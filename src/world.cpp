@@ -24,8 +24,6 @@ World::World() {
 
 World::~World() = default;
 
-std::shared_ptr<Particles::ParticleEmitter> fireSpawner;
-
 
 // World initialization
 bool World::init(glm::vec2 screen) {
@@ -115,7 +113,21 @@ bool World::init(glm::vec2 screen) {
         return false;
     }
 
+    // init the UI
+	uiShader = std::make_shared<Shader>();
+	if (!uiShader->load_from_file(shader_path("ui.vs.glsl"), shader_path("ui.fs.glsl"))) {
+		logger(LogLevel::ERR) << "Failed to load UI shader!" << '\n';
+		return false;
+	}
 
+    std::shared_ptr<Texture> uiTexture = std::make_shared<Texture>();
+    uiTexture->load_from_file(textures_path("turtle.png"));
+    if (!uiTexture->is_valid()) {
+            throw "UI texture failed to load!";
+        }
+    ui = std::make_shared<UI>(uiShader, uiTexture);
+
+	// load meshes
 	if(!initMeshTypes(Model::meshSources)) {
 		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
 	}
@@ -286,6 +298,11 @@ void World::draw() {
 	for (const auto &emitter : level.emitters) {
 		emitter->render(projectionView, camera.position);
 	}
+
+	// Render the UI
+	ui->recomputeLayout(m_screen);
+	ui->render();
+
 	// Presenting
 	glfwSwapBuffers(m_window);
 }
