@@ -68,6 +68,9 @@ private:
 
 	// Game entities
 	std::shared_ptr<Shader> objShader;
+	std::shared_ptr<Entity> lastPlaced;
+	std::vector<std::shared_ptr<Entity>> entities;
+	std::vector<std::shared_ptr<TurretUnit>> turretUnits;
 	Level level;
 	Skybox m_skybox;
 

@@ -1,5 +1,6 @@
 #include "entity.hpp"
 #include "global.hpp" //for pathfinding stuff
+#include <cmath>
 
 Entity::Entity() : geometryRenderer(Model::meshRenderers[Model::MeshType::BALL]) {}
 
@@ -7,6 +8,7 @@ Entity::Entity(Model::MeshType geometry) : geometryRenderer(Model::meshRenderers
 
 //example of using the animate function when overriding Entity
 void Entity::animate(float ms) {
+	attackingCooldown -= ms;
 	this->geometryRenderer.scale(glm::vec3(1.01, 1.01, 1.01)); //default implementation for demo purposes
 }
 
@@ -66,6 +68,18 @@ void Entity::translate(glm::vec3 translation) {
 void Entity::rotate(float amount, glm::vec3 axis) {
 	this->geometryRenderer.rotate(amount, axis);
 	this->rigidBody.setRotation(this->rigidBody.getRotation(axis) + amount, axis);
+}
+
+void Entity::rotateXZ(float amount)
+{
+	angle += amount;
+	rotate(amount, { 1.0f, 0.0f, 0.0f });
+}
+
+void Entity::setRotationXZ(float amount)
+{
+	rotate(amount - angle, { 1.0f, 0.0f, 0.0f });
+	angle = amount;
 }
 
 void Entity::scale(glm::vec3 scale) {
@@ -137,6 +151,8 @@ void Entity::move(double elapsed_time) {
 //			double transCol = (dCol / (1000 / elapsed_time)) * movementSpeed;
 //			translate({transCol, 0, transRow});
 
+		// TODO: Calculate future velocity for collisions
+
 		double destCol = curr.colCoord + (dCol * index.second);
 		double destRow = curr.rowCoord + (dRow * index.second);
 
@@ -167,4 +183,35 @@ bool Entity::operator==(const Entity& rhs) const {
 		   aiComp == rhs.aiComp &&
 		   unitComp == rhs.unitComp &&
 		   rigidBody == rhs.rigidBody;
+}
+
+void Entity::attack(std::shared_ptr<Entity> other)
+{
+	if (target == nullptr) {
+		target = other;
+		return;
+	}
+	if (target == other && attackingCooldown <= 0 ) {
+		// Attack!
+		other->unitComp.currentEnergyLevel -= unitComp.attackDamage;
+		attackingCooldown = 1000;
+	}
+}
+
+void TurretUnit::animate(float ms)
+{
+	attackingCooldown -= ms;
+	if (unitComp.currentEnergyLevel <= 0)softDelete();
+	// Face the turret to the entity we're attacking
+	if (target != nullptr) {
+		glm::vec3 dir = target->getPosition() - getPosition();
+		float turretAngle = atan2(dir.x, dir.z);
+		float angleInDegrees = turretAngle * 180.0f / M_PI;
+		float amountToRotate = angleInDegrees - turretAngle - angle;
+		rotate(turretIndex, amountToRotate, { 1.0f, 0.0, 0.0 });
+		turretAngle = angleInDegrees;
+	}
+	else {
+		rotate(turretIndex, 0, { 1.0f, 0.0, 0.0 });
+	}
 }

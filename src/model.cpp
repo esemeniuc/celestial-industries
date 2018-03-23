@@ -18,7 +18,7 @@ namespace Model {
 		{ Model::MeshType::ENEMY_RANGED_LINE_UNIT,	{ { "enemyRangedLineUnit.obj",			-1 } } },
 		{ Model::MeshType::ENEMY_RANGED_RADIUS_UNIT,{ { "enemyRangeRadiusUnitBase.obj",	-1 },{ "enemyRangeRadiusUnitTop.obj", 0} } },
 		{ Model::MeshType::FRIENDLY_FIRE_UNIT,		{ { "friendlyFireUnit.obj",				-1 } } },
-		{ Model::MeshType::FRIENDLY_RANGED_UNIT,	{ { "friendlyRangedUnitBase.obj",		-1 },{ "friendlyRangedUnitTop.obj", 0 } } },
+		{ Model::MeshType::FRIENDLY_RANGED_UNIT,	{ { "friendlyRangedUnitBase.obj",		-1 },{ "friendlyRangedUnitPillar.obj", 0 } ,{ "friendlyRangedUnitTop.obj", 1 } } },
 		{ Model::MeshType::TILE_CURSOR,				{ { "tileSelector.obj",					-1 } } },
     };
 

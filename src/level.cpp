@@ -146,8 +146,6 @@ bool Level::placeEntity(Model::MeshType type, glm::vec3 location)
 	return true;
 }
 
-
-
 std::shared_ptr<Tile> Level::tileFromMeshType(Model::MeshType type)
 {
 	switch (type) {
