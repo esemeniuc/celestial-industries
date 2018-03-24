@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rigidBody.hpp"
+#include <memory>
 
 enum class GamePieceOwner {
 	NONE, PLAYER, AI
@@ -19,10 +20,8 @@ public:
 	int visionRange = 5;
 	GamePieceOwner owner = GamePieceOwner::NONE;
 	GamePieceClass type = GamePieceClass::NONE;
-	int currentHealth = initialHealth;
+	float currentHealth = initialHealth;
 	int value; //used for AI to prioritize targets
-
-
 
 	//constructors
 	AiComp() {}

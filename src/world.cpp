@@ -7,6 +7,8 @@
 #include "particle.hpp"
 #include "aimanager.hpp"
 #include "unit.hpp"
+#include "attackManger.hpp"
+#include "buildingmanager.hpp"
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -110,8 +112,7 @@ bool World::init() {
 		logger(LogLevel::ERR) << "Failed to initialize renderers\n";
 	}
 
-	levelArray = level.levelLoader(
-			pathBuilder({"data", "levels"}) + "emptylevel.txt");
+	levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "GameLevel1.txt");
 	level.init(Model::meshRenderers);
 
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
@@ -122,30 +123,28 @@ bool World::init() {
 
 	UnitManager::init(levelHeight, levelWidth);
 	AiManager::init(levelHeight, levelWidth);
-	// test different starting points for the AI
 	aiCostMap = level.getLevelTraversalCostMap();
 
-	int startx = 39, startz = 1;
-	auto temp3 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::AI);
+	//display a path
+	int startx = 25, startz = 11;
+	int targetx = 10, targetz = 10;
+	auto temp1 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	temp1->moveTo(targetx, targetz);
 
 	startx = 39, startz = 19;
-	auto temp4 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::AI);
-//	//display a path
-//	int startx = 25, startz = 11;
-//	int targetx = 10, targetz = 10;
-//	auto temp1 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
-//	temp1->moveTo(targetx, targetz);
-//
-//	startx = 39, startz = 19;
-//	auto temp2 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
-//	temp2->moveTo(targetx, targetz);
-//
-//	startx = 39, startz = 1;
-//	auto temp3 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
-//	temp3->moveTo(targetx, targetz);
+	auto temp2 = Unit::spawn(Unit::UnitType::TANK, {startx, 0, startz}, GamePieceOwner::AI);
+	temp2->moveTo(targetx, targetz);
+
+	startx = 39, startz = 1;
+	auto temp3 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	temp3->moveTo(targetx, targetz);
+
+	// Example use of targeting units.
+	AttackManager::registerTargetUnit(temp2, temp1);
 
 	selectedTileCoordinates.rowCoord = levelWidth / 2;
 	selectedTileCoordinates.colCoord = levelHeight / 2;
+
 	// Unit test stuff
 
 	return true;
@@ -217,6 +216,9 @@ bool World::update(double elapsed_ms) {
 	Particles::updateParticleStates(elapsed_ms);
 	AiManager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
+	AttackManager::update(elapsed_ms);
+    BuildingManager::update(elapsed_ms);
+  
 	Model::collisionDetector.findCollisions(elapsed_ms);
 	for (const auto& tile : level.tiles) {
 		tile->update(elapsed_ms);
@@ -328,6 +330,11 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 	// Core controls
 	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
 		escapePressed = true;
+	}
+
+	// File saving
+	if (action == GLFW_RELEASE && key == GLFW_KEY_P) {
+		level.save("savedLevel.txt");
 	}
 
 	// Tile selection controls:

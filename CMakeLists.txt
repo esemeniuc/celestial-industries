@@ -77,7 +77,12 @@ set(PROJ_SOURCES
 		src/tile.cpp
 		src/world.cpp
 		src/unitcomp.cpp
-		src/unitmanager.cpp src/unitmanager.hpp src/unit.cpp src/unit.hpp src/building.cpp src/building.hpp src/aicore.cpp src/aicore.h)
+		src/unitmanager.cpp src/unitmanager.hpp
+		src/unit.cpp src/unit.hpp
+		src/building.cpp src/building.hpp
+		src/attackManger.cpp src/attackManger.hpp
+		src/buildingmanager.cpp src/buildingmanager.hpp
+		src/aicore.cpp src/aicore.h)
 
 add_library(libproj ${PROJ_SOURCES})
 target_compile_options(libproj PUBLIC ${CUSTOM_COMPILE_FLAGS})
