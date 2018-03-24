@@ -199,9 +199,13 @@ void Renderer::updateModelMatrixStack(unsigned int instanceIndex, bool updateHie
 					modelIndex = subObjects[modelIndex].parentMesh;
 				}
 				instancesData.modelMatrices[instanceIndex*subObjects.size() + i] = collapseMatrixVector(modelMatrices);
+				normalMatricesData.normalMatrix[instanceIndex*subObjects.size() + i] =
+					glm::transpose(glm::inverse(collapseMatrixVector(modelMatrices) * viewMatrix));
 			}
 			else {
 				instancesData.modelMatrices[instanceIndex*subObjects.size() + i] = instances[instanceIndex].matrixStack[i];
+				normalMatricesData.normalMatrix[instanceIndex*subObjects.size() + i] =
+					glm::transpose(glm::inverse(instances[instanceIndex].matrixStack[i] * viewMatrix));
 			}
 		}
 	}
