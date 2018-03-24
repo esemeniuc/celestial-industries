@@ -2,7 +2,7 @@
 
 #include <limits>
 #include <ostream> //for overloaded << operator
-#include <unordered_map>
+#include <map>
 #include "common.hpp"
 #include "config.hpp"
 #include "tile.hpp"
@@ -87,8 +87,8 @@ private:
 	std::vector<std::vector<AStarNode>> levelTraversalCostMap;
 
 	// Indexable using MeshType enum
-	std::unordered_map<Model::MeshType, std::pair<double, float>> tileToCost;
-	std::unordered_map<char, Model::MeshType> charToType;
+	std::map<Model::MeshType, std::pair<int, float>> tileToCost;
+	std::map<char, Model::MeshType> charToType;
 
 	//funcs
 };
