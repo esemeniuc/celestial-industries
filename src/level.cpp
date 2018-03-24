@@ -38,7 +38,10 @@ AStarNode nodeFromCost(int row, int col, std::pair<double, float> cost) {
 	return AStarNode(col, row, cost.first, cost.second);
 }
 
-std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& levelTextFile, std::shared_ptr<Shader> particleShader) {
+std::vector<std::vector<Model::MeshType>> Level::levelLoader(
+        const std::string& levelTextFile,
+        const std::shared_ptr<Shader>& particleShader
+) {
 	std::ifstream level(levelTextFile);
 	std::string line;
 	std::vector<std::vector<Model::MeshType>> levelData;

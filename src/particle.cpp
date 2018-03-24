@@ -1,6 +1,8 @@
 #include <cmath>
 #include "particle.hpp"
 
+#define PARTICLES_PER_EMITTER 2000
+
 namespace Particles {
     const glm::vec3 &ParticleEmitter::getPosition() const {
         return position;
@@ -96,7 +98,8 @@ namespace Particles {
         glGenBuffers(1, &vbo);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-        TexturedVertex vertices[4] = {
+        const int NUMBER_OF_VERTICES = 4;
+        TexturedVertex vertices[NUMBER_OF_VERTICES] = {
                 // top left corner
                 {{-0.5f * particleWidth, 0.5f * particleHeight, 0}, {0, 1}},
                 // top right corner
@@ -107,7 +110,7 @@ namespace Particles {
                 {{0.5f * particleWidth,  -0.5f * particleHeight, 0}, {1, 0}}
         };
 
-        glBufferData(GL_ARRAY_BUFFER, 4*sizeof(TexturedVertex), &vertices, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, NUMBER_OF_VERTICES*sizeof(TexturedVertex), &vertices, GL_STATIC_DRAW);
 
         // generate the IBO
         glGenBuffers(1, &ibo);
@@ -151,8 +154,6 @@ namespace Particles {
         glBindVertexArray(vao);
 
         // pass parameters into the shader
-//        glm::vec3 directionToCamera = cameraPosition - position;
-//        glm::mat4 rotationMatrix = glm::lookAt(glm::vec3(0), cameraPosition, glm::vec3(0.0f, 1.0f, 0.0f));
         glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), position);
 
         glm::mat4 modelViewProjection = viewProjection * modelMatrix;
@@ -166,7 +167,9 @@ namespace Particles {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture->id);
 
-        glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, 2000);
+        // The "6" here refers to the number of vertex indices to draw, which are laid out in
+        // the "vertexIndices[6]" variable in the ParticleEmitter constructor.
+        glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, PARTICLES_PER_EMITTER);
 
         glDisable(GL_BLEND);
     }

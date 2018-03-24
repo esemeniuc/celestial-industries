@@ -64,7 +64,10 @@ public:
 
 	bool displayPath(const std::vector<Coord>& levelArray);
 
-	std::vector<std::vector<Model::MeshType>> levelLoader(const std::string& levelTextFile, std::shared_ptr<Shader> particleShader);
+	std::vector<std::vector<Model::MeshType>> levelLoader(
+			const std::string& levelTextFile,
+			const std::shared_ptr<Shader>& particleShader
+	);
 
 	std::vector<std::vector<AStarNode>> getLevelTraversalCostMap();
 
