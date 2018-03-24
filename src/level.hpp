@@ -2,7 +2,7 @@
 
 #include <limits>
 #include <ostream> //for overloaded << operator
-#include <map>
+#include <unordered_map>
 #include "common.hpp"
 #include "config.hpp"
 #include "tile.hpp"

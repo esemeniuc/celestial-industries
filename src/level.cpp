@@ -30,8 +30,8 @@ bool Level::init(
 // Takes in full path
 void Level::save(std::string filename)
 {
-	std::map<short, char> typeToChar;
-	for (std::map<char, Model::MeshType>::iterator iter = charToType.begin(); iter != charToType.end(); ++iter) {
+	std::unordered_map<short, char> typeToChar;
+	for (std::unordered_map<char, Model::MeshType>::iterator iter = charToType.begin(); iter != charToType.end(); ++iter) {
 		typeToChar[iter->second] = iter->first;
 	}
 	std::ofstream fs(filename);
