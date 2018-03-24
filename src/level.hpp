@@ -57,10 +57,7 @@ public:
     std::vector<std::shared_ptr<Particles::ParticleEmitter>> emitters;
 
 	//funcs
-	bool init(
-			std::vector<std::vector<Model::MeshType>>& levelArray,
-			std::vector<std::shared_ptr<Renderer>>& meshRenderers
-	);
+	bool init(const std::vector<std::shared_ptr<Renderer>>& meshRenderers);
 
 	void save(std::string filename);
 
@@ -86,8 +83,6 @@ public:
 	std::shared_ptr<Tile> tileFromMeshType(Model::MeshType type);
 
 	std::shared_ptr<Entity> entityFromMeshType(Model::MeshType type);
-
-	Coord getLevelSize() const;
 
 private:
 	//members

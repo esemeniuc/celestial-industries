@@ -32,7 +32,9 @@
 class World {
 public:
 	//members
-	bool advanced_mode = false;
+	size_t levelWidth;
+	size_t levelHeight;
+
 	//funcs
 	World();
 

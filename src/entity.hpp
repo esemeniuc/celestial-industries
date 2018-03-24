@@ -43,6 +43,8 @@ public:
 
 	glm::vec3 getPosition();
 
+	Coord getPositionInt();
+
     void attack(const std::shared_ptr<Entity> entityToAttack, double elapsed_ms);
 
     void takeAttack(const Entity& attackingEntity, double elapsed_ms);
@@ -82,10 +84,12 @@ public:
 	RigidBody getRigidBody();
 
 	glm::vec3 getPosition() const;
-
+	
 	void setTargetPath(const std::vector<Coord>& targetPath);
 
 	void moveTo(int x, int z);
+
+	void scoutPosition(int x, int z);
 
 	void move(double elapsed_time);
 

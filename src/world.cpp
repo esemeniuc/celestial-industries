@@ -119,15 +119,16 @@ bool World::init() {
 		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
 	}
 
-	levelArray = level.levelLoader(
-			pathBuilder({"data", "levels"}) + "GameLevel1.txt", particleShader);
-
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
 
-	level.init(levelArray, Model::meshRenderers);
-	UnitManager::init(levelArray.size(), levelArray.front().size());
-	// test different starting points for the AI
+	levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "GameLevel1.txt", particleShader);
+	level.init(Model::meshRenderers);
+	this->levelHeight = levelArray.size();
+	this->levelWidth = levelArray.front().size();
+
+	UnitManager::init(levelHeight, levelWidth);
+	AiManager::init(levelHeight, levelWidth);
 	aiCostMap = level.getLevelTraversalCostMap();
 
 	//display a path
@@ -135,7 +136,6 @@ bool World::init() {
 	int targetx = 10, targetz = 10;
 	auto temp1 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
 	temp1->moveTo(targetx, targetz);
-
 
 	startx = 39, startz = 19;
 	auto temp2 = Unit::spawn(Unit::UnitType::TANK, {startx, 0, startz}, GamePieceOwner::AI);
@@ -145,11 +145,11 @@ bool World::init() {
 	auto temp3 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
 	temp3->moveTo(targetx, targetz);
 
-    // Example use of targetting units.
+	// Example use of targeting units.
 	AttackManager::registerTargetUnit(temp2, temp1);
 
-	selectedTileCoordinates.rowCoord = level.getLevelSize().rowCoord / 2;
-	selectedTileCoordinates.colCoord = level.getLevelSize().colCoord / 2;
+	selectedTileCoordinates.rowCoord = levelWidth / 2;
+	selectedTileCoordinates.colCoord = levelHeight / 2;
 
 	// Unit test stuff
 
@@ -236,8 +236,8 @@ bool World::update(double elapsed_ms) {
 		entity->animate(elapsed_ms);
 	}
 	if (m_dist(m_rng) < 0.005) {
-		int row = m_dist(m_rng)*level.getLevelSize().rowCoord;
-		int col = m_dist(m_rng)*level.getLevelSize().colCoord;
+		int row = m_dist(m_rng)*levelWidth;
+		int col = m_dist(m_rng)*levelHeight;
 		if (level.getLevelTraversalCostMap()[col][row].movementCost < 50.0f) {
 			glm::vec3 pos = glm::vec3(row, 0, col);
 			float unitRand = m_dist(m_rng);
@@ -333,9 +333,6 @@ void World::updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<i
 		}
 	}
 }
-
-
-
 
 // On key callback
 void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
@@ -437,9 +434,6 @@ void World::on_mouse_button(GLFWwindow * window, int button, int action, int mod
 {
 	glm::vec3 coords = { selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord };
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-		Coord levelDimensions = level.getLevelSize();
-		int levelWidth = levelDimensions.rowCoord;
-		int levelHeight = levelDimensions.colCoord;
 		if (coords.x < 0 || coords.x + 1 > levelWidth)
 			return;
 		if (coords.z < 0 || coords.z + 1 > levelHeight)

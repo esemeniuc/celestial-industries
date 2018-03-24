@@ -5,12 +5,8 @@
 #include "particle.hpp"
 #include <fstream>
 
-bool Level::init(
-    std::vector<std::vector<Model::MeshType>>& levelArray,
-    std::vector< std::shared_ptr<Renderer>>& meshRenderers
-)
-{
-    // So that re initializing will be the same as first initialization
+bool Level::init(const std::vector<std::shared_ptr<Renderer>>& meshRenderers) {
+	// So that re initializing will be the same as first initialization
 	tiles.clear();
 	
 	for (size_t i = 0; i < levelArray.size(); i++) {
@@ -166,10 +162,6 @@ std::vector<std::vector<AStarNode>> Level::getLevelTraversalCostMap() {
 
 std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location, unsigned int width, unsigned int height)
 {
-	Coord levelDimensions = getLevelSize();
-	int levelWidth = levelDimensions.rowCoord;
-	int levelHeight = levelDimensions.colCoord;
-
 	for (size_t i = 0; i < tiles.size(); i++) {
 		if (
 			tiles[i]->position.x >= location.x
@@ -282,9 +274,4 @@ bool Level::displayPath(const std::vector<Coord>& path) {
 	}
 
 	return true;
-}
-
-//returns size in h by w
-Coord Level::getLevelSize() const {
-	return Coord(levelArray.size(), levelArray.front().size());
 }
