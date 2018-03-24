@@ -9,7 +9,7 @@ layout(std140) uniform MaterialInfo {
     vec4 ambient;
     vec4 diffuse;
     vec4 specular;
-    bool hasDiffuseMap;   
+    bool hasDiffuseMap;
 }  mat;
 
 uniform sampler2D diffuseMapSampler;

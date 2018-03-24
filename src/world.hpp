@@ -67,7 +67,6 @@ private:
 
 	// Selection
 	Coord selectedTileCoordinates;
-    std::shared_ptr<Tile> selectedTile;
 
 	// Game entities
 	std::shared_ptr<Shader> objShader;
@@ -99,4 +98,6 @@ private:
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
 	void on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
+
+	void on_mouse_button(GLFWwindow* window, int button, int action, int mods);
 };

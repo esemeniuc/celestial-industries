@@ -3,8 +3,10 @@
 //
 
 #pragma once
+#define GLM_ENABLE_EXPERIMENTAL
 
-#include <set>
+#include <glm/gtx/norm.hpp>
+
 #include "global.hpp"
 #include "unitcomp.hpp"
 #include "building.hpp"
@@ -49,10 +51,6 @@ patrol/scout what player is doing
 //make attack value function
 
 
-
-
-
-
 namespace AiManager {
 
 	int playerUnitValue = 0;
@@ -61,10 +59,15 @@ namespace AiManager {
 	int aiBuildingValue = 0;
 	int percentageSeen = 0;
 
+
+	int aiSpawnX, aiSpawnZ;
+
 	std::vector<std::vector<uint32_t>> visibilityMap; //stores the last seen time of each cell by ai
 
 	void init(size_t levelHeight, size_t levelWidth) {
 		visibilityMap = std::vector<std::vector<uint32_t>>(levelHeight, std::vector<uint32_t>(levelWidth));
+		aiSpawnX = levelWidth - 1;//FIXME: a hack to make ai always spawn from far right of the map
+		aiSpawnZ = levelHeight / 2;
 	}
 
 
@@ -152,39 +155,71 @@ namespace AiManager {
 			int x = unit->getPositionInt().colCoord;
 			int z = unit->getPositionInt().rowCoord;
 			int radius = unit->aiComp.visionRange;
-			float calculatedVal = getScoutValue(x, z, radius);
+			float calculatedVal = getScoutValue(x, z, x, z, radius); //FIXME
 			if (calculatedVal > runningBestValue) {
 				runningBestValue = calculatedVal;
 			}
 		}
 	}
 
-	//assume we make 1 action per frame for simplicity
-	void findBestScoutLocation() {
+	struct bfsState {
+		int x, z, unseenDistance;
 
-		//traverse tree
-		visibilityMap = std::vector<std::vector<bool>>(world.levelHeight, std::vector<uint32_t>(world.levelWidth));
-		int start = 0;
+		bfsState(int x, int z, int unseenDistance) : x(x), z(z), unseenDistance(unseenDistance) {}
+	};
+
+
+	const int DIST_THRESHOLD = 6;
+
+	bool isWithinRange(int x, int z) {
+		return x >= 0 && x < world.levelWidth &&
+			   z >= 0 && z < world.levelHeight;
+	}
+
+	//in x,z format
+	std::pair<int, int> adj[4] = {{0,  1}, //down
+								  {0,  -1}, //up
+								  {1,  0}, //right
+								  {-1, 0}//left
+	};
+
+	//assume we make 1 action per frame for simplicity, assume vision range is fixed
+	Coord findBestScoutLocation() {
+
+		std::vector<std::vector<bool>> visited(world.levelHeight, std::vector<bool>(world.levelWidth));
 		//traverse tree with bfs
-		visited[start] = true;
-		std::queue<action> queue;
-		queue.push(start); //start from q, try to get to p, if so output yes
+		visited[aiSpawnZ][aiSpawnX] = true;
+		std::queue<bfsState> queue;
+		queue.push({aiSpawnX, aiSpawnZ, 0});
+		int run = 0;
 		while (!queue.empty()) {
-			action u = queue.front();
-			queue.pop();
 
-			if (u == p) {
-				printf("yes\n"); //we reached p from q, meaning p is higher rated than q
-				flag = 1;
-				break; //skip the rest as we already outputted
+			bfsState u = queue.front();
+			queue.pop();
+			run++;
+			if (u.unseenDistance >= DIST_THRESHOLD) {
+				return Coord(u.x, u.z);
 			}
-			for (int v : adj[u]) {
-				if (!visited[v]) {
-					visited[v] = true;
-					queue.push(v);
+			for (std::pair<int, int> dir : adj) {
+				int nextX = u.x + dir.first;
+				int nextZ = u.z + dir.second;
+				int nextDist = u.unseenDistance;
+				if (isWithinRange(nextX, nextZ) && !visited[nextZ][nextX]) {
+					visited[nextZ][nextX] = true;
+					if (visibilityMap[nextZ][nextX] > 0) //FIXME: change this to be relative later
+					{
+						nextDist++;
+					}
+					queue.push({nextX, nextZ, nextDist});
 				}
 			}
 		}
+
+		//assumes this is the player spawn
+		int playerSpawnX = 0;
+		int playerSpawnZ = world.levelHeight / 2;
+		return Coord(playerSpawnX, playerSpawnZ);
+
 
 	}
 
@@ -193,9 +228,9 @@ namespace AiManager {
 		playerUnitsSeenByAI.clear();//this is a hack because its slow, we need some removal proceedure
 		aiUnitsSeenByPlayer.clear();
 
-		for (auto& playerUnit : playerUnits) {
+		for (const auto& playerUnit : playerUnits) {
 
-			for (auto& aiUnit : aiUnits) {
+			for (const auto& aiUnit : aiUnits) {
 				if (playerUnit->canSee(aiUnit)) {
 					playerUnitsSeenByAI.insert(aiUnit);
 				}
@@ -207,12 +242,32 @@ namespace AiManager {
 		}
 	}
 
+	std::shared_ptr<Entity> getBestUnitToAttack(const Coord& targetLocation) {
+		glm::vec3 targetLocation3(targetLocation.colCoord, 0, targetLocation.rowCoord);
+
+		std::shared_ptr<Entity> bestUnit;
+		float bestDist = std::numeric_limits<float>::max();
+		for (const auto& unit : aiUnits) {
+			float dist = l2Norm(targetLocation3, unit->getPosition());
+			if (dist < bestDist) {
+				bestUnit = unit;
+				bestDist = dist;
+			}
+		}
+		return bestUnit;
+	}
 
 	void update(double elapsed_ms) {
 		updateValueOfEntities();
 		updateVisibilityMap();
 		updateUnitsSeen();
 
+		//send unit to scout
+		Coord loc = findBestScoutLocation();
+		std::shared_ptr<Entity> bestUnit = getBestUnitToAttack(loc);
+		if (bestUnit) { //if not null
+			bestUnit->moveTo(loc.colCoord, loc.rowCoord);
+		}
 	}
 
 
