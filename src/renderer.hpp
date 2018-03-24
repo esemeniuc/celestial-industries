@@ -53,12 +53,14 @@ public:
 	// TODO: Currently does a shitty "soft" delete because I can't update the IDs of the other ones so its not like we're saving data
 	void deleteInstance(unsigned int id);
     unsigned int getNextId();
-    void render(glm::mat4 viewProjection);
+    void render(glm::mat4 viewProjection, glm::mat4 viewMatrix);
     void updateModelMatrixStack(unsigned int modelIndex, bool updateHierarchically=true);
     glm::mat4 getModelMatrix(unsigned int id, unsigned int modelIndex);
 private:
     // TODO: replace with uniform buffers
-    GLuint viewProjectionUniform, modelIndexUniform, instanceDataAttribute, materialUniformBlock, positionAttribute, texcoordAttribute, normalAttribute, instancesDataBuffer;
+	GLuint viewProjectionUniform, viewMatrixUniform, modelIndexUniform, instanceDataAttribute, materialUniformBlock, positionAttribute;
+	GLuint normalMatrixUniformBlock, texcoordAttribute, normalAttribute, instancesDataBuffer;
+	GLuint normalMatricesAttribute, normalMatricesBuffer, directionalLightUniform;
     static const unsigned int maxInstances = Config::MAX_TOTAL_SUBOBJECTS_PER_RENDERER;
 
     struct ShaderInstancesData {
@@ -68,6 +70,14 @@ private:
         float padding3;
         glm::mat4 modelMatrices[maxInstances];
     };
+
+	struct ShaderNormalMatrixData {
+		unsigned int stride;
+		float padding1;
+		float padding2;
+		float padding3;
+		glm::mat4 normalMatrix[maxInstances];
+	};
 
     struct ShaderMaterialData {
         glm::vec4 ambient;
@@ -80,6 +90,8 @@ private:
     };
 
     ShaderInstancesData instancesData;
+	ShaderNormalMatrixData normalMatricesData;
+	glm::mat4 viewMatrix;
 };
 
 class Renderable {

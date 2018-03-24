@@ -278,7 +278,7 @@ void World::draw() {
 	glm::mat4 projectionView = projection * view;
 
 	for (auto renderer : Model::meshRenderers) {
-		renderer->render(projectionView);
+		renderer->render(projectionView, view);
 	}
 
 

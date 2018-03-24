@@ -19,8 +19,12 @@ layout(std140) uniform InstancesData {
         mat4 modelMatrices[1000];
 } instances;
 
-uniform int modelIndex;
+layout (std140) uniform normalMatricesData {
+        uint stride;
+		mat4 normalMatrix[1000];
+} normalMatrices;
 
+uniform int modelIndex;
 
 void main()
 {
