@@ -218,7 +218,7 @@ namespace AiManager {
 		}
 
 		//assumes this is the player spawn and just goes to it
-		int playerSpawnX = 0;
+		int playerSpawnX = 1;
 		int playerSpawnZ = world.levelHeight / 2;
 		scoutingTargetsInProgress.emplace_back(playerSpawnX, playerSpawnZ);
 		return Coord(playerSpawnX, playerSpawnZ);
