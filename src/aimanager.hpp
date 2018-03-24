@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <set>
 #include "global.hpp"
 #include "unitcomp.hpp"
 #include "building.hpp"
@@ -37,50 +38,128 @@ patrol/scout what player is doing
 
 
 namespace AiManager {
-	std::vector<std::vector<UnitComp>> unitsSeen;
-	std::vector<std::vector<Building>> buildingsSeen;
 
 	int playerUnitValue = 0;
 	int aiUnitValue = 0;
 	int playerBuildingValue = 0;
 	int aiBuildingValue = 0;
 
-
 	void updateValueOfEntities() {
 		aiUnitValue = 0;
 		playerUnitValue = 0;
 		aiBuildingValue = 0;
 		playerBuildingValue = 0;
-		for (auto& entityInACell : entityMap) {
-			if (entityInACell->aiComp.type == GamePieceType::UNIT_NON_ATTACKING ||
-				entityInACell->aiComp.type == GamePieceType::UNIT_DEFENSIVE_ACTIVE ||
-				entityInACell->aiComp.type == GamePieceType::UNIT_OFFENSIVE) {
-				if (entityInACell->aiComp.owner == GamePieceOwner::AI) {
-					aiUnitValue += entityInACell->aiComp.value;
-				} else if (entityInACell->aiComp.owner == GamePieceOwner::PLAYER) {
-					playerUnitValue += entityInACell->aiComp.value;
+		for (auto& unit : playerUnits) {
+			if (unit->aiComp.owner == GamePieceOwner::AI) {
+				aiUnitValue += unit->aiComp.value;
+			} else if (unit->aiComp.owner == GamePieceOwner::PLAYER) {
+				playerUnitValue += unit->aiComp.value;
+			}
+		}
+
+		for (auto& building : buildingMap) {
+			if (building->aiComp.owner == GamePieceOwner::AI) {
+				aiBuildingValue += building->aiComp.value;
+			} else if (building->aiComp.owner == GamePieceOwner::PLAYER) {
+				playerBuildingValue += building->aiComp.value;
+			}
+		}
+	}
+
+	int size = 5;
+
+	//assume we make 1 action per frame for simplicity
+	void findNextBestAction() {
+		//generate tree of things to attack
+//		for()
+//
+//		std::vector<bool> visited(size);
+//		int start = 0;
+//		//traverse tree with bfs
+//		visited[start] = true;
+//		std::queue<action> queue;
+//		queue.push(start); //start from q, try to get to p, if so output yes
+//		while (!queue.empty()) {
+//			action u = queue.front();
+//			queue.pop();
+//
+//			if (u == p) {
+//				printf("yes\n"); //we reached p from q, meaning p is higher rated than q
+//				flag = 1;
+//				break; //skip the rest as we already outputted
+//			}
+//			for (int v : adj[u]) {
+//				if (!visited[v]) {
+//					visited[v] = true;
+//					queue.push(v);
+//				}
+//			}
+//		}
+
+	}
+
+	void update(double elapsed_ms) {
+		updateValueOfEntities();
+
+		playerUnitsSeenByAI.clear();//this is a hack because its slow, we need some removal proceedure
+		aiUnitsSeenByPlayer.clear();
+
+		for (auto& playerUnit : playerUnits) {
+
+			for (auto& aiUnit : aiUnits) {
+				if (playerUnit->canSee(aiUnit)) {
+					playerUnitsSeenByAI.insert(aiUnit);
 				}
-			} else if (entityInACell->aiComp.type == GamePieceType::BUILDING_NON_ATTACKING ||
-					   entityInACell->aiComp.type == GamePieceType::BUILDING_DEFENSIVE_PASSIVE ||
-					   entityInACell->aiComp.type == GamePieceType::BUILDING_DEFENSIVE_ACTIVE) {
-				if (entityInACell->aiComp.owner == GamePieceOwner::AI) {
-					aiBuildingValue += entityInACell->aiComp.value;
-				} else if (entityInACell->aiComp.owner == GamePieceOwner::PLAYER) {
-					playerBuildingValue += entityInACell->aiComp.value;
+
+				if (aiUnit->canSee(playerUnit)) {
+					aiUnitsSeenByPlayer.insert(playerUnit);
 				}
 			}
 		}
 	}
 
-
-	void update(double elapsed_ms) {
-		updateValueOfEntities();
-	}
-
 	int const PRIORITIZE_CLOSER_ATTACKS = 2;
 
-	Building* bestBuildingToAttack(std::vector<Building>& buildings, Entity& entity);
+	std::shared_ptr<Entity>
+	bestBuildingToAttack(std::vector<std::shared_ptr<Entity>>& buildings, Entity& entity) {
+		float bestAttackValue = -1;
+		std::shared_ptr<Entity> building;
 
-	Building* getHighestValuedBuilding(std::vector<Building>& buildings);
+		if (buildings.size() <= 0) {
+			// TODO: take care of case where length of building list passed in is 0
+		}
 
-};
+		for (auto& currentBuilding : buildings) {
+			int buildingValue = currentBuilding->aiComp.value;
+
+			float distanceToBuilding = 0;//getDistanceBetweenEntities(currentBuilding, entity); //fixme to revert
+
+			float attackValue = buildingValue - (distanceToBuilding * PRIORITIZE_CLOSER_ATTACKS);
+
+			if (attackValue > bestAttackValue) {
+				bestAttackValue = attackValue;
+				building = currentBuilding;
+			}
+		}
+
+		return building;
+	}
+
+	std::shared_ptr<Entity> getHighestValuedBuilding(std::vector<std::shared_ptr<Entity>>& buildings) {
+		int highestValueSoFar = -1;
+		std::shared_ptr<Entity> building;
+
+		if (buildings.size() <= 0) {
+			// TODO: take care of case where length of building list passed in is 0
+		}
+
+		for (auto& currentBuilding : buildings) {
+			if (currentBuilding->aiComp.value > highestValueSoFar) {
+				highestValueSoFar = currentBuilding->aiComp.value;
+				building = currentBuilding;
+			}
+		}
+
+		return building;
+	}
+}

@@ -1,5 +1,4 @@
 // Header
-#include <chrono>  // for high_resolution_clock
 #include "unitmanager.hpp"
 #include "unitcomp.hpp"
 #include "logger.hpp"
@@ -7,6 +6,9 @@
 #include "collisiondetection.hpp"
 #include "particle.hpp"
 #include "aimanager.hpp"
+#include "unit.hpp"
+#include "attackManger.hpp"
+#include "buildingmanager.hpp"
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -24,11 +26,8 @@ World::World() {
 
 World::~World() = default;
 
-std::shared_ptr<Particles::ParticleEmitter> fireSpawner;
-
-
 // World initialization
-bool World::init(glm::vec2 screen) {
+bool World::init() {
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -46,8 +45,8 @@ bool World::init(glm::vec2 screen) {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	glfwWindowHint(GLFW_RESIZABLE, 1);
-	m_window = glfwCreateWindow((int) screen.x, (int) screen.y, Config::WINDOW_TITLE, nullptr, nullptr);
-	m_screen = screen;
+	m_window = glfwCreateWindow(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT, Config::WINDOW_TITLE, nullptr, nullptr);
+	m_screen = glm::vec2(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT);
 	if (m_window == nullptr)
 		return false;
 
@@ -70,9 +69,13 @@ bool World::init(glm::vec2 screen) {
 	auto scroll_offset_redirect = [](GLFWwindow* wnd, double _0, double _1) {
 		((World*) glfwGetWindowUserPointer(wnd))->on_mouse_scroll(wnd, _0, _1);
 	};
+	auto mouse_button_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2) {
+		((World*)glfwGetWindowUserPointer(wnd))->on_mouse_button(wnd, _0, _1, _2);
+	};
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
 	glfwSetScrollCallback(m_window, scroll_offset_redirect);
+	glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
 
 	//-------------------------------------------------------------------------
 	// Loading music and sounds
@@ -109,9 +112,6 @@ bool World::init(glm::vec2 screen) {
 		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
 	}
 
-	// TODO: Performance tanks and memory usage is very high for large maps. This is because the OBJ Data isn't being shared
-	// thats a big enough change to merit its own ticket in milestone 2 though
-
 	levelArray = level.levelLoader(
 			pathBuilder({"data", "levels"}) + "GameLevel1.txt");
 
@@ -126,28 +126,25 @@ bool World::init(glm::vec2 screen) {
 	//display a path
 	int startx = 25, startz = 11;
 	int targetx = 10, targetz = 10;
-	auto temp1 = std::make_shared<Entity>();
-	temp1->translate({startx, 0, startz});
+	auto temp1 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
 	temp1->moveTo(targetx, targetz);
-	entityMap.push_back(temp1);
 
 
 	startx = 39, startz = 19;
-	auto temp2 = std::make_shared<Entity>();
-	temp2->translate({startx, 0, startz});
+	auto temp2 = Unit::spawn(Unit::UnitType::TANK, {startx, 0, startz}, GamePieceOwner::AI);
 	temp2->moveTo(targetx, targetz);
-	entityMap.push_back(temp2);
 
 	startx = 39, startz = 1;
-	auto temp3 = std::make_shared<Entity>();
-	temp3->translate({startx, 0, startz});
+	auto temp3 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
 	temp3->moveTo(targetx, targetz);
-	entityMap.push_back(temp3);
 
+    // Example use of targetting units.
+	AttackManager::registerTargetUnit(temp2, temp1);
 
 	selectedTileCoordinates.rowCoord = level.getLevelSize().rowCoord / 2;
 	selectedTileCoordinates.colCoord = level.getLevelSize().colCoord / 2;
-	selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
+
+	// Unit test stuff
 
 	return true;
 }
@@ -204,7 +201,6 @@ bool World::update(double elapsed_ms) {
 	glfwGetFramebufferSize(m_window, &w, &h);
 	camera.update(elapsed_ms);
 	total_time += elapsed_ms;
-	selectedTile->shouldDraw(true);
 
 	if (
 			selectedTileCoordinates.rowCoord >= 0 &&
@@ -213,18 +209,39 @@ bool World::update(double elapsed_ms) {
 			(unsigned long) selectedTileCoordinates.colCoord < level.getLevelTraversalCostMap()[0].size()
 			) {
 
-		selectedTile = level.tiles[selectedTileCoordinates.rowCoord][selectedTileCoordinates.colCoord];
-		selectedTile->shouldDraw(false);
-	}
-
-	for (const auto& turret : level.guntowers) {
-		turret->update(elapsed_ms);
+		level.tileCursor->setPosition({ selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord });
 	}
 
 	Particles::updateParticleStates(elapsed_ms);
 	AiManager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
-
+	AttackManager::update(elapsed_ms);
+    BuildingManager::update(elapsed_ms);
+  
+	Model::collisionDetector.findCollisions(elapsed_ms);
+	for (const auto& tile : level.tiles) {
+		tile->update(elapsed_ms);
+	}
+	for (const auto& entity : playerUnits) {
+		entity->animate(elapsed_ms);
+	}
+	if (m_dist(m_rng) < 0.005) {
+		int row = m_dist(m_rng)*level.getLevelSize().rowCoord;
+		int col = m_dist(m_rng)*level.getLevelSize().colCoord;
+		if (level.getLevelTraversalCostMap()[col][row].movementCost < 50.0f) {
+			glm::vec3 pos = glm::vec3(row, 0, col);
+			float unitRand = m_dist(m_rng);
+			if (unitRand < 0.33) {
+				level.placeEntity(Model::MeshType::ENEMY_SPIKE_UNIT, pos, GamePieceOwner::AI);
+			}
+			else if (unitRand < 0.66) {
+				level.placeEntity(Model::MeshType::ENEMY_RANGED_LINE_UNIT, pos, GamePieceOwner::AI);
+			}
+			else {
+				level.placeEntity(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, pos, GamePieceOwner::AI);
+			}
+		}
+	}
 	return true;
 }
 
@@ -304,16 +321,19 @@ void World::updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<i
 	}
 }
 
+
+
+
 // On key callback
 void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 	// Core controls
-	if (action == GLFW_RELEASE && key == GLFW_KEY_R) {
-		int w, h;
-		glfwGetWindowSize(m_window, &w, &h);
-	}
-
 	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
 		escapePressed = true;
+	}
+
+	// File saving
+	if (action == GLFW_RELEASE && key == GLFW_KEY_P) {
+		level.save("savedLevel.txt");
 	}
 
 	// Tile selection controls:
@@ -386,11 +406,47 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 		selectedTileCoordinates.rowCoord = (int) round(pointInWorld.z);
 		selectedTileCoordinates.colCoord = (int) round(pointInWorld.x);
 	}
-
-
 }
 
 void World::on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset) {
 	camera.mouseScroll = glm::vec2(xoffset, yoffset);
+}
+
+//returns w x h
+std::pair<int, int> World::getWindowSize(){
+	int windowWidth;
+	int windowHeight;
+	glfwGetWindowSize(m_window, &windowWidth, &windowHeight);
+	return {windowWidth, windowHeight};
+};
+
+void World::on_mouse_button(GLFWwindow * window, int button, int action, int mods)
+{
+	glm::vec3 coords = { selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord };
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+		Coord levelDimensions = level.getLevelSize();
+		int levelWidth = levelDimensions.rowCoord;
+		int levelHeight = levelDimensions.colCoord;
+		if (coords.x < 0 || coords.x + 1 > levelWidth)
+			return;
+		if (coords.z < 0 || coords.z + 1 > levelHeight)
+			return;
+		level.placeTile(Model::MeshType::GUN_TURRET, coords);
+		logger(LogLevel::INFO) << "Right click detected " << '\n';
+	}
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		if (m_dist(m_rng) < 0.5) {
+			level.placeEntity(Model::MeshType::FRIENDLY_RANGED_UNIT, coords, GamePieceOwner::PLAYER);
+		}
+		else {
+			level.placeEntity(Model::MeshType::FRIENDLY_FIRE_UNIT, coords, GamePieceOwner::PLAYER);
+		}
+		logger(LogLevel::INFO) << "Left click detected " << '\n';
+	}
+	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
+		for (const auto& entity : playerUnits) {
+			entity->rigidBody.setVelocity((coords - entity->rigidBody.getPosition())/5000.0f);
+		}
+	}
 }
 

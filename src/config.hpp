@@ -9,8 +9,8 @@
 
 namespace Config {
 
-	const int WINDOW_WIDTH = 1000;
-	const int WINDOW_HEIGHT = 800;
+	const int INITIAL_WINDOW_WIDTH = 1000;
+	const int INITIAL_WINDOW_HEIGHT = 800;
 	constexpr const char* WINDOW_TITLE = "Celestial Industries";
 	const LogLevel SYSTEM_LOGGING_LEVEL = LogLevel::DEBUG;
 	const bool SYSTEM_LOG_TO_FILE = true;

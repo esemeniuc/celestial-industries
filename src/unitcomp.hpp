@@ -8,7 +8,7 @@
 #include "common.hpp"
 
 enum class UnitState {
-	IDLE, RECHARGING, LOW_ENERGY, ATTACK, ATTACK_MOVE, MOVE, RETREAT, ACTION
+	NONE, IDLE, RECHARGING, LOW_ENERGY, ATTACK, ATTACK_MOVE, MOVE, RETREAT, ACTION
 };
 
 
@@ -25,14 +25,16 @@ public:
 	int currentEnergyLevel;
 	UnitState state;
 	std::vector<Coord> targetPath;
+	glm::vec3 velocity;
+	glm::vec3 nextPos;
 	double targetPathStartTimestamp; //needed to get delta time
 
 
 	UnitComp() : initialEnergyLevel(50),
-				 attackDamage(6),
-				 attackRange(6),
+				 attackDamage(1),
+				 attackRange(5),
 				 attackSpeed(1),
-				 movementSpeed(15),
+				 movementSpeed(10),
 				 currentEnergyLevel(50),
 				 state(UnitState::IDLE) {
 	}

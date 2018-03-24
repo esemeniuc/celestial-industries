@@ -1,12 +1,13 @@
 #pragma once
 
 #include "rigidBody.hpp"
+#include <memory>
 
 enum class GamePieceOwner {
 	NONE, PLAYER, AI
 };
 
-enum class GamePieceType {
+enum class GamePieceClass {
 	NONE, BUILDING_NON_ATTACKING, UNIT_NON_ATTACKING, BUILDING_DEFENSIVE_PASSIVE, BUILDING_DEFENSIVE_ACTIVE, UNIT_DEFENSIVE_ACTIVE, UNIT_OFFENSIVE
 };
 
@@ -18,16 +19,14 @@ public:
 	int initialHealth = 100;
 	int visionRange = 5;
 	GamePieceOwner owner = GamePieceOwner::NONE;
-	GamePieceType type = GamePieceType::NONE;
-	int currentHealth = initialHealth;
+	GamePieceClass type = GamePieceClass::NONE;
+	float currentHealth = initialHealth;
 	int value; //used for AI to prioritize targets
-
-
 
 	//constructors
 	AiComp() {}
 
-	AiComp(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceType type, int value)
+	AiComp(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceClass type, int value)
 			: initialHealth(initialHealth),
 			  visionRange(visionRange),
 			  owner(owner),
@@ -35,7 +34,7 @@ public:
 			  currentHealth(initialHealth),
 			  value(value) {}
 
-	AiComp(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceType type,
+	AiComp(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceClass type,
 			  int currentHealth, int value) : initialHealth(initialHealth),
 											  visionRange(visionRange),
 											  owner(owner), type(type),

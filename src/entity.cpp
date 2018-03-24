@@ -1,5 +1,6 @@
 #include "entity.hpp"
 #include "global.hpp" //for pathfinding stuff
+#include <cmath>
 
 Entity::Entity() : geometryRenderer(Model::meshRenderers[Model::MeshType::BALL]) {}
 
@@ -7,7 +8,20 @@ Entity::Entity(Model::MeshType geometry) : geometryRenderer(Model::meshRenderers
 
 //example of using the animate function when overriding Entity
 void Entity::animate(float ms) {
-	this->geometryRenderer.scale(glm::vec3(1.01, 1.01, 1.01)); //default implementation for demo purposes
+	attackingCooldown -= ms;
+	if (rigidBody.getAllCollisions().size() == 0) {
+		translate(rigidBody.getVelocity()*ms);
+	}
+	else {
+		CollisionDetection::CollisionInfo collision = rigidBody.getFirstCollision();
+		translate(rigidBody.getVelocity()*collision.time);
+	}
+}
+
+void Entity::softDelete()
+{
+	geometryRenderer.removeSelf();
+	// TODO: AI Comp, Unit Comp soft deletes
 }
 
 void Entity::translate(int modelIndex, glm::vec3 translation) {
@@ -62,6 +76,26 @@ void Entity::rotate(float amount, glm::vec3 axis) {
 	this->rigidBody.setRotation(this->rigidBody.getRotation(axis) + amount, axis);
 }
 
+void Entity::rotateXZ(float amount)
+{
+	angle += amount;
+	rotate(amount, { 0.0f, 1.0f, 0.0f });
+}
+
+void Entity::setRotationXZ(float amount)
+{
+	rotate(amount - angle, { 0.0f, 1.0f, 0.0f });
+	angle = amount;
+}
+
+void Entity::setRotationXZ(int modelIndex, float amount)
+{
+	//rotate(modelIndex, amount - angle, { 0.0f, 1.0f, 0.0f });
+	setModelMatrix(modelIndex, glm::rotate(glm::mat4(1.0f), amount, { 0.0f,1.0f,0.0f }));
+	angle = amount;
+
+}
+
 void Entity::scale(glm::vec3 scale) {
 	// this may require manually updating the collision geometry size
 	// but I don't expect to have an entity being scaled multiple times
@@ -103,6 +137,8 @@ void Entity::moveTo(int x, int z) {
 	setTargetPath(AI::aStar::a_star(aiCostMap, 1, (int) rigidBody.getPosition().x, (int) rigidBody.getPosition().z, x,
 									z).second); //might need fixing with respect to int start positions
 
+    //TODO: use getPositionInt() later.
+	unitComp.targetPath.insert(unitComp.targetPath.begin(), {(int)getPosition().x, (int)getPosition().z});
 }
 
 //returns a pathIndex and a 0.00 - 0.99 value to interpolate between steps in a path
@@ -120,6 +156,7 @@ void Entity::move(double elapsed_time) {
 
 	unitComp.targetPathStartTimestamp += elapsed_time;
 	std::pair<int, double> index = getInterpolationPercentage(); //first is index into path, second is interp amount (0 to 1)
+	glm::vec3 newPos;
 	if (index.first < (int) unitComp.targetPath.size() - 1) {
 		Coord curr = unitComp.targetPath[index.first];
 		Coord next = unitComp.targetPath[index.first + 1];
@@ -131,29 +168,32 @@ void Entity::move(double elapsed_time) {
 //			double transCol = (dCol / (1000 / elapsed_time)) * movementSpeed;
 //			translate({transCol, 0, transRow});
 
+		// TODO: Calculate future velocity for collisions
+
 		double destCol = curr.colCoord + (dCol * index.second);
 		double destRow = curr.rowCoord + (dRow * index.second);
 
-		glm::vec3 newPos = {destCol, 0, destRow};
-		setPositionFast(0, newPos); //for rendering
-		rigidBody.setPosition(newPos); //for phys
+		newPos = {destCol, 0, destRow};
 	} else { //move to the last coord in the path
-		glm::vec3 newPos = {unitComp.targetPath.back().colCoord, 0, unitComp.targetPath.back().rowCoord};
-		setPositionFast(0, newPos);
-		rigidBody.setPosition(newPos);
+		newPos = {unitComp.targetPath.back().colCoord, 0, unitComp.targetPath.back().rowCoord};
 	}
+
+	// TODO: Split this in calculate and update so this can do collisions
+
+	setPositionFast(0, newPos); //for rendering
+	rigidBody.setPosition(newPos); //for phys
 }
 
 glm::vec3 Entity::getPosition() const {
 	return rigidBody.getPosition();
 }
 
-bool Entity::inVisionRange(const Entity& other) {
-	return glm::length(glm::vec2(other.getPosition() - this->getPosition())) <= aiComp.visionRange;
+bool Entity::canSee(std::shared_ptr<Entity> entity) {
+	return glm::length(glm::vec2(entity->getPosition() - this->getPosition())) <= aiComp.visionRange;
 }
 
-bool Entity::inAttackRange(const Entity& other) {
-	return glm::length(glm::vec2(other.getPosition() - this->getPosition())) <= unitComp.attackRange;
+bool Entity::inAttackRange(std::shared_ptr<Entity> entity) {
+	return glm::length(glm::vec2(entity->getPosition() - this->getPosition())) <= unitComp.attackRange;
 }
 
 bool Entity::operator==(const Entity& rhs) const {
@@ -161,4 +201,75 @@ bool Entity::operator==(const Entity& rhs) const {
 		   aiComp == rhs.aiComp &&
 		   unitComp == rhs.unitComp &&
 		   rigidBody == rhs.rigidBody;
+}
+
+void Entity::takeAttack(const Entity& attackingEntity, double elapsed_ms) {
+    // reduce health
+    int damagePerSecond = attackingEntity.unitComp.attackDamage * attackingEntity.unitComp.attackSpeed;
+    float damageToDoThisFrame = damagePerSecond * (elapsed_ms / 1000);
+
+    aiComp.currentHealth -= damageToDoThisFrame;
+}
+
+void Entity::attack(const std::shared_ptr<Entity> entityToAttack, double elapsed_ms) {
+	if (unitComp.state == UnitState::ATTACK) {
+		// Already attacking something else, nothing to do, return.
+		return;
+	}
+
+	if (aiComp.type != GamePieceClass::UNIT_OFFENSIVE) return;
+
+	unitComp.state = UnitState::ATTACK;
+	entityToAttack->takeAttack(*this, elapsed_ms);
+
+	// Check to see if attack is done.
+	// Set state to non-attacking state if attack is done (other entity is killed)
+	if (entityToAttack->aiComp.currentHealth <= 0) {
+		unitComp.state = UnitState::IDLE;
+	}
+}
+
+float vectorAngleXZ(glm::vec3 v) {
+	// https://stackoverflow.com/questions/6247153/angle-from-2d-unit-vector
+	//if (v.x == 0) {
+	//	if (v.z > 0)
+	//		return 90.0f;
+	//	if (v.z == 0)
+	//		return 0.0f;
+	//	return 270.0f;
+	//}
+	//if (v.z == 0) {
+	//	if (v.x >= 0)
+	//		return 0.0f;
+	//	return 180.0f;
+	//}
+	//float angle = atanf(v.z / v.x)*(180.0f/ M_PI);
+	//if (v.x < 0 && v.z < 0)
+	//	return 180.0f + angle;
+	//if (v.x < 0)
+	//	return 180.0f + angle;
+	//if (v.z < 0)
+	//	return 360.0f + angle;
+	glm::vec3 xUnit = glm::vec3(1.0f, 0.0f, 0.0f);
+	v = glm::normalize(v);
+	return glm::acos(glm::dot(v, xUnit))*(180.0f / M_PI);	
+}
+
+
+void TurretUnit::animate(float ms)
+{
+	attackingCooldown -= ms;
+	if (unitComp.currentEnergyLevel <= 0)softDelete();
+	// Face the turret to the entity we're attacking
+	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
+		targetPosition = target->getPosition();
+	}
+	glm::vec3 dir = glm::normalize(targetPosition - getPosition());
+	float turretAngle = vectorAngleXZ(dir);
+	float turretAngle2 = std::atan2(dir.z, dir.x);
+	float angleInDegrees = 180 - turretAngle2 * 180.0f / M_PI;
+	glm::vec3 xUnit = glm::vec3(1.0f, 0.0f, 0.0f);
+	glm::vec3 crossProduct = glm::cross(dir, xUnit);
+	float crossProductDegrees = crossProduct.y * 180.0f / M_PI;
+	setRotationXZ(turretIndex, turretAngle);
 }

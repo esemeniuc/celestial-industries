@@ -42,6 +42,9 @@ public:
         std::vector<SubObjectSource> subObjectSources
     );
     SubObject loadSubObject(SubObjectSource source);
+
+	// TODO: Currently does a shitty "soft" delete because I can't update the IDs of the other ones so its not like we're saving data
+	void deleteInstance(unsigned int id);
     unsigned int getNextId();
     void render(glm::mat4 viewProjection, glm::mat4 viewMatrix);
     void updateModelMatrixStack(unsigned int modelIndex, bool updateHierarchically=true);
@@ -97,7 +100,7 @@ public:
 
 	//funcs
     Renderable(std::shared_ptr<Renderer> initParent);
-    void shouldDraw(bool val);
+    void shouldUpdate(bool val);
 
     void setModelMatricesFromComputed();
 
@@ -136,6 +139,9 @@ public:
     void translate(glm::vec3 translation, bool updateHierarchically = true);
     void rotate(float amount, glm::vec3 axis, bool updateHierarchically = true);
     void scale(glm::vec3 scale, bool updateHierarchically = true);
+
+	// Soft deletes the object from the parent renderer
+	void removeSelf();
 
 	virtual ~Renderable() {};
 

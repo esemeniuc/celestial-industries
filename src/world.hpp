@@ -39,7 +39,7 @@ public:
 	~World();
 
 	// Creates a window, sets up events and begins the game
-	bool init(glm::vec2 screen);
+	bool init();
 
 	// Releases all associated resources
 	void destroy();
@@ -53,6 +53,9 @@ public:
 	// Should the game be over ?
 	bool is_over() const;
 
+	//returns w x h
+	std::pair<int, int> getWindowSize();
+
 private:
 	//members
 	// Window handle
@@ -65,7 +68,6 @@ private:
 
 	// Selection
 	Coord selectedTileCoordinates;
-    std::shared_ptr<Tile> selectedTile;
 
 	// Game entities
 	std::shared_ptr<Shader> objShader;
@@ -97,4 +99,6 @@ private:
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
 	void on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
+
+	void on_mouse_button(GLFWwindow* window, int button, int action, int mods);
 };

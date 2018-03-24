@@ -5,6 +5,8 @@
 #include <sstream>
 #include <cstring>
 #include "config.hpp"
+#include "collisiondetection.hpp"
+
 
 // glm
 #define GLM_ENABLE_EXPERIMENTAL
@@ -68,6 +70,12 @@ public:
 
 	bool operator==(const RigidBody& rhs) const;
 
+	void removeSelf();
+
+	std::vector<CollisionDetection::CollisionInfo> getAllCollisions();
+
+	CollisionDetection::CollisionInfo getFirstCollision();
+
 protected:
 	// this is 1/mass, a better representation that 
 	// allows us to work with 0 and infinite masses
@@ -76,7 +84,7 @@ protected:
 	// velocity damping factor used to simulate
 	// drag and friction forces in the real world
 
-	float dampingFactor = 0.995;
+	float dampingFactor = 0.995f;
 
 	glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f);
