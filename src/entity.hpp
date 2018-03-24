@@ -97,8 +97,6 @@ public:
 
 	bool operator==(const Entity& rhs) const;
 
-	virtual void attack(std::shared_ptr<Entity> other);
-
 protected:
 	float angle = 0.0f;
 

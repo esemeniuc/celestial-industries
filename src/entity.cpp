@@ -210,37 +210,36 @@ void Entity::takeAttack(Entity& attackingEntity, double elapsed_ms) {
 }
 
 void Entity::attack(std::shared_ptr<Entity> entityToAttack, double elapsed_ms) {
-    if (unitComp.state == UnitState::ATTACK) {
+	if (unitComp.state == UnitState::ATTACK) {
 		logger << 'already attacking this frame';
-        // Already attacking something else, nothing to do, return.
-        return;
-    }
+		// Already attacking something else, nothing to do, return.
+		return;
+	}
 
 	logger << " 1 attack done" << '\n';
 
 	if (aiComp.type != GamePieceClass::UNIT_OFFENSIVE) return;
 
-    unitComp.state = UnitState::ATTACK;
-    entityToAttack->takeAttack(*this, elapsed_ms);
+	unitComp.state = UnitState::ATTACK;
+	entityToAttack->takeAttack(*this, elapsed_ms);
 
-    // Check to see if attack is done.
-    // Set state to non-attacking state if attack is done (other entity is killed)
-    if (entityToAttack->aiComp.currentHealth <= 0) {
-        unitComp.state = UnitState::IDLE;
-    }
-  
-void Entity::attack(std::shared_ptr<Entity> other)
-{
-	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
-		target = other;
-		return;
+	// Check to see if attack is done.
+	// Set state to non-attacking state if attack is done (other entity is killed)
+	if (entityToAttack->aiComp.currentHealth <= 0) {
+		unitComp.state = UnitState::IDLE;
 	}
-	// http://www.cplusplus.com/reference/memory/shared_ptr/operators/
-	if (target == other && attackingCooldown <= 0 ) {
-		// Attack!
-		other->unitComp.currentEnergyLevel -= unitComp.attackDamage;
-		attackingCooldown = 1000;
-	}
+
+//	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
+//		target = entityToAttack;
+//		return;
+//	}
+//	// http://www.cplusplus.com/reference/memory/shared_ptr/operators/
+//	if (target == other && attackingCooldown <= 0 ) {
+//		// Attack!
+//		other->unitComp.currentEnergyLevel -= unitComp.attackDamage;
+//		attackingCooldown = 1000;
+//	}
+
 }
 
 float vectorAngleXZ(glm::vec3 v) {

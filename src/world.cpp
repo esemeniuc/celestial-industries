@@ -144,7 +144,7 @@ bool World::init(glm::vec2 screen) {
 	temp3->moveTo(targetx, targetz);
 
     // Example use of targetting units.
-	// AttackManager::registerTargetUnit(temp2, temp1);
+	AttackManager::registerTargetUnit(temp2, temp1);
 
 	selectedTileCoordinates.rowCoord = level.getLevelSize().rowCoord / 2;
 	selectedTileCoordinates.colCoord = level.getLevelSize().colCoord / 2;
