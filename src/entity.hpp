@@ -43,9 +43,9 @@ public:
 
 	glm::vec3 getPosition();
 
-    void attack(std::shared_ptr<Entity> entityToAttack, double elapsed_ms);
+    void attack(const std::shared_ptr<Entity> entityToAttack, double elapsed_ms);
 
-    void takeAttack(Entity& attackingEntity, double elapsed_ms);
+    void takeAttack(const Entity& attackingEntity, double elapsed_ms);
 
 	void setPosition(glm::vec3 position);
 

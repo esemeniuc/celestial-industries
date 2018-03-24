@@ -15,8 +15,8 @@ namespace UnitManager {
 	{
 		if(unit->aiComp.currentHealth <= 0)
 		{
-			unit.get()->softDelete();
-		}s
+			unit->softDelete();
+		}
 		return unit->aiComp.currentHealth <= 0;
 	}
 

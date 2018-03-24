@@ -14,20 +14,6 @@ namespace AttackManager {
     }
 
     void update(double elapsed_ms) {
-        std::vector<std::shared_ptr<Entity>> allEntities;
-
-        for (std::shared_ptr<Entity> entity : aiUnits) {
-            allEntities.push_back(entity);
-        }
-
-        for (std::shared_ptr<Entity> entity : playerUnits) {
-            allEntities.push_back(entity);
-        }
-
-        for (std::shared_ptr<Entity> entity : buildingMap) {
-            allEntities.push_back(entity);
-        }
-
         // logger(LogLevel::DEBUG) << "Number of entities found: " << allEntities.size() << " \n";
         // logger << "MS passed: " << elapsed_ms << '\n';
 
@@ -58,10 +44,7 @@ namespace AttackManager {
             }
         }
 
-        for (auto& entity : allEntities) {
-            entity->unitComp.state = UnitState::IDLE;
-        }
-
+        // Target Path is updated every second (1000ms)
         if (targetTime < 1000) {
             targetTime += elapsed_ms;
         } else targetTime = 0;
@@ -70,8 +53,8 @@ namespace AttackManager {
             for (std::pair<std::shared_ptr<Entity>, std::shared_ptr<Entity>> pair : unitTargetMap) {
 
                 pair.first->moveTo(pair.second->getPosition().x, pair.second->getPosition().z);
-                if (pair.second.get()->aiComp.currentHealth <= 0) {
-                    //unitTargetMap.erase(pair.first);
+                if (pair.second->aiComp.currentHealth <= 0) {
+                    unitTargetMap.erase(pair.first);
                 }
 
             }

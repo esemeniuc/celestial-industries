@@ -12,7 +12,7 @@ namespace BuildingManager {
 	{
 		if(unit->aiComp.currentHealth <= 0)
 		{
-			unit.get()->softDelete();
+			unit->softDelete();
 		}
 		return unit->aiComp.currentHealth <= 0;
 	}
@@ -26,8 +26,8 @@ namespace BuildingManager {
 	void update(double elapsed_ms) {
 		removeDead();
 		for (auto& building : buildingMap) {
-			if (building.get()->aiComp.currentHealth <= 0) {
-				building.get()->softDelete();
+			if (building->aiComp.currentHealth <= 0) {
+				building->softDelete();
 			}
 		}
 	}

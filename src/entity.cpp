@@ -136,6 +136,8 @@ void Entity::setTargetPath(const std::vector<Coord>& targetPath) {
 void Entity::moveTo(int x, int z) {
 	setTargetPath(AI::aStar::a_star(aiCostMap, 1, (int) rigidBody.getPosition().x, (int) rigidBody.getPosition().z, x,
 									z).second); //might need fixing with respect to int start positions
+
+    //TODO: use getPositionInt() later.
 	unitComp.targetPath.insert(unitComp.targetPath.begin(), {(int)getPosition().x, (int)getPosition().z});
 }
 
@@ -201,7 +203,7 @@ bool Entity::operator==(const Entity& rhs) const {
 		   rigidBody == rhs.rigidBody;
 }
 
-void Entity::takeAttack(Entity& attackingEntity, double elapsed_ms) {
+void Entity::takeAttack(const Entity& attackingEntity, double elapsed_ms) {
     // reduce health
     int damagePerSecond = attackingEntity.unitComp.attackDamage * attackingEntity.unitComp.attackSpeed;
     float damageToDoThisFrame = damagePerSecond * (elapsed_ms / 1000);
@@ -209,7 +211,7 @@ void Entity::takeAttack(Entity& attackingEntity, double elapsed_ms) {
     aiComp.currentHealth -= damageToDoThisFrame;
 }
 
-void Entity::attack(std::shared_ptr<Entity> entityToAttack, double elapsed_ms) {
+void Entity::attack(const std::shared_ptr<Entity> entityToAttack, double elapsed_ms) {
 	if (unitComp.state == UnitState::ATTACK) {
 		// Already attacking something else, nothing to do, return.
 		return;
