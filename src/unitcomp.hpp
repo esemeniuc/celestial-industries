@@ -31,10 +31,10 @@ public:
 
 
 	UnitComp() : initialEnergyLevel(50),
-				 attackDamage(6),
-				 attackRange(6),
+				 attackDamage(1),
+				 attackRange(5),
 				 attackSpeed(1),
-				 movementSpeed(15),
+				 movementSpeed(10),
 				 currentEnergyLevel(50),
 				 state(UnitState::IDLE) {
 	}

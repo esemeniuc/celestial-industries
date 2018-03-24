@@ -3,6 +3,7 @@
 #include "level.hpp"
 #include "logger.hpp"
 #include "particle.hpp"
+#include <fstream>
 
 bool Level::init(
     std::vector<std::vector<Model::MeshType>>& levelArray,
@@ -26,6 +27,27 @@ bool Level::init(
 	return true;
 }
 
+// Takes in full path
+void Level::save(std::string filename)
+{
+	std::unordered_map<short, char> typeToChar;
+	for (std::unordered_map<char, Model::MeshType>::iterator iter = charToType.begin(); iter != charToType.end(); ++iter) {
+		typeToChar[iter->second] = iter->first;
+	}
+	std::ofstream fs(filename);
+	if (!fs) {
+		logger(LogLevel::ERR) << "Failed to save level with name " << filename;
+		throw "Failed to open file for writing";
+	}
+	for (const auto& row : levelTraversalCostMap) {
+		for (const auto& cell : row) {
+			fs << typeToChar[cell.type];
+		}
+		fs << '\n';
+	}
+	fs.close();
+}
+
 void Level::update(float ms)
 {
     for (auto& tile : tiles) {
@@ -33,9 +55,10 @@ void Level::update(float ms)
     }
 }
 
-AStarNode nodeFromCost(int row, int col, std::pair<double, float> cost) {
+AStarNode Level::nodeFromCost(int row, int col, Model::MeshType type) {
+	std::pair<int, float> cost = tileToCost[type];
 	// TODO: Why are we giving this stuff doubles instead of ints?
-	return AStarNode(col, row, cost.first, cost.second);
+	return AStarNode(col, row, cost.first, cost.second, (short)type);
 }
 
 std::vector<std::vector<Model::MeshType>> Level::levelLoader(
@@ -55,19 +78,37 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(
 
 	// Needed to properly update cost map when placeing tiles 
 	tileToCost = {
-		{Model::MeshType::HROAD, { 1000.0, INF }},
-		{Model::MeshType::SAND_1, { 10.0, INF }},
-		{Model::MeshType::SAND_2, { 10.0, INF }},
-		{Model::MeshType::SAND_3, { 10.0, INF }},
-		{Model::MeshType::SAND_4, { 10.0, INF }},
-		{Model::MeshType::SAND_5, { 10.0, INF }},
-		{Model::MeshType::TREE, {1000.0, INF}},
-		{Model::MeshType::REDTREE, {1000.0, INF}},
-		{Model::MeshType::WATER, {1000.0, INF}},
-		{Model::MeshType::GRASS, {10.0, INF}},
-		{Model::MeshType::HROAD, {10.0, INF}},
-		{Model::MeshType::VROAD, {10.0, INF}},
-		{Model::MeshType::GEYSER, {1000.0, INF}}
+		{Model::MeshType::HROAD, { 1000, INF }},
+		{Model::MeshType::SAND_1, { 10, INF }},
+		{Model::MeshType::SAND_2, { 10, INF }},
+		{Model::MeshType::SAND_3, { 10, INF }},
+		{Model::MeshType::SAND_4, { 10, INF }},
+		{Model::MeshType::SAND_5, { 10, INF }},
+		{Model::MeshType::TREE, {1000, INF}},
+		{Model::MeshType::REDTREE, {1000, INF}},
+		{Model::MeshType::WATER, {1000, INF}},
+		{Model::MeshType::GRASS, {10, INF}},
+		{Model::MeshType::HROAD, {10, INF}},
+		{Model::MeshType::VROAD, {10, INF}},
+		{Model::MeshType::GEYSER, {1000, INF}}
+	};
+
+	charToType = {
+		{'#', Model::MeshType::HROAD},
+		{' ', Model::MeshType::SAND_1},
+		{'\\', Model::MeshType::SAND_2},
+		{'.', Model::MeshType::SAND_3},
+		{';', Model::MeshType::SAND_4},
+		{',', Model::MeshType::SAND_5},
+		{'T', Model::MeshType::TREE},
+		{'Y', Model::MeshType::YELLOWTREE},
+		{'R', Model::MeshType::REDTREE},
+		{'W', Model::MeshType::WATER},
+		{'G', Model::MeshType::GRASS},
+		{'H', Model::MeshType::HROAD},
+		{'V', Model::MeshType::VROAD},
+		{'P', Model::MeshType::GEYSER},
+		{'X', Model::MeshType::GUN_TURRET}
 	};
 
 	if (!level.is_open()) {
@@ -80,76 +121,9 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(
 		tileData.clear();
 		int colNumber = 0;
 		for (const char tile : line) {
+			// Handles special stuff to do on special tiles
 			switch (tile) {
-				case '#': {
-					row.push_back(Model::MeshType::HROAD);
-					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::HROAD]));
-					break;
-				}
-				case ' ': {
-					row.push_back(Model::MeshType::SAND_1);
-					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::SAND_1]));
-					break;
-				}
-				case '\'': {
-					row.push_back(Model::MeshType::SAND_2);
-					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::SAND_2]));
-					break;
-				}
-				case '.': {
-					row.push_back(Model::MeshType::SAND_3);
-					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::SAND_3]));
-					break;
-				}
-				case ';': {
-					row.push_back(Model::MeshType::SAND_4);
-					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::SAND_4]));
-					break;
-				}
-				case ',': {
-					row.push_back(Model::MeshType::SAND_5);
-					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::SAND_5]));
-					break;
-				}
-				case 'T': {
-					row.push_back(Model::MeshType::TREE);
-					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::TREE]));
-					break;
-				}
-				case 'Y': {
-					row.push_back(Model::MeshType::YELLOWTREE);
-					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::YELLOWTREE]));
-					break;
-				}
-				case 'R': {
-					row.push_back(Model::MeshType::REDTREE);
-					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::REDTREE]));
-					break;
-				}
-				case 'W': {
-					row.push_back(Model::MeshType::WATER);
-					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::WATER]));
-					break;
-				}
-				case 'G': {
-					row.push_back(Model::MeshType::GRASS);
-					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::GRASS]));
-					break;
-				}
-				case 'H': {
-					row.push_back(Model::MeshType::HROAD);
-					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::HROAD]));
-					break;
-				}
-				case 'V': {
-					row.push_back(Model::MeshType::VROAD);
-					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::VROAD]));
-					break;
-				}
 				case 'P': {
-					row.push_back(Model::MeshType::GEYSER);
-					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::GEYSER]));
-
 					auto emitter = std::make_shared<Particles::ParticleEmitter>(
                             glm::vec3{colNumber, 0, rowNumber}, // emitter position
                             glm::vec3{0,1,0}, // emitter direction
@@ -164,11 +138,17 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(
 					emitters.push_back(emitter);
                     break;
                 }
-				default: {
-					row.push_back(Model::MeshType::SAND_2);
-					tileData.push_back(nodeFromCost(rowNumber, colNumber, tileToCost[Model::MeshType::SAND_2]));
-					break;
-				}
+			}
+
+			// Actually add the tiles
+			if (charToType.find(tile) == charToType.end()) {
+				// Not in map
+				row.push_back(Model::MeshType::SAND_2);
+				tileData.push_back(nodeFromCost(rowNumber, colNumber, Model::MeshType::SAND_2));
+			}
+			else {
+				row.push_back(charToType[tile]);
+				tileData.push_back(nodeFromCost(rowNumber, colNumber, charToType[tile]));
 			}
 			colNumber++;
 		}
@@ -204,7 +184,7 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 
 	for (unsigned int x = location.x; x < location.x + width; x++) {
 		for (unsigned int y = location.z; y < location.z + height; y++) {
-			levelTraversalCostMap[y][x] = AStarNode(x, y, tileToCost[type].first, tileToCost[type].second);
+			levelTraversalCostMap[y][x] = nodeFromCost(x,y, type);
 		}
 	}
 	std::shared_ptr<Tile> newTile = tileFromMeshType(type);

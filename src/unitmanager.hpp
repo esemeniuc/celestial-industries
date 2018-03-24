@@ -11,21 +11,28 @@ namespace UnitManager {
 		aiUnits.reserve(levelHeight * levelWidth);
 	}
 
-	void removeUnit(const std::shared_ptr<Entity>& unit) {
-		if (unit->aiComp.owner == GamePieceOwner::PLAYER) {
-			playerUnits.erase(std::remove(playerUnits.begin(), playerUnits.end(), unit), playerUnits.end());
-
-		} else if (unit->aiComp.owner == GamePieceOwner::AI) {
-			aiUnits.erase(std::remove(aiUnits.begin(), aiUnits.end(), unit), aiUnits.end());
+	bool isDead( std::shared_ptr<Entity>& unit)
+	{
+		if(unit->aiComp.currentHealth <= 0)
+		{
+			unit->softDelete();
 		}
+		return unit->aiComp.currentHealth <= 0;
+	}
+
+	void removeDead() {
+		//std::cout << "before: " << playerUnits.size() << '\n';
+		playerUnits.erase(std::remove_if(playerUnits.begin(), playerUnits.end(), isDead), playerUnits.end());
+		//std::cout << "after: " << playerUnits.size() << '\n';
+		aiUnits.erase(std::remove_if(aiUnits.begin(), aiUnits.end(), isDead), aiUnits.end());
 	}
 
 	void update(double elapsed_ms) {
+		removeDead();
 		for (auto& playerUnit : playerUnits) {
-			playerUnit->unitComp.update();
-			playerUnit->move(elapsed_ms);
+				playerUnit->unitComp.update();
+				playerUnit->move(elapsed_ms);
 		}
-
 
 		for (auto& aiUnit : aiUnits) {
 			aiUnit->unitComp.update();

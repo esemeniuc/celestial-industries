@@ -7,6 +7,8 @@
 #include "particle.hpp"
 #include "aimanager.hpp"
 #include "unit.hpp"
+#include "attackManger.hpp"
+#include "buildingmanager.hpp"
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -134,13 +136,17 @@ bool World::init() {
 	auto temp1 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
 	temp1->moveTo(targetx, targetz);
 
+
 	startx = 39, startz = 19;
-	auto temp2 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	auto temp2 = Unit::spawn(Unit::UnitType::TANK, {startx, 0, startz}, GamePieceOwner::AI);
 	temp2->moveTo(targetx, targetz);
 
 	startx = 39, startz = 1;
 	auto temp3 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
 	temp3->moveTo(targetx, targetz);
+
+    // Example use of targetting units.
+	AttackManager::registerTargetUnit(temp2, temp1);
 
 	selectedTileCoordinates.rowCoord = level.getLevelSize().rowCoord / 2;
 	selectedTileCoordinates.colCoord = level.getLevelSize().colCoord / 2;
@@ -219,6 +225,9 @@ bool World::update(double elapsed_ms) {
 
 	AiManager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
+	AttackManager::update(elapsed_ms);
+    BuildingManager::update(elapsed_ms);
+  
 	Model::collisionDetector.findCollisions(elapsed_ms);
 	for (const auto& tile : level.tiles) {
 		tile->update(elapsed_ms);
@@ -333,6 +342,11 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 	// Core controls
 	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
 		escapePressed = true;
+	}
+
+	// File saving
+	if (action == GLFW_RELEASE && key == GLFW_KEY_P) {
+		level.save("savedLevel.txt");
 	}
 
 	// Tile selection controls:

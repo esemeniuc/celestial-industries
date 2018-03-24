@@ -137,6 +137,8 @@ void Entity::moveTo(int x, int z) {
 	setTargetPath(AI::aStar::a_star(aiCostMap, 1, (int) rigidBody.getPosition().x, (int) rigidBody.getPosition().z, x,
 									z).second); //might need fixing with respect to int start positions
 
+    //TODO: use getPositionInt() later.
+	unitComp.targetPath.insert(unitComp.targetPath.begin(), {(int)getPosition().x, (int)getPosition().z});
 }
 
 //returns a pathIndex and a 0.00 - 0.99 value to interpolate between steps in a path
@@ -186,12 +188,12 @@ glm::vec3 Entity::getPosition() const {
 	return rigidBody.getPosition();
 }
 
-bool Entity::canSee(std::shared_ptr<Entity> other) {
-	return glm::length(glm::vec2(other->getPosition() - this->getPosition())) <= aiComp.visionRange;
+bool Entity::canSee(std::shared_ptr<Entity> entity) {
+	return glm::length(glm::vec2(entity->getPosition() - this->getPosition())) <= aiComp.visionRange;
 }
 
-bool Entity::inAttackRange(std::shared_ptr<Entity> other) {
-	return glm::length(glm::vec2(other->getPosition() - this->getPosition())) <= unitComp.attackRange;
+bool Entity::inAttackRange(std::shared_ptr<Entity> entity) {
+	return glm::length(glm::vec2(entity->getPosition() - this->getPosition())) <= unitComp.attackRange;
 }
 
 bool Entity::operator==(const Entity& rhs) const {
@@ -201,17 +203,29 @@ bool Entity::operator==(const Entity& rhs) const {
 		   rigidBody == rhs.rigidBody;
 }
 
-void Entity::attack(std::shared_ptr<Entity> other)
-{
-	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
-		target = other;
+void Entity::takeAttack(const Entity& attackingEntity, double elapsed_ms) {
+    // reduce health
+    int damagePerSecond = attackingEntity.unitComp.attackDamage * attackingEntity.unitComp.attackSpeed;
+    float damageToDoThisFrame = damagePerSecond * (elapsed_ms / 1000);
+
+    aiComp.currentHealth -= damageToDoThisFrame;
+}
+
+void Entity::attack(const std::shared_ptr<Entity> entityToAttack, double elapsed_ms) {
+	if (unitComp.state == UnitState::ATTACK) {
+		// Already attacking something else, nothing to do, return.
 		return;
 	}
-	// http://www.cplusplus.com/reference/memory/shared_ptr/operators/
-	if (target == other && attackingCooldown <= 0 ) {
-		// Attack!
-		other->unitComp.currentEnergyLevel -= unitComp.attackDamage;
-		attackingCooldown = 1000;
+
+	if (aiComp.type != GamePieceClass::UNIT_OFFENSIVE) return;
+
+	unitComp.state = UnitState::ATTACK;
+	entityToAttack->takeAttack(*this, elapsed_ms);
+
+	// Check to see if attack is done.
+	// Set state to non-attacking state if attack is done (other entity is killed)
+	if (entityToAttack->aiComp.currentHealth <= 0) {
+		unitComp.state = UnitState::IDLE;
 	}
 }
 
