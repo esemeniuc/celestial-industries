@@ -27,7 +27,6 @@ namespace Model {
 			BALL,
 			GUN_TURRET,
 			GEYSER,
-			PARTICLE,
 			TILE_CURSOR,
 			ENEMY_SPIKE_UNIT,
 			ENEMY_RANGED_LINE_UNIT,

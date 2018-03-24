@@ -7,7 +7,9 @@
 #include "config.hpp"
 #include "tile.hpp"
 #include "model.hpp"
+#include "particle.hpp"
 #include "entity.hpp"
+
 
 #define INF std::numeric_limits<float>::infinity()
 
@@ -52,11 +54,10 @@ public:
 	// Using a shared pointer to a tile allows us to actually have derived classes in there as well.
 	std::vector<std::shared_ptr<Tile>> tiles; // we can add the time dimension when we get there
 	std::shared_ptr<Tile> tileCursor;
+    std::vector<std::shared_ptr<Particles::ParticleEmitter>> emitters;
+
 	//funcs
-	bool init(
-			std::vector<std::vector<Model::MeshType>>& levelArray,
-			std::vector<std::shared_ptr<Renderer>>& meshRenderers
-	);
+	bool init(const std::vector<std::shared_ptr<Renderer>>& meshRenderers);
 
 	void save(std::string filename);
 
@@ -64,7 +65,10 @@ public:
 
 	bool displayPath(const std::vector<Coord>& levelArray);
 
-	std::vector<std::vector<Model::MeshType>> levelLoader(const std::string& levelTextFile);
+	std::vector<std::vector<Model::MeshType>> levelLoader(
+			const std::string& levelTextFile,
+			const std::shared_ptr<Shader>& particleShader
+	);
 
 	std::vector<std::vector<AStarNode>> getLevelTraversalCostMap();
 
@@ -79,8 +83,6 @@ public:
 	std::shared_ptr<Tile> tileFromMeshType(Model::MeshType type);
 
 	std::shared_ptr<Entity> entityFromMeshType(Model::MeshType type);
-
-	Coord getLevelSize() const;
 
 private:
 	//members

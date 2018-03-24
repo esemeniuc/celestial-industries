@@ -111,6 +111,11 @@ glm::vec3 Entity::getPosition() {
 	return rigidBody.getPosition();
 }
 
+
+Coord Entity::getPositionInt() {
+	return {int(rigidBody.getPosition().x+0.5), int(rigidBody.getPosition().z+0.5)};
+}
+
 void Entity::setPosition(glm::vec3 position) {
 	rigidBody.setPosition(position);
 	this->geometryRenderer.setModelMatrix(0, position);
@@ -133,12 +138,18 @@ void Entity::setTargetPath(const std::vector<Coord>& targetPath) {
 	unitComp.targetPath = targetPath;
 }
 
+void Entity::scoutPosition(int x, int z) {
+	this->moveTo(x,z);
+	this->unitComp.state = UnitState::MOVE;
+}
+
+//set unit state before this
+//FIXME: make specialized state versions of moveTo
 void Entity::moveTo(int x, int z) {
 	setTargetPath(AI::aStar::a_star(aiCostMap, 1, (int) rigidBody.getPosition().x, (int) rigidBody.getPosition().z, x,
 									z).second); //might need fixing with respect to int start positions
 
-    //TODO: use getPositionInt() later.
-	unitComp.targetPath.insert(unitComp.targetPath.begin(), {(int)getPosition().x, (int)getPosition().z});
+	unitComp.targetPath.insert(unitComp.targetPath.begin(), {getPositionInt().colCoord, getPositionInt().rowCoord});
 }
 
 //returns a pathIndex and a 0.00 - 0.99 value to interpolate between steps in a path
@@ -164,10 +175,6 @@ void Entity::move(double elapsed_time) {
 		double dRow = next.rowCoord - curr.rowCoord;
 		double dCol = next.colCoord - curr.colCoord;
 
-//			double transRow = (dRow / (1000 / elapsed_time)) * movementSpeed;
-//			double transCol = (dCol / (1000 / elapsed_time)) * movementSpeed;
-//			translate({transCol, 0, transRow});
-
 		// TODO: Calculate future velocity for collisions
 
 		double destCol = curr.colCoord + (dCol * index.second);
@@ -176,6 +183,7 @@ void Entity::move(double elapsed_time) {
 		newPos = {destCol, 0, destRow};
 	} else { //move to the last coord in the path
 		newPos = {unitComp.targetPath.back().colCoord, 0, unitComp.targetPath.back().rowCoord};
+		this->unitComp.state = UnitState::IDLE;
 	}
 
 	// TODO: Split this in calculate and update so this can do collisions
@@ -252,7 +260,7 @@ float vectorAngleXZ(glm::vec3 v) {
 	//	return 360.0f + angle;
 	glm::vec3 xUnit = glm::vec3(1.0f, 0.0f, 0.0f);
 	v = glm::normalize(v);
-	return glm::acos(glm::dot(v, xUnit))*(180.0f / M_PI);	
+	return glm::acos(glm::dot(v, xUnit))*(180.0f / M_PI);
 }
 
 

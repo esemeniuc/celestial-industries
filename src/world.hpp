@@ -32,7 +32,9 @@
 class World {
 public:
 	//members
-	bool advanced_mode = false;
+	size_t levelWidth;
+	size_t levelHeight;
+
 	//funcs
 	World();
 
@@ -73,6 +75,9 @@ private:
 	std::shared_ptr<Shader> objShader;
 	Level level;
 	Skybox m_skybox;
+
+	// Particle things
+	std::shared_ptr<Shader> particleShader;
 
 	// C++ rng
 	std::default_random_engine m_rng;
