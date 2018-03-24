@@ -87,8 +87,8 @@ private:
 	std::vector<std::vector<AStarNode>> levelTraversalCostMap;
 
 	// Indexable using MeshType enum
-	std::map<Model::MeshType, std::pair<double, float>> tileToCost;
-	std::map<char, Model::MeshType> charToType;
+	std::unordered_map<Model::MeshType, std::pair<double, float>> tileToCost;
+	std::unordered_map<char, Model::MeshType> charToType;
 
 	//funcs
 };
