@@ -2,12 +2,14 @@
 
 #include <limits>
 #include <ostream> //for overloaded << operator
-#include <unordered_map>
+#include <map>
 #include "common.hpp"
 #include "config.hpp"
 #include "tile.hpp"
 #include "model.hpp"
+#include "particle.hpp"
 #include "entity.hpp"
+
 
 #define INF std::numeric_limits<float>::infinity()
 
@@ -52,6 +54,8 @@ public:
 	// Using a shared pointer to a tile allows us to actually have derived classes in there as well.
 	std::vector<std::shared_ptr<Tile>> tiles; // we can add the time dimension when we get there
 	std::shared_ptr<Tile> tileCursor;
+    std::vector<std::shared_ptr<Particles::ParticleEmitter>> emitters;
+
 	//funcs
 	bool init(const std::vector<std::shared_ptr<Renderer>>& meshRenderers);
 
@@ -61,7 +65,10 @@ public:
 
 	bool displayPath(const std::vector<Coord>& levelArray);
 
-	std::vector<std::vector<Model::MeshType>> levelLoader(const std::string& levelTextFile);
+	std::vector<std::vector<Model::MeshType>> levelLoader(
+			const std::string& levelTextFile,
+			const std::shared_ptr<Shader>& particleShader
+	);
 
 	std::vector<std::vector<AStarNode>> getLevelTraversalCostMap();
 
@@ -82,8 +89,8 @@ private:
 	std::vector<std::vector<AStarNode>> levelTraversalCostMap;
 
 	// Indexable using MeshType enum
-	std::unordered_map<Model::MeshType, std::pair<double, float>> tileToCost;
-	std::unordered_map<char, Model::MeshType> charToType;
+	std::map<Model::MeshType, std::pair<int, float>> tileToCost;
+	std::map<char, Model::MeshType> charToType;
 
 	//funcs
 };

@@ -26,8 +26,8 @@ bool Level::init(const std::vector<std::shared_ptr<Renderer>>& meshRenderers) {
 // Takes in full path
 void Level::save(std::string filename)
 {
-	std::unordered_map<short, char> typeToChar;
-	for (std::unordered_map<char, Model::MeshType>::iterator iter = charToType.begin(); iter != charToType.end(); ++iter) {
+	std::map<short, char> typeToChar;
+	for (std::map<char, Model::MeshType>::iterator iter = charToType.begin(); iter != charToType.end(); ++iter) {
 		typeToChar[iter->second] = iter->first;
 	}
 	std::ofstream fs(filename);
@@ -57,12 +57,20 @@ AStarNode Level::nodeFromCost(int row, int col, Model::MeshType type) {
 	return AStarNode(col, row, cost.first, cost.second, (short)type);
 }
 
-std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& levelTextFile) {
+std::vector<std::vector<Model::MeshType>> Level::levelLoader(
+        const std::string& levelTextFile,
+        const std::shared_ptr<Shader>& particleShader
+) {
 	std::ifstream level(levelTextFile);
 	std::string line;
 	std::vector<std::vector<Model::MeshType>> levelData;
 	std::vector<Model::MeshType> row;
 	std::vector<AStarNode> tileData;
+	std::shared_ptr<Texture> particleTexture = std::make_shared<Texture>();
+	particleTexture->load_from_file(textures_path("turtle.png"));
+	if (!particleTexture->is_valid()) {
+		throw "Particle texture failed to load!";
+	}
 
 	// Needed to properly update cost map when placeing tiles 
 	tileToCost = {
@@ -112,15 +120,18 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 			// Handles special stuff to do on special tiles
 			switch (tile) {
 				case 'P': {
-                    Particles::makeParticleEmitter(
+					auto emitter = std::make_shared<Particles::ParticleEmitter>(
                             glm::vec3{colNumber, 0, rowNumber}, // emitter position
                             glm::vec3{0,1,0}, // emitter direction
-                            1.0f,    // spread
-                            0.1f,    // particle width
-                            0.1f,    // particle height
+                            0.8f,    // spread
+                            0.5f,    // particle width
+                            0.5f,    // particle height
                             2.0f,    // lifespan
-                            5.0f     // speed
+                            5.0f,    // speed
+                            particleShader,
+							particleTexture
                     );
+					emitters.push_back(emitter);
                     break;
                 }
 			}
