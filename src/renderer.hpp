@@ -49,7 +49,8 @@ public:
 private:
     // TODO: replace with uniform buffers
 	GLuint viewProjectionUniform, viewMatrixUniform, modelIndexUniform, instanceDataAttribute, materialUniformBlock, positionAttribute;
-	GLuint normalMatrixUniformBlock, texcoordAttribute, normalAttribute, instancesDataBuffer, normalMatricesAttribute, normalMatricesBuffer;
+	GLuint normalMatrixUniformBlock, texcoordAttribute, normalAttribute, instancesDataBuffer;
+	GLuint normalMatricesAttribute, normalMatricesBuffer, directionalLightUniform;
     static const unsigned int maxInstances = Config::MAX_TOTAL_SUBOBJECTS_PER_RENDERER;
 
     struct ShaderInstancesData {
@@ -80,6 +81,7 @@ private:
 
     ShaderInstancesData instancesData;
 	ShaderNormalMatrixData normalMatricesData;
+	glm::mat4 viewMatrix;
 };
 
 class Renderable {

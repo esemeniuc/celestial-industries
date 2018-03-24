@@ -40,13 +40,17 @@ SubObject Renderer::loadSubObject(SubObjectSource source)
     materialUniformBlock = glGetUniformBlockIndex(shader->program, "MaterialInfo");
 	normalMatrixUniformBlock = glGetUniformBlockIndex(shader->program, "normalMatrixInfo");
 	viewMatrixUniform = glGetUniformLocation(shader->program, "viewMatrix");
-
+	
 
     // Getting attribute locations
     positionAttribute = glGetAttribLocation(shader->program, "in_position");
     texcoordAttribute = glGetAttribLocation(shader->program, "in_texcoord");
     normalAttribute = glGetAttribLocation(shader->program, "in_normal");
 
+	// Directional light vector
+	glm::vec3 lightVector = glm::vec3(0.49, 0.79, 0.49);
+	directionalLightUniform = glGetUniformLocation(shader->program, "directionalLight");
+	glUniform3fv(directionalLightUniform, 1, &lightVector[0]);
 
     OBJ::Data obj;
     std::string path = pathBuilder({ "data", "models" });
@@ -133,21 +137,18 @@ glm::mat4 Renderer::collapseMatrixVector(std::vector<glm::mat4> v)
     return result;
 }
 
-void Renderer::render(glm::mat4 viewProjection, glm::mat4 viewMatrix)
+void Renderer::render(glm::mat4 viewProjection, glm::mat4 view)
 {
-    // Setting shaders
+	// update view matrix
+	viewMatrix = view;
+
+	// Setting shaders
     glUseProgram(shader->program);
 
     glBindBuffer(GL_UNIFORM_BUFFER, instancesDataBuffer);
     glUniformBlockBinding(shader->program, instanceDataAttribute, 2); // layout hardcoded in shader
     glBindBufferBase(GL_UNIFORM_BUFFER, 2, instancesDataBuffer);
     glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderInstancesData), &instancesData, GL_DYNAMIC_DRAW);
-
-	// compute normal matrices for use in lighting computations in the shader
-	for (size_t i = 0; i < maxInstances; i++) {
-		// glm offer another function inverseTranspose, but I opted to use this for now
-		normalMatricesData.normalMatrix[i] = glm::transpose(glm::inverse(instancesData.modelMatrices[i] * viewMatrix));
-	}
 
 	// bind normal matrices data structure to a uniform buffer and send to shader
 	glBindBuffer(GL_UNIFORM_BUFFER, normalMatricesBuffer);
@@ -189,9 +190,13 @@ void Renderer::updateModelMatrixStack(unsigned int instanceIndex, bool updateHie
                 modelIndex = subObjects[modelIndex].parentMesh;
             }
             instancesData.modelMatrices[instanceIndex*subObjects.size() + i] = collapseMatrixVector(modelMatrices);
+			normalMatricesData.normalMatrix[instanceIndex*subObjects.size() + i] =
+				glm::transpose(glm::inverse(collapseMatrixVector(modelMatrices) * viewMatrix));
         }
         else {
             instancesData.modelMatrices[instanceIndex*subObjects.size() + i] = instances[instanceIndex].matrixStack[i];
+			normalMatricesData.normalMatrix[instanceIndex*subObjects.size() + i] =
+				glm::transpose(glm::inverse(instances[instanceIndex].matrixStack[i] * viewMatrix));
         }
     }
 }
