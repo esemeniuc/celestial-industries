@@ -74,6 +74,9 @@ private:
 	Level level;
 	Skybox m_skybox;
 
+	// Particle things
+	std::shared_ptr<Shader> particleShader;
+
 	// C++ rng
 	std::default_random_engine m_rng;
 	std::uniform_real_distribution<float> m_dist; // default 0..1

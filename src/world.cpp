@@ -108,12 +108,19 @@ bool World::init() {
 		return false;
 	}
 
-	if (!initMeshTypes(Model::meshSources)) {
+	particleShader = std::make_shared<Shader>();
+    if (!particleShader->load_from_file(shader_path("particles.vs.glsl"), shader_path("particles.fs.glsl"))) {
+        logger(LogLevel::ERR) << "Failed to load particle shader!" << '\n';
+        return false;
+    }
+
+
+	if(!initMeshTypes(Model::meshSources)) {
 		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
 	}
 
 	levelArray = level.levelLoader(
-			pathBuilder({"data", "levels"}) + "GameLevel1.txt");
+			pathBuilder({"data", "levels"}) + "GameLevel1.txt", particleShader);
 
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
@@ -212,7 +219,10 @@ bool World::update(double elapsed_ms) {
 		level.tileCursor->setPosition({ selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord });
 	}
 
-	Particles::updateParticleStates(elapsed_ms);
+    for (const auto& emitter : level.emitters) {
+        emitter->update(elapsed_ms);
+    }
+
 	AiManager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
 	AttackManager::update(elapsed_ms);
@@ -279,6 +289,9 @@ void World::draw() {
 	m_skybox.getCameraPosition(camera.position);
 	m_skybox.draw(projection * view * m_skybox.getModelMatrix());
 
+	for (const auto &emitter : level.emitters) {
+		emitter->render(projectionView, camera.position);
+	}
 	// Presenting
 	glfwSwapBuffers(m_window);
 }
