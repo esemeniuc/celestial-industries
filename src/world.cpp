@@ -25,11 +25,8 @@ World::World() {
 
 World::~World() = default;
 
-std::shared_ptr<Particles::ParticleEmitter> fireSpawner;
-
-
 // World initialization
-bool World::init(glm::vec2 screen) {
+bool World::init() {
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -47,8 +44,8 @@ bool World::init(glm::vec2 screen) {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	glfwWindowHint(GLFW_RESIZABLE, 1);
-	m_window = glfwCreateWindow((int) screen.x, (int) screen.y, Config::WINDOW_TITLE, nullptr, nullptr);
-	m_screen = screen;
+	m_window = glfwCreateWindow(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT, Config::WINDOW_TITLE, nullptr, nullptr);
+	m_screen = glm::vec2(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT);
 	if (m_window == nullptr)
 		return false;
 
@@ -325,14 +322,12 @@ void World::updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<i
 	}
 }
 
+
+
+
 // On key callback
 void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 	// Core controls
-	if (action == GLFW_RELEASE && key == GLFW_KEY_R) {
-		int w, h;
-		glfwGetWindowSize(m_window, &w, &h);
-	}
-
 	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
 		escapePressed = true;
 	}
@@ -412,6 +407,14 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 void World::on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset) {
 	camera.mouseScroll = glm::vec2(xoffset, yoffset);
 }
+
+//returns w x h
+std::pair<int, int> World::getWindowSize(){
+	int windowWidth;
+	int windowHeight;
+	glfwGetWindowSize(m_window, &windowWidth, &windowHeight);
+	return {windowWidth, windowHeight};
+};
 
 void World::on_mouse_button(GLFWwindow * window, int button, int action, int mods)
 {
