@@ -57,8 +57,10 @@ namespace AiManager {
 	int aiUnitValue = 0;
 	int playerBuildingValue = 0;
 	int aiBuildingValue = 0;
-	int percentageSeen = 0;
+	double percentVisible = 0;
+	const double AI_VISIBLE_THRESHOLD = 0.5; //scout only if more than this value
 	const int AI_RUN_THRESHOLD = 1000; //run every 1000ms
+	const int DIST_THRESHOLD = 6;
 	double lastRunTimestamp = AI_RUN_THRESHOLD;
 
 	std::vector<Coord> scoutingTargetsInProgress;
@@ -97,7 +99,7 @@ namespace AiManager {
 			}
 		}
 
-		percentageSeen = cellsVisible / (int) (world.levelHeight * world.levelWidth);
+		percentVisible = (double) cellsVisible / (world.levelHeight * world.levelWidth);
 	}
 
 	//calculates the values of ai and player units and buildings
@@ -122,8 +124,6 @@ namespace AiManager {
 			}
 		}
 	}
-
-	int size = 5;
 
 	//returns the number of newly found cells during scouting by placing a unit at (x,z)
 	int getNumberOfNewCellsIfScout(int x, int y, int radius) {
@@ -153,8 +153,6 @@ namespace AiManager {
 	};
 
 
-	const int DIST_THRESHOLD = 6;
-
 	bool isWithinRange(int x, int z) {
 		return x >= 0 && x < world.levelWidth &&
 			   z >= 0 && z < world.levelHeight;
@@ -167,44 +165,63 @@ namespace AiManager {
 								  {-1, 0}//left
 	};
 
+	bool withinRangeOfOtherScoutTargets(int x, int z) {
+		for (const auto& existingTarget : scoutingTargetsInProgress) {
+			glm::vec3 newTarget(x, 0, z);
+			glm::vec3 existingTargetV(existingTarget.colCoord, 0, existingTarget.rowCoord);
+			float dist = glm::l2Norm(existingTargetV, newTarget);
+			if (dist < DIST_THRESHOLD) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	//assume we make 1 action per frame for simplicity, assume vision range is fixed
 	Coord findBestScoutLocation() {
-
 		std::vector<std::vector<bool>> visited(world.levelHeight, std::vector<bool>(world.levelWidth));
+		std::vector<std::vector<std::pair<int, int>>> parent(world.levelHeight,
+															 std::vector<std::pair<int, int>>(world.levelWidth));
 		//traverse tree with bfs
+		std::pair<int, int> root(-1, -1);
+		parent[aiSpawnZ][aiSpawnX] = root;
 		visited[aiSpawnZ][aiSpawnX] = true;
 		std::queue<bfsState> queue;
 		queue.push({aiSpawnX, aiSpawnZ, 0});
-		int run = 0;
 		while (!queue.empty()) {
-
 			bfsState u = queue.front();
 			queue.pop();
-			run++;
-			if (u.unseenDistance >= DIST_THRESHOLD) {
-				return Coord(u.x, u.z);
+
+			if (u.unseenDistance >= DIST_THRESHOLD && !withinRangeOfOtherScoutTargets(u.x, u.z)) {
+				scoutingTargetsInProgress.emplace_back(u.x, u.z);
+				std::pair<int, int> traverser(u.x, u.z);
+				for (int i = DIST_THRESHOLD; i > DIST_THRESHOLD / 2 && traverser != root; i--)//get to center of circle
+				{
+					traverser = parent[traverser.second][traverser.first]; //parent[z][x]
+				}
+				return Coord(traverser.first, traverser.second);
 			}
+
 			for (std::pair<int, int> dir : adj) {
 				int nextX = u.x + dir.first;
 				int nextZ = u.z + dir.second;
 				int nextDist = u.unseenDistance;
 				if (isWithinRange(nextX, nextZ) && !visited[nextZ][nextX]) {
 					visited[nextZ][nextX] = true;
-					if (visibilityMap[nextZ][nextX] > 0) //FIXME: change this to be relative later
-					{
-						nextDist++;
+					parent[nextZ][nextX] = {u.x, u.z};
+					if (visibilityMap[nextZ][nextX] > 0) {
+						nextDist++;//FIXME: change this to be relative later
 					}
 					queue.push({nextX, nextZ, nextDist});
 				}
 			}
 		}
 
-		//assumes this is the player spawn
+		//assumes this is the player spawn and just goes to it
 		int playerSpawnX = 0;
 		int playerSpawnZ = world.levelHeight / 2;
+		scoutingTargetsInProgress.emplace_back(playerSpawnX, playerSpawnZ);
 		return Coord(playerSpawnX, playerSpawnZ);
-
-
 	}
 
 //updates the state trackers of what units the ai has seen
@@ -251,14 +268,16 @@ namespace AiManager {
 		}
 
 		updateValueOfEntities();
-		updateVisibilityMap();
 		updateUnitsSeen();
 
 		//send unit to scout
-		Coord loc = findBestScoutLocation();
-		std::shared_ptr<Entity> bestUnit = getBestScoutUnit(loc);
-		if (bestUnit) { //if not null
-			bestUnit->scoutPosition(loc.colCoord, loc.rowCoord);
+		updateVisibilityMap();
+		if (percentVisible < AI_VISIBLE_THRESHOLD) {
+			Coord loc = findBestScoutLocation();
+			std::shared_ptr<Entity> bestUnit = getBestScoutUnit(loc);
+			if (bestUnit) { //if not null
+				bestUnit->scoutPosition(loc.colCoord, loc.rowCoord);
+			}
 		}
 	}
 
