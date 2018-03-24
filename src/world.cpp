@@ -322,6 +322,11 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 		escapePressed = true;
 	}
 
+	// File saving
+	if (action == GLFW_RELEASE && key == GLFW_KEY_P) {
+		level.save("savedLevel.txt");
+	}
+
 	// Tile selection controls:
 	if (action == GLFW_RELEASE) {
 		if (key == GLFW_KEY_I) {

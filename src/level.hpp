@@ -18,15 +18,17 @@ struct TimeTile {
 
 // used to build a graph of nodes for the AI pathfinder to traverse each tile node.
 struct AStarNode {
+	short type;
 	int rowCoord, colCoord, movementCost;
 	float fScore;
 
 	AStarNode() = default;
 
-	AStarNode(int _colCoord, int _rowCoord, int _movementCost, float _fScore) : rowCoord(_rowCoord),
+	AStarNode(int _colCoord, int _rowCoord, int _movementCost, float _fScore, short _type) : rowCoord(_rowCoord),
 																				colCoord(_colCoord),
 																				movementCost(_movementCost),
-																				fScore(_fScore) {}
+																				fScore(_fScore),
+		                                                                        type(_type) {}
 
 	bool operator==(const AStarNode& rhs) const {
 		return rowCoord == rhs.rowCoord &&
@@ -56,6 +58,8 @@ public:
 			std::vector<std::shared_ptr<Renderer>>& meshRenderers
 	);
 
+	void save(std::string filename);
+
 	void update(float ms);
 
 	bool displayPath(const std::vector<Coord>& levelArray);
@@ -63,6 +67,8 @@ public:
 	std::vector<std::vector<Model::MeshType>> levelLoader(const std::string& levelTextFile);
 
 	std::vector<std::vector<AStarNode>> getLevelTraversalCostMap();
+
+	AStarNode nodeFromCost(int row, int col, Model::MeshType type);
 
 	// Places a tile, replaceing anything there before. If the tile is larger than standard specify the width and height.
 	// The location reffer's to the tile's top left corner (0,0,0) being the minimum accepted. The location is NOT the center of the tile.
@@ -82,6 +88,7 @@ private:
 
 	// Indexable using MeshType enum
 	std::map<Model::MeshType, std::pair<double, float>> tileToCost;
+	std::map<char, Model::MeshType> charToType;
 
 	//funcs
 };
