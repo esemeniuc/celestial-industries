@@ -242,14 +242,14 @@ namespace AiManager {
 		}
 	}
 
-	std::shared_ptr<Entity> getBestUnitToAttack(const Coord& targetLocation) {
+	std::shared_ptr<Entity> getBestScoutUnit(const Coord& targetLocation) {
 		glm::vec3 targetLocation3(targetLocation.colCoord, 0, targetLocation.rowCoord);
 
 		std::shared_ptr<Entity> bestUnit;
 		float bestDist = std::numeric_limits<float>::max();
 		for (const auto& unit : aiUnits) {
-			float dist = l2Norm(targetLocation3, unit->getPosition());
-			if (dist < bestDist) {
+			float dist = glm::l2Norm(targetLocation3, unit->getPosition());
+			if (dist < bestDist && unit->unitComp.state == UnitState::IDLE) {
 				bestUnit = unit;
 				bestDist = dist;
 			}
@@ -264,9 +264,9 @@ namespace AiManager {
 
 		//send unit to scout
 		Coord loc = findBestScoutLocation();
-		std::shared_ptr<Entity> bestUnit = getBestUnitToAttack(loc);
+		std::shared_ptr<Entity> bestUnit = getBestScoutUnit(loc);
 		if (bestUnit) { //if not null
-			bestUnit->moveTo(loc.colCoord, loc.rowCoord);
+			bestUnit->scoutPosition(loc.colCoord, loc.rowCoord);
 		}
 	}
 

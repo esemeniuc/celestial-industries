@@ -138,6 +138,12 @@ void Entity::setTargetPath(const std::vector<Coord>& targetPath) {
 	unitComp.targetPath = targetPath;
 }
 
+void Entity::scoutPosition(int x, int z) {
+	this->unitComp.state = UnitState::MOVE;
+	this->moveTo(x,z);
+}
+
+//set unit state before this
 void Entity::moveTo(int x, int z) {
 	setTargetPath(AI::aStar::a_star(aiCostMap, 1, (int) rigidBody.getPosition().x, (int) rigidBody.getPosition().z, x,
 									z).second); //might need fixing with respect to int start positions
@@ -167,10 +173,6 @@ void Entity::move(double elapsed_time) {
 		double dRow = next.rowCoord - curr.rowCoord;
 		double dCol = next.colCoord - curr.colCoord;
 
-//			double transRow = (dRow / (1000 / elapsed_time)) * movementSpeed;
-//			double transCol = (dCol / (1000 / elapsed_time)) * movementSpeed;
-//			translate({transCol, 0, transRow});
-
 		// TODO: Calculate future velocity for collisions
 
 		double destCol = curr.colCoord + (dCol * index.second);
@@ -179,6 +181,7 @@ void Entity::move(double elapsed_time) {
 		newPos = {destCol, 0, destRow};
 	} else { //move to the last coord in the path
 		newPos = {unitComp.targetPath.back().colCoord, 0, unitComp.targetPath.back().rowCoord};
+		this->unitComp.state = UnitState::IDLE;
 	}
 
 	// TODO: Split this in calculate and update so this can do collisions

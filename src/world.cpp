@@ -111,7 +111,7 @@ bool World::init() {
 	}
 
 	levelArray = level.levelLoader(
-			pathBuilder({"data", "levels"}) + "GameLevel1.txt");
+			pathBuilder({"data", "levels"}) + "emptylevel.txt");
 	level.init(Model::meshRenderers);
 
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,

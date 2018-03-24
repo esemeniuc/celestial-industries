@@ -85,6 +85,8 @@ public:
 
 	void moveTo(int x, int z);
 
+	void scoutPosition(int x, int z);
+
 	void move(double elapsed_time);
 
 	std::pair<int, double> getInterpolationPercentage();
