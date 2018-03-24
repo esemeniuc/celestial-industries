@@ -8,6 +8,7 @@
 #include "aimanager.hpp"
 #include "unit.hpp"
 #include "attackManger.hpp"
+#include "buildingmanager.hpp"
 
 // Same as static in c, local to compilation unit
 namespace {
@@ -218,6 +219,7 @@ bool World::update(double elapsed_ms) {
 	AiManager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
 	AttackManager::update(elapsed_ms);
+    BuildingManager::update(elapsed_ms);
   
 	Model::collisionDetector.findCollisions(elapsed_ms);
 	for (const auto& tile : level.tiles) {

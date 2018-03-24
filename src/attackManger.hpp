@@ -9,7 +9,6 @@ namespace AttackManager {
     std::unordered_map<std::shared_ptr<Entity>, std::shared_ptr<Entity>> unitTargetMap;
     double targetTime = 0;
 
-
     void registerTargetUnit(std::shared_ptr<Entity> unit1, std::shared_ptr<Entity> unit2) {
         unitTargetMap.insert( {unit1, unit2} );
     }
@@ -29,16 +28,14 @@ namespace AttackManager {
             allEntities.push_back(entity);
         }
 
-        logger(LogLevel::DEBUG) << "Number of entities found: " << allEntities.size() << " \n";
-        logger << "MS passed: " << elapsed_ms << '\n';
+        // logger(LogLevel::DEBUG) << "Number of entities found: " << allEntities.size() << " \n";
+        // logger << "MS passed: " << elapsed_ms << '\n';
+
         for (std::shared_ptr<Entity> entity1 : aiUnits) {
             for (std::shared_ptr<Entity> entity2 : playerUnits) {
                 if (entity1->inAttackRange(entity2)) {
                     // Entity1 attacks entity2 for elapsed_ms amount of time.
-                    logger << "New attack Started!\n";
                     entity1->attack(entity2, elapsed_ms);
-                } else {
-                    logger << "Entity Not in range or already attacking!\n";
                 }
             }
         }
@@ -47,10 +44,7 @@ namespace AttackManager {
             for (std::shared_ptr<Entity> entity2 : buildingMap) {
                 if (entity1->inAttackRange(entity2)) {
                     // Entity1 attacks entity2 for elapsed_ms amount of time.
-                    logger << "New attack Started!\n";
                     entity1->attack(entity2, elapsed_ms);
-                } else {
-                    logger << "Entity Not in range or already attacking!\n";
                 }
             }
         }
@@ -59,10 +53,7 @@ namespace AttackManager {
             for (std::shared_ptr<Entity> entity2 : aiUnits) {
                 if (entity1->inAttackRange(entity2)) {
                     // Entity1 attacks entity2 for elapsed_ms amount of time.
-                    logger << "New attack Started!\n";
                     entity1->attack(entity2, elapsed_ms);
-                } else {
-                    logger << "Entity Not in range or already attacking!\n";
                 }
             }
         }
