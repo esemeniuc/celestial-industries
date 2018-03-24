@@ -16,7 +16,7 @@ using Clock = std::chrono::high_resolution_clock;
 int main(int argc, char* argv[]) {
 	logger(LogLevel::DEBUG) << "Started game\n";
 	// Initializing world (after renderer.init().. sorry)
-	if (!world.init({(float) Config::WINDOW_WIDTH, (float) Config::WINDOW_HEIGHT})) {
+	if (!world.init()) {
 		// Time to read the error message
 		logger(LogLevel::ERR) << "Press any key to exit" << '\n';
 		std::cin.get();
