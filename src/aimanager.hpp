@@ -58,6 +58,10 @@ namespace AiManager {
 	int playerBuildingValue = 0;
 	int aiBuildingValue = 0;
 	int percentageSeen = 0;
+	const int AI_RUN_THRESHOLD = 1000; //run every 1000ms
+	double lastRunTimestamp = AI_RUN_THRESHOLD;
+
+	std::vector<Coord> scoutingTargetsInProgress;
 
 
 	int aiSpawnX, aiSpawnZ;
@@ -140,26 +144,6 @@ namespace AiManager {
 		}
 
 		return newCellsFound;
-	}
-
-	//returns value in [0..1] range if we place a unit at (x,z)
-	float getScoutValue(int startX, int startY, int targetX, int targetY, int radius) {
-		float percentageNotSeen = 1 - percentageSeen;
-		return percentageNotSeen * getNumberOfNewCellsIfScout(targetX, targetY, radius);
-	}
-
-	void bestScoutValue() {
-		float runningBestValue = 0;
-		std::shared_ptr<Entity> bestUnitToScoutWith;
-		for (auto& unit : aiUnits) {
-			int x = unit->getPositionInt().colCoord;
-			int z = unit->getPositionInt().rowCoord;
-			int radius = unit->aiComp.visionRange;
-			float calculatedVal = getScoutValue(x, z, x, z, radius); //FIXME
-			if (calculatedVal > runningBestValue) {
-				runningBestValue = calculatedVal;
-			}
-		}
 	}
 
 	struct bfsState {
@@ -258,6 +242,14 @@ namespace AiManager {
 	}
 
 	void update(double elapsed_ms) {
+		lastRunTimestamp += elapsed_ms;
+
+		if (lastRunTimestamp > AI_RUN_THRESHOLD) {
+			lastRunTimestamp = 0; //reset as we past the threshold
+		} else {
+			return; //run only after we exceed the threshold
+		}
+
 		updateValueOfEntities();
 		updateVisibilityMap();
 		updateUnitsSeen();
