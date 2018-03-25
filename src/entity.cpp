@@ -196,7 +196,7 @@ glm::vec3 Entity::getPosition() const {
 	return rigidBody.getPosition();
 }
 
-bool Entity::canSee(std::shared_ptr<Entity> entity) {
+bool Entity::canSee(const std::shared_ptr<Entity> entity) {
 	return glm::length(glm::vec2(entity->getPosition() - this->getPosition())) <= aiComp.visionRange;
 }
 
@@ -211,15 +211,15 @@ bool Entity::operator==(const Entity& rhs) const {
 		   rigidBody == rhs.rigidBody;
 }
 
-void Entity::takeAttack(const Entity& attackingEntity, double elapsed_ms) {
-    // reduce health
-    int damagePerSecond = attackingEntity.unitComp.attackDamage * attackingEntity.unitComp.attackSpeed;
+void Entity::takeAttack(const std::shared_ptr<Entity> attackingEntity, double elapsed_ms) {
+    // Reduce health.
+    int damagePerSecond = attackingEntity->unitComp.attackDamage * attackingEntity->unitComp.attackSpeed;
     float damageToDoThisFrame = damagePerSecond * (elapsed_ms / 1000);
 
     aiComp.currentHealth -= damageToDoThisFrame;
 }
 
-void Entity::attack(const std::shared_ptr<Entity> entityToAttack, double elapsed_ms) {
+void Entity::attack(const std::shared_ptr<Entity> entityToAttack) {
 	if (unitComp.state == UnitState::ATTACK) {
 		// Already attacking something else, nothing to do, return.
 		return;
@@ -228,7 +228,6 @@ void Entity::attack(const std::shared_ptr<Entity> entityToAttack, double elapsed
 	if (aiComp.type != GamePieceClass::UNIT_OFFENSIVE) return;
 
 	unitComp.state = UnitState::ATTACK;
-	entityToAttack->takeAttack(*this, elapsed_ms);
 
 	// Check to see if attack is done.
 	// Set state to non-attacking state if attack is done (other entity is killed)

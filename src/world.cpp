@@ -132,14 +132,14 @@ bool World::init() {
 	aiCostMap = level.getLevelTraversalCostMap();
 
 	//display a path
-	int startx = 25, startz = 11;
+	int startx = 20, startz = 11;
 	int targetx = 10, targetz = 10;
 	auto temp1 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
 	temp1->moveTo(targetx, targetz);
 
 	startx = 39, startz = 19;
 	auto temp2 = Unit::spawn(Unit::UnitType::TANK, {startx, 0, startz}, GamePieceOwner::AI);
-	temp2->moveTo(targetx, targetz);
+	//temp2->moveTo(targetx, targetz);
 
 	startx = 39, startz = 1;
 	auto temp3 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
@@ -222,6 +222,9 @@ bool World::update(double elapsed_ms) {
     for (const auto& emitter : level.emitters) {
         emitter->update(elapsed_ms);
     }
+
+
+	
 
 	AiManager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
