@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "global.hpp"
+#include "aimanager.hpp"
 
 
 namespace UnitManager {
@@ -29,14 +30,17 @@ namespace UnitManager {
 
 	void update(double elapsed_ms) {
 		removeDead();
+		int currentUnixTime = (int) getUnixTime();
 		for (auto& playerUnit : playerUnits) {
 				playerUnit->unitComp.update();
 				playerUnit->move(elapsed_ms);
+				AiManager::updateAreaSeenByUnit(playerUnit, currentUnixTime, playerVisibilityMap);
 		}
 
 		for (auto& aiUnit : aiUnits) {
 			aiUnit->unitComp.update();
 			aiUnit->move(elapsed_ms);
+			AiManager::updateAreaSeenByUnit(aiUnit, currentUnixTime, aiVisibilityMap);
 		}
 	}
 

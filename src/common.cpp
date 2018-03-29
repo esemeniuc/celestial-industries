@@ -2,6 +2,7 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <chrono> //for getting unix time
 
 #include "common.hpp"
 
@@ -91,4 +92,9 @@ bool gl_has_errors()
         error = glGetError();
     }
     return true;
+}
+
+long getUnixTime() {
+	return std::chrono::duration_cast<std::chrono::seconds>(
+			std::chrono::_V2::system_clock::now().time_since_epoch()).count();
 }

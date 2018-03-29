@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-
 // glfw
 #define NOMINMAX
 
@@ -100,3 +99,5 @@ T clamp(T lower, T value, T upper) {
 	}
 	return value;
 }
+
+long getUnixTime();

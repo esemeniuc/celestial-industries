@@ -93,18 +93,15 @@ else()
 endif ()
 target_include_directories(libproj PUBLIC ${CUSTOM_INCLUDE_DIRS})
 
+add_executable(proj src/main.cpp) #main.cpp gets compile flags through PUBLIC flag of libproj
+target_link_libraries(proj libproj)
+
+
+
 set(TEST_SUITE_SOURCES
 		test/example.cpp
 		test/genericunit_test.cpp
 		)
-
-add_executable(proj src/main.cpp) #main.cpp gets compile flags through PUBLIC flag of libproj
-
-
-
-target_link_libraries(proj libproj)
-
-
 # Prepare "Catch" library for other executables
 set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/catch2/single_include)
 add_library(Catch INTERFACE)

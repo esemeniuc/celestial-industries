@@ -20,7 +20,7 @@ public:
 	RigidBody rigidBody;
 
 	std::shared_ptr<Entity> target;
-	glm::vec3 targetPosition = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 targetPosition = {0.0f, 0.0f, 0.0f};
 	float attackingCooldown;
 
 	// constructors
@@ -45,9 +45,9 @@ public:
 
 	Coord getPositionInt();
 
-    void attack(const std::shared_ptr<Entity> entityToAttack, double elapsed_ms);
+	void attack(const std::shared_ptr<Entity> entityToAttack, double elapsed_ms);
 
-    void takeAttack(const Entity& attackingEntity, double elapsed_ms);
+	void takeAttack(const Entity& attackingEntity, double elapsed_ms);
 
 	void setPosition(glm::vec3 position);
 
@@ -84,8 +84,10 @@ public:
 	RigidBody getRigidBody();
 
 	glm::vec3 getPosition() const;
-	
+
 	void setTargetPath(const std::vector<Coord>& targetPath);
+
+	bool hasTarget();
 
 	void moveTo(int x, int z);
 
@@ -111,6 +113,7 @@ class TurretUnit : public Entity {
 public:
 	unsigned int turretIndex;
 	float turretAngle;
+
 	TurretUnit(Model::MeshType geometry, unsigned int turretIndex) : turretIndex(turretIndex), Entity(geometry) {};
 
 	void animate(float ms) override;

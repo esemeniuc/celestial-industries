@@ -7,6 +7,7 @@
 
 #include <glm/gtx/norm.hpp>
 
+#include "common.hpp"
 #include "global.hpp"
 #include "unitcomp.hpp"
 #include "building.hpp"
@@ -58,47 +59,57 @@ namespace AiManager {
 	int playerBuildingValue = 0;
 	int aiBuildingValue = 0;
 	double percentVisible = 0;
-	const double AI_VISIBLE_THRESHOLD = 0.5; //scout only if more than this value
-	const int AI_RUN_THRESHOLD = 1000; //run every 1000ms
+	const double AI_VISIBLE_THRESHOLD = 0.5; //scout only if we've seen less than this value
+	const int AI_RUN_THRESHOLD = 500; //run every 500ms
 	const int DIST_THRESHOLD = 6;
 	double lastRunTimestamp = AI_RUN_THRESHOLD;
+	const int FOG_OF_WAR_TIME_THRESHOLD = 10;
 
 	std::vector<Coord> scoutingTargetsInProgress;
 
 
 	int aiSpawnX, aiSpawnZ;
 
-	std::vector<std::vector<uint32_t>> visibilityMap; //stores the last seen time of each cell by ai
-
 	void init(size_t levelHeight, size_t levelWidth) {
-		visibilityMap = std::vector<std::vector<uint32_t>>(levelHeight, std::vector<uint32_t>(levelWidth));
+		aiVisibilityMap = std::vector<std::vector<int>>(levelHeight, std::vector<int>(levelWidth));
 		aiSpawnX = levelWidth - 1;//FIXME: a hack to make ai always spawn from far right of the map
 		aiSpawnZ = levelHeight / 2;
 	}
 
 
-	void updateVisibilityMap() {
-		//FIXME:hacky to just reset every time
-		visibilityMap = std::vector<std::vector<uint32_t>>(world.levelHeight, std::vector<uint32_t>(world.levelWidth));
+	void updateAreaSeenByUnit(const std::shared_ptr<Entity>& unit, int currentUnixTime,
+							  std::vector<std::vector<int>> visibilityMap) {
+		int radius = unit->aiComp.visionRange;
+		int xMin = std::max(0, unit->getPositionInt().colCoord - radius);
+		int xMax = std::min((int) world.levelWidth, unit->getPositionInt().colCoord + radius);
+		int yMin = std::max(0, unit->getPositionInt().rowCoord - radius);
+		int yMax = std::min((int) world.levelHeight, unit->getPositionInt().rowCoord + radius);
 
-		int cellsVisible = 0;
-		for (auto& unit : aiUnits) {
-			size_t radius = (size_t) unit->aiComp.visionRange;
-			size_t xMin = std::max<size_t>(0, (size_t) unit->getPositionInt().colCoord - radius);
-			size_t xMax = std::min<size_t>(world.levelWidth, (size_t) unit->getPositionInt().colCoord + radius);
-			size_t yMin = std::max<size_t>(0, (size_t) unit->getPositionInt().colCoord - radius);
-			size_t yMax = std::min<size_t>(world.levelWidth, (size_t) unit->getPositionInt().colCoord + radius);
-
-			for (size_t i = yMin; i < yMax; ++i) {
-				for (size_t j = xMin; j < xMax; ++j) {
-					if (i * i + j * j <= radius * radius && visibilityMap[i][j] == 0) {
-						visibilityMap[i][j] = 1;//we can see it
-						cellsVisible++;
-					}
+		for (int i = yMin; i < yMax; ++i) {
+			for (int j = xMin; j < xMax; ++j) {
+				int xp = i - unit->getPositionInt().colCoord;
+				int yp = j - unit->getPositionInt().rowCoord;
+				if (xp * xp + yp * yp <= radius * radius) {
+					visibilityMap[i][j] = currentUnixTime;
 				}
 			}
 		}
+	}
 
+	void updateVisibilityMap() {
+		int currentUnixTime = (int) getUnixTime();
+		for (const auto& unit : aiUnits) {
+			updateAreaSeenByUnit(unit, currentUnixTime, aiVisibilityMap);
+		}
+
+		int cellsVisible = 0;
+		for (const auto& row: aiVisibilityMap) {
+			for (const auto& cellLastSceneTime : row) {
+				if (currentUnixTime - cellLastSceneTime < FOG_OF_WAR_TIME_THRESHOLD) {
+					cellsVisible++;
+				}
+			}
+		}
 		percentVisible = (double) cellsVisible / (world.levelHeight * world.levelWidth);
 	}
 
@@ -125,35 +136,21 @@ namespace AiManager {
 		}
 	}
 
-	//returns the number of newly found cells during scouting by placing a unit at (x,z)
-	int getNumberOfNewCellsIfScout(int x, int y, int radius) {
-		int newCellsFound = 0;
-		for (auto& unit : aiUnits) {
-			int xMin = std::max(0, x - radius);
-			int xMax = std::min((int) world.levelWidth, x + radius);
-			int yMin = std::max(0, y - radius);
-			int yMax = std::min((int) world.levelHeight, y + radius);
-
-			for (int i = yMin; i < yMax; ++i) {
-				for (int j = xMin; j < xMax; ++j) {
-					if (i * i + j * j <= radius * radius && visibilityMap[i][j] == 0) {
-						newCellsFound++;
-					}
-				}
-			}
-		}
-
-		return newCellsFound;
-	}
 
 	struct bfsState {
-		int x, z, unseenDistance;
+		int x, z, unseenDistance, unseenTimeDeltaSum;
+		//unseenTimeDeltaSum is to prioritize areas that haven't been seen in a long time
 
-		bfsState(int x, int z, int unseenDistance) : x(x), z(z), unseenDistance(unseenDistance) {}
+		bfsState(int x, int z, int unseenDistance, int unseenTimeDeltaSum) : x(x), z(z), unseenDistance(unseenDistance),
+																			 unseenTimeDeltaSum(unseenTimeDeltaSum) {}
+
+		bool operator<(const bfsState& rhs) const { //prioritizes the ones that have the most unseen area
+			return unseenTimeDeltaSum < rhs.unseenTimeDeltaSum;
+		}
 	};
 
 
-	bool isWithinRange(int x, int z) {
+	bool isWithinBounds(int x, int z) {
 		return x >= 0 && x < world.levelWidth &&
 			   z >= 0 && z < world.levelHeight;
 	}
@@ -183,13 +180,14 @@ namespace AiManager {
 		std::vector<std::vector<std::pair<int, int>>> parent(world.levelHeight,
 															 std::vector<std::pair<int, int>>(world.levelWidth));
 		//traverse tree with bfs
+		int currentUnixTime = static_cast<int>(getUnixTime());
 		std::pair<int, int> root(-1, -1);
 		parent[aiSpawnZ][aiSpawnX] = root;
 		visited[aiSpawnZ][aiSpawnX] = true;
-		std::queue<bfsState> queue;
-		queue.push({aiSpawnX, aiSpawnZ, 0});
+		std::priority_queue<bfsState> queue;
+		queue.push({aiSpawnX, aiSpawnZ, 0, 0});
 		while (!queue.empty()) {
-			bfsState u = queue.front();
+			bfsState u = queue.top();
 			queue.pop();
 
 			if (u.unseenDistance >= DIST_THRESHOLD && !withinRangeOfOtherScoutTargets(u.x, u.z)) {
@@ -206,13 +204,14 @@ namespace AiManager {
 				int nextX = u.x + dir.first;
 				int nextZ = u.z + dir.second;
 				int nextDist = u.unseenDistance;
-				if (isWithinRange(nextX, nextZ) && !visited[nextZ][nextX]) {
+				if (isWithinBounds(nextX, nextZ) && !visited[nextZ][nextX]) {
 					visited[nextZ][nextX] = true;
 					parent[nextZ][nextX] = {u.x, u.z};
-					if (visibilityMap[nextZ][nextX] > 0) {
-						nextDist++;//FIXME: change this to be relative later
+					const int timeDelta = currentUnixTime - aiVisibilityMap[nextZ][nextX];
+					if (timeDelta > FOG_OF_WAR_TIME_THRESHOLD) {
+						nextDist++;
 					}
-					queue.push({nextX, nextZ, nextDist});
+					queue.push({nextX, nextZ, nextDist, u.unseenTimeDeltaSum + timeDelta});
 				}
 			}
 		}
@@ -272,6 +271,14 @@ namespace AiManager {
 
 		//send unit to scout
 		updateVisibilityMap();
+
+		//print grid
+//		for (const auto& row: aiVisibilityMap) {
+//			for (const auto& cellLastSceneTime : row) {
+//				printf("%d ", cellLastSceneTime);
+//			}
+//			printf("\n");
+//		}
 		if (percentVisible < AI_VISIBLE_THRESHOLD) {
 			Coord loc = findBestScoutLocation();
 			std::shared_ptr<Entity> bestUnit = getBestScoutUnit(loc);
@@ -279,51 +286,5 @@ namespace AiManager {
 				bestUnit->scoutPosition(loc.colCoord, loc.rowCoord);
 			}
 		}
-	}
-
-
-	int const PRIORITIZE_CLOSER_ATTACKS = 2;
-
-	std::shared_ptr<Entity>
-	bestBuildingToAttack(std::vector<std::shared_ptr<Entity>>& buildings, Entity& entity) {
-		float bestAttackValue = -1;
-		std::shared_ptr<Entity> building;
-
-		if (buildings.size() <= 0) {
-			// TODO: take care of case where length of building list passed in is 0
-		}
-
-		for (auto& currentBuilding : buildings) {
-			int buildingValue = currentBuilding->aiComp.value;
-
-			float distanceToBuilding = 0;//getDistanceBetweenEntities(currentBuilding, entity); //fixme to revert
-
-			float attackValue = buildingValue - (distanceToBuilding * PRIORITIZE_CLOSER_ATTACKS);
-
-			if (attackValue > bestAttackValue) {
-				bestAttackValue = attackValue;
-				building = currentBuilding;
-			}
-		}
-
-		return building;
-	}
-
-	std::shared_ptr<Entity> getHighestValuedBuilding(std::vector<std::shared_ptr<Entity>>& buildings) {
-		int highestValueSoFar = -1;
-		std::shared_ptr<Entity> building;
-
-		if (buildings.size() <= 0) {
-			// TODO: take care of case where length of building list passed in is 0
-		}
-
-		for (auto& currentBuilding : buildings) {
-			if (currentBuilding->aiComp.value > highestValueSoFar) {
-				highestValueSoFar = currentBuilding->aiComp.value;
-				building = currentBuilding;
-			}
-		}
-
-		return building;
 	}
 }

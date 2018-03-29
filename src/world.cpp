@@ -225,7 +225,7 @@ bool World::update(double elapsed_ms) {
 
 	AiManager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
-	AttackManager::update(elapsed_ms);
+//	AttackManager::update(elapsed_ms);
     BuildingManager::update(elapsed_ms);
   
 	Model::collisionDetector.findCollisions(elapsed_ms);

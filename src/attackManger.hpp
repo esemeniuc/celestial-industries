@@ -64,4 +64,49 @@ namespace AttackManager {
 
 
     }
+
+	int const PRIORITIZE_CLOSER_ATTACKS = 2;
+
+	std::shared_ptr<Entity>
+	bestBuildingToAttack(std::vector<std::shared_ptr<Entity>>& buildings, Entity& entity) {
+		float bestAttackValue = -1;
+		std::shared_ptr<Entity> building;
+
+		if (buildings.size() <= 0) {
+			// TODO: take care of case where length of building list passed in is 0
+		}
+
+		for (auto& currentBuilding : buildings) {
+			int buildingValue = currentBuilding->aiComp.value;
+
+			float distanceToBuilding = 0;//getDistanceBetweenEntities(currentBuilding, entity); //fixme to revert
+
+			float attackValue = buildingValue - (distanceToBuilding * PRIORITIZE_CLOSER_ATTACKS);
+
+			if (attackValue > bestAttackValue) {
+				bestAttackValue = attackValue;
+				building = currentBuilding;
+			}
+		}
+
+		return building;
+	}
+
+	std::shared_ptr<Entity> getHighestValuedBuilding(std::vector<std::shared_ptr<Entity>>& buildings) {
+		int highestValueSoFar = -1;
+		std::shared_ptr<Entity> building;
+
+		if (buildings.size() <= 0) {
+			// TODO: take care of case where length of building list passed in is 0
+		}
+
+		for (auto& currentBuilding : buildings) {
+			if (currentBuilding->aiComp.value > highestValueSoFar) {
+				highestValueSoFar = currentBuilding->aiComp.value;
+				building = currentBuilding;
+			}
+		}
+
+		return building;
+	}
 };

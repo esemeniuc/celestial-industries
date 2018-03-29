@@ -140,7 +140,7 @@ void Entity::setTargetPath(const std::vector<Coord>& targetPath) {
 
 void Entity::scoutPosition(int x, int z) {
 	this->moveTo(x,z);
-	this->unitComp.state = UnitState::MOVE;
+	this->unitComp.state = UnitState::SCOUT;
 }
 
 //set unit state before this
@@ -160,8 +160,13 @@ std::pair<int, double> Entity::getInterpolationPercentage() {
 	return {pathIndex, interpolationPercent};
 }
 
+//returns true if this entity can move on the next update
+bool Entity::hasTarget(){
+	return !this->unitComp.targetPath.empty();
+}
+
 void Entity::move(double elapsed_time) {
-	if (unitComp.targetPath.empty()) {
+	if (!hasTarget()) {
 		return;
 	}
 
@@ -184,6 +189,7 @@ void Entity::move(double elapsed_time) {
 	} else { //move to the last coord in the path
 		newPos = {unitComp.targetPath.back().colCoord, 0, unitComp.targetPath.back().rowCoord};
 		this->unitComp.state = UnitState::IDLE;
+		this->unitComp.targetPath.clear();
 	}
 
 	// TODO: Split this in calculate and update so this can do collisions
