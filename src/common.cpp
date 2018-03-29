@@ -96,5 +96,5 @@ bool gl_has_errors()
 
 long getUnixTime() {
 	return std::chrono::duration_cast<std::chrono::seconds>(
-			std::chrono::_V2::system_clock::now().time_since_epoch()).count();
+			std::chrono::system_clock::now().time_since_epoch()).count();
 }
