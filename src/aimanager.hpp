@@ -156,10 +156,10 @@ namespace AiManager {
 	}
 
 	//in x,z format
-	constexpr std::pair<int, int> adj[4] = {{0,  1}, //down
-											{0,  -1}, //up
-											{1,  0}, //right
-											{-1, 0} //left
+	std::array<std::pair<int, int>, 4> adj = {{0,  1}, //down
+											  {0,  -1}, //up
+											  {1,  0}, //right
+											  {-1, 0} //left
 	};
 
 	bool withinRangeOfOtherScoutTargets(int x, int z) {
@@ -219,9 +219,9 @@ namespace AiManager {
 
 		//assumes this is the player spawn and just goes to it
 		Coord randomCoord;
-		do{
+		do {
 			//check if traversable
-		} while(false);
+		} while (false);
 
 //		scoutingTargetsInProgress.emplace_back(playerSpawnX, playerSpawnZ);
 		return randomCoord;
@@ -261,11 +261,9 @@ namespace AiManager {
 		return bestUnit;
 	}
 
-	void cleanupScoutTargets()
-	{
-		for(const auto & aiUnit: aiUnits)
-		{
-			if(aiUnit->unitComp.state == UnitState::SCOUT && !aiUnit->hasTarget()) //check for finish scouting
+	void cleanupScoutTargets() {
+		for (const auto& aiUnit: aiUnits) {
+			if (aiUnit->unitComp.state == UnitState::SCOUT && !aiUnit->hasTarget()) //check for finish scouting
 			{
 //				scoutingTargetsInProgress.erase()
 			}
