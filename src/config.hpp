@@ -20,4 +20,7 @@ namespace Config {
 	const int CAMERA_START_POSITION_Z = 30;
     // Note: this must be equal to the value in the shader, otherwise weird things will eventually happen probably
     const unsigned int MAX_TOTAL_SUBOBJECTS_PER_RENDERER = 1000; // If you change this and not the shader you are a bad person
+
+	const int OBSTACLE_COST = 1000;
+	const int DEFAULT_TRAVERSABLE_COST = 10;
 }

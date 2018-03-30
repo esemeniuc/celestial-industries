@@ -129,7 +129,7 @@ bool World::init() {
 
 	UnitManager::init(levelHeight, levelWidth);
 	AiManager::init(levelHeight, levelWidth);
-	aiCostMap = level.getLevelTraversalCostMap();
+	aStarCostMap = level.getLevelTraversalCostMap();
 
 	//display a path
 	int startx = 25, startz = 11;

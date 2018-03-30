@@ -72,41 +72,6 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(
 		throw "Particle texture failed to load!";
 	}
 
-	// Needed to properly update cost map when placeing tiles 
-	tileToCost = {
-		{Model::MeshType::HROAD, { 1000, INF }},
-		{Model::MeshType::SAND_1, { 10, INF }},
-		{Model::MeshType::SAND_2, { 10, INF }},
-		{Model::MeshType::SAND_3, { 10, INF }},
-		{Model::MeshType::SAND_4, { 10, INF }},
-		{Model::MeshType::SAND_5, { 10, INF }},
-		{Model::MeshType::TREE, {1000, INF}},
-		{Model::MeshType::REDTREE, {1000, INF}},
-		{Model::MeshType::WATER, {1000, INF}},
-		{Model::MeshType::GRASS, {10, INF}},
-		{Model::MeshType::HROAD, {10, INF}},
-		{Model::MeshType::VROAD, {10, INF}},
-		{Model::MeshType::GEYSER, {1000, INF}}
-	};
-
-	charToType = {
-		{'#', Model::MeshType::HROAD},
-		{' ', Model::MeshType::SAND_1},
-		{'\\', Model::MeshType::SAND_2},
-		{'.', Model::MeshType::SAND_3},
-		{';', Model::MeshType::SAND_4},
-		{',', Model::MeshType::SAND_5},
-		{'T', Model::MeshType::TREE},
-		{'Y', Model::MeshType::YELLOWTREE},
-		{'R', Model::MeshType::REDTREE},
-		{'W', Model::MeshType::WATER},
-		{'G', Model::MeshType::GRASS},
-		{'H', Model::MeshType::HROAD},
-		{'V', Model::MeshType::VROAD},
-		{'P', Model::MeshType::GEYSER},
-		{'X', Model::MeshType::GUN_TURRET}
-	};
-
 	if (!level.is_open()) {
 		logger(LogLevel::ERR) << "Failed to open level data file '" << levelTextFile << "'\n";
 		return {};
@@ -134,6 +99,8 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(
 					emitters.push_back(emitter);
                     break;
                 }
+				default:
+					break;
 			}
 
 			// Actually add the tiles

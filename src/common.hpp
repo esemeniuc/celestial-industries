@@ -91,7 +91,7 @@ struct Coord {
 		return os;
 	}
 
-	Coord getRandomCoord(int levelWidth, int levelHeight) {
+	static Coord getRandomCoord(int levelWidth, int levelHeight) {
 		std::uniform_int_distribution<int> xRng(0, levelWidth - 1); // guaranteed unbiased
 		std::uniform_int_distribution<int> zRng(0, levelHeight - 1); // guaranteed unbiased
 		return {xRng(rng), zRng(rng)};

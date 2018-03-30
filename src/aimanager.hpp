@@ -63,7 +63,7 @@ namespace AiManager {
 	double percentVisible = 0;
 	const double AI_VISIBLE_THRESHOLD = 0.5; //scout only if we've seen less than this value
 	const int AI_RUN_THRESHOLD = 500; //run every 500ms
-	const int UNSEEN_DIST_THRESHOLD = 6;
+	const int UNSEEN_RADIUS_THRESHOLD = 6;
 	double lastRunTimestamp = AI_RUN_THRESHOLD;
 	const int FOG_OF_WAR_TIME_THRESHOLD = 10;
 
@@ -153,23 +153,23 @@ namespace AiManager {
 
 
 	bool isWithinBounds(int x, int z) {
-		return x >= 0 && x < world.levelWidth &&
-			   z >= 0 && z < world.levelHeight;
+		return x >= 0 && x < (int) world.levelWidth &&
+			   z >= 0 && z < (int) world.levelHeight;
 	}
 
 	//in x,z format
-	std::array<std::pair<int, int>, 4> adj = {{{0,  1}, //down
-											  {0,  -1}, //up
-											  {1,  0}, //right
-											  {-1, 0} //left
-	}};
+	std::array<std::pair<int, int>, 4> adj = {{{0, 1}, //down
+													  {0, -1}, //up
+													  {1, 0}, //right
+													  {-1, 0} //left
+											  }};
 
 	bool withinRangeOfOtherScoutTargets(int x, int z) {
 		for (const auto& existingTarget : scoutingTargetsInProgress) {
 			glm::vec3 newTarget(x, 0, z);
 			glm::vec3 existingTargetV(existingTarget.colCoord, 0, existingTarget.rowCoord);
 			float dist = glm::l2Norm(existingTargetV, newTarget);
-			if (dist < UNSEEN_DIST_THRESHOLD) {
+			if (dist < 2 * UNSEEN_RADIUS_THRESHOLD) {
 				return true;
 			}
 		}
@@ -183,7 +183,7 @@ namespace AiManager {
 															 std::vector<std::pair<int, int>>(world.levelWidth));
 		//traverse tree with bfs
 		int currentUnixTime = static_cast<int>(getUnixTime());
-		std::pair<int, int> root(-1, -1);
+		std::pair<int, int> root(INT32_MIN, INT32_MIN);
 		parent[aiSpawnZ][aiSpawnX] = root;
 		visited[aiSpawnZ][aiSpawnX] = true;
 		std::priority_queue<bfsState> queue;
@@ -193,11 +193,10 @@ namespace AiManager {
 			queue.pop();
 
 			//use 2x because we want to capture diameter unseen dist
-			if (u.unseenDistance >= 2 * UNSEEN_DIST_THRESHOLD && !withinRangeOfOtherScoutTargets(u.x, u.z)) {
+			if (u.unseenDistance >= 2 * UNSEEN_RADIUS_THRESHOLD && !withinRangeOfOtherScoutTargets(u.x, u.z)) {
 				std::pair<int, int> traverser(u.x, u.z);
-				for (int i = UNSEEN_DIST_THRESHOLD;
-					 i > UNSEEN_DIST_THRESHOLD / 2 && traverser != root; i--)//get to center of circle
-				{
+				//get to center of circle
+				for (int i = UNSEEN_RADIUS_THRESHOLD; i > UNSEEN_RADIUS_THRESHOLD / 2 && traverser != root; i--) {
 					traverser = parent[traverser.second][traverser.first]; //parent[z][x]
 				}
 				return Coord(traverser.first, traverser.second);
@@ -207,7 +206,7 @@ namespace AiManager {
 				int nextX = u.x + dir.first;
 				int nextZ = u.z + dir.second;
 				int nextDist = u.unseenDistance;
-				if (isWithinBounds(nextX, nextZ) && !visited[nextZ][nextX]) {
+				if (isWithinBounds(nextX, nextZ) && !visited[nextZ][nextX] && AI::aStar::isTraversable(nextX, nextZ)) {
 					visited[nextZ][nextX] = true;
 					parent[nextZ][nextX] = {u.x, u.z};
 					const int timeDelta = currentUnixTime - aiVisibilityMap[nextZ][nextX];
@@ -220,10 +219,11 @@ namespace AiManager {
 		}
 
 		//assumes this is the player spawn and just goes to it
-		Coord randomCoord;
-		do {
-			//check if traversable
-		} while (false);
+		Coord randomCoord = Coord::getRandomCoord(world.levelWidth, world.levelHeight);
+//		while(AI::aStar::a_star(aStarCostMap, 1, randomCoord.colCoord, randomCoord.rowCoord, x,
+//								z).second))
+		//check if traversable
+
 
 //		scoutingTargetsInProgress.emplace_back(playerSpawnX, playerSpawnZ);
 		return randomCoord;

@@ -10,16 +10,14 @@ Entity::Entity(Model::MeshType geometry) : geometryRenderer(Model::meshRenderers
 void Entity::animate(float ms) {
 	attackingCooldown -= ms;
 	if (rigidBody.getAllCollisions().size() == 0) {
-		translate(rigidBody.getVelocity()*ms);
-	}
-	else {
+		translate(rigidBody.getVelocity() * ms);
+	} else {
 		CollisionDetection::CollisionInfo collision = rigidBody.getFirstCollision();
-		translate(rigidBody.getVelocity()*collision.time);
+		translate(rigidBody.getVelocity() * collision.time);
 	}
 }
 
-void Entity::softDelete()
-{
+void Entity::softDelete() {
 	geometryRenderer.removeSelf();
 	// TODO: AI Comp, Unit Comp soft deletes
 }
@@ -76,22 +74,19 @@ void Entity::rotate(float amount, glm::vec3 axis) {
 	this->rigidBody.setRotation(this->rigidBody.getRotation(axis) + amount, axis);
 }
 
-void Entity::rotateXZ(float amount)
-{
+void Entity::rotateXZ(float amount) {
 	angle += amount;
-	rotate(amount, { 0.0f, 1.0f, 0.0f });
+	rotate(amount, {0.0f, 1.0f, 0.0f});
 }
 
-void Entity::setRotationXZ(float amount)
-{
-	rotate(amount - angle, { 0.0f, 1.0f, 0.0f });
+void Entity::setRotationXZ(float amount) {
+	rotate(amount - angle, {0.0f, 1.0f, 0.0f});
 	angle = amount;
 }
 
-void Entity::setRotationXZ(int modelIndex, float amount)
-{
+void Entity::setRotationXZ(int modelIndex, float amount) {
 	//rotate(modelIndex, amount - angle, { 0.0f, 1.0f, 0.0f });
-	setModelMatrix(modelIndex, glm::rotate(glm::mat4(1.0f), amount, { 0.0f,1.0f,0.0f }));
+	setModelMatrix(modelIndex, glm::rotate(glm::mat4(1.0f), amount, {0.0f, 1.0f, 0.0f}));
 	angle = amount;
 
 }
@@ -113,7 +108,7 @@ glm::vec3 Entity::getPosition() {
 
 
 Coord Entity::getPositionInt() {
-	return {int(rigidBody.getPosition().x+0.5), int(rigidBody.getPosition().z+0.5)};
+	return {int(rigidBody.getPosition().x + 0.5), int(rigidBody.getPosition().z + 0.5)};
 }
 
 void Entity::setPosition(glm::vec3 position) {
@@ -139,15 +134,14 @@ void Entity::setTargetPath(const std::vector<Coord>& targetPath) {
 }
 
 void Entity::scoutPosition(int x, int z) {
-	this->moveTo(x,z);
+	this->moveTo(x, z);
 	this->unitComp.state = UnitState::SCOUT;
 }
 
-//set unit state before this
-//FIXME: make specialized state versions of moveTo
+//expects the caller to set the unit state before calling this
 void Entity::moveTo(int x, int z) {
-	setTargetPath(AI::aStar::a_star(aiCostMap, 1, (int) rigidBody.getPosition().x, (int) rigidBody.getPosition().z, x,
-									z).second); //might need fixing with respect to int start positions
+	setTargetPath(AI::aStar::findPath(1, this->getPositionInt().colCoord, this->getPositionInt().rowCoord, x,
+									  z).second); //might need fixing with respect to int start positions
 
 	unitComp.targetPath.insert(unitComp.targetPath.begin(), {getPositionInt().colCoord, getPositionInt().rowCoord});
 }
@@ -161,7 +155,7 @@ std::pair<int, double> Entity::getInterpolationPercentage() {
 }
 
 //returns true if this entity can move on the next update
-bool Entity::hasTarget(){
+bool Entity::hasTarget() {
 	return !this->unitComp.targetPath.empty();
 }
 
@@ -218,11 +212,11 @@ bool Entity::operator==(const Entity& rhs) const {
 }
 
 void Entity::takeAttack(const Entity& attackingEntity, double elapsed_ms) {
-    // reduce health
-    int damagePerSecond = attackingEntity.unitComp.attackDamage * attackingEntity.unitComp.attackSpeed;
-    float damageToDoThisFrame = damagePerSecond * (elapsed_ms / 1000);
+	// reduce health
+	int damagePerSecond = attackingEntity.unitComp.attackDamage * attackingEntity.unitComp.attackSpeed;
+	float damageToDoThisFrame = damagePerSecond * (elapsed_ms / 1000);
 
-    aiComp.currentHealth -= damageToDoThisFrame;
+	aiComp.currentHealth -= damageToDoThisFrame;
 }
 
 void Entity::attack(const std::shared_ptr<Entity> entityToAttack, double elapsed_ms) {
@@ -266,12 +260,11 @@ float vectorAngleXZ(glm::vec3 v) {
 	//	return 360.0f + angle;
 	glm::vec3 xUnit = glm::vec3(1.0f, 0.0f, 0.0f);
 	v = glm::normalize(v);
-	return glm::acos(glm::dot(v, xUnit))*(180.0f / M_PI);
+	return glm::acos(glm::dot(v, xUnit)) * (180.0f / M_PI);
 }
 
 
-void TurretUnit::animate(float ms)
-{
+void TurretUnit::animate(float ms) {
 	attackingCooldown -= ms;
 	if (unitComp.currentEnergyLevel <= 0)softDelete();
 	// Face the turret to the entity we're attacking

@@ -20,5 +20,5 @@ extern std::vector<std::shared_ptr<Entity>> buildingMap;
 
 extern std::vector<std::vector<Model::MeshType>> levelArray;
 
-extern std::vector<std::vector<AStarNode>> aiCostMap; //ai should be able to see the level traversal costs
+extern std::vector<std::vector<AStarNode>> aStarCostMap; //ai should be able to see the level traversal costs
 
