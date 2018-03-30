@@ -12,6 +12,8 @@
 #include "unitcomp.hpp"
 #include "building.hpp"
 
+#include <array>
+
 //assume AI has goal to destroy main control building of player
 /*we do the tree thing like alla suggested
 with look ahead to a depth level of 8 for example, 2^8 = 256
@@ -156,11 +158,11 @@ namespace AiManager {
 	}
 
 	//in x,z format
-	std::array<std::pair<int, int>, 4> adj = {{0,  1}, //down
+	std::array<std::pair<int, int>, 4> adj = {{{0,  1}, //down
 											  {0,  -1}, //up
 											  {1,  0}, //right
 											  {-1, 0} //left
-	};
+	}};
 
 	bool withinRangeOfOtherScoutTargets(int x, int z) {
 		for (const auto& existingTarget : scoutingTargetsInProgress) {
