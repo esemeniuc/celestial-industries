@@ -61,11 +61,11 @@ namespace AiManager {
 	double percentVisible = 0;
 	const double AI_VISIBLE_THRESHOLD = 0.5; //scout only if we've seen less than this value
 	const int AI_RUN_THRESHOLD = 500; //run every 500ms
-	const int DIST_THRESHOLD = 6;
+	const int UNSEEN_DIST_THRESHOLD = 6;
 	double lastRunTimestamp = AI_RUN_THRESHOLD;
 	const int FOG_OF_WAR_TIME_THRESHOLD = 10;
 
-	std::vector<Coord> scoutingTargetsInProgress;
+	std::unordered_set<Coord, CoordHasher> scoutingTargetsInProgress;
 
 
 	int aiSpawnX, aiSpawnZ;
@@ -156,10 +156,10 @@ namespace AiManager {
 	}
 
 	//in x,z format
-	std::pair<int, int> adj[4] = {{0,  1}, //down
-								  {0,  -1}, //up
-								  {1,  0}, //right
-								  {-1, 0}//left
+	constexpr std::pair<int, int> adj[4] = {{0,  1}, //down
+											{0,  -1}, //up
+											{1,  0}, //right
+											{-1, 0} //left
 	};
 
 	bool withinRangeOfOtherScoutTargets(int x, int z) {
@@ -167,7 +167,7 @@ namespace AiManager {
 			glm::vec3 newTarget(x, 0, z);
 			glm::vec3 existingTargetV(existingTarget.colCoord, 0, existingTarget.rowCoord);
 			float dist = glm::l2Norm(existingTargetV, newTarget);
-			if (dist < DIST_THRESHOLD) {
+			if (dist < UNSEEN_DIST_THRESHOLD) {
 				return true;
 			}
 		}
@@ -190,10 +190,11 @@ namespace AiManager {
 			bfsState u = queue.top();
 			queue.pop();
 
-			if (u.unseenDistance >= DIST_THRESHOLD && !withinRangeOfOtherScoutTargets(u.x, u.z)) {
-				scoutingTargetsInProgress.emplace_back(u.x, u.z);
+			//use 2x because we want to capture diameter unseen dist
+			if (u.unseenDistance >= 2 * UNSEEN_DIST_THRESHOLD && !withinRangeOfOtherScoutTargets(u.x, u.z)) {
 				std::pair<int, int> traverser(u.x, u.z);
-				for (int i = DIST_THRESHOLD; i > DIST_THRESHOLD / 2 && traverser != root; i--)//get to center of circle
+				for (int i = UNSEEN_DIST_THRESHOLD;
+					 i > UNSEEN_DIST_THRESHOLD / 2 && traverser != root; i--)//get to center of circle
 				{
 					traverser = parent[traverser.second][traverser.first]; //parent[z][x]
 				}
@@ -217,10 +218,13 @@ namespace AiManager {
 		}
 
 		//assumes this is the player spawn and just goes to it
-		int playerSpawnX = 1;
-		int playerSpawnZ = world.levelHeight / 2;
-		scoutingTargetsInProgress.emplace_back(playerSpawnX, playerSpawnZ);
-		return Coord(playerSpawnX, playerSpawnZ);
+		Coord randomCoord;
+		do{
+			//check if traversable
+		} while(false);
+
+//		scoutingTargetsInProgress.emplace_back(playerSpawnX, playerSpawnZ);
+		return randomCoord;
 	}
 
 //updates the state trackers of what units the ai has seen
@@ -257,6 +261,17 @@ namespace AiManager {
 		return bestUnit;
 	}
 
+	void cleanupScoutTargets()
+	{
+		for(const auto & aiUnit: aiUnits)
+		{
+			if(aiUnit->unitComp.state == UnitState::SCOUT && !aiUnit->hasTarget()) //check for finish scouting
+			{
+//				scoutingTargetsInProgress.erase()
+			}
+		}
+	}
+
 	void update(double elapsed_ms) {
 		lastRunTimestamp += elapsed_ms;
 
@@ -284,6 +299,7 @@ namespace AiManager {
 			std::shared_ptr<Entity> bestUnit = getBestScoutUnit(loc);
 			if (bestUnit) { //if not null
 				bestUnit->scoutPosition(loc.colCoord, loc.rowCoord);
+				scoutingTargetsInProgress.insert(loc);
 			}
 		}
 	}

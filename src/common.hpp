@@ -8,6 +8,7 @@
 #include <ostream>
 #include <string>
 #include <vector>
+#include <random>
 
 // glfw
 #define NOMINMAX
@@ -44,6 +45,9 @@
 
 // Our stuff
 extern Logger logger; //use extern so we share the logger in main.cpp with all other cpp files
+extern std::random_device rd;     // only used once to initialise (seed) engine
+extern std::mt19937 rng;    // random-number engine used (Mersenne-Twister in this case)
+
 
 std::vector<std::string> splitString(std::string input, const char separator);
 
@@ -85,6 +89,26 @@ struct Coord {
 	friend std::ostream& operator<<(std::ostream& os, const Coord& coord) {
 		os << "colCoord: " << coord.colCoord << " rowCoord: " << coord.rowCoord;
 		return os;
+	}
+
+	Coord getRandomCoord(int levelWidth, int levelHeight) {
+		std::uniform_int_distribution<int> xRng(0, levelWidth - 1); // guaranteed unbiased
+		std::uniform_int_distribution<int> zRng(0, levelHeight - 1); // guaranteed unbiased
+		return {xRng(rng), zRng(rng)};
+	}
+};
+
+//from boost
+template<typename SizeT>
+inline void hash_combine(SizeT& seed, SizeT value) {
+	seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
+struct CoordHasher {
+	std::size_t operator()(const Coord& in) const noexcept {
+		size_t result = std::hash<int>{}(in.rowCoord);
+		hash_combine(result, std::hash<int>{}(in.colCoord));
+		return result;
 	}
 };
 

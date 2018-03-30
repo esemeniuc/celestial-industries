@@ -188,8 +188,8 @@ void Entity::move(double elapsed_time) {
 		newPos = {destCol, 0, destRow};
 	} else { //move to the last coord in the path
 		newPos = {unitComp.targetPath.back().colCoord, 0, unitComp.targetPath.back().rowCoord};
-		this->unitComp.state = UnitState::IDLE;
 		this->unitComp.targetPath.clear();
+		this->unitComp.state = UnitState::IDLE;
 	}
 
 	// TODO: Split this in calculate and update so this can do collisions

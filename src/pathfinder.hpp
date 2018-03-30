@@ -21,8 +21,8 @@ namespace AI {
 		struct aStarHasher {
 			std::size_t operator()(const AStarNode& in) const noexcept {
 				size_t result = std::hash<int>{}(in.rowCoord);
-				result = 1021 * result + std::hash<int>{}(in.colCoord);
-				return result; // or use boost::hash_combine
+				hash_combine(result, std::hash<int>{}(in.colCoord));
+				return result;
 			}
 		};
 

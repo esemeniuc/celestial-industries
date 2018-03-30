@@ -428,7 +428,7 @@ std::pair<int, int> World::getWindowSize(){
 	int windowHeight;
 	glfwGetWindowSize(m_window, &windowWidth, &windowHeight);
 	return {windowWidth, windowHeight};
-};
+}
 
 void World::on_mouse_button(GLFWwindow * window, int button, int action, int mods)
 {

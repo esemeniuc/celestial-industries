@@ -8,6 +8,8 @@
 
 // Our stuff
 Logger logger;
+std::random_device rd;     // only used once to initialise (seed) engine
+std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
 
 char separator()
 {
@@ -86,6 +88,8 @@ bool gl_has_errors()
         case GL_INVALID_FRAMEBUFFER_OPERATION:
             error_str = "INVALID_FRAMEBUFFER_OPERATION";
             break;
+		default:
+			break;
         }
 
         logger(LogLevel::DEBUG) << "OpenGL: " << error_str << '\n';

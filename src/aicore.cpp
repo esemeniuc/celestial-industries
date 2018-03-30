@@ -1,10 +1,8 @@
 #include <aicore.h>
 
-namespace aicore
-{
+namespace aicore {
 
-	DecisionTreeNode* Decision::makeDecision()
-	{
+	DecisionTreeNode* Decision::makeDecision() {
 		// Choose a branch based on the getBranch method
 		if (getBranch()) {
 			// Make sure its not null before recursing.
@@ -17,15 +15,12 @@ namespace aicore
 		}
 	}
 
-	RandomDecision::RandomDecision()
-			:
+	RandomDecision::RandomDecision() :
 			lastDecisionFrame(0),
-			lastDecision(false)
-	{
+			lastDecision(false) {
 	}
 
-	bool RandomDecision::getBranch()
-	{
+	bool RandomDecision::getBranch() {
 		unsigned thisFrame = 0;//TimingData::get().frameNumber;
 
 		// If we didn't get here last time, then things may change
@@ -40,15 +35,12 @@ namespace aicore
 		return lastDecision;
 	}
 
-	RandomDecisionWithTimeOut::RandomDecisionWithTimeOut()
-			:
+	RandomDecisionWithTimeOut::RandomDecisionWithTimeOut() :
 			RandomDecision(),
-			firstDecisionFrame(0)
-	{
+			firstDecisionFrame(0) {
 	}
 
-	bool RandomDecisionWithTimeOut::getBranch()
-	{
+	bool RandomDecisionWithTimeOut::getBranch() {
 		unsigned thisFrame = 0;//TimingData::get().frameNumber;
 
 		// Check if the stored decision is either too old, or if we
@@ -70,4 +62,4 @@ namespace aicore
 		return lastDecision;
 	}
 
-}; // end of namespace
+} // end of namespace
