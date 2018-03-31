@@ -32,7 +32,8 @@
 class World {
 public:
 	//members
-
+	// Window handle
+	GLFWwindow* m_window;
 
 	//funcs
 	World();
@@ -56,11 +57,13 @@ public:
 
 	//returns w x h
 	std::pair<int, int> getWindowSize();
+	void imguiSetup();
+	void imguiRenderThings();
+
 
 private:
 	//members
-	// Window handle
-	GLFWwindow* m_window;
+
 	bool escapePressed = false;
 	glm::vec2 m_screen;
 

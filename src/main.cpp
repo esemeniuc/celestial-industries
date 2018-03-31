@@ -1,7 +1,7 @@
 // internal
 #include "common.hpp"
 #include "world.hpp"
-
+#include "imgui.h"
 #define GL3W_IMPLEMENTATION
 
 #include <gl3w.h>
@@ -10,6 +10,7 @@
 #include <chrono>
 World world;
 using Clock = std::chrono::high_resolution_clock;
+void renderDrawData(ImDrawData* draw_data);
 
 // Entry point
 int main(int argc, char* argv[]) {
@@ -22,8 +23,10 @@ int main(int argc, char* argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	auto t = Clock::now();
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	world.imguiSetup();
 
+	auto t = Clock::now();
 	// variable timestep loop.. can be improved (:
 	while (!world.is_over()) {
 		// Processes system messages, if this wasn't present the window would become unresponsive
@@ -39,6 +42,7 @@ int main(int argc, char* argv[]) {
 			elapsed_milliSec = 1000 / 60.0; //pretend we continue to next frame at 60fps
 		}
 
+		world.imguiRenderThings();
 		world.update(elapsed_milliSec);
 		world.draw();
 	}
@@ -47,3 +51,4 @@ int main(int argc, char* argv[]) {
 
 	return EXIT_SUCCESS;
 }
+
