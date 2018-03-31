@@ -77,7 +77,7 @@ auto inline end(std::shared_ptr<T> ptr) -> typename T::iterator {
 struct Coord {
 	int colCoord, rowCoord;
 
-	Coord() = default;
+	Coord() : colCoord(0), rowCoord(0) {};
 
 	Coord(int _colCoord, int _rowCoord) : colCoord(_colCoord), rowCoord(_rowCoord) {}
 
@@ -89,6 +89,15 @@ struct Coord {
 	friend std::ostream& operator<<(std::ostream& os, const Coord& coord) {
 		os << "colCoord: " << coord.colCoord << " rowCoord: " << coord.rowCoord;
 		return os;
+	}
+
+
+	static Coord getInvalidCoord() {
+		return {INT32_MIN, INT32_MIN};
+	}
+
+	bool isInvalid() {
+		return *this == getInvalidCoord();
 	}
 
 	static Coord getRandomCoord(int levelWidth, int levelHeight) {

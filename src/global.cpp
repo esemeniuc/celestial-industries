@@ -21,5 +21,7 @@ namespace Global {
 	std::vector<std::vector<Model::MeshType>> levelArray; //make global so we can have ai know what tiles are around
 	std::vector<std::vector<AStarNode>> levelTraversalCostMap;
 
+	std::unordered_set<Coord, CoordHasher> scoutingTargetsInProgress;
+
 	std::vector<std::vector<AStarNode>> aStarCostMap;
 }

@@ -128,20 +128,18 @@ void Entity::setPositionFast(int modelIndex, glm::vec3 position) {
 	geometryRenderer.setModelMatrix(modelIndex, m);
 }
 
-void Entity::setTargetPath(const std::vector<Coord>& targetPath) {
+void Entity::setTargetPath(const std::vector<Coord>& targetPath, int x, int z) {
 	unitComp.targetPathStartTimestamp = 0;
 	unitComp.targetPath = targetPath;
-}
-
-void Entity::scoutPosition(int x, int z) {
-	this->moveTo(x, z);
-	this->unitComp.state = UnitState::SCOUT;
+	unitComp.targetDest = Coord(x,z);
 }
 
 //expects the caller to set the unit state before calling this
-void Entity::moveTo(int x, int z) {
+void Entity::moveTo(UnitState unitState, int x, int z) {
+	this->unitComp.state = unitState;
+
 	setTargetPath(AI::aStar::findPath(1, this->getPositionInt().colCoord, this->getPositionInt().rowCoord, x,
-									  z).second); //might need fixing with respect to int start positions
+									  z).second, x, z); //might need fixing with respect to int start positions
 
 	unitComp.targetPath.insert(unitComp.targetPath.begin(), {getPositionInt().colCoord, getPositionInt().rowCoord});
 }
@@ -182,14 +180,19 @@ void Entity::move(double elapsed_time) {
 		newPos = {destCol, 0, destRow};
 	} else { //move to the last coord in the path
 		newPos = {unitComp.targetPath.back().colCoord, 0, unitComp.targetPath.back().rowCoord};
-		this->unitComp.targetPath.clear();
-		this->unitComp.state = UnitState::IDLE;
+		cleanUpTargetPath();
 	}
 
 	// TODO: Split this in calculate and update so this can do collisions
 
 	setPositionFast(0, newPos); //for rendering
 	rigidBody.setPosition(newPos); //for phys
+}
+
+//dont erase targetDest so aimanager can clean up the in progress scouting targets
+void Entity::cleanUpTargetPath() {
+	unitComp.targetPath.clear();
+	unitComp.state = UnitState::IDLE;
 }
 
 glm::vec3 Entity::getPosition() const {

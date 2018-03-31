@@ -85,13 +85,13 @@ public:
 
 	glm::vec3 getPosition() const;
 
-	void setTargetPath(const std::vector<Coord>& targetPath);
+	void setTargetPath(const std::vector<Coord>& targetPath, int x, int z);
 
 	bool hasTarget();
 
-	void moveTo(int x, int z);
+	void moveTo(UnitState unitState, int x, int z);
 
-	void scoutPosition(int x, int z);
+	void cleanUpTargetPath();
 
 	void move(double elapsed_time);
 
@@ -105,7 +105,6 @@ public:
 
 protected:
 	float angle = 0.0f;
-
 };
 
 // TODO: Override rotate methods so that they also update angle

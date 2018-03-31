@@ -29,6 +29,8 @@ namespace Global {
 	extern std::vector<std::vector<Model::MeshType>> levelArray; //the tiles that make up the level
 	extern std::vector<std::vector<AStarNode>> levelTraversalCostMap; //costs for going over each tile
 
+	extern std::unordered_set<Coord, CoordHasher> scoutingTargetsInProgress; //ai uses this to avoid double scouting a position
+
 	extern std::vector<std::vector<AStarNode>> aStarCostMap; //ai should be able to see the level traversal costs
 
 }

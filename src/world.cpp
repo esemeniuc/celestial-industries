@@ -45,7 +45,8 @@ bool World::init() {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	glfwWindowHint(GLFW_RESIZABLE, 1);
-	m_window = glfwCreateWindow(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT, Config::WINDOW_TITLE, nullptr, nullptr);
+	m_window = glfwCreateWindow(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT, Config::WINDOW_TITLE,
+								nullptr, nullptr);
 	m_screen = glm::vec2(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT);
 	if (m_window == nullptr)
 		return false;
@@ -70,7 +71,7 @@ bool World::init() {
 		((World*) glfwGetWindowUserPointer(wnd))->on_mouse_scroll(wnd, _0, _1);
 	};
 	auto mouse_button_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2) {
-		((World*)glfwGetWindowUserPointer(wnd))->on_mouse_button(wnd, _0, _1, _2);
+		((World*) glfwGetWindowUserPointer(wnd))->on_mouse_button(wnd, _0, _1, _2);
 	};
 	auto window_size_callback = [](GLFWwindow* window, int width, int height) {
 		Global::windowWidth = static_cast<size_t>(width);
@@ -114,13 +115,13 @@ bool World::init() {
 	}
 
 	particleShader = std::make_shared<Shader>();
-    if (!particleShader->load_from_file(shader_path("particles.vs.glsl"), shader_path("particles.fs.glsl"))) {
-        logger(LogLevel::ERR) << "Failed to load particle shader!" << '\n';
-        return false;
-    }
+	if (!particleShader->load_from_file(shader_path("particles.vs.glsl"), shader_path("particles.fs.glsl"))) {
+		logger(LogLevel::ERR) << "Failed to load particle shader!" << '\n';
+		return false;
+	}
 
 
-	if(!initMeshTypes(Model::meshSources)) {
+	if (!initMeshTypes(Model::meshSources)) {
 		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
 	}
 
@@ -133,22 +134,22 @@ bool World::init() {
 	level.init(Model::meshRenderers);
 
 	UnitManager::init(Global::levelHeight, Global::levelWidth);
-	AiManager::init(Global::levelHeight, Global::levelWidth);
+	AI::Manager::init(Global::levelHeight, Global::levelWidth);
 	Global::aStarCostMap = level.getLevelTraversalCostMap();
 
 	//display a path
 	int startx = 25, startz = 11;
 	int targetx = 10, targetz = 10;
 	auto temp1 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
-	temp1->moveTo(targetx, targetz);
+	temp1->moveTo(UnitState::MOVE, targetx, targetz);
 
 	startx = 39, startz = 19;
 	auto temp2 = Unit::spawn(Unit::UnitType::TANK, {startx, 0, startz}, GamePieceOwner::AI);
-	temp2->moveTo(targetx, targetz);
+//	temp2->moveTo(targetx, targetz);
 
 	startx = 39, startz = 1;
 	auto temp3 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
-	temp3->moveTo(targetx, targetz);
+	temp3->moveTo(UnitState::MOVE, targetx, targetz);
 
 	startx = 20, startz = 20;
 	auto temp4 = Unit::spawn(Unit::UnitType::TANK, {startx, 0, startz}, GamePieceOwner::AI);
@@ -217,24 +218,22 @@ bool World::update(double elapsed_ms) {
 	camera.update(elapsed_ms);
 	total_time += elapsed_ms;
 
-	if (
-			selectedTileCoordinates.rowCoord >= 0 &&
-			(unsigned long) selectedTileCoordinates.rowCoord < level.getLevelTraversalCostMap().size() &&
-			selectedTileCoordinates.colCoord >= 0 &&
-			(unsigned long) selectedTileCoordinates.colCoord < level.getLevelTraversalCostMap()[0].size()
-			) {
+	if (selectedTileCoordinates.rowCoord >= 0 &&
+		(unsigned long) selectedTileCoordinates.rowCoord < level.getLevelTraversalCostMap().size() &&
+		selectedTileCoordinates.colCoord >= 0 &&
+		(unsigned long) selectedTileCoordinates.colCoord < level.getLevelTraversalCostMap()[0].size()) {
 
-		level.tileCursor->setPosition({ selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord });
+		level.tileCursor->setPosition({selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord});
 	}
 
-    for (const auto& emitter : level.emitters) {
-        emitter->update(elapsed_ms);
-    }
+	for (const auto& emitter : level.emitters) {
+		emitter->update(elapsed_ms);
+	}
 
-	AiManager::update(elapsed_ms);
+	AI::Manager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
 //	AttackManager::update(elapsed_ms);
-    BuildingManager::update(elapsed_ms);
+	BuildingManager::update(elapsed_ms);
 
 	Model::collisionDetector.findCollisions(elapsed_ms);
 	for (const auto& tile : level.tiles) {
@@ -244,18 +243,16 @@ bool World::update(double elapsed_ms) {
 		entity->animate(elapsed_ms);
 	}
 	if (m_dist(m_rng) < 0.005) {
-		int row = m_dist(m_rng)*Global::levelWidth;
-		int col = m_dist(m_rng)*Global::levelHeight;
+		int row = m_dist(m_rng) * Global::levelWidth;
+		int col = m_dist(m_rng) * Global::levelHeight;
 		if (level.getLevelTraversalCostMap()[col][row].movementCost < 50.0f) {
 			glm::vec3 pos = glm::vec3(row, 0, col);
 			float unitRand = m_dist(m_rng);
 			if (unitRand < 0.33) {
 				level.placeEntity(Model::MeshType::ENEMY_SPIKE_UNIT, pos, GamePieceOwner::AI);
-			}
-			else if (unitRand < 0.66) {
+			} else if (unitRand < 0.66) {
 				level.placeEntity(Model::MeshType::ENEMY_RANGED_LINE_UNIT, pos, GamePieceOwner::AI);
-			}
-			else {
+			} else {
 				level.placeEntity(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, pos, GamePieceOwner::AI);
 			}
 		}
@@ -297,7 +294,7 @@ void World::draw() {
 	m_skybox.getCameraPosition(camera.position);
 	m_skybox.draw(projection * view * m_skybox.getModelMatrix());
 
-	for (const auto &emitter : level.emitters) {
+	for (const auto& emitter : level.emitters) {
 		emitter->render(projectionView, camera.position);
 	}
 	// Presenting
@@ -431,16 +428,15 @@ void World::on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset) 
 }
 
 //returns w x h
-std::pair<int, int> World::getWindowSize(){
+std::pair<int, int> World::getWindowSize() {
 	int windowWidth;
 	int windowHeight;
 	glfwGetWindowSize(m_window, &windowWidth, &windowHeight);
 	return {windowWidth, windowHeight};
 }
 
-void World::on_mouse_button(GLFWwindow * window, int button, int action, int mods)
-{
-	glm::vec3 coords = { selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord };
+void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods) {
+	glm::vec3 coords = {selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord};
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 		if (coords.x < 0 || coords.x + 1 > Global::levelWidth)
 			return;
@@ -452,15 +448,14 @@ void World::on_mouse_button(GLFWwindow * window, int button, int action, int mod
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		if (m_dist(m_rng) < 0.5) {
 			level.placeEntity(Model::MeshType::FRIENDLY_RANGED_UNIT, coords, GamePieceOwner::PLAYER);
-		}
-		else {
+		} else {
 			level.placeEntity(Model::MeshType::FRIENDLY_FIRE_UNIT, coords, GamePieceOwner::PLAYER);
 		}
 		logger(LogLevel::INFO) << "Left click detected " << '\n';
 	}
 	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
 		for (const auto& entity : Global::playerUnits) {
-			entity->rigidBody.setVelocity((coords - entity->rigidBody.getPosition())/5000.0f);
+			entity->rigidBody.setVelocity((coords - entity->rigidBody.getPosition()) / 5000.0f);
 		}
 	}
 }

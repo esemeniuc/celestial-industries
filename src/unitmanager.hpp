@@ -34,13 +34,13 @@ namespace UnitManager {
 		for (auto& playerUnit : Global::playerUnits) {
 				playerUnit->unitComp.update();
 				playerUnit->move(elapsed_ms);
-				AiManager::updateAreaSeenByUnit(playerUnit, currentUnixTime, Global::playerVisibilityMap);
+				AI::Manager::updateAreaSeenByUnit(playerUnit, currentUnixTime, Global::playerVisibilityMap);
 		}
 
 		for (auto& aiUnit : Global::aiUnits) {
 			aiUnit->unitComp.update();
 			aiUnit->move(elapsed_ms);
-			AiManager::updateAreaSeenByUnit(aiUnit, currentUnixTime, Global::aiVisibilityMap);
+			AI::Manager::updateAreaSeenByUnit(aiUnit, currentUnixTime, Global::aiVisibilityMap);
 		}
 	}
 
