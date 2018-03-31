@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 project(proj)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 # where to look for cmake modules
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_HOME_DIRECTORY}/cmake_modules)

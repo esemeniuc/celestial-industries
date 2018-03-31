@@ -153,12 +153,12 @@ std::pair<int, double> Entity::getInterpolationPercentage() {
 }
 
 //returns true if this entity can move on the next update
-bool Entity::hasTarget() {
+bool Entity::hasMoveTarget() {
 	return !this->unitComp.targetPath.empty();
 }
 
 void Entity::move(double elapsed_time) {
-	if (!hasTarget()) {
+	if (!hasMoveTarget()) {
 		return;
 	}
 

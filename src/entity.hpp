@@ -87,7 +87,7 @@ public:
 
 	void setTargetPath(const std::vector<Coord>& targetPath, int x, int z);
 
-	bool hasTarget();
+	bool hasMoveTarget();
 
 	void moveTo(UnitState unitState, int x, int z);
 

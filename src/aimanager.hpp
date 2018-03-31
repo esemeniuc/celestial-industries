@@ -58,7 +58,7 @@ patrol/scout what player is doing
 
 namespace AI {
 	namespace Manager {
-
+		int aiManagerRunIterations = 0;
 		int playerUnitValue = 0;
 		int aiUnitValue = 0;
 		int playerBuildingValue = 0;
@@ -169,9 +169,9 @@ namespace AI {
 
 		bool withinRangeOfOtherScoutTargets(int x, int z) {
 			for (const auto& existingTarget : Global::scoutingTargetsInProgress) {
-				glm::vec3 newTarget(x, 0, z);
-				glm::vec3 existingTargetV(existingTarget.colCoord, 0, existingTarget.rowCoord);
-				float dist = glm::l2Norm(existingTargetV, newTarget);
+				int deltaX = existingTarget.colCoord - x;
+				int deltaZ = existingTarget.rowCoord - z;
+				float dist = sqrtf(deltaX * deltaX + deltaZ * deltaZ);
 				if (dist < 2 * UNSEEN_RADIUS_THRESHOLD) {
 					return true;
 				}
@@ -182,11 +182,14 @@ namespace AI {
 		//assume we make 1 action per frame for simplicity, assume vision range is fixed
 		Coord findBestScoutLocation() {
 			std::vector<std::vector<bool>> visited(Global::levelHeight, std::vector<bool>(Global::levelWidth));
-			std::vector<std::vector<std::pair<int, int>>> parent(Global::levelHeight,
-																 std::vector<std::pair<int, int>>(Global::levelWidth));
+			std::vector<std::vector<std::pair<int, int>>> parent(
+					Global::levelHeight,
+					std::vector<std::pair<int, int>>(Global::levelWidth,
+													 {Coord::getInvalidCoord().colCoord,
+													  Coord::getInvalidCoord().rowCoord}));
 			//traverse tree with bfs
 			int currentUnixTime = static_cast<int>(getUnixTime());
-			std::pair<int, int> root(Coord::getInvalidCoord().colCoord, Coord::getInvalidCoord().rowCoord);
+			std::pair<int, int> root(aiSpawnX, aiSpawnZ);
 			parent[aiSpawnZ][aiSpawnX] = root;
 			visited[aiSpawnZ][aiSpawnX] = true;
 			std::priority_queue<bfsState> queue;
@@ -205,19 +208,41 @@ namespace AI {
 					return Coord(traverser.first, traverser.second);
 				}
 
-				for (std::pair<int, int> dir : adj) {
-					int nextX = u.x + dir.first;
-					int nextZ = u.z + dir.second;
-					int nextDist = u.unseenDistance;
-					if (isWithinBounds(nextX, nextZ) && !visited[nextZ][nextX] &&
-						AI::aStar::isTraversable(nextX, nextZ)) {
-						visited[nextZ][nextX] = true;
-						parent[nextZ][nextX] = {u.x, u.z};
-						const int timeDelta = currentUnixTime - Global::aiVisibilityMap[nextZ][nextX];
-						if (timeDelta > FOG_OF_WAR_TIME_THRESHOLD) {
-							nextDist++;
+				if (aiManagerRunIterations % 2 == 0) {
+					auto start = std::begin(adj); //forward
+					auto end = std::end(adj);
+					for (auto dirIter = start; dirIter != end; dirIter++) {
+						int nextX = u.x + dirIter->first;
+						int nextZ = u.z + dirIter->second;
+						int nextDist = u.unseenDistance;
+						if (isWithinBounds(nextX, nextZ) && !visited[nextZ][nextX] &&
+							AI::aStar::isTraversable(nextX, nextZ)) {
+							visited[nextZ][nextX] = true;
+							parent[nextZ][nextX] = {u.x, u.z};
+							const int timeDelta = currentUnixTime - Global::aiVisibilityMap[nextZ][nextX];
+							if (timeDelta > FOG_OF_WAR_TIME_THRESHOLD) {
+								nextDist++;
+							}
+							queue.push({nextX, nextZ, nextDist, u.unseenTimeDeltaSum + timeDelta});
 						}
-						queue.push({nextX, nextZ, nextDist, u.unseenTimeDeltaSum + timeDelta});
+					}
+				} else {
+					auto start = std::rbegin(adj); //backwards
+					auto end = std::rend(adj);
+					for (auto dirIter = start; dirIter != end; dirIter++) {
+						int nextX = u.x + dirIter->first;
+						int nextZ = u.z + dirIter->second;
+						int nextDist = u.unseenDistance;
+						if (isWithinBounds(nextX, nextZ) && !visited[nextZ][nextX] &&
+							AI::aStar::isTraversable(nextX, nextZ)) {
+							visited[nextZ][nextX] = true;
+							parent[nextZ][nextX] = {u.x, u.z};
+							const int timeDelta = currentUnixTime - Global::aiVisibilityMap[nextZ][nextX];
+							if (timeDelta > FOG_OF_WAR_TIME_THRESHOLD) {
+								nextDist++;
+							}
+							queue.push({nextX, nextZ, nextDist, u.unseenTimeDeltaSum + timeDelta});
+						}
 					}
 				}
 			}
@@ -251,6 +276,7 @@ namespace AI {
 			}
 		}
 
+		//chooses idle units that are closest to the target
 		std::shared_ptr<Entity> getBestScoutUnit(const Coord& targetLocation) {
 			glm::vec3 targetLocation3(targetLocation.colCoord, 0, targetLocation.rowCoord);
 
@@ -268,7 +294,7 @@ namespace AI {
 
 		void cleanupCompletedScoutTargets() {
 			for (const auto& aiUnit: Global::aiUnits) {
-				if (!aiUnit->hasTarget()) {
+				if (!aiUnit->hasMoveTarget()) {
 					Global::scoutingTargetsInProgress.erase(aiUnit->unitComp.targetDest);
 				}
 			}
@@ -282,6 +308,7 @@ namespace AI {
 			} else {
 				return; //run only after we exceed the threshold
 			}
+			aiManagerRunIterations++;
 
 			cleanupCompletedScoutTargets();
 			updateValueOfEntities();
