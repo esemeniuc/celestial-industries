@@ -150,6 +150,9 @@ bool World::init() {
 	auto temp3 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
 	temp3->moveTo(targetx, targetz);
 
+	startx = 20, startz = 20;
+	auto temp4 = Unit::spawn(Unit::UnitType::TANK, {startx, 0, startz}, GamePieceOwner::AI);
+
 	// Example use of targeting units.
 	AttackManager::registerTargetUnit(temp2, temp1);
 

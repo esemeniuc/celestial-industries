@@ -221,11 +221,11 @@ namespace AiManager {
 		}
 
 		//assumes this is the player spawn and just goes to it
-		Coord randomCoord = Coord::getRandomCoord(Global::levelWidth, Global::levelHeight);
-//		while(AI::aStar::a_star(aStarCostMap, 1, randomCoord.colCoord, randomCoord.rowCoord, x,
-//								z).second))
-		//check if traversable
-
+		Coord randomCoord = Coord::getRandomCoord((int)Global::levelWidth, (int)Global::levelHeight);
+		while(!AI::aStar::isTraversable(randomCoord.colCoord, randomCoord.rowCoord)) {
+			//make sure its traversable
+			randomCoord = Coord::getRandomCoord((int)Global::levelWidth, (int)Global::levelHeight);
+		}
 
 //		scoutingTargetsInProgress.emplace_back(playerSpawnX, playerSpawnZ);
 		return randomCoord;

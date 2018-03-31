@@ -36,7 +36,7 @@ void Level::save(std::string filename)
 		logger(LogLevel::ERR) << "Failed to save level with name " << filename;
 		throw "Failed to open file for writing";
 	}
-	for (const auto& row : levelTraversalCostMap) {
+	for (const auto& row : Global::levelTraversalCostMap) {
 		for (const auto& cell : row) {
 			fs << typeToChar[cell.type];
 		}
@@ -117,7 +117,7 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(
 			colNumber++;
 		}
 		levelData.push_back(row);
-		levelTraversalCostMap.push_back(tileData);
+		Global::levelTraversalCostMap.push_back(tileData);
 	}
 	level.close();
 
@@ -125,7 +125,7 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(
 }
 
 std::vector<std::vector<AStarNode>> Level::getLevelTraversalCostMap() {
-	return this->levelTraversalCostMap;
+	return Global::levelTraversalCostMap;
 }
 
 std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location, unsigned int width, unsigned int height)
@@ -144,7 +144,7 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 
 	for (unsigned int x = location.x; x < location.x + width; x++) {
 		for (unsigned int y = location.z; y < location.z + height; y++) {
-			levelTraversalCostMap[y][x] = nodeFromCost(x,y, type);
+			Global::levelTraversalCostMap[y][x] = nodeFromCost(x,y, type);
 		}
 	}
 	std::shared_ptr<Tile> newTile = tileFromMeshType(type);

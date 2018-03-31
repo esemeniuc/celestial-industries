@@ -26,7 +26,8 @@ namespace Global {
 
 	extern std::vector<std::shared_ptr<Entity>> buildingMap;
 
-	extern std::vector<std::vector<Model::MeshType>> levelArray;
+	extern std::vector<std::vector<Model::MeshType>> levelArray; //the tiles that make up the level
+	extern std::vector<std::vector<AStarNode>> levelTraversalCostMap; //costs for going over each tile
 
 	extern std::vector<std::vector<AStarNode>> aStarCostMap; //ai should be able to see the level traversal costs
 

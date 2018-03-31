@@ -88,26 +88,22 @@ public:
 
 	// Needed to properly update cost map when placing tiles
 
-private:
-	//members
-	std::vector<std::vector<AStarNode>> levelTraversalCostMap;
-
 	// Indexable using MeshType enum
 	std::map<Model::MeshType, std::pair<int, float>> tileToCost{
-			{Model::MeshType::HROAD,   {Config::OBSTACLE_COST,     INF}},
-			{Model::MeshType::SAND_1,  {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-			{Model::MeshType::SAND_2,  {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-			{Model::MeshType::SAND_3,  {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-			{Model::MeshType::SAND_4,  {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-			{Model::MeshType::SAND_5,  {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-			{Model::MeshType::TREE,    {Config::OBSTACLE_COST,     INF}},
-			{Model::MeshType::REDTREE, {Config::OBSTACLE_COST,     INF}},
-			{Model::MeshType::REDTREE, {Config::OBSTACLE_COST,     INF}},
-			{Model::MeshType::WATER,   {Config::OBSTACLE_COST,     INF}},
-			{Model::MeshType::GRASS,   {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-			{Model::MeshType::HROAD,   {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-			{Model::MeshType::VROAD,   {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-			{Model::MeshType::GEYSER,  {Config::OBSTACLE_COST,     INF}}
+			{Model::MeshType::HROAD,      {Config::OBSTACLE_COST,            INF}},
+			{Model::MeshType::SAND_1,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
+			{Model::MeshType::SAND_2,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
+			{Model::MeshType::SAND_3,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
+			{Model::MeshType::SAND_4,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
+			{Model::MeshType::SAND_5,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
+			{Model::MeshType::TREE,       {Config::OBSTACLE_COST,            INF}},
+			{Model::MeshType::YELLOWTREE, {Config::OBSTACLE_COST,            INF}},
+			{Model::MeshType::REDTREE,    {Config::OBSTACLE_COST,            INF}},
+			{Model::MeshType::WATER,      {Config::OBSTACLE_COST,            INF}},
+			{Model::MeshType::GRASS,      {Config::DEFAULT_TRAVERSABLE_COST, INF}},
+			{Model::MeshType::HROAD,      {Config::DEFAULT_TRAVERSABLE_COST, INF}},
+			{Model::MeshType::VROAD,      {Config::DEFAULT_TRAVERSABLE_COST, INF}},
+			{Model::MeshType::GEYSER,     {Config::OBSTACLE_COST,            INF}}
 	};
 
 	std::map<char, Model::MeshType> charToType{
@@ -127,6 +123,9 @@ private:
 			{'P',  Model::MeshType::GEYSER},
 			{'X',  Model::MeshType::GUN_TURRET}
 	};
+
+private:
+	//members
 
 	//funcs
 };

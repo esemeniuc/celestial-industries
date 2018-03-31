@@ -19,6 +19,7 @@ namespace Global {
 	std::vector<std::shared_ptr<Entity>> buildingMap;
 
 	std::vector<std::vector<Model::MeshType>> levelArray; //make global so we can have ai know what tiles are around
+	std::vector<std::vector<AStarNode>> levelTraversalCostMap;
 
 	std::vector<std::vector<AStarNode>> aStarCostMap;
 }
