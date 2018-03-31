@@ -9,8 +9,8 @@ bool Level::init(const std::vector<std::shared_ptr<Renderer>>& meshRenderers) {
 	// So that re initializing will be the same as first initialization
 	tiles.clear();
 	
-	for (size_t i = 0; i < levelArray.size(); i++) {
-		std::vector<Model::MeshType> row = levelArray[i];
+	for (size_t i = 0; i < Global::levelArray.size(); i++) {
+		std::vector<Model::MeshType> row = Global::levelArray[i];
 		for (size_t j = 0; j < row.size(); j++) {
             Model::MeshType type = row[j];
 			std::shared_ptr<Tile> tilePointer = tileFromMeshType(type);
@@ -20,6 +20,7 @@ bool Level::init(const std::vector<std::shared_ptr<Renderer>>& meshRenderers) {
 		}
 	}
 	tileCursor = std::make_shared<Tile>(Model::MeshType::TILE_CURSOR);
+
 	return true;
 }
 
@@ -195,11 +196,11 @@ void initUnitFromMeshType(std::shared_ptr<Entity> e, Model::MeshType type, GameP
 	e->aiComp.owner = owner;
 
 	if (owner == GamePieceOwner::PLAYER) {
-		playerUnits.push_back(e);
+		Global::playerUnits.push_back(e);
 
 	}
 	else if (owner == GamePieceOwner::AI) {
-		aiUnits.push_back(e);
+		Global::aiUnits.push_back(e);
 	}
 }
 

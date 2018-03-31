@@ -69,10 +69,10 @@ namespace Unit {
 		e->aiComp.owner = owner;
 
 		if (owner == GamePieceOwner::PLAYER) {
-			playerUnits.push_back(e);
+			Global::playerUnits.push_back(e);
 
 		} else if (owner == GamePieceOwner::AI) {
-			aiUnits.push_back(e);
+			Global::aiUnits.push_back(e);
 		}
 		return e;
 	}

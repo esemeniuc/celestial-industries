@@ -1,5 +1,5 @@
 #include "entity.hpp"
-#include "global.hpp" //for pathfinding stuff
+#include "pathfinder.hpp"  //for astar stuff
 #include <cmath>
 
 Entity::Entity() : geometryRenderer(Model::meshRenderers[Model::MeshType::BALL]) {}

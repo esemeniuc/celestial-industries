@@ -8,8 +8,8 @@
 namespace UnitManager {
 
 	void init(size_t levelHeight, size_t levelWidth) {
-		playerUnits.reserve(levelHeight * levelWidth);
-		aiUnits.reserve(levelHeight * levelWidth);
+		Global::playerUnits.reserve(levelHeight * levelWidth);
+		Global::aiUnits.reserve(levelHeight * levelWidth);
 	}
 
 	bool isDead( std::shared_ptr<Entity>& unit)
@@ -23,24 +23,24 @@ namespace UnitManager {
 
 	void removeDead() {
 		//std::cout << "before: " << playerUnits.size() << '\n';
-		playerUnits.erase(std::remove_if(playerUnits.begin(), playerUnits.end(), isDead), playerUnits.end());
+		Global::playerUnits.erase(std::remove_if(Global::playerUnits.begin(), Global::playerUnits.end(), isDead), Global::playerUnits.end());
 		//std::cout << "after: " << playerUnits.size() << '\n';
-		aiUnits.erase(std::remove_if(aiUnits.begin(), aiUnits.end(), isDead), aiUnits.end());
+		Global::aiUnits.erase(std::remove_if(Global::aiUnits.begin(), Global::aiUnits.end(), isDead), Global::aiUnits.end());
 	}
 
 	void update(double elapsed_ms) {
 		removeDead();
 		int currentUnixTime = (int) getUnixTime();
-		for (auto& playerUnit : playerUnits) {
+		for (auto& playerUnit : Global::playerUnits) {
 				playerUnit->unitComp.update();
 				playerUnit->move(elapsed_ms);
-				AiManager::updateAreaSeenByUnit(playerUnit, currentUnixTime, playerVisibilityMap);
+				AiManager::updateAreaSeenByUnit(playerUnit, currentUnixTime, Global::playerVisibilityMap);
 		}
 
-		for (auto& aiUnit : aiUnits) {
+		for (auto& aiUnit : Global::aiUnits) {
 			aiUnit->unitComp.update();
 			aiUnit->move(elapsed_ms);
-			AiManager::updateAreaSeenByUnit(aiUnit, currentUnixTime, aiVisibilityMap);
+			AiManager::updateAreaSeenByUnit(aiUnit, currentUnixTime, Global::aiVisibilityMap);
 		}
 	}
 

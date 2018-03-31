@@ -72,10 +72,15 @@ bool World::init() {
 	auto mouse_button_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2) {
 		((World*)glfwGetWindowUserPointer(wnd))->on_mouse_button(wnd, _0, _1, _2);
 	};
+	auto window_size_callback = [](GLFWwindow* window, int width, int height) {
+		Global::windowWidth = static_cast<size_t>(width);
+		Global::windowHeight = static_cast<size_t>(height);
+	};
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
 	glfwSetScrollCallback(m_window, scroll_offset_redirect);
 	glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
+	glfwSetWindowSizeCallback(m_window, window_size_callback);
 
 	//-------------------------------------------------------------------------
 	// Loading music and sounds
@@ -122,14 +127,14 @@ bool World::init() {
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
 
-	levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "GameLevel1.txt", particleShader);
+	Global::levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "GameLevel1.txt", particleShader);
+	Global::levelHeight = Global::levelArray.size();
+	Global::levelWidth = Global::levelArray.front().size();
 	level.init(Model::meshRenderers);
-	this->levelHeight = levelArray.size();
-	this->levelWidth = levelArray.front().size();
 
-	UnitManager::init(levelHeight, levelWidth);
-	AiManager::init(levelHeight, levelWidth);
-	aStarCostMap = level.getLevelTraversalCostMap();
+	UnitManager::init(Global::levelHeight, Global::levelWidth);
+	AiManager::init(Global::levelHeight, Global::levelWidth);
+	Global::aStarCostMap = level.getLevelTraversalCostMap();
 
 	//display a path
 	int startx = 25, startz = 11;
@@ -148,8 +153,8 @@ bool World::init() {
 	// Example use of targeting units.
 	AttackManager::registerTargetUnit(temp2, temp1);
 
-	selectedTileCoordinates.rowCoord = levelWidth / 2;
-	selectedTileCoordinates.colCoord = levelHeight / 2;
+	selectedTileCoordinates.rowCoord = Global::levelWidth / 2;
+	selectedTileCoordinates.colCoord = Global::levelHeight / 2;
 
 	// Unit test stuff
 
@@ -227,17 +232,17 @@ bool World::update(double elapsed_ms) {
 	UnitManager::update(elapsed_ms);
 //	AttackManager::update(elapsed_ms);
     BuildingManager::update(elapsed_ms);
-  
+
 	Model::collisionDetector.findCollisions(elapsed_ms);
 	for (const auto& tile : level.tiles) {
 		tile->update(elapsed_ms);
 	}
-	for (const auto& entity : playerUnits) {
+	for (const auto& entity : Global::playerUnits) {
 		entity->animate(elapsed_ms);
 	}
 	if (m_dist(m_rng) < 0.005) {
-		int row = m_dist(m_rng)*levelWidth;
-		int col = m_dist(m_rng)*levelHeight;
+		int row = m_dist(m_rng)*Global::levelWidth;
+		int col = m_dist(m_rng)*Global::levelHeight;
 		if (level.getLevelTraversalCostMap()[col][row].movementCost < 50.0f) {
 			glm::vec3 pos = glm::vec3(row, 0, col);
 			float unitRand = m_dist(m_rng);
@@ -434,9 +439,9 @@ void World::on_mouse_button(GLFWwindow * window, int button, int action, int mod
 {
 	glm::vec3 coords = { selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord };
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-		if (coords.x < 0 || coords.x + 1 > levelWidth)
+		if (coords.x < 0 || coords.x + 1 > Global::levelWidth)
 			return;
-		if (coords.z < 0 || coords.z + 1 > levelHeight)
+		if (coords.z < 0 || coords.z + 1 > Global::levelHeight)
 			return;
 		level.placeTile(Model::MeshType::GUN_TURRET, coords);
 		logger(LogLevel::INFO) << "Right click detected " << '\n';
@@ -451,7 +456,7 @@ void World::on_mouse_button(GLFWwindow * window, int button, int action, int mod
 		logger(LogLevel::INFO) << "Left click detected " << '\n';
 	}
 	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
-		for (const auto& entity : playerUnits) {
+		for (const auto& entity : Global::playerUnits) {
 			entity->rigidBody.setVelocity((coords - entity->rigidBody.getPosition())/5000.0f);
 		}
 	}

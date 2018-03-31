@@ -32,8 +32,7 @@
 class World {
 public:
 	//members
-	size_t levelWidth;
-	size_t levelHeight;
+
 
 	//funcs
 	World();

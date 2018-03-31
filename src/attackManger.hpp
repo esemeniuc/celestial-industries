@@ -3,6 +3,8 @@
 //
 #pragma once
 
+#include <unordered_map>
+
 #include "global.hpp"
 
 namespace AttackManager {
@@ -17,8 +19,8 @@ namespace AttackManager {
         // logger(LogLevel::DEBUG) << "Number of entities found: " << allEntities.size() << " \n";
         // logger << "MS passed: " << elapsed_ms << '\n';
 
-        for (std::shared_ptr<Entity> entity1 : aiUnits) {
-            for (std::shared_ptr<Entity> entity2 : playerUnits) {
+        for (std::shared_ptr<Entity> entity1 : Global::aiUnits) {
+            for (std::shared_ptr<Entity> entity2 : Global::playerUnits) {
                 if (entity1->inAttackRange(entity2)) {
                     // Entity1 attacks entity2 for elapsed_ms amount of time.
                     entity1->attack(entity2, elapsed_ms);
@@ -26,8 +28,8 @@ namespace AttackManager {
             }
         }
 
-        for (std::shared_ptr<Entity> entity1 : aiUnits) {
-            for (std::shared_ptr<Entity> entity2 : buildingMap) {
+        for (std::shared_ptr<Entity> entity1 : Global::aiUnits) {
+            for (std::shared_ptr<Entity> entity2 : Global::buildingMap) {
                 if (entity1->inAttackRange(entity2)) {
                     // Entity1 attacks entity2 for elapsed_ms amount of time.
                     entity1->attack(entity2, elapsed_ms);
@@ -35,8 +37,8 @@ namespace AttackManager {
             }
         }
 
-        for (std::shared_ptr<Entity> entity1 : playerUnits) {
-            for (std::shared_ptr<Entity> entity2 : aiUnits) {
+        for (std::shared_ptr<Entity> entity1 : Global::playerUnits) {
+            for (std::shared_ptr<Entity> entity2 : Global::aiUnits) {
                 if (entity1->inAttackRange(entity2)) {
                     // Entity1 attacks entity2 for elapsed_ms amount of time.
                     entity1->attack(entity2, elapsed_ms);

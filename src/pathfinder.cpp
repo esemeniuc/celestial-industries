@@ -4,6 +4,7 @@
 namespace AI {
 	namespace aStar {
 
+		//returns true if a spot can be traversed upon
 		bool isTraversable(int x, int z) {
 			return false; //FIXME
 		}
@@ -92,11 +93,11 @@ namespace AI {
 			/* hash table that helps us keep track of how we reached a tile node
 			using a key of its predecessor node in the path*/
 			std::unordered_map<AStarNode, AStarNode, aStarHasher> came_from;
-			came_from.reserve(aStarCostMap.size() * aStarCostMap.front().size());
+			came_from.reserve(Global::levelArray.size() * Global::levelArray.front().size());
 
 			// cost associated with a path up to a certain node
 			std::unordered_map<AStarNode, double, aStarHasher> cost_so_far;
-			cost_so_far.reserve(aStarCostMap.size() * aStarCostMap.front().size());
+			cost_so_far.reserve(Global::levelArray.size() * Global::levelArray.front().size());
 
 			// check which tiles the given positions lie in
 			// TODO: check coordinate signs ( -Z as opposed to +Z for tile positions)
@@ -123,7 +124,7 @@ namespace AI {
 					return {true, path}; //true for bool because we found a path
 				}
 
-				std::vector<AStarNode> neighbors = getNeighbors(aStarCostMap, current, goal);
+				std::vector<AStarNode> neighbors = getNeighbors(Global::aStarCostMap, current, goal);
 				for (auto& next : neighbors) {
 					// total movement cost to next node: path cost of current node + cost of taking
 					// a step from current to next node

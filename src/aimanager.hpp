@@ -11,8 +11,10 @@
 #include "global.hpp"
 #include "unitcomp.hpp"
 #include "building.hpp"
+#include "pathfinder.hpp"
 
 #include <array>
+#include <queue>
 
 //assume AI has goal to destroy main control building of player
 /*we do the tree thing like alla suggested
@@ -73,7 +75,7 @@ namespace AiManager {
 	int aiSpawnX, aiSpawnZ;
 
 	void init(size_t levelHeight, size_t levelWidth) {
-		aiVisibilityMap = std::vector<std::vector<int>>(levelHeight, std::vector<int>(levelWidth));
+		Global::aiVisibilityMap = std::vector<std::vector<int>>(levelHeight, std::vector<int>(levelWidth));
 		aiSpawnX = levelWidth - 1;//FIXME: a hack to make ai always spawn from far right of the map
 		aiSpawnZ = levelHeight / 2;
 	}
@@ -83,9 +85,9 @@ namespace AiManager {
 							  std::vector<std::vector<int>> visibilityMap) {
 		int radius = unit->aiComp.visionRange;
 		int xMin = std::max(0, unit->getPositionInt().colCoord - radius);
-		int xMax = std::min((int) world.levelWidth, unit->getPositionInt().colCoord + radius);
+		int xMax = std::min((int) Global::levelWidth, unit->getPositionInt().colCoord + radius);
 		int yMin = std::max(0, unit->getPositionInt().rowCoord - radius);
-		int yMax = std::min((int) world.levelHeight, unit->getPositionInt().rowCoord + radius);
+		int yMax = std::min((int) Global::levelHeight, unit->getPositionInt().rowCoord + radius);
 
 		for (int i = yMin; i < yMax; ++i) {
 			for (int j = xMin; j < xMax; ++j) {
@@ -100,19 +102,19 @@ namespace AiManager {
 
 	void updateVisibilityMap() {
 		int currentUnixTime = (int) getUnixTime();
-		for (const auto& unit : aiUnits) {
-			updateAreaSeenByUnit(unit, currentUnixTime, aiVisibilityMap);
+		for (const auto& unit : Global::aiUnits) {
+			updateAreaSeenByUnit(unit, currentUnixTime, Global::aiVisibilityMap);
 		}
 
 		int cellsVisible = 0;
-		for (const auto& row: aiVisibilityMap) {
+		for (const auto& row: Global::aiVisibilityMap) {
 			for (const auto& cellLastSceneTime : row) {
 				if (currentUnixTime - cellLastSceneTime < FOG_OF_WAR_TIME_THRESHOLD) {
 					cellsVisible++;
 				}
 			}
 		}
-		percentVisible = (double) cellsVisible / (world.levelHeight * world.levelWidth);
+		percentVisible = (double) cellsVisible / (Global::levelHeight * Global::levelWidth);
 	}
 
 	//calculates the values of ai and player units and buildings
@@ -121,15 +123,15 @@ namespace AiManager {
 		playerUnitValue = 0;
 		aiBuildingValue = 0;
 		playerBuildingValue = 0;
-		for (auto& unit : playerUnits) {
+		for (auto& unit : Global::playerUnits) {
 			playerUnitValue += unit->aiComp.value;
 		}
 
-		for (auto& unit : aiUnits) {
+		for (auto& unit : Global::aiUnits) {
 			aiUnitValue += unit->aiComp.value;
 		}
 
-		for (auto& building : buildingMap) {
+		for (auto& building : Global::buildingMap) {
 			if (building->aiComp.owner == GamePieceOwner::AI) {
 				aiBuildingValue += building->aiComp.value;
 			} else if (building->aiComp.owner == GamePieceOwner::PLAYER) {
@@ -153,8 +155,8 @@ namespace AiManager {
 
 
 	bool isWithinBounds(int x, int z) {
-		return x >= 0 && x < (int) world.levelWidth &&
-			   z >= 0 && z < (int) world.levelHeight;
+		return x >= 0 && x < (int) Global::levelWidth &&
+			   z >= 0 && z < (int) Global::levelHeight;
 	}
 
 	//in x,z format
@@ -178,9 +180,9 @@ namespace AiManager {
 
 	//assume we make 1 action per frame for simplicity, assume vision range is fixed
 	Coord findBestScoutLocation() {
-		std::vector<std::vector<bool>> visited(world.levelHeight, std::vector<bool>(world.levelWidth));
-		std::vector<std::vector<std::pair<int, int>>> parent(world.levelHeight,
-															 std::vector<std::pair<int, int>>(world.levelWidth));
+		std::vector<std::vector<bool>> visited(Global::levelHeight, std::vector<bool>(Global::levelWidth));
+		std::vector<std::vector<std::pair<int, int>>> parent(Global::levelHeight,
+															 std::vector<std::pair<int, int>>(Global::levelWidth));
 		//traverse tree with bfs
 		int currentUnixTime = static_cast<int>(getUnixTime());
 		std::pair<int, int> root(INT32_MIN, INT32_MIN);
@@ -209,7 +211,7 @@ namespace AiManager {
 				if (isWithinBounds(nextX, nextZ) && !visited[nextZ][nextX] && AI::aStar::isTraversable(nextX, nextZ)) {
 					visited[nextZ][nextX] = true;
 					parent[nextZ][nextX] = {u.x, u.z};
-					const int timeDelta = currentUnixTime - aiVisibilityMap[nextZ][nextX];
+					const int timeDelta = currentUnixTime - Global::aiVisibilityMap[nextZ][nextX];
 					if (timeDelta > FOG_OF_WAR_TIME_THRESHOLD) {
 						nextDist++;
 					}
@@ -219,7 +221,7 @@ namespace AiManager {
 		}
 
 		//assumes this is the player spawn and just goes to it
-		Coord randomCoord = Coord::getRandomCoord(world.levelWidth, world.levelHeight);
+		Coord randomCoord = Coord::getRandomCoord(Global::levelWidth, Global::levelHeight);
 //		while(AI::aStar::a_star(aStarCostMap, 1, randomCoord.colCoord, randomCoord.rowCoord, x,
 //								z).second))
 		//check if traversable
@@ -231,18 +233,18 @@ namespace AiManager {
 
 //updates the state trackers of what units the ai has seen
 	void updateUnitsSeen() {
-		playerUnitsSeenByAI.clear();//this is a hack because its slow, we need some removal proceedure
-		aiUnitsSeenByPlayer.clear();
+		Global::playerUnitsSeenByAI.clear();//this is a hack because its slow, we need some removal proceedure
+		Global::aiUnitsSeenByPlayer.clear();
 
-		for (const auto& playerUnit : playerUnits) {
+		for (const auto& playerUnit : Global::playerUnits) {
 
-			for (const auto& aiUnit : aiUnits) {
+			for (const auto& aiUnit : Global::aiUnits) {
 				if (playerUnit->canSee(aiUnit)) {
-					playerUnitsSeenByAI.insert(aiUnit);
+					Global::playerUnitsSeenByAI.insert(aiUnit);
 				}
 
 				if (aiUnit->canSee(playerUnit)) {
-					aiUnitsSeenByPlayer.insert(playerUnit);
+					Global::aiUnitsSeenByPlayer.insert(playerUnit);
 				}
 			}
 		}
@@ -253,7 +255,7 @@ namespace AiManager {
 
 		std::shared_ptr<Entity> bestUnit;
 		float bestDist = std::numeric_limits<float>::max();
-		for (const auto& unit : aiUnits) {
+		for (const auto& unit : Global::aiUnits) {
 			float dist = glm::l2Norm(targetLocation3, unit->getPosition());
 			if (dist < bestDist && unit->unitComp.state == UnitState::IDLE) {
 				bestUnit = unit;
@@ -264,7 +266,7 @@ namespace AiManager {
 	}
 
 	void cleanupScoutTargets() {
-		for (const auto& aiUnit: aiUnits) {
+		for (const auto& aiUnit: Global::aiUnits) {
 			if (aiUnit->unitComp.state == UnitState::SCOUT && !aiUnit->hasTarget()) //check for finish scouting
 			{
 //				scoutingTargetsInProgress.erase()

@@ -58,9 +58,9 @@ glm::mat4 Camera::getViewMatrix() {
 //delta get set to 0 on every update() call
 void Camera::pan(int x, int y) {
 	int leftBound = panDetectionWidth;
-	int rightBound = world.getWindowSize().first - panDetectionWidth;
+	int rightBound = (int) Global::windowWidth - panDetectionWidth;
 	int topBound = panDetectionWidth; //top border
-	int botBound = world.getWindowSize().second - panDetectionWidth; //bottom border
+	int botBound = (int) Global::windowHeight - panDetectionWidth; //bottom border
 	if (x <= leftBound) { //handles NW, SW, and W cases
 		if (y <= topBound) {
 			deltaY = 1;

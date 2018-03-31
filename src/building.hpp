@@ -62,7 +62,7 @@ namespace Building {
 			}
 		}
 
-		buildingMap.push_back(e);
+		Global::buildingMap.push_back(e);
 		e->setPosition(spawnLocation);
 		e->aiComp.owner = owner;
 		return e;
