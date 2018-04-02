@@ -27,7 +27,6 @@ set(CUSTOM_COMPILE_FLAGS
 		-Wno-comment
 		-Wno-unused-parameter
 		-ggdb
-		-v
 		)
 
 set(CUSTOM_INCLUDE_DIRS
