@@ -7,3 +7,6 @@
 [submodule "ext/catch2"]
 	path = ext/catch2
 	url = https://github.com/catchorg/Catch2.git
+[submodule "ext/imgui"]
+	path = ext/imgui
+	url = https://github.com/ocornut/imgui.git
