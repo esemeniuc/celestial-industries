@@ -68,7 +68,7 @@ namespace AI {
 		const int AI_RUN_THRESHOLD = 500; //run every 500ms
 		const int UNSEEN_RADIUS_THRESHOLD = 6;
 		double lastRunTimestamp = AI_RUN_THRESHOLD;
-		const int FOG_OF_WAR_TIME_THRESHOLD = 5;
+		const int FOG_OF_WAR_TIME_THRESHOLD = 10;
 
 
 		int aiSpawnX, aiSpawnZ;
@@ -295,12 +295,12 @@ namespace AI {
 			updateUnitsSeen();
 
 			//print grid
-			for (const auto& row: Global::aiVisibilityMap) {
-				for (const auto& cellLastSceneTime : row) {
-					printf("%d ", (uint8_t)cellLastSceneTime);
-				}
-				printf("\n");
-			}
+//			for (const auto& row: Global::aiVisibilityMap) {
+//				for (const auto& cellLastSceneTime : row) {
+//					printf("%d ", (uint8_t)cellLastSceneTime);
+//				}
+//				printf("\n");
+//			}
 			//send unit to scout
 			updateVisibilityMap();
 
