@@ -9,7 +9,7 @@
 #include "global.hpp"
 
 TEST_CASE("Unit range is accurate", "[generic_unit]") {
-	world.init();
+//	world.init();
 //	world.initMeshTypes(Model::meshSources);
 //	std::shared_ptr<Renderer> parent = world.meshRenderers[Model::MeshType::SAND_2];
 

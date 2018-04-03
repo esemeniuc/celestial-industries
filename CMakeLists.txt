@@ -27,6 +27,7 @@ set(CUSTOM_COMPILE_FLAGS
 		-Wno-comment
 		-Wno-unused-parameter
 		-ggdb
+		-v
 		)
 
 set(CUSTOM_INCLUDE_DIRS
@@ -36,7 +37,7 @@ set(CUSTOM_INCLUDE_DIRS
 		ext/gl3w
 		ext/gl3w/GL
 		ext/stb_image
-		${SDL2_INCLUDE_DIRS}
+		${SDL2_INCLUDE_DIR}
 		${SDL2_MIXER_INCLUDE_DIRS}
 		)
 
@@ -45,7 +46,7 @@ set(CUSTOM_INCLUDE_LIBS
 		glfw
 		glm
 		${CMAKE_DL_LIBS}
-		${SDL2_LIBRARIES}
+		${SDL2_LIBRARY}
 		${SDL2_MIXER_LIBRARIES}
 		)
 
@@ -53,7 +54,6 @@ set(PROJ_SOURCES
 		ext/gl3w/GL/gl3w.cpp
 		ext/imgui/imgui.cpp
 		ext/imgui/imgui_draw.cpp
-		ext/imgui/imgui_demo.cpp
 		src/aicomp.cpp
 		src/aimanager.cpp
 		src/building.cpp
@@ -95,6 +95,7 @@ else()
 	target_link_libraries(libproj PUBLIC ${CUSTOM_INCLUDE_LIBS})
 endif ()
 target_include_directories(libproj PUBLIC ${CUSTOM_INCLUDE_DIRS})
+
 
 add_executable(proj src/main.cpp) #main.cpp gets compile flags through PUBLIC flag of libproj
 target_link_libraries(proj libproj)
