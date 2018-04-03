@@ -27,7 +27,6 @@ set(CUSTOM_COMPILE_FLAGS
 		-Wno-comment
 		-Wno-unused-parameter
 		-ggdb
-		-v
 		)
 
 set(CUSTOM_INCLUDE_DIRS
@@ -54,6 +53,7 @@ set(PROJ_SOURCES
 		ext/gl3w/GL/gl3w.cpp
 		ext/imgui/imgui.cpp
 		ext/imgui/imgui_draw.cpp
+		ext/imgui/imgui_demo.cpp
 		src/aicomp.cpp
 		src/aimanager.cpp
 		src/attackManger.cpp
