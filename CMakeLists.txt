@@ -56,7 +56,9 @@ set(PROJ_SOURCES
 		ext/imgui/imgui_draw.cpp
 		src/aicomp.cpp
 		src/aimanager.cpp
+		src/attackManger.cpp
 		src/building.cpp
+		src/buildingmanager.cpp
 		src/camera.cpp
 		src/collisiondetection.cpp
 		src/collisiondetector.cpp
@@ -80,18 +82,15 @@ set(PROJ_SOURCES
 		src/tile.cpp
 		src/world.cpp
 		src/unitcomp.cpp
-		src/unitmanager.cpp src/unitmanager.hpp
-		src/unit.cpp src/unit.hpp
-		src/building.cpp src/building.hpp
-		src/attackManger.cpp src/attackManger.hpp
-		src/buildingmanager.cpp src/buildingmanager.hpp
-		src/aicore.cpp src/aicore.h)
+		src/unitmanager.cpp
+		src/unit.cpp
+		src/aicore.cpp)
 
 add_library(libproj ${PROJ_SOURCES})
 target_compile_options(libproj PUBLIC ${CUSTOM_COMPILE_FLAGS})
 if (APPLE)
 	target_link_libraries(libproj PUBLIC ${CUSTOM_INCLUDE_LIBS} "-framework CoreFoundation")
-else()
+else ()
 	target_link_libraries(libproj PUBLIC ${CUSTOM_INCLUDE_LIBS})
 endif ()
 target_include_directories(libproj PUBLIC ${CUSTOM_INCLUDE_DIRS})
@@ -99,7 +98,6 @@ target_include_directories(libproj PUBLIC ${CUSTOM_INCLUDE_DIRS})
 
 add_executable(proj src/main.cpp) #main.cpp gets compile flags through PUBLIC flag of libproj
 target_link_libraries(proj libproj)
-
 
 
 set(TEST_SUITE_SOURCES

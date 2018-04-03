@@ -20,9 +20,9 @@ struct TimeTile {
 
 // used to build a graph of nodes for the AI pathfinder to traverse each tile node.
 struct AStarNode {
-	short type;
 	int rowCoord, colCoord, movementCost;
 	float fScore;
+	short type;
 
 	AStarNode() = default;
 

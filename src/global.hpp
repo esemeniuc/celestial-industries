@@ -6,8 +6,6 @@
 #include "entity.hpp"
 #include "level.hpp"
 
-// Global
-
 namespace Global {
 	extern size_t levelWidth;
 	extern size_t levelHeight;

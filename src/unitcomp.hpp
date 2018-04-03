@@ -26,7 +26,7 @@ public:
 	UnitState state;
 	std::vector<Coord> targetPath;
 	Coord targetDest;
-	double targetPathStartTimestamp; //needed to get delta time
+	double targetPathStartTimestamp = 0; //needed to get delta time
 
 	glm::vec3 velocity;
 	glm::vec3 nextPos;
@@ -38,7 +38,6 @@ public:
 				 attackSpeed(1),
 				 movementSpeed(10),
 				 currentEnergyLevel(50),
-				 targetPathStartTimestamp(0),
 				 state(UnitState::IDLE) {
 	}
 
@@ -57,7 +56,6 @@ public:
 								 attackSpeed(_attackSpeed),
 								 movementSpeed(_movementSpeed),
 								 currentEnergyLevel(_initialEnergyLevel),
-								 targetPathStartTimestamp(0),
 								 state(_state) {
 	}
 

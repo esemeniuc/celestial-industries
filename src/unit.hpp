@@ -30,7 +30,7 @@ namespace Unit {
 				e->unitComp.attackDamage = 30;
 				e->unitComp.attackRange = 5;
 				e->unitComp.attackSpeed = 1;
-				e->unitComp.movementSpeed = 30;
+				e->unitComp.movementSpeed = 20;
 				e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
 				e->unitComp.state = UnitState::IDLE;
 				break;
@@ -58,7 +58,7 @@ namespace Unit {
 				e->unitComp.attackDamage = 10;
 				e->unitComp.attackRange = 1;
 				e->unitComp.attackSpeed = 1;
-				e->unitComp.movementSpeed = 5;
+				e->unitComp.movementSpeed = 1;
 				e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
 				e->unitComp.state = UnitState::IDLE;
 				break;
