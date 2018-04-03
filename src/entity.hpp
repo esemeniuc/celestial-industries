@@ -97,9 +97,9 @@ public:
 
 	std::pair<int, double> getInterpolationPercentage();
 
-	bool canSee(const std::shared_ptr<Entity> other);
+	bool canSee(const std::shared_ptr<Entity>& other) const;
 
-	bool inAttackRange(const std::shared_ptr<Entity> other);
+	bool inAttackRange(const std::shared_ptr<Entity>& other) const;
 
 	bool operator==(const Entity& rhs) const;
 

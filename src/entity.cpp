@@ -199,11 +199,11 @@ glm::vec3 Entity::getPosition() const {
 	return rigidBody.getPosition();
 }
 
-bool Entity::canSee(std::shared_ptr<Entity> entity) {
+bool Entity::canSee(const std::shared_ptr<Entity>& entity) const {
 	return glm::length(glm::vec2(entity->getPosition() - this->getPosition())) <= aiComp.visionRange;
 }
 
-bool Entity::inAttackRange(std::shared_ptr<Entity> entity) {
+bool Entity::inAttackRange(const std::shared_ptr<Entity>& entity) const {
 	return glm::length(glm::vec2(entity->getPosition() - this->getPosition())) <= unitComp.attackRange;
 }
 
