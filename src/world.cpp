@@ -242,21 +242,21 @@ bool World::update(double elapsed_ms) {
 	for (const auto& entity : Global::playerUnits) {
 		entity->animate(elapsed_ms);
 	}
-	if (m_dist(m_rng) < 0.005) {
-		int row = m_dist(m_rng) * Global::levelWidth;
-		int col = m_dist(m_rng) * Global::levelHeight;
-		if (level.getLevelTraversalCostMap()[col][row].movementCost < 50.0f) {
-			glm::vec3 pos = glm::vec3(row, 0, col);
-			float unitRand = m_dist(m_rng);
-			if (unitRand < 0.33) {
-				level.placeEntity(Model::MeshType::ENEMY_SPIKE_UNIT, pos, GamePieceOwner::AI);
-			} else if (unitRand < 0.66) {
-				level.placeEntity(Model::MeshType::ENEMY_RANGED_LINE_UNIT, pos, GamePieceOwner::AI);
-			} else {
-				level.placeEntity(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, pos, GamePieceOwner::AI);
-			}
-		}
-	}
+//	if (m_dist(m_rng) < 0.005) {
+//		int row = m_dist(m_rng) * Global::levelWidth;
+//		int col = m_dist(m_rng) * Global::levelHeight;
+//		if (level.getLevelTraversalCostMap()[col][row].movementCost < 50.0f) {
+//			glm::vec3 pos = glm::vec3(row, 0, col);
+//			float unitRand = m_dist(m_rng);
+//			if (unitRand < 0.33) {
+//				level.placeEntity(Model::MeshType::ENEMY_SPIKE_UNIT, pos, GamePieceOwner::AI);
+//			} else if (unitRand < 0.66) {
+//				level.placeEntity(Model::MeshType::ENEMY_RANGED_LINE_UNIT, pos, GamePieceOwner::AI);
+//			} else {
+//				level.placeEntity(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, pos, GamePieceOwner::AI);
+//			}
+//		}
+//	}
 	return true;
 }
 

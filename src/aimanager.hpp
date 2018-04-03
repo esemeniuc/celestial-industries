@@ -64,8 +64,8 @@ namespace AI {
 																				 unseenTimeDeltaSum(
 																						 unseenTimeDeltaSum) {}
 
-			bool operator<(const bfsState& rhs) const { //prioritizes the ones that have the most unseen area
-				return unseenTimeDeltaSum < rhs.unseenTimeDeltaSum;
+			bool operator<(const bfsState& rhs) const { //prioritizes the ones that have the most unseen area (desc order)
+				return unseenTimeDeltaSum > rhs.unseenTimeDeltaSum;
 			}
 		};
 

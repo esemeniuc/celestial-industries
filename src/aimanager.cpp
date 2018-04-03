@@ -71,7 +71,7 @@ namespace AI {
 				int deltaX = existingTarget.colCoord - x;
 				int deltaZ = existingTarget.rowCoord - z;
 				float dist = sqrtf(deltaX * deltaX + deltaZ * deltaZ);
-				if (dist < 2 * UNSEEN_RADIUS_THRESHOLD) {
+				if (dist < 4 * UNSEEN_RADIUS_THRESHOLD) {
 					return true;
 				}
 			}
