@@ -68,43 +68,21 @@ namespace AI {
 		const int AI_RUN_THRESHOLD = 500; //run every 500ms
 		const int UNSEEN_RADIUS_THRESHOLD = 6;
 		double lastRunTimestamp = AI_RUN_THRESHOLD;
-		const int FOG_OF_WAR_TIME_THRESHOLD = 10;
+		const int FOG_OF_WAR_TIME_THRESHOLD = 5;
 
 
 		int aiSpawnX, aiSpawnZ;
 
 		void init(size_t levelHeight, size_t levelWidth) {
-			Global::aiVisibilityMap = std::vector<std::vector<int>>(levelHeight, std::vector<int>(levelWidth));
-			aiSpawnX = levelWidth - 1;//FIXME: a hack to make ai always spawn from far right of the map
+						aiSpawnX = levelWidth - 1;//FIXME: a hack to make ai always spawn from far right of the map
 			aiSpawnZ = levelHeight / 2;
 		}
 
 
-		void updateAreaSeenByUnit(const std::shared_ptr<Entity>& unit, int currentUnixTime,
-								  std::vector<std::vector<int>> visibilityMap) {
-			int radius = unit->aiComp.visionRange;
-			int xMin = std::max(0, unit->getPositionInt().colCoord - radius);
-			int xMax = std::min((int) Global::levelWidth, unit->getPositionInt().colCoord + radius);
-			int yMin = std::max(0, unit->getPositionInt().rowCoord - radius);
-			int yMax = std::min((int) Global::levelHeight, unit->getPositionInt().rowCoord + radius);
 
-			for (int i = yMin; i < yMax; ++i) {
-				for (int j = xMin; j < xMax; ++j) {
-					int xp = i - unit->getPositionInt().colCoord;
-					int yp = j - unit->getPositionInt().rowCoord;
-					if (xp * xp + yp * yp <= radius * radius) {
-						visibilityMap[i][j] = currentUnixTime;
-					}
-				}
-			}
-		}
-
+		//dont call updateAreaSeenByUnit() since unitmanager does this
 		void updateVisibilityMap() {
 			int currentUnixTime = (int) getUnixTime();
-			for (const auto& unit : Global::aiUnits) {
-				updateAreaSeenByUnit(unit, currentUnixTime, Global::aiVisibilityMap);
-			}
-
 			int cellsVisible = 0;
 			for (const auto& row: Global::aiVisibilityMap) {
 				for (const auto& cellLastSceneTime : row) {
@@ -113,6 +91,8 @@ namespace AI {
 					}
 				}
 			}
+			std::cout << "time: " << currentUnixTime  << "count " << cellsVisible<< '\n';
+
 			percentVisible = (double) cellsVisible / (Global::levelHeight * Global::levelWidth);
 		}
 
@@ -314,16 +294,16 @@ namespace AI {
 			updateValueOfEntities();
 			updateUnitsSeen();
 
+			//print grid
+			for (const auto& row: Global::aiVisibilityMap) {
+				for (const auto& cellLastSceneTime : row) {
+					printf("%d ", (uint8_t)cellLastSceneTime);
+				}
+				printf("\n");
+			}
 			//send unit to scout
 			updateVisibilityMap();
 
-			//print grid
-//		for (const auto& row: aiVisibilityMap) {
-//			for (const auto& cellLastSceneTime : row) {
-//				printf("%d ", cellLastSceneTime);
-//			}
-//			printf("\n");
-//		}
 			if (percentVisible < AI_VISIBLE_THRESHOLD) {
 				Coord loc = findBestScoutLocation();
 				std::shared_ptr<Entity> bestUnit = getBestScoutUnit(loc);
