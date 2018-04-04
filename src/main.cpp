@@ -42,9 +42,9 @@ int main(int argc, char* argv[]) {
 			elapsed_milliSec = 1000 / 60.0; //pretend we continue to next frame at 60fps
 		}
 
-		world.imguiRenderThings();
 		world.update(elapsed_milliSec);
 		world.draw();
+		world.imguiRenderThings();
 	}
 
 	world.destroy();
