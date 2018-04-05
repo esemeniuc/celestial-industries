@@ -1,7 +1,8 @@
 // internal
 #include "common.hpp"
 #include "world.hpp"
-#include "imgui.h"
+#include "ui.h"
+
 #define GL3W_IMPLEMENTATION
 
 #include <gl3w.h>
@@ -23,8 +24,8 @@ int main(int argc, char* argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-	world.imguiSetup();
+//	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	Ui::imguiSetup(world.m_window);
 
 	auto t = Clock::now();
 	// variable timestep loop.. can be improved (:
@@ -44,7 +45,7 @@ int main(int argc, char* argv[]) {
 
 		world.update(elapsed_milliSec);
 		world.draw();
-		world.imguiRenderThings();
+		Ui::imguiRenderThings();
 	}
 
 	world.destroy();

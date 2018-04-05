@@ -57,9 +57,6 @@ public:
 
 	//returns w x h
 	std::pair<int, int> getWindowSize();
-	void imguiSetup();
-	void imguiRenderThings();
-
 
 private:
 	//members

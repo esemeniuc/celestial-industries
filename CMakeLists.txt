@@ -84,7 +84,8 @@ set(PROJ_SOURCES
 		src/unitcomp.cpp
 		src/unitmanager.cpp
 		src/unit.cpp
-		src/aicore.cpp)
+		src/aicore.cpp
+		src/ui.cpp)
 
 add_library(libproj ${PROJ_SOURCES})
 target_compile_options(libproj PUBLIC ${CUSTOM_COMPILE_FLAGS})
