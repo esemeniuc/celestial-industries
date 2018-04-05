@@ -24,7 +24,6 @@ int main(int argc, char* argv[]) {
 		return EXIT_FAILURE;
 	}
 
-//	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	Ui::imguiSetup(world.m_window);
 
 	auto t = Clock::now();
@@ -45,7 +44,7 @@ int main(int argc, char* argv[]) {
 
 		world.update(elapsed_milliSec);
 		world.draw();
-		Ui::imguiRenderThings();
+		Ui::imguiGenerateScreenObjects();
 	}
 
 	world.destroy();
