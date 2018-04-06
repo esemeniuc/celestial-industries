@@ -9,7 +9,7 @@
 #include "imgui.h"
 
 namespace Ui {
-	static bool show_demo_window = true;
+	static bool show_demo_window = false;
 	static bool show_another_window = false;
 	static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
@@ -26,6 +26,9 @@ namespace Ui {
 	static int          g_AttribLocationTex = 0, g_AttribLocationProjMtx = 0;
 	static int          g_AttribLocationPosition = 0, g_AttribLocationUV = 0, g_AttribLocationColor = 0;
 	static unsigned int g_VboHandle = 0, g_ElementsHandle = 0;
+
+	//eric's stuff
+	static int uiHeight = 200;
 
 	void imguiSetup(GLFWwindow* window);
 

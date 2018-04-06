@@ -1,7 +1,7 @@
 // internal
 #include "common.hpp"
 #include "world.hpp"
-#include "ui.h"
+#include "ui.hpp"
 
 #define GL3W_IMPLEMENTATION
 
