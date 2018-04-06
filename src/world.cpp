@@ -179,7 +179,7 @@ bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<Sub
 }
 
 // skybox
-bool World::ZZloadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder) {
+bool World::loadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder) {
 	OBJ::Data skyboxObj;
 
 	std::string geometryPath = pathBuilder({"data", "models"});
