@@ -9,7 +9,6 @@
 
 // stlib
 #include <chrono>
-World world;
 using Clock = std::chrono::high_resolution_clock;
 void renderDrawData(ImDrawData* draw_data);
 
@@ -17,18 +16,18 @@ void renderDrawData(ImDrawData* draw_data);
 int main(int argc, char* argv[]) {
 	logger(LogLevel::DEBUG) << "Started game\n";
 	// Initializing world (after renderer.init().. sorry)
-	if (!world.init()) {
+	if (!World::init()) {
 		// Time to read the error message
 		logger(LogLevel::ERR) << "Press any key to exit" << '\n';
 		std::cin.get();
 		return EXIT_FAILURE;
 	}
 
-	Ui::imguiSetup(world.m_window);
+	Ui::imguiSetup(World::getWindowHandle());
 
 	auto t = Clock::now();
 	// variable timestep loop.. can be improved (:
-	while (!world.is_over()) {
+	while (!World::is_over()) {
 		// Processes system messages, if this wasn't present the window would become unresponsive
 		glfwPollEvents();
 
@@ -42,12 +41,12 @@ int main(int argc, char* argv[]) {
 			elapsed_milliSec = 1000 / 60.0; //pretend we continue to next frame at 60fps
 		}
 
-		world.update(elapsed_milliSec);
-		world.draw();
+		World::update(elapsed_milliSec);
+		World::draw();
 		Ui::imguiGenerateScreenObjects();
 	}
 
-	world.destroy();
+	World::destroy();
 
 	return EXIT_SUCCESS;
 }

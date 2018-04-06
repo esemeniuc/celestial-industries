@@ -4,7 +4,6 @@
 #include "camera.hpp"
 #include "common.hpp"
 #include "level.hpp"
-#include "pathfinder.hpp"
 #include "skybox.hpp"
 #include "tile.hpp"
 #include "model.hpp"
@@ -29,17 +28,33 @@
 
 // Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
-class World {
-public:
+namespace World {
 	//members
 	// Window handle
-	GLFWwindow* m_window;
+	extern GLFWwindow* m_window;
+
+	extern bool escapePressed;
+	extern glm::vec2 m_screen;
+
+	// Camera stuff
+	extern Camera camera;
+
+	// Selection
+	extern Coord selectedTileCoordinates;
+
+	// Game entities
+	extern std::shared_ptr<Shader> objShader;
+	extern Level level;
+	extern Skybox m_skybox;
+
+	// Particle things
+	extern std::shared_ptr<Shader> particleShader;
+
+	// C++ rng
+	extern std::default_random_engine m_rng;
+	extern std::uniform_real_distribution<float> m_dist; // default 0..1
 
 	//funcs
-	World();
-
-	~World();
-
 	// Creates a window, sets up events and begins the game
 	bool init();
 
@@ -53,36 +68,14 @@ public:
 	void draw();
 
 	// Should the game be over ?
-	bool is_over() const;
+	bool is_over();
 
 	//returns w x h
 	std::pair<int, int> getWindowSize();
 
-private:
-	//members
-
-	bool escapePressed = false;
-	glm::vec2 m_screen;
-
-	// Camera stuff
-	Camera camera;
-
-	// Selection
-	Coord selectedTileCoordinates;
-
-	// Game entities
-	std::shared_ptr<Shader> objShader;
-	Level level;
-	Skybox m_skybox;
-
-	// Particle things
-	std::shared_ptr<Shader> particleShader;
-
-	// C++ rng
-	std::default_random_engine m_rng;
-	std::uniform_real_distribution<float> m_dist; // default 0..1
-
 	//funcs
+	GLFWwindow* getWindowHandle();
+
 	void move_cursor_up();
 
 	void move_cursor_down();
@@ -105,4 +98,6 @@ private:
 	void on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
 
 	void on_mouse_button(GLFWwindow* window, int button, int action, int mods);
-};
+
+	void on_window_resize(GLFWwindow* window, int width, int height);
+}

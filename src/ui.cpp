@@ -6,7 +6,7 @@
 #include "global.hpp" //for window size
 #include "unit.hpp" //for spawning
 #include "building.hpp" //for spawning
-//#include "world.cpp" //for key callbacks
+#include "world.hpp" //for key callbacks
 
 #include "GLFW/glfw3.h" //put before gl stuff (else break things)
 #include <GL/gl3w.h>
