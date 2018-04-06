@@ -4,6 +4,7 @@
 
 #include "ui.hpp"
 #include "global.hpp" //for window size
+#include "unit.hpp"
 
 #include "GLFW/glfw3.h"
 #include <GL/gl3w.h>
@@ -61,17 +62,23 @@ namespace Ui {
 
 			static float f = 0.0f;
 			static int counter = 0;
-			ImGui::Text(
-					"Hello, world!");                           // Display some text (you can use a format string too)
+			ImGui::Text("Spawn:");                           // Display some text (you can use a format string too)
 			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
 			ImGui::ColorEdit3("clear color", (float*) &clear_color); // Edit 3 floats representing a color
 
 			ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our windows open/close state
 			ImGui::Checkbox("Another Window", &show_another_window);
 
-			if (ImGui::Button(
-					"Button"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
-				counter++;
+			if (ImGui::Button("Tank")) // Buttons return true when clicked
+			{
+				Unit::spawn(Unit::UnitType::TANK, glm::vec3(30, 0, 30), GamePieceOwner::AI);
+			}
+
+
+			if (ImGui::Button("Ball"))
+			{
+
+			}
 			ImGui::SameLine();
 			ImGui::Text("counter = %d", counter);
 
