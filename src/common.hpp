@@ -81,6 +81,8 @@ struct Coord {
 
 	Coord(int _colCoord, int _rowCoord) : colCoord(_colCoord), rowCoord(_rowCoord) {}
 
+	Coord(const glm::vec3& input) : colCoord(int(input.x + 0.5)), rowCoord(int(input.z + 0.5)) {}
+
 	bool operator==(const Coord& rhs) const {
 		return rowCoord == rhs.rowCoord &&
 			   colCoord == rhs.colCoord;
@@ -134,3 +136,4 @@ T clamp(T lower, T value, T upper) {
 }
 
 long getUnixTime();
+

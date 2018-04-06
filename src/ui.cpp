@@ -98,7 +98,7 @@ namespace Ui {
 												ImGuiWindowFlags_NoMove);
 			// Buttons return true when clicked
 			if (ImGui::Button("Tank")) {
-				Unit::spawn(Unit::UnitType::TANK, glm::vec3(30, 0, 30), GamePieceOwner::AI);
+				Unit::spawn(Unit::UnitType::TANK, glm::vec3(40, 0, 40), GamePieceOwner::AI);
 			}
 
 			if (ImGui::Button("Ball")) {
@@ -117,19 +117,19 @@ namespace Ui {
 													ImGuiWindowFlags_NoMove);
 			// Buttons return true when clicked
 			if (ImGui::Button("Command Center")) {
-				Building::spawn(Building::BuildingType::COMMAND_CENTER, glm::vec3(30, 0, 30), GamePieceOwner::PLAYER);
+				Building::spawn(Building::BuildingType::COMMAND_CENTER, glm::vec3(35, 0, 35), GamePieceOwner::PLAYER);
 			}
 
 			if (ImGui::Button("Gun Turret")) {
-				Building::spawn(Building::BuildingType::GUN_TURRET, glm::vec3(30, 0, 30), GamePieceOwner::PLAYER);
+				Building::spawn(Building::BuildingType::GUN_TURRET, glm::vec3(10, 0, 10), GamePieceOwner::PLAYER);
 			}
 
 			if (ImGui::Button("Refinery")) {
-				Building::spawn(Building::BuildingType::REFINERY, glm::vec3(30, 0, 30), GamePieceOwner::PLAYER);
+				Building::spawn(Building::BuildingType::REFINERY, glm::vec3(15, 0, 15), GamePieceOwner::PLAYER);
 			}
 
 			if (ImGui::Button("Supply Depot")) {
-				Building::spawn(Building::BuildingType::SUPPLY_DEPOT, glm::vec3(30, 0, 30), GamePieceOwner::PLAYER);
+				Building::spawn(Building::BuildingType::SUPPLY_DEPOT, glm::vec3(25, 0, 25), GamePieceOwner::PLAYER);
 			}
 			ImGui::SameLine();
 			ImGui::End();
