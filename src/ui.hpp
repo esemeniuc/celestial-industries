@@ -9,8 +9,6 @@
 #include "imgui.h"
 
 namespace Ui {
-	static bool show_demo_window = false;
-	static bool show_another_window = false;
 	static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	// GLFW data
@@ -28,7 +26,10 @@ namespace Ui {
 	static unsigned int g_VboHandle = 0, g_ElementsHandle = 0;
 
 	//eric's stuff
+	static bool spawnUnit = true;
+	static bool spawnBuilding = false;
 	static int uiHeight = 200;
+	static int spawnWindowWidth = 300;
 
 	//funcs
 	void imguiSetup(GLFWwindow* window);
