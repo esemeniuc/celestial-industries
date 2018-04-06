@@ -5,6 +5,7 @@
 #include "ui.hpp"
 #include "global.hpp" //for window size
 #include "unit.hpp"
+#include "building.hpp"
 
 #include "GLFW/glfw3.h"
 #include <GL/gl3w.h>
@@ -51,12 +52,12 @@ namespace Ui {
 
 		{ //draw resources counter at top right
 			ImGui::SetNextWindowSize(ImVec2(resourceWindowWidth, resourceWindowHeight));
-			ImGui::SetNextWindowPos(ImVec2(windowWidth - resourceCounterWidthOffset, resourceCounterHeightOffset));	
+			ImGui::SetNextWindowPos(ImVec2(windowWidth - resourceCounterWidthOffset, resourceCounterHeightOffset));
 			ImGui::Begin("Resources", nullptr, ImGuiWindowFlags_NoSavedSettings |
-											 ImGuiWindowFlags_NoResize |
-											 ImGuiWindowFlags_NoCollapse |
-											 ImGuiWindowFlags_NoMove |
-											 ImGuiWindowFlags_NoTitleBar);
+											   ImGuiWindowFlags_NoResize |
+											   ImGuiWindowFlags_NoCollapse |
+											   ImGuiWindowFlags_NoMove |
+											   ImGuiWindowFlags_NoTitleBar);
 
 			ImGui::Text("Resources: %d Supply: %d", Global::playerResources, Global::playerSupply);
 			ImGui::End();
@@ -113,12 +114,20 @@ namespace Ui {
 													ImGuiWindowFlags_NoCollapse |
 													ImGuiWindowFlags_NoMove);
 			// Buttons return true when clicked
-			if (ImGui::Button("Barracks")) {
-				Unit::spawn(Unit::UnitType::TANK, glm::vec3(30, 0, 30), GamePieceOwner::AI);
+			if (ImGui::Button("Command Center")) {
+				Building::spawn(Building::BuildingType::COMMAND_CENTER, glm::vec3(30, 0, 30), GamePieceOwner::PLAYER);
+			}
+
+			if (ImGui::Button("Gun Turret")) {
+				Building::spawn(Building::BuildingType::GUN_TURRET, glm::vec3(30, 0, 30), GamePieceOwner::PLAYER);
+			}
+
+			if (ImGui::Button("Refinery")) {
+				Building::spawn(Building::BuildingType::REFINERY, glm::vec3(30, 0, 30), GamePieceOwner::PLAYER);
 			}
 
 			if (ImGui::Button("Supply Depot")) {
-				Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, glm::vec3(20, 0, 20), GamePieceOwner::AI);
+				Building::spawn(Building::BuildingType::SUPPLY_DEPOT, glm::vec3(30, 0, 30), GamePieceOwner::PLAYER);
 			}
 			ImGui::SameLine();
 			ImGui::End();
