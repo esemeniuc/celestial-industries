@@ -63,7 +63,7 @@ void Skybox::draw(glm::mat4 viewProjection)
 	GLuint model_uloc = glGetUniformLocation(shader->program, "model");
 	GLuint camera_uloc = glGetUniformLocation(shader->program, "cameraPosition");
 
-	for (auto mesh : meshes) {
+	for (const auto& mesh : meshes) {
 		// Setting vertices and indices
 		glBindVertexArray(mesh.vao);
 		glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
@@ -72,7 +72,7 @@ void Skybox::draw(glm::mat4 viewProjection)
 		// Input data location as in the vertex buffer
 		GLuint position_loc = glGetAttribLocation(shader->program, "position");
 		glEnableVertexAttribArray(position_loc);
-		glVertexAttribPointer(position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(OBJ::VertexData), (void*)0); 
+		glVertexAttribPointer(position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(OBJ::VertexData), nullptr);
 		glUniformMatrix4fv(vp_uloc, 1, GL_FALSE, &viewProjection[0][0]);
 		glUniformMatrix4fv(model_uloc, 1, GL_FALSE, &this->model[0][0]);
 		glUniform3fv(camera_uloc, 1, &(this->cameraPosition[0]));

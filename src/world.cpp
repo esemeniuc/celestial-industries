@@ -79,33 +79,11 @@ bool World::init() {
 	// Setting callbacks to member functions (that's why the redirect is needed)
 	// Input is handled using GLFW, for more info see
 	// http://www.glfw.org/docs/latest/input_guide.html
-//	glfwSetWindowUserPointer(m_window, this);
-//	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) {
-//		((World*) glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3);
-//	};
-//	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) {
-//		((World*) glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1);
-//	};
-//	auto scroll_offset_redirect = [](GLFWwindow* wnd, double _0, double _1) {
-//		((World*) glfwGetWindowUserPointer(wnd))->on_mouse_scroll(wnd, _0, _1);
-//	};
-//	auto mouse_button_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2) {
-//		((World*) glfwGetWindowUserPointer(wnd))->on_mouse_button(wnd, _0, _1, _2);
-//	};
-//	auto window_size_callback = [](GLFWwindow* window, int width, int height) {
-//		Global::windowWidth = static_cast<size_t>(width);
-//		Global::windowHeight = static_cast<size_t>(height);
-//	};
 	glfwSetKeyCallback(m_window, on_key);
 	glfwSetCursorPosCallback(m_window, on_mouse_move);
 	glfwSetScrollCallback(m_window, on_mouse_scroll);
 	glfwSetMouseButtonCallback(m_window, on_mouse_button);
 	glfwSetWindowSizeCallback(m_window, on_window_resize);
-//	glfwSetKeyCallback(m_window, key_redirect);
-//	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
-//	glfwSetScrollCallback(m_window, scroll_offset_redirect);
-//	glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
-//	glfwSetWindowSizeCallback(m_window, window_size_callback);
 
 	//-------------------------------------------------------------------------
 	// Loading music and sounds
@@ -201,7 +179,7 @@ bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<Sub
 }
 
 // skybox
-bool World::loadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder) {
+bool World::ZZloadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder) {
 	OBJ::Data skyboxObj;
 
 	std::string geometryPath = pathBuilder({"data", "models"});
