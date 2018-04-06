@@ -2,7 +2,7 @@
 #include "unitmanager.hpp"
 #include "logger.hpp"
 #include "world.hpp"
-#include "collisiondetection.hpp"
+//#include "collisiondetection.hpp"
 #include "particle.hpp"
 #include "aimanager.hpp"
 #include "unit.hpp"
@@ -42,6 +42,8 @@ namespace World {
 	// C++ rng
 	std::default_random_engine m_rng = std::default_random_engine(std::random_device()());
 	std::uniform_real_distribution<float> m_dist; // default 0..1
+
+	double total_time = 0.0;
 }
 
 
@@ -170,7 +172,7 @@ bool World::init() {
 bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources) {
 	// All the models come from the same place
 	std::string path = pathBuilder({"data", "models"});
-	for (auto source : sources) {
+	for (const auto& source : sources) {
 		Model::MeshType tileType = source.first;
 		std::vector<SubObjectSource> objSources = source.second;
 		Model::meshRenderers[tileType] = std::make_shared<Renderer>(objShader, objSources);
@@ -212,8 +214,6 @@ void World::destroy() {
 }
 
 // Update our game world
-float total_time = 0.0f;
-
 bool World::update(double elapsed_ms) {
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
