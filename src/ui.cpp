@@ -49,10 +49,20 @@ namespace Ui {
 		glfwGetWindowSize(g_Window, &windowWidth, &windowHeight);
 		ImGui_ImplGlfwGL3_NewFrame();
 
+		{ //draw resources counter at top right
+			ImGui::SetNextWindowSize(ImVec2(resourceWindowWidth, resourceWindowHeight));
+			ImGui::SetNextWindowPos(ImVec2(windowWidth - resourceCounterWidthOffset, resourceCounterHeightOffset));	
+			ImGui::Begin("Resources", nullptr, ImGuiWindowFlags_NoSavedSettings |
+											 ImGuiWindowFlags_NoResize |
+											 ImGuiWindowFlags_NoCollapse |
+											 ImGuiWindowFlags_NoMove |
+											 ImGuiWindowFlags_NoTitleBar);
 
-		// 1. Show a simple window.
-		// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
-		{
+			ImGui::Text("Resources: %d Supply: %d", Global::playerResources, Global::playerSupply);
+			ImGui::End();
+		}
+
+		{ //draw main game ui
 			ImGui::SetNextWindowSize(ImVec2(windowWidth - spawnWindowWidth, uiHeight));
 			ImGui::SetNextWindowPos(ImVec2(0, windowHeight - uiHeight));
 			ImGui::Begin("Game UI", nullptr, ImGuiWindowFlags_NoSavedSettings |
@@ -61,7 +71,7 @@ namespace Ui {
 											 ImGuiWindowFlags_NoMove |
 											 ImGuiWindowFlags_NoTitleBar);
 
-			ImGui::Text("Spawn:");                           // Display some text (you can use a format string too)
+			ImGui::Text("Spawn:");
 
 			if (ImGui::Button("Unit")) {
 				spawnUnit = true;

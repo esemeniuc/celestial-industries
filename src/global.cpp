@@ -4,9 +4,12 @@ namespace Global {
 	size_t levelWidth = 0; //gets overwritten in world.init()
 	size_t levelHeight = 0;
 
+	int playerResources = 0;
+	int playerSupply = 0;
+
 	size_t windowWidth = Config::INITIAL_WINDOW_WIDTH; //gets overwritten by the resize callback
 	size_t windowHeight = Config::INITIAL_WINDOW_HEIGHT;
-	
+
 	std::vector<std::shared_ptr<Entity>> playerUnits;
 	std::vector<std::shared_ptr<Entity>> aiUnits;
 
