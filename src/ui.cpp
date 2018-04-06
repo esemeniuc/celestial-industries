@@ -295,20 +295,23 @@ namespace Ui {
 		glfwSetClipboardString((GLFWwindow*) user_data, text);
 	}
 
-	void ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow*, int button, int action, int /*mods*/) {
-		if (action == GLFW_PRESS && button >= 0 && button < 3)
+	void ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+		if (action == GLFW_PRESS && button >= 0 && button < 3) {
 			g_MouseJustPressed[button] = true;
+		}
+
+		World::on_mouse_button(window, button, action, mods);
 	}
 
-	void ImGui_ImplGlfw_ScrollCallback(GLFWwindow*, double xoffset, double yoffset) {
+	void ImGui_ImplGlfw_ScrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 		ImGuiIO& io = ImGui::GetIO();
 		io.MouseWheelH += (float) xoffset;
 		io.MouseWheel += (float) yoffset;
 
-		//FIXME: add callbacks
+		World::on_mouse_scroll(window, xoffset, yoffset);
 	}
 
-	void ImGui_ImplGlfw_KeyCallback(GLFWwindow*, int key, int, int action, int mods) {
+	void ImGui_ImplGlfw_KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 		ImGuiIO& io = ImGui::GetIO();
 		if (action == GLFW_PRESS)
 			io.KeysDown[key] = true;
@@ -320,6 +323,8 @@ namespace Ui {
 		io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
 		io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
 		io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
+
+		World::on_key(window, key, scancode, action, mods);
 	}
 
 	void ImGui_ImplGlfw_CharCallback(GLFWwindow*, unsigned int c) {

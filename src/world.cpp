@@ -364,7 +364,7 @@ void World::updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<i
 }
 
 // On key callback
-void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
+void World::on_key(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	// Core controls
 	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
 		escapePressed = true;

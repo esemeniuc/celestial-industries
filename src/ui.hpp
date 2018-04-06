@@ -46,7 +46,7 @@ namespace Ui {
 
 	void ImGui_ImplGlfw_ScrollCallback(GLFWwindow*, double xoffset, double yoffset);
 
-	void ImGui_ImplGlfw_KeyCallback(GLFWwindow*, int key, int, int action, int mods);
+	void ImGui_ImplGlfw_KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 	void ImGui_ImplGlfw_CharCallback(GLFWwindow*, unsigned int c);
 
