@@ -14,6 +14,7 @@ namespace Global {
 	extern size_t windowHeight;
 
 	extern int playerResources;
+	extern int playerResourcesPerSec;
 	extern int playerCurrentSupply;
 	extern int playerMaxSupply;
 

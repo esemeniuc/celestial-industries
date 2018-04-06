@@ -5,6 +5,7 @@ namespace Global {
 	size_t levelHeight = 0;
 
 	int playerResources = 0;
+	int playerResourcesPerSec = 0;
 	int playerCurrentSupply = 0;
 	int playerMaxSupply = 0;
 

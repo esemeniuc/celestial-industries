@@ -30,10 +30,10 @@ namespace Ui {
 	static bool spawnBuilding = false;
 	static int uiHeight = 200;
 	static int spawnWindowWidth = 300;
-	static int resourceCounterWidthOffset = 225; //starting position offset from right side of screen
+	static int resourceWindowWidth = 230;
+	static int resourceWindowHeight = 70;
 	static int resourceCounterHeightOffset = 10; //starting position offset from top
-	static int resourceWindowWidth = 225;
-	static int resourceWindowHeight = 25;
+	static int resourceCounterWidthOffset = resourceWindowWidth + 10; //starting position offset from right side of screen
 
 	//funcs
 	void imguiSetup(GLFWwindow* window);

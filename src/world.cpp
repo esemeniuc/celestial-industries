@@ -282,7 +282,7 @@ void World::draw() {
 	glm::mat4 view = camera.getViewMatrix();
 	glm::mat4 projectionView = projection * view;
 
-	for (auto renderer : Model::meshRenderers) {
+	for (const auto& renderer : Model::meshRenderers) {
 		renderer->render(projectionView);
 	}
 
@@ -390,15 +390,14 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 	camera.pan((int) xpos, (int) ypos);
 
-	int windowWidth;
-	int windowHeight;
+	int windowWidth, windowHeight;
 	glfwGetWindowSize(window, &windowWidth, &windowHeight);
 
 	int framebufferWidth, framebufferHeight;
 	glfwGetFramebufferSize(m_window, &framebufferWidth, &framebufferHeight);
 
-	int computedFbX = (float) xpos / (float) windowWidth * (float) framebufferWidth;
-	int computedFbY = (float) ypos / (float) windowHeight * (float) framebufferHeight;
+	int computedFbX = int((xpos / windowWidth * framebufferWidth) + 0.5);
+	int computedFbY = int((ypos / windowHeight * framebufferHeight) + 0.5);
 
 	glm::vec2 windowCoordinates{computedFbX, computedFbY};
 	glm::vec2 viewport{framebufferWidth, framebufferHeight};

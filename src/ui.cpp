@@ -4,12 +4,12 @@
 
 #include "ui.hpp"
 #include "global.hpp" //for window size
-#include "unit.hpp"
-#include "building.hpp"
+#include "unit.hpp" //for spawning
+#include "building.hpp" //for spawning
+//#include "world.cpp" //for key callbacks
 
-#include "GLFW/glfw3.h"
+#include "GLFW/glfw3.h" //put before gl stuff (else break things)
 #include <GL/gl3w.h>
-#include <imgui_internal.h>
 
 namespace Ui {
 	void imguiSetup(GLFWwindow* window) {
@@ -50,7 +50,7 @@ namespace Ui {
 		glfwGetWindowSize(g_Window, &windowWidth, &windowHeight);
 		ImGui_ImplGlfwGL3_NewFrame();
 
-		{ //draw resources counter at top right
+		{ //resources counter at top right
 			ImGui::SetNextWindowSize(ImVec2(resourceWindowWidth, resourceWindowHeight));
 			ImGui::SetNextWindowPos(ImVec2(windowWidth - resourceCounterWidthOffset, resourceCounterHeightOffset));
 			ImGui::Begin("Resources", nullptr, ImGuiWindowFlags_NoSavedSettings |
@@ -59,11 +59,13 @@ namespace Ui {
 											   ImGuiWindowFlags_NoMove |
 											   ImGuiWindowFlags_NoTitleBar);
 
-			ImGui::Text("Resources: %d Supply: %d/%d", Global::playerResources, Global::playerCurrentSupply, Global::playerMaxSupply);
+			ImGui::Text("Resources:     %8d", Global::playerResources);
+			ImGui::Text("Resource Rate: %8d", Global::playerResourcesPerSec);
+			ImGui::Text("Supply:        %8d/%d", Global::playerCurrentSupply, Global::playerMaxSupply);
 			ImGui::End();
 		}
 
-		{ //draw main game ui
+		{ //main game ui
 			ImGui::SetNextWindowSize(ImVec2(windowWidth - spawnWindowWidth, uiHeight));
 			ImGui::SetNextWindowPos(ImVec2(0, windowHeight - uiHeight));
 			ImGui::Begin("Game UI", nullptr, ImGuiWindowFlags_NoSavedSettings |
@@ -302,6 +304,8 @@ namespace Ui {
 		ImGuiIO& io = ImGui::GetIO();
 		io.MouseWheelH += (float) xoffset;
 		io.MouseWheel += (float) yoffset;
+
+		//FIXME: add callbacks
 	}
 
 	void ImGui_ImplGlfw_KeyCallback(GLFWwindow*, int key, int, int action, int mods) {
