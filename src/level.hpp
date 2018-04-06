@@ -64,7 +64,7 @@ public:
 
 	void update(float ms);
 
-	bool displayPath(const std::vector<Coord>& levelArray);
+	void displayPath(const std::vector<Coord>& levelArray);
 
 	std::vector<std::vector<Model::MeshType>> levelLoader(
 			const std::string& levelTextFile,

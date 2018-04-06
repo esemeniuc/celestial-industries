@@ -232,14 +232,11 @@ std::shared_ptr<Entity> Level::entityFromMeshType(Model::MeshType type)
 	}
 }
 
-
-bool Level::displayPath(const std::vector<Coord>& path) {
+void Level::displayPath(const std::vector<Coord>& path) {
 	// TODO: Replace tiles in question instead of just adding 2 tiles in one spot
 	for (const Coord& component : path) {
 		auto tile = std::make_shared<Tile>(Model::MeshType::SAND_2);
 		tile->translate({component.colCoord, 0, component.rowCoord});
 		tiles.push_back(tile);
 	}
-
-	return true;
 }
