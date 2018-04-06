@@ -14,7 +14,8 @@ namespace Global {
 	extern size_t windowHeight;
 
 	extern int playerResources;
-	extern int playerSupply;
+	extern int playerCurrentSupply;
+	extern int playerMaxSupply;
 
 	extern std::vector<std::shared_ptr<Entity>> playerUnits;
 	extern std::vector<std::shared_ptr<Entity>> aiUnits;

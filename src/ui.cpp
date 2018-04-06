@@ -59,7 +59,7 @@ namespace Ui {
 											   ImGuiWindowFlags_NoMove |
 											   ImGuiWindowFlags_NoTitleBar);
 
-			ImGui::Text("Resources: %d Supply: %d", Global::playerResources, Global::playerSupply);
+			ImGui::Text("Resources: %d Supply: %d/%d", Global::playerResources, Global::playerCurrentSupply, Global::playerMaxSupply);
 			ImGui::End();
 		}
 

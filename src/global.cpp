@@ -5,7 +5,8 @@ namespace Global {
 	size_t levelHeight = 0;
 
 	int playerResources = 0;
-	int playerSupply = 0;
+	int playerCurrentSupply = 0;
+	int playerMaxSupply = 0;
 
 	size_t windowWidth = Config::INITIAL_WINDOW_WIDTH; //gets overwritten by the resize callback
 	size_t windowHeight = Config::INITIAL_WINDOW_HEIGHT;
