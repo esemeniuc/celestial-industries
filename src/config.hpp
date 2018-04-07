@@ -7,6 +7,12 @@
 #define INF std::numeric_limits<float>::infinity()
 #define EPSILON 1e-9
 
+#ifdef _MSC_VER
+#define font_path(name) "../data/fonts/" name
+#else
+#define font_path(name) "data/fonts/" name
+#endif
+
 namespace Config {
 	//window setup
 	const int INITIAL_WINDOW_WIDTH = 1000;
@@ -31,7 +37,7 @@ namespace Config {
 	constexpr const int DEFAULT_TRAVERSABLE_COST = 10;
 
 	//file paths
-	constexpr const char* FONTAWESOME_FILE_PATH = "data/fonts/fa-solid-900.ttf";
-	constexpr const char* KENNEY_PIXEL_FONT_FILE_PATH = "data/fonts/KenneyPixel.ttf";
-	constexpr const char* KENNEY_FUTURE_FONT_FILE_PATH = "data/fonts/KenneyFuture.ttf";
+	constexpr const char* FONTAWESOME_FILE_PATH = font_path("fa-solid-900.ttf");
+	constexpr const char* KENNEY_PIXEL_FONT_FILE_PATH = font_path("KenneyPixel.ttf");
+	constexpr const char* KENNEY_FUTURE_FONT_FILE_PATH = font_path("KenneyFuture.ttf");
 }

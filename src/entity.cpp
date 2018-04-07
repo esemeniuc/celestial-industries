@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES // Needed for M_PI
 #include "entity.hpp"
 #include "pathfinder.hpp"  //for astar stuff
 #include <cmath>
