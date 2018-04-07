@@ -4,6 +4,41 @@
 #include "logger.hpp"
 #include "particle.hpp"
 #include <fstream>
+std::map<Model::MeshType, std::pair<int, float>> Level::tileToCost{
+		{Model::MeshType::HROAD,      {Config::OBSTACLE_COST,            INF}},
+		{Model::MeshType::SAND_1,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
+		{Model::MeshType::SAND_2,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
+		{Model::MeshType::SAND_3,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
+		{Model::MeshType::SAND_4,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
+		{Model::MeshType::SAND_5,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
+		{Model::MeshType::TREE,       {Config::OBSTACLE_COST,            INF}},
+		{Model::MeshType::YELLOWTREE, {Config::OBSTACLE_COST,            INF}},
+		{Model::MeshType::REDTREE,    {Config::OBSTACLE_COST,            INF}},
+		{Model::MeshType::WATER,      {Config::OBSTACLE_COST,            INF}},
+		{Model::MeshType::GRASS,      {Config::DEFAULT_TRAVERSABLE_COST, INF}},
+		{Model::MeshType::HROAD,      {Config::DEFAULT_TRAVERSABLE_COST, INF}},
+		{Model::MeshType::VROAD,      {Config::DEFAULT_TRAVERSABLE_COST, INF}},
+		{Model::MeshType::GEYSER,     {Config::OBSTACLE_COST,            INF}}
+};
+
+std::map<char, Model::MeshType> Level::charToType{
+		{'#',  Model::MeshType::HROAD},
+		{' ',  Model::MeshType::SAND_1},
+		{'\\', Model::MeshType::SAND_2},
+		{'.',  Model::MeshType::SAND_3},
+		{';',  Model::MeshType::SAND_4},
+		{',',  Model::MeshType::SAND_5},
+		{'T',  Model::MeshType::TREE},
+		{'Y',  Model::MeshType::YELLOWTREE},
+		{'R',  Model::MeshType::REDTREE},
+		{'W',  Model::MeshType::WATER},
+		{'G',  Model::MeshType::GRASS},
+		{'H',  Model::MeshType::HROAD},
+		{'V',  Model::MeshType::VROAD},
+		{'P',  Model::MeshType::GEYSER},
+		{'X',  Model::MeshType::GUN_TURRET}
+};
+
 
 bool Level::init(const std::vector<std::shared_ptr<Renderer>>& meshRenderers) {
 	// So that re initializing will be the same as first initialization
@@ -28,7 +63,7 @@ bool Level::init(const std::vector<std::shared_ptr<Renderer>>& meshRenderers) {
 void Level::save(std::string filename)
 {
 	std::map<short, char> typeToChar;
-	for (const auto& pair : typeToChar) {
+	for (const auto& pair : charToType) {
 		typeToChar[pair.second] = pair.first;
 	}
 	std::ofstream fs(filename);
