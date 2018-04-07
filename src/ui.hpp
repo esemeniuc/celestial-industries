@@ -32,6 +32,12 @@ namespace Ui {
 		SPAWN_ECONOMIC_BUILDINGS
 	};
 
+//	enum class SpawnWindowState{
+//		SPAWN_SELECTOR,
+//		SPAWN_DEFENSIVE_BUILDINGS,
+//		SPAWN_ECONOMIC_BUILDINGS
+//	};
+
 	static SpawnWindowState spawnWindowState = SpawnWindowState::SPAWN_SELECTOR;
 	static bool cursorNormalMode = true;
 	static int uiHeight = 200;
@@ -39,7 +45,7 @@ namespace Ui {
 	static int spawnWindowWidth = 300;
 
 	static int resourceCounterWidth = 230;
-	static int resourceCounterHeight = 70;
+	static int resourceCounterHeight = 80;
 	static int resourceCounterHeightOffset = 10; //starting position offset from top
 	static int resourceCounterWidthOffset = resourceCounterWidth + 10; //starting position offset from right side of screen
 
@@ -49,6 +55,8 @@ namespace Ui {
 	void imguiGenerateScreenObjects();
 
 	bool ImGui_ImplGlfwGL3_Init(GLFWwindow* window, bool install_callbacks, const char* glsl_version);
+
+	void ImGui_ImplGlfw_CursorPosCallback(GLFWwindow *window, double xpos, double ypos);
 
 	void ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow*, int button, int action, int /*mods*/);
 

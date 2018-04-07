@@ -32,4 +32,6 @@ namespace Config {
 
 	//file paths
 	constexpr const char* FONTAWESOME_FILE_PATH = "data/fonts/fa-solid-900.ttf";
+	constexpr const char* KENNEY_PIXEL_FONT_FILE_PATH = "data/fonts/KenneyPixel.ttf";
+	constexpr const char* KENNEY_FUTURE_FONT_FILE_PATH = "data/fonts/KenneyFuture.ttf";
 }

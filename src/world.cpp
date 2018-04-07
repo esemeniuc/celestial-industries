@@ -78,14 +78,15 @@ bool World::init() {
 	// Load OpenGL function pointers
 	gl3wInit();
 
-	// Setting callbacks to member functions (that's why the redirect is needed)
-	// Input is handled using GLFW, for more info see
-	// http://www.glfw.org/docs/latest/input_guide.html
-	glfwSetKeyCallback(m_window, on_key);
-	glfwSetCursorPosCallback(m_window, on_mouse_move);
-	glfwSetScrollCallback(m_window, on_mouse_scroll);
-	glfwSetMouseButtonCallback(m_window, on_mouse_button);
-	glfwSetWindowSizeCallback(m_window, on_window_resize);
+	//done in ui.cpp now
+//	// Setting callbacks to member functions (that's why the redirect is needed)
+//	// Input is handled using GLFW, for more info see
+//	// http://www.glfw.org/docs/latest/input_guide.html
+//	glfwSetKeyCallback(m_window, on_key);
+//	glfwSetCursorPosCallback(m_window, on_mouse_move);
+//	glfwSetScrollCallback(m_window, on_mouse_scroll);
+//	glfwSetMouseButtonCallback(m_window, on_mouse_button);
+//	glfwSetWindowSizeCallback(m_window, on_window_resize);
 
 	//-------------------------------------------------------------------------
 	// Loading music and sounds
@@ -388,7 +389,7 @@ void World::on_key(GLFWwindow* window, int key, int scancode, int action, int mo
 }
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
-	camera.pan((int) xpos, (int) ypos);
+	camera.pan(xpos, ypos);
 
 	int windowWidth, windowHeight;
 	glfwGetWindowSize(window, &windowWidth, &windowHeight);

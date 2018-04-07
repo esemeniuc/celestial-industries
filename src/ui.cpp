@@ -42,9 +42,9 @@ namespace Ui {
 		//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 		//IM_ASSERT(font != NULL);
 
-
 		//IconFont stuff
-		io.Fonts->AddFontDefault();
+//		io.Fonts->AddFontDefault(); dont use proggy font
+		io.Fonts->AddFontFromFileTTF(Config::KENNEY_FUTURE_FONT_FILE_PATH, 16.0f);
 
 		// merge in icons from Font Awesome
 		static const ImWchar icons_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
@@ -75,8 +75,9 @@ namespace Ui {
 											   ImGuiWindowFlags_NoTitleBar);
 
 			ImGui::Text(ICON_FA_HAND_HOLDING_USD " Resources:     %8d", Global::playerResources);
-			ImGui::Text(" " ICON_FA_DOLLAR_SIGN " Resource Rate: %8d", Global::playerResourcesPerSec);
-			ImGui::Text(ICON_FA_WAREHOUSE " Supply:        %8d/%d", Global::playerCurrentSupply, Global::playerMaxSupply);
+			ImGui::Text(" " ICON_FA_DOLLAR_SIGN "  Resource Rate: %8d", Global::playerResourcesPerSec);
+			ImGui::Text(ICON_FA_WAREHOUSE " Supply:        %8d/%d", Global::playerCurrentSupply,
+						Global::playerMaxSupply);
 			ImGui::End();
 		}
 
@@ -325,12 +326,24 @@ namespace Ui {
 		glfwSetClipboardString((GLFWwindow *) user_data, text);
 	}
 
+	void ImGui_ImplGlfw_CursorPosCallback(GLFWwindow *window, double xpos, double ypos) {
+		//make sure to call the world mouse callback only game world and not ui
+//		if (ypos < Global::windowHeight - uiHeight) {
+			World::on_mouse_move(window, xpos, ypos); //cant do check because of camera panning
+//		}
+	}
+
 	void ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
 		if (action == GLFW_PRESS && button >= 0 && button < 3) {
 			g_MouseJustPressed[button] = true;
 		}
 
-		World::on_mouse_button(window, button, action, mods);
+		//make sure to call the world mouse callback only game world and not ui
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+		if (ypos < Global::windowHeight - uiHeight) {
+			World::on_mouse_button(window, button, action, mods);
+		}
 	}
 
 	void ImGui_ImplGlfw_ScrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
@@ -478,6 +491,7 @@ namespace Ui {
 	}
 
 	static void ImGui_ImplGlfw_InstallCallbacks(GLFWwindow *window) {
+		glfwSetCursorPosCallback(window, ImGui_ImplGlfw_CursorPosCallback);
 		glfwSetMouseButtonCallback(window, ImGui_ImplGlfw_MouseButtonCallback);
 		glfwSetScrollCallback(window, ImGui_ImplGlfw_ScrollCallback);
 		glfwSetKeyCallback(window, ImGui_ImplGlfw_KeyCallback);
