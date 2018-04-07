@@ -45,7 +45,7 @@ public:
 
 	Coord getPositionInt();
 
-	void attack(const std::shared_ptr<Entity> entityToAttack, double elapsed_ms);
+	void attack(const std::shared_ptr<Entity>& entityToAttack, double elapsed_ms);
 
 	void takeAttack(const Entity& attackingEntity, double elapsed_ms);
 
@@ -108,12 +108,12 @@ protected:
 };
 
 // TODO: Override rotate methods so that they also update angle
-class TurretUnit : public Entity {
+class PivotingGunEntity : public Entity {
 public:
 	unsigned int turretIndex;
 	float turretAngle;
 
-	TurretUnit(Model::MeshType geometry, unsigned int turretIndex) : turretIndex(turretIndex), Entity(geometry) {};
+	PivotingGunEntity(Model::MeshType geometry, unsigned int turretIndex) : turretIndex(turretIndex), Entity(geometry) {};
 
 	void animate(float ms) override;
 };

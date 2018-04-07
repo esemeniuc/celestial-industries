@@ -126,7 +126,7 @@ bool World::init() {
 
 
 	if (!initMeshTypes(Model::meshSources)) {
-		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
+		logger(LogLevel::ERR) << "Failed to initialize renderers\n";
 	}
 
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
@@ -144,22 +144,24 @@ bool World::init() {
 	//display a path
 	int startx = 25, startz = 11;
 	int targetx = 10, targetz = 10;
-	auto temp1 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
-	temp1->moveTo(UnitState::MOVE, targetx, targetz);
+//	auto temp1 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	auto temp1 = level.placeEntity(Model::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
+//
+//	temp1->moveTo(UnitState::MOVE, targetx, targetz);
 
 	startx = 39, startz = 19;
-	auto temp2 = Unit::spawn(Unit::UnitType::TANK, {startx, 0, startz}, GamePieceOwner::AI);
-//	temp2->moveTo(targetx, targetz);
-
-	startx = 39, startz = 1;
-	auto temp3 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
-	temp3->moveTo(UnitState::MOVE, targetx, targetz);
-
-	startx = 20, startz = 20;
-	auto temp4 = Unit::spawn(Unit::UnitType::TANK, {startx, 0, startz}, GamePieceOwner::AI);
+//	auto temp2 = Unit::spawn(Unit::UnitType::TANK, {startx, 0, startz}, GamePieceOwner::AI);
+////	temp2->moveTo(targetx, targetz);
+//
+//	startx = 39, startz = 1;
+//	auto temp3 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
+////	temp3->moveTo(UnitState::MOVE, targetx, targetz);
+//
+//	startx = 20, startz = 20;
+//	auto temp4 = Unit::spawn(Unit::UnitType::TANK, {startx, 0, startz}, GamePieceOwner::AI);
 
 	// Example use of targeting units.
-	AttackManager::registerTargetUnit(temp2, temp1);
+//	AttackManager::registerTargetUnit(temp2, temp1);
 
 	selectedTileCoordinates.rowCoord = Global::levelWidth / 2;
 	selectedTileCoordinates.colCoord = Global::levelHeight / 2;
@@ -234,7 +236,7 @@ bool World::update(double elapsed_ms) {
 
 	AI::Manager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
-//	AttackManager::update(elapsed_ms);
+	AttackManager::update(elapsed_ms);
 	BuildingManager::update(elapsed_ms);
 
 	Model::collisionDetector.findCollisions(elapsed_ms);

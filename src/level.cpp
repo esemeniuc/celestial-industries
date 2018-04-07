@@ -174,6 +174,7 @@ void initUnitFromMeshType(std::shared_ptr<Entity> e, Model::MeshType type, GameP
 		break;
 	case Model::MeshType::FRIENDLY_RANGED_UNIT:
 	case Model::MeshType::ENEMY_RANGED_RADIUS_UNIT:
+	case Model::MeshType::BALL:
 	case Model::MeshType::ENEMY_RANGED_LINE_UNIT:
 		e->aiComp.initialHealth = 45;
 		e->aiComp.visionRange = 8;
@@ -226,7 +227,7 @@ std::shared_ptr<Entity> Level::entityFromMeshType(Model::MeshType type)
 {
 	switch (type) {
 	case Model::MeshType::FRIENDLY_RANGED_UNIT:
-		return std::make_shared<TurretUnit>(type, 2);
+		return std::make_shared<PivotingGunEntity>(type, 2);
 	default:
 		return std::make_shared<Entity>(type);
 	}

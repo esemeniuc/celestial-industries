@@ -6,6 +6,7 @@
 
 std::shared_ptr<Entity> Unit::spawn(Unit::UnitType unitName, glm::vec3 spawnLocation, GamePieceOwner owner) {
 	std::shared_ptr<Entity> e = std::make_shared<Entity>();
+	e->setPosition(spawnLocation);
 
 	switch (unitName) {
 		case (UnitType::TANK): {
@@ -56,7 +57,6 @@ std::shared_ptr<Entity> Unit::spawn(Unit::UnitType unitName, glm::vec3 spawnLoca
 		}
 	}
 
-	e->setPosition(spawnLocation);
 	e->aiComp.owner = owner;
 
 	if (owner == GamePieceOwner::PLAYER) {

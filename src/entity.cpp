@@ -222,7 +222,7 @@ void Entity::takeAttack(const Entity& attackingEntity, double elapsed_ms) {
 	aiComp.currentHealth -= damageToDoThisFrame;
 }
 
-void Entity::attack(const std::shared_ptr<Entity> entityToAttack, double elapsed_ms) {
+void Entity::attack(const std::shared_ptr<Entity>& entityToAttack, double elapsed_ms) {
 	if (unitComp.state == UnitState::ATTACK) {
 		// Already attacking something else, nothing to do, return.
 		return;
@@ -267,7 +267,7 @@ float vectorAngleXZ(glm::vec3 v) {
 }
 
 
-void TurretUnit::animate(float ms) {
+void PivotingGunEntity::animate(float ms) {
 	attackingCooldown -= ms;
 	if (unitComp.currentEnergyLevel <= 0)softDelete();
 	// Face the turret to the entity we're attacking

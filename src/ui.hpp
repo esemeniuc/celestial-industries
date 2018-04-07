@@ -17,7 +17,7 @@ namespace Ui {
 	static bool         g_MouseJustPressed[3] = { false, false, false };
 	static GLFWcursor*  g_MouseCursors[ImGuiMouseCursor_COUNT] = { 0 };
 
-// OpenGL3 data
+	// OpenGL3 data
 	static char         g_GlslVersion[32] = "#version 150";
 	static GLuint       g_FontTexture = 0;
 	static int          g_ShaderHandle = 0, g_VertHandle = 0, g_FragHandle = 0;
@@ -28,12 +28,15 @@ namespace Ui {
 	//eric's stuff
 	static bool spawnUnit = true;
 	static bool spawnBuilding = false;
+	static bool cursorNormalMode = true;
 	static int uiHeight = 200;
+
 	static int spawnWindowWidth = 300;
-	static int resourceWindowWidth = 230;
-	static int resourceWindowHeight = 70;
+
+	static int resourceCounterWidth = 230;
+	static int resourceCounterHeight = 70;
 	static int resourceCounterHeightOffset = 10; //starting position offset from top
-	static int resourceCounterWidthOffset = resourceWindowWidth + 10; //starting position offset from right side of screen
+	static int resourceCounterWidthOffset = resourceCounterWidth + 10; //starting position offset from right side of screen
 
 	//funcs
 	void imguiSetup(GLFWwindow* window);

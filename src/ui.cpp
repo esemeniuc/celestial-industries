@@ -51,7 +51,7 @@ namespace Ui {
 		ImGui_ImplGlfwGL3_NewFrame();
 
 		{ //resources counter at top right
-			ImGui::SetNextWindowSize(ImVec2(resourceWindowWidth, resourceWindowHeight));
+			ImGui::SetNextWindowSize(ImVec2(resourceCounterWidth, resourceCounterHeight));
 			ImGui::SetNextWindowPos(ImVec2(windowWidth - resourceCounterWidthOffset, resourceCounterHeightOffset));
 			ImGui::Begin("Resources", nullptr, ImGuiWindowFlags_NoSavedSettings |
 											   ImGuiWindowFlags_NoResize |
@@ -88,6 +88,31 @@ namespace Ui {
 
 			ImGui::End();
 		}
+
+		{ //unit info
+			ImGui::SetNextWindowSize(ImVec2(windowWidth - spawnWindowWidth, uiHeight));
+			ImGui::SetNextWindowPos(ImVec2(0, windowHeight - uiHeight));
+			ImGui::Begin("Game UI", nullptr, ImGuiWindowFlags_NoSavedSettings |
+											 ImGuiWindowFlags_NoResize |
+											 ImGuiWindowFlags_NoCollapse |
+											 ImGuiWindowFlags_NoMove |
+											 ImGuiWindowFlags_NoTitleBar);
+
+			ImGui::Text("Spawn:");
+
+			if (ImGui::Button("Unit")) {
+				spawnUnit = true;
+				spawnBuilding = false;
+			}
+
+			if (ImGui::Button("Building")) {
+				spawnUnit = false;
+				spawnBuilding = true;
+			}
+
+			ImGui::End();
+		}
+
 
 		if (spawnUnit) {
 			ImGui::SetNextWindowSize(ImVec2(spawnWindowWidth, uiHeight));

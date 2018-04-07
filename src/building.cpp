@@ -23,8 +23,8 @@ Building::spawn(Building::BuildingType buildingType, glm::vec3 spawnLocation, Ga
 		}
 		case (BuildingType::REFINERY): {
 			Coord location(spawnLocation);
-			if(Global::levelArray[location.rowCoord][location.colCoord] == Model::GEYSER ){ //make sure it is placed on a geyser
-
+			if(Global::levelArray[location.rowCoord][location.colCoord] != Model::GEYSER ){ //make sure it is placed on a geyser
+				return nullptr; //FIXME: do something smarter than this
 			}
 
 			e->geometryRenderer = Model::meshRenderers[Model::MINING_TOWER];
