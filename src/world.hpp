@@ -72,12 +72,7 @@ namespace World {
 	// Should the game be over ?
 	bool is_over();
 
-	//returns w x h
-	std::pair<int, int> getWindowSize();
-
 	//funcs
-	GLFWwindow* getWindowHandle();
-
 	void move_cursor_up();
 
 	void move_cursor_down();

@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	Ui::imguiSetup(World::getWindowHandle());
+	Ui::imguiSetup(World::m_window);
 
 	auto t = Clock::now();
 	// variable timestep loop.. can be improved (:

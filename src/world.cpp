@@ -78,7 +78,7 @@ bool World::init() {
 	// Load OpenGL function pointers
 	gl3wInit();
 
-	//done in ui.cpp now
+	//the 4 below are done in ui.cpp now
 //	// Setting callbacks to member functions (that's why the redirect is needed)
 //	// Input is handled using GLFW, for more info see
 //	// http://www.glfw.org/docs/latest/input_guide.html
@@ -86,7 +86,7 @@ bool World::init() {
 //	glfwSetCursorPosCallback(m_window, on_mouse_move);
 //	glfwSetScrollCallback(m_window, on_mouse_scroll);
 //	glfwSetMouseButtonCallback(m_window, on_mouse_button);
-//	glfwSetWindowSizeCallback(m_window, on_window_resize);
+	glfwSetWindowSizeCallback(m_window, on_window_resize);
 
 	//-------------------------------------------------------------------------
 	// Loading music and sounds
@@ -391,21 +391,18 @@ void World::on_key(GLFWwindow* window, int key, int scancode, int action, int mo
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 	camera.pan(xpos, ypos);
 
-	int windowWidth, windowHeight;
-	glfwGetWindowSize(window, &windowWidth, &windowHeight);
-
 	int framebufferWidth, framebufferHeight;
 	glfwGetFramebufferSize(m_window, &framebufferWidth, &framebufferHeight);
 
-	int computedFbX = int((xpos / windowWidth * framebufferWidth) + 0.5);
-	int computedFbY = int((ypos / windowHeight * framebufferHeight) + 0.5);
+	int computedFbX = int((xpos / Global::windowWidth * framebufferWidth) + 0.5);
+	int computedFbY = int((ypos / Global::windowHeight * framebufferHeight) + 0.5);
 
 	glm::vec2 windowCoordinates{computedFbX, computedFbY};
 	glm::vec2 viewport{framebufferWidth, framebufferHeight};
 	glm::vec4 clipCoordinates{windowCoordinates / viewport * 2.0f - glm::vec2{1.0f}, -1.0f, 1.0f};
 	clipCoordinates[1] *= -1.0;
 	glm::mat4 clipWorldMatrix{
-			glm::inverse(camera.getProjectionMatrix(windowWidth, windowHeight) * camera.getViewMatrix())};
+			glm::inverse(camera.getProjectionMatrix(Global::windowWidth, Global::windowHeight) * camera.getViewMatrix())};
 	glm::vec4 unprojectedWorldCoordinates{clipWorldMatrix * clipCoordinates};
 	glm::vec3 worldCoordinates{glm::vec3{unprojectedWorldCoordinates} / unprojectedWorldCoordinates.w};
 
@@ -432,14 +429,6 @@ void World::on_window_resize(GLFWwindow* window, int width, int height) {
 	Global::windowHeight = static_cast<size_t>(height);
 }
 
-//returns w x h
-std::pair<int, int> World::getWindowSize() {
-	int windowWidth;
-	int windowHeight;
-	glfwGetWindowSize(m_window, &windowWidth, &windowHeight);
-	return {windowWidth, windowHeight};
-}
-
 void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods) {
 	glm::vec3 coords = {selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord};
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
@@ -463,8 +452,4 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 			entity->rigidBody.setVelocity((coords - entity->rigidBody.getPosition()) / 5000.0f);
 		}
 	}
-}
-
-GLFWwindow* World::getWindowHandle() {
-	return m_window;
 }
