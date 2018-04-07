@@ -104,7 +104,7 @@ public:
 			{Model::MeshType::GEYSER,     {Config::OBSTACLE_COST,            INF}}
 	};
 
-	constexpr static std::map<char,int> charToType{
+	std::map<char, Model::MeshType> charToType{
 			{'#',  Model::MeshType::HROAD},
 			{' ',  Model::MeshType::SAND_1},
 			{'\\', Model::MeshType::SAND_2},

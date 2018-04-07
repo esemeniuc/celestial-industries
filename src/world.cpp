@@ -144,8 +144,7 @@ bool World::init() {
 	//display a path
 	int startx = 25, startz = 11;
 	int targetx = 10, targetz = 10;
-//	auto temp1 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
-	auto temp1 = level.placeEntity(Model::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	auto temp1 = Unit::spawn(Model::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
 //
 //	temp1->moveTo(UnitState::MOVE, targetx, targetz);
 
@@ -455,9 +454,9 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 	}
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		if (m_dist(m_rng) < 0.5) {
-			level.placeEntity(Model::MeshType::FRIENDLY_RANGED_UNIT, coords, GamePieceOwner::PLAYER);
+			Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, coords, GamePieceOwner::PLAYER);
 		} else {
-			level.placeEntity(Model::MeshType::FRIENDLY_FIRE_UNIT, coords, GamePieceOwner::PLAYER);
+			Unit::spawn(Model::MeshType::FRIENDLY_FIRE_UNIT, coords, GamePieceOwner::PLAYER);
 		}
 		logger(LogLevel::INFO) << "Left click detected " << '\n';
 	}

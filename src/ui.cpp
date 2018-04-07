@@ -119,11 +119,11 @@ namespace Ui {
 												ImGuiWindowFlags_NoMove);
 			// Buttons return true when clicked
 			if (ImGui::Button("Tank")) {
-				Unit::spawn(Unit::UnitType::TANK, glm::vec3(40, 0, 40), GamePieceOwner::AI);
+				Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, glm::vec3(40, 0, 40), GamePieceOwner::AI);
 			}
 
 			if (ImGui::Button("Ball")) {
-				Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, glm::vec3(20, 0, 20), GamePieceOwner::AI);
+				Unit::spawn(Model::MeshType::BALL, glm::vec3(20, 0, 20), GamePieceOwner::AI);
 			}
 			ImGui::SameLine();
 			ImGui::End();
@@ -587,7 +587,7 @@ namespace Ui {
 		}
 
 		// Update OS/hardware mouse cursor if imgui isn't drawing a software cursor
-		if ((io.ConfigFlags & ImGuiConfigFlags_NoSetMouseCursor) == 0 &&
+		if ((io.ConfigFlags & ImGuiConfigFlags_NoMouseCursorChange) == 0 &&
 			glfwGetInputMode(g_Window, GLFW_CURSOR) != GLFW_CURSOR_DISABLED) {
 			ImGuiMouseCursor cursor = ImGui::GetMouseCursor();
 			if (io.MouseDrawCursor || cursor == ImGuiMouseCursor_None) {
