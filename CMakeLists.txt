@@ -32,6 +32,7 @@ set(CUSTOM_COMPILE_FLAGS
 set(CUSTOM_INCLUDE_DIRS
 		src
 		src/unit
+		ext/iconFont
 		ext/imgui
 		ext/gl3w
 		ext/gl3w/GL

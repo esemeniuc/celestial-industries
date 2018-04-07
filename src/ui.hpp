@@ -26,8 +26,13 @@ namespace Ui {
 	static unsigned int g_VboHandle = 0, g_ElementsHandle = 0;
 
 	//eric's stuff
-	static bool spawnUnit = true;
-	static bool spawnBuilding = false;
+	enum class SpawnWindowState{
+		SPAWN_SELECTOR,
+		SPAWN_DEFENSIVE_BUILDINGS,
+		SPAWN_ECONOMIC_BUILDINGS
+	};
+
+	static SpawnWindowState spawnWindowState = SpawnWindowState::SPAWN_SELECTOR;
 	static bool cursorNormalMode = true;
 	static int uiHeight = 200;
 

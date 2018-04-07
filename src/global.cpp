@@ -12,6 +12,8 @@ namespace Global {
 	size_t windowWidth = Config::INITIAL_WINDOW_WIDTH; //gets overwritten by the resize callback
 	size_t windowHeight = Config::INITIAL_WINDOW_HEIGHT;
 
+	std::vector<std::shared_ptr<Entity>> selectedEntities; //highlighted by the mouse
+
 	std::vector<std::shared_ptr<Entity>> playerUnits;
 	std::vector<std::shared_ptr<Entity>> aiUnits;
 
