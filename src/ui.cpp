@@ -74,9 +74,9 @@ namespace Ui {
 											   ImGuiWindowFlags_NoMove |
 											   ImGuiWindowFlags_NoTitleBar);
 
-			ImGui::Text("Resources:     %8d", Global::playerResources);
-			ImGui::Text("Resource Rate: %8d", Global::playerResourcesPerSec);
-			ImGui::Text("Supply:        %8d/%d", Global::playerCurrentSupply, Global::playerMaxSupply);
+			ImGui::Text(ICON_FA_HAND_HOLDING_USD " Resources:     %8d", Global::playerResources);
+			ImGui::Text(" " ICON_FA_DOLLAR_SIGN " Resource Rate: %8d", Global::playerResourcesPerSec);
+			ImGui::Text(ICON_FA_WAREHOUSE " Supply:        %8d/%d", Global::playerCurrentSupply, Global::playerMaxSupply);
 			ImGui::End();
 		}
 
@@ -110,11 +110,11 @@ namespace Ui {
 
 			switch (spawnWindowState) {
 				case SpawnWindowState::SPAWN_SELECTOR: {
-					if (ImGui::Button("Economic")) {
+					if (ImGui::Button(ICON_FA_BUILDING " Economic")) {
 						spawnWindowState = SpawnWindowState::SPAWN_ECONOMIC_BUILDINGS;
 					}
 
-					if (ImGui::Button("Defence")) {
+					if (ImGui::Button(ICON_FA_SHIELD_ALT " Defence")) {
 						spawnWindowState = SpawnWindowState::SPAWN_DEFENSIVE_BUILDINGS;
 					}
 					break;
