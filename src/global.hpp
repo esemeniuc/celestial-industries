@@ -4,7 +4,7 @@
 #include <unordered_set>
 #include <vector>
 #include "entity.hpp"
-#include "level.hpp"
+#include "level.hpp" //for AStarNode
 
 namespace Global {
 	extern size_t levelWidth;

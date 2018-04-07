@@ -80,11 +80,9 @@ public:
 	std::shared_ptr<Tile>
 	placeTile(Model::MeshType type, glm::vec3 location, unsigned int width = 1, unsigned int height = 1);
 
-	std::shared_ptr<Entity> placeEntity(Model::MeshType type, glm::vec3 location, GamePieceOwner owner);
+
 
 	std::shared_ptr<Tile> tileFromMeshType(Model::MeshType type);
-
-	std::shared_ptr<Entity> entityFromMeshType(Model::MeshType type);
 
 	// Needed to properly update cost map when placing tiles
 
@@ -106,7 +104,7 @@ public:
 			{Model::MeshType::GEYSER,     {Config::OBSTACLE_COST,            INF}}
 	};
 
-	std::map<char, Model::MeshType> charToType{
+	constexpr static std::map<char,int> charToType{
 			{'#',  Model::MeshType::HROAD},
 			{' ',  Model::MeshType::SAND_1},
 			{'\\', Model::MeshType::SAND_2},

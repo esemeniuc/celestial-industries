@@ -22,6 +22,6 @@ namespace Config {
     const unsigned int MAX_TOTAL_SUBOBJECTS_PER_RENDERER = 1000; // If you change this and not the shader you are a bad person
 
 	//game tunable constants
-	const int OBSTACLE_COST = 1000;
-	const int DEFAULT_TRAVERSABLE_COST = 10;
+	constexpr const int OBSTACLE_COST = 1000;
+	constexpr const int DEFAULT_TRAVERSABLE_COST = 10;
 }

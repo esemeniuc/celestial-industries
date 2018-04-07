@@ -89,26 +89,22 @@ namespace Ui {
 			ImGui::End();
 		}
 
-		{ //unit info
+		{ //entity info
 			ImGui::SetNextWindowSize(ImVec2(windowWidth - spawnWindowWidth, uiHeight));
 			ImGui::SetNextWindowPos(ImVec2(0, windowHeight - uiHeight));
-			ImGui::Begin("Game UI", nullptr, ImGuiWindowFlags_NoSavedSettings |
+			ImGui::Begin("Entity Info", nullptr, ImGuiWindowFlags_NoSavedSettings |
 											 ImGuiWindowFlags_NoResize |
 											 ImGuiWindowFlags_NoCollapse |
 											 ImGuiWindowFlags_NoMove |
 											 ImGuiWindowFlags_NoTitleBar);
 
-			ImGui::Text("Spawn:");
+//			ImGui::Text("Name: %s:", );
+//			ImGui::Text("Health: %d/%d:", );
+//			ImGui::Text("Damage: %s:", );
+//			ImGui::Text("Attack Range: %s:", );
+//			ImGui::Text("Owner: %s:", );
+//			ImGui::Text("Type: %s:", );
 
-			if (ImGui::Button("Unit")) {
-				spawnUnit = true;
-				spawnBuilding = false;
-			}
-
-			if (ImGui::Button("Building")) {
-				spawnUnit = false;
-				spawnBuilding = true;
-			}
 
 			ImGui::End();
 		}

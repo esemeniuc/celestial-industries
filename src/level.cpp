@@ -28,8 +28,8 @@ bool Level::init(const std::vector<std::shared_ptr<Renderer>>& meshRenderers) {
 void Level::save(std::string filename)
 {
 	std::map<short, char> typeToChar;
-	for (std::map<char, Model::MeshType>::iterator iter = charToType.begin(); iter != charToType.end(); ++iter) {
-		typeToChar[iter->second] = iter->first;
+	for (const auto& pair : typeToChar) {
+		typeToChar[pair.second] = pair.first;
 	}
 	std::ofstream fs(filename);
 	if (!fs) {
@@ -130,14 +130,12 @@ std::vector<std::vector<AStarNode>> Level::getLevelTraversalCostMap() {
 
 std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location, unsigned int width, unsigned int height)
 {
-	for (size_t i = 0; i < tiles.size(); i++) {
-		if (
-			tiles[i]->position.x >= location.x
-			&& tiles[i]->position.x < location.x + width
-			&& tiles[i]->position.z >= location.z
-			&& tiles[i]->position.z < location.z + height
-		) {
-			tiles[i]->softDelete();
+	for (auto& tile : tiles) {
+		if (tile->position.x >= location.x &&
+			tile->position.x < location.x + width &&
+			tile->position.z >= location.z &&
+			tile->position.z < location.z + height) {
+			tile->softDelete();
 			// TODO: Actually remove the tiles lol (memory is still allocated)
 		}
 	}
@@ -153,83 +151,14 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 	return newTile;
 }
 
-// Sets AI comp and Unit comp
-void initUnitFromMeshType(std::shared_ptr<Entity> e, Model::MeshType type, GamePieceOwner owner) {
-	switch (type) {
-	case Model::MeshType::FRIENDLY_FIRE_UNIT:
-	case Model::MeshType::ENEMY_SPIKE_UNIT:
-		e->aiComp.initialHealth = 160;
-		e->aiComp.visionRange = 8;
-		e->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
-		e->aiComp.currentHealth = e->aiComp.initialHealth;
-		e->aiComp.value = 100;
-
-		e->unitComp.initialEnergyLevel = 50;
-		e->unitComp.attackDamage = 10;
-		e->unitComp.attackRange = 1;
-		e->unitComp.attackSpeed = 5;
-		e->unitComp.movementSpeed = 3;
-		e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
-		e->unitComp.state = UnitState::IDLE;
-		break;
-	case Model::MeshType::FRIENDLY_RANGED_UNIT:
-	case Model::MeshType::ENEMY_RANGED_RADIUS_UNIT:
-	case Model::MeshType::BALL:
-	case Model::MeshType::ENEMY_RANGED_LINE_UNIT:
-		e->aiComp.initialHealth = 45;
-		e->aiComp.visionRange = 8;
-		e->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
-		e->aiComp.currentHealth = e->aiComp.initialHealth;
-		e->aiComp.value = 50;
-
-		e->unitComp.initialEnergyLevel = 50;
-		e->unitComp.attackDamage = 6;
-		e->unitComp.attackRange = 5;
-		e->unitComp.attackSpeed = 5;
-		e->unitComp.movementSpeed = 3;
-		e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
-		e->unitComp.state = UnitState::IDLE;
-		break;
-	default:
-		throw "Un initializeable unit encountered in initUnitFromMeshType";
-	}
-
-	e->aiComp.owner = owner;
-
-	if (owner == GamePieceOwner::PLAYER) {
-		Global::playerUnits.push_back(e);
-
-	}
-	else if (owner == GamePieceOwner::AI) {
-		Global::aiUnits.push_back(e);
-	}
-}
-
-std::shared_ptr<Entity> Level::placeEntity(Model::MeshType type, glm::vec3 location, GamePieceOwner owner)
-{
-	std::shared_ptr<Entity> entity = entityFromMeshType(type);
-	entity->setPosition(location);
-	initUnitFromMeshType(entity, type, owner);
-	return entity;
-}
 
 std::shared_ptr<Tile> Level::tileFromMeshType(Model::MeshType type)
 {
 	switch (type) {
-	case Model::MeshType::GUN_TURRET:
-		return std::make_shared<GunTowerTile>();
-	default:
-		return std::make_shared<Tile>(type);
-	}
-}
-
-std::shared_ptr<Entity> Level::entityFromMeshType(Model::MeshType type)
-{
-	switch (type) {
-	case Model::MeshType::FRIENDLY_RANGED_UNIT:
-		return std::make_shared<PivotingGunEntity>(type, 2);
-	default:
-		return std::make_shared<Entity>(type);
+		case Model::MeshType::GUN_TURRET:
+			return std::make_shared<GunTowerTile>();
+		default:
+			return std::make_shared<Tile>(type);
 	}
 }
 
