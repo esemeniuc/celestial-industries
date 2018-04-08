@@ -130,6 +130,11 @@ bool World::init() {
 		logger(LogLevel::ERR) << "Failed to initialize renderers\n";
 	}
 
+	int windowWidth,windowHeight;
+	glfwGetWindowSize(m_window, &windowWidth, &windowHeight);
+	Global::windowWidth = static_cast<size_t>(windowWidth);
+	Global::windowHeight = static_cast<size_t>(windowHeight);
+
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
 
@@ -411,7 +416,8 @@ std::pair<bool, glm::vec3> World::getTileCoordFromWindowCoords(double xpos, doub
 	float t = glm::dot(planeNormalVector, (planePoint - camera.position)) / planeDotDirection;
 
 	glm::vec3 pointInWorld = camera.position + (t * directionVector);
-	return {(t > 0), pointInWorld};
+
+	return {(!isnan(t) && t > 0), pointInWorld};
 }
 
 void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
