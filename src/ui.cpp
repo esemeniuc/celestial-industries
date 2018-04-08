@@ -9,7 +9,7 @@
 #include "world.hpp" //for key callbacks
 #include "config.hpp" //for font file path
 
-#include "IconsFontAwesome5.h"
+#include "IconsFontAwesome5.h" //for game icons
 
 #include "GLFW/glfw3.h" //put before gl stuff (else break things)
 #include <GL/gl3w.h>
@@ -26,32 +26,6 @@ std::ostream& operator<<(std::ostream& os, const ImVec2& vec2) {
 ImVec2 abs(ImVec2 a) {
 	return {abs(a.x), abs(a.y)};
 }
-
-float minTerm(ImVec2 a) {
-	return std::min(a.x, a.y);
-}
-
-float l1Norm(ImVec2 a) {
-	return std::min(a.x, a.y);
-}
-
-float l2Norm(ImVec2 a) {
-	return sqrt(a.x * a.x + a.y * a.y);
-}
-
-ImVec2 min(ImVec2 a, ImVec2 b) {
-	if (l2Norm(a) <= l2Norm(b)) {
-		return a;
-	}
-	return b;
-}
-
-//ImVec2 max(ImVec2 a, ImVec2 b) {
-//	if (minTerm(a) >= minTerm(b)) {
-//		return a;
-//	}
-//	return b;
-//}
 
 namespace Ui {
 	void imguiSetup(GLFWwindow* window) {
@@ -103,48 +77,41 @@ namespace Ui {
 		int windowWidth, windowHeight;
 		glfwGetWindowSize(g_Window, &windowWidth, &windowHeight);
 		ImGui_ImplGlfwGL3_NewFrame();
-		ImGui::ShowDemoWindow();
+//		ImGui::ShowDemoWindow();
 
-		if (ImGui::IsMouseDragging()) {
-
-			ImVec2 startClick = ImGui::GetIO().MouseClickedPos[0];
+		if (ImGui::IsMouseDragging()) { //for selection window
+			ImVec2 startClick = ImGui::GetIO().MouseClickedPos[0]; //0 for main mouse button
 			ImVec2 endClick = ImGui::GetMousePos();
 
-
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f); //make a square box
 			ImVec2 selectionSize = abs(endClick - startClick);
 
 			ImVec2 topLeft;
 			if (startClick.x <= endClick.x && startClick.y <= endClick.y) {
-				std::cout << 1;
 				topLeft = startClick; //normal top left to bottom right case
 			} else if (startClick.x >= endClick.x && startClick.y >= endClick.y) {
-				std::cout << 2;
 				topLeft = endClick; //the start at bottom right, end at top left case
 			} else if (startClick.x >= endClick.x && startClick.y <= endClick.y) {
-				std::cout << 3;
 				topLeft = ImVec2(endClick.x, startClick.y); //the start at top right, end at bottom left case
 			} else if (startClick.x <= endClick.x && startClick.y >= endClick.y) {
-				std::cout << 4;
-				 //the start at bottom left, end at top right case
-				topLeft = ImVec2(startClick.x, endClick.y);
+				topLeft = ImVec2(startClick.x, endClick.y); //the start at bottom left, end at top right case
 			}
-			ImGui::SetNextWindowPos(topLeft);
+			ImGui::SetNextWindowPos(topLeft); //window always starts from top left corner
 			ImGui::SetNextWindowSize(selectionSize);
 
-			std::cout << "start: " << startClick << " end: " << endClick << " size: " << selectionSize << " tl: "
-					  << topLeft << '\n';
+//			std::cout << "start: " << startClick << " end: " << endClick << " size: " << selectionSize << " tl: "
+//					  << topLeft << '\n';
 			ImGui::SetNextWindowBgAlpha(0.3f); // Transparent background
-			ImGui::Begin("Example: Fixed Overlay", nullptr,
-						 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+			ImGui::Begin("Game selection overlay", nullptr,
+						 ImGuiWindowFlags_NoTitleBar |
+						 ImGuiWindowFlags_NoResize |
 						 ImGuiWindowFlags_NoMove |
-						 ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
+						 ImGuiWindowFlags_NoSavedSettings |
+						 ImGuiWindowFlags_NoFocusOnAppearing |
 						 ImGuiWindowFlags_NoNav);
 
 			ImGui::End();
-			ImGui::PopStyleVar();
-
-
+			ImGui::PopStyleVar(); //must be after end
 		} else if (ImGui::IsMouseDragging(1)) {
 			std::cout << "dragging2\n";
 			std::cout << ImGui::GetMouseDragDelta(1).x << ' ' << ImGui::GetMouseDragDelta(1).y << "\n";
@@ -234,7 +201,6 @@ namespace Ui {
 										GamePieceOwner::PLAYER);
 					}
 
-
 					if (ImGui::Button("Refinery")) {
 						Building::spawn(Building::BuildingType::REFINERY, glm::vec3(15, 0, 15),
 										GamePieceOwner::PLAYER);
@@ -244,7 +210,6 @@ namespace Ui {
 						Building::spawn(Building::BuildingType::SUPPLY_DEPOT, glm::vec3(25, 0, 25),
 										GamePieceOwner::PLAYER);
 					}
-
 
 					ImGui::SetCursorPos(ImVec2(spawnWindowWidth - ImGui::GetFontSize() * 5,
 											   uiHeight - ImGui::GetFontSize() * 3));

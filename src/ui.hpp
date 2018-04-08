@@ -32,22 +32,9 @@ namespace Ui {
 		SPAWN_ECONOMIC_BUILDINGS
 	};
 
-//	enum class SpawnWindowState{
-//		SPAWN_SELECTOR,
-//		SPAWN_DEFENSIVE_BUILDINGS,
-//		SPAWN_ECONOMIC_BUILDINGS
-//	};
-
 	static SpawnWindowState spawnWindowState = SpawnWindowState::SPAWN_SELECTOR;
-	static bool cursorNormalMode = true;
 	static int uiHeight = 200;
-
 	static int spawnWindowWidth = 300;
-
-	static int resourceCounterWidth = 230;
-	static int resourceCounterHeight = 80;
-	static int resourceCounterHeightOffset = 10; //starting position offset from top
-	static int resourceCounterWidthOffset = resourceCounterWidth + 10; //starting position offset from right side of screen
 
 	//funcs
 	void imguiSetup(GLFWwindow* window);
