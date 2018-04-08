@@ -162,9 +162,7 @@ bool World::init() {
 	// Example use of targeting units.
 //	AttackManager::registerTargetUnit(temp2, temp1);
 
-	selectedTileCoordinates.rowCoord = Global::levelWidth / 2;
-	selectedTileCoordinates.colCoord = Global::levelHeight / 2;
-
+	//don't set selectedTileCoords at launch because glfwGetCursorPos() returns weird stuff
 	return true;
 }
 
@@ -388,9 +386,8 @@ void World::on_key(GLFWwindow* window, int key, int scancode, int action, int mo
 	}
 }
 
-void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
-	camera.pan(xpos, ypos);
 
+std::pair<bool, glm::vec3> World::getTileCoordFromWindowCoords(double xpos, double ypos) {
 	int framebufferWidth, framebufferHeight;
 	glfwGetFramebufferSize(m_window, &framebufferWidth, &framebufferHeight);
 
@@ -401,8 +398,8 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 	glm::vec2 viewport{framebufferWidth, framebufferHeight};
 	glm::vec4 clipCoordinates{windowCoordinates / viewport * 2.0f - glm::vec2{1.0f}, -1.0f, 1.0f};
 	clipCoordinates[1] *= -1.0;
-	glm::mat4 clipWorldMatrix{
-			glm::inverse(camera.getProjectionMatrix(Global::windowWidth, Global::windowHeight) * camera.getViewMatrix())};
+	glm::mat4 clipWorldMatrix{glm::inverse(camera.getProjectionMatrix(Global::windowWidth,
+																	  Global::windowHeight) * camera.getViewMatrix())};
 	glm::vec4 unprojectedWorldCoordinates{clipWorldMatrix * clipCoordinates};
 	glm::vec3 worldCoordinates{glm::vec3{unprojectedWorldCoordinates} / unprojectedWorldCoordinates.w};
 
@@ -413,10 +410,18 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 	float planeDotDirection = glm::dot(planeNormalVector, directionVector);
 	float t = glm::dot(planeNormalVector, (planePoint - camera.position)) / planeDotDirection;
 
-	if (t > 0) {
-		glm::vec3 pointInWorld = camera.position + (t * directionVector);
-		selectedTileCoordinates.rowCoord = (int) round(pointInWorld.z);
-		selectedTileCoordinates.colCoord = (int) round(pointInWorld.x);
+	glm::vec3 pointInWorld = camera.position + (t * directionVector);
+	return {(t > 0), pointInWorld};
+}
+
+void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
+	camera.pan(xpos, ypos);
+
+	std::pair<bool, glm::vec3> result = World::getTileCoordFromWindowCoords(xpos, ypos);
+	if (result.first) { //if t>0
+//		printf("x: %f z: %f\n", result.second.x, result.second.z);
+		selectedTileCoordinates.colCoord = int(result.second.x + 0.5);
+		selectedTileCoordinates.rowCoord = int(result.second.z + 0.5);
 	}
 }
 

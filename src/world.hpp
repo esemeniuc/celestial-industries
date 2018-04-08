@@ -73,6 +73,8 @@ namespace World {
 	bool is_over();
 
 	//funcs
+	std::pair<bool, glm::vec3> getTileCoordFromWindowCoords(double xpos, double ypos);
+
 	void move_cursor_up();
 
 	void move_cursor_down();
