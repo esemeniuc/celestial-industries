@@ -7,6 +7,8 @@
 
 namespace UnitManager {
 
+	extern std::vector<std::shared_ptr<Entity>> selectedUnits;
+
 	void init(size_t levelHeight, size_t levelWidth);
 
 	bool isDead(std::shared_ptr<Entity>& unit);
@@ -18,7 +20,7 @@ namespace UnitManager {
 
 	void update(double elapsed_ms);
 
-	std::vector<std::shared_ptr<Entity>> selectUnitsInRange(Coord startCorner, Coord endCorner);
+	void selectUnitsInRange(Coord startCorner, Coord endCorner);
 
 }
 

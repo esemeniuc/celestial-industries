@@ -8,13 +8,18 @@
 #include "building.hpp" //for spawning
 #include "world.hpp" //for key callbacks
 #include "config.hpp" //for font file path
+#include "unitmanager.hpp" //for unit selection info
 
 #include "IconsFontAwesome5.h" //for game icons
 
 #include "GLFW/glfw3.h" //put before gl stuff (else break things)
 #include <GL/gl3w.h>
 
-ImVec2 operator-(ImVec2 a, ImVec2 b) {
+ImVec2 operator+(const ImVec2& a, const ImVec2& b) {
+	return {a.x + b.x, a.y + b.y};
+}
+
+ImVec2 operator-(const ImVec2& a, const ImVec2& b) {
 	return {a.x - b.x, a.y - b.y};
 }
 
@@ -23,7 +28,7 @@ std::ostream& operator<<(std::ostream& os, const ImVec2& vec2) {
 	return os;
 }
 
-ImVec2 abs(ImVec2 a) {
+ImVec2 abs(const ImVec2& a) {
 	return {abs(a.x), abs(a.y)};
 }
 
@@ -68,6 +73,7 @@ namespace Ui {
 		// use FONT_ICON_FILE_NAME_FAR if you want regular instead of solid
 	}
 
+
 	void imguiGenerateScreenObjects() {
 // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
 		// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
@@ -88,16 +94,8 @@ namespace Ui {
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f); //make a square box
 			ImVec2 selectionSize = abs(endClick - startClick);
 
-			ImVec2 topLeft;
-			if (startClick.x <= endClick.x && startClick.y <= endClick.y) {
-				topLeft = startClick; //normal top left to bottom right case
-			} else if (startClick.x >= endClick.x && startClick.y >= endClick.y) {
-				topLeft = endClick; //the start at bottom right, end at top left case
-			} else if (startClick.x >= endClick.x && startClick.y <= endClick.y) {
-				topLeft = ImVec2(endClick.x, startClick.y); //the start at top right, end at bottom left case
-			} else if (startClick.x <= endClick.x && startClick.y >= endClick.y) {
-				topLeft = ImVec2(startClick.x, endClick.y); //the start at bottom left, end at top right case
-			}
+			topLeft = getSelectionBoxStartPos(startClick, endClick);
+			bottomRight = topLeft + selectionSize;
 			ImGui::SetNextWindowPos(topLeft); //window always starts from top left corner
 			ImGui::SetNextWindowSize(selectionSize);
 
@@ -114,6 +112,8 @@ namespace Ui {
 
 			ImGui::End();
 			ImGui::PopStyleVar(); //must be after end
+
+			UnitManager::selectUnitsInRange(Coord(topLeft), Coord(bottomRight)); //need this for display
 		} else if (ImGui::IsMouseDragging(1)) {
 			std::cout << "dragging2\n";
 			std::cout << ImGui::GetMouseDragDelta(1).x << ' ' << ImGui::GetMouseDragDelta(1).y << "\n";
@@ -151,12 +151,21 @@ namespace Ui {
 												 ImGuiWindowFlags_NoMove |
 												 ImGuiWindowFlags_NoTitleBar);
 
-//			ImGui::Text("Name: %s:", );
-//			ImGui::Text("Health: %d/%d:", );
-//			ImGui::Text("Damage: %s:", );
-//			ImGui::Text("Attack Range: %s:", );
-//			ImGui::Text("Owner: %s:", );
-//			ImGui::Text("Type: %s:", );
+
+			if (UnitManager::selectedUnits.size() == 1) {
+				std::shared_ptr<Entity> unit = UnitManager::selectedUnits.front();
+//				ImGui::Text("Unit: %s\n", unit.a);
+				ImGui::Text("Health: %d/%d\n", unit->aiComp.currentHealth, unit->aiComp.totalHealth);
+				ImGui::Text("Damage: %d\n", unit->unitComp.attackDamage);
+				ImGui::Text("Attack Range: %d\n", unit->unitComp.attackRange);
+				ImGui::Text("Attack Speed: %d\n", unit->unitComp.attackSpeed);
+				ImGui::Text("Owner: %d\n", unit->aiComp.owner);
+				ImGui::Text("Type: %d:", unit->aiComp.type);
+			} else if (UnitManager::selectedUnits.size() > 1) {
+				for (const auto& unit : UnitManager::selectedUnits) {
+//draw something
+				}
+			}
 
 
 			ImGui::End();
@@ -235,6 +244,20 @@ namespace Ui {
 		ImGui::Render();
 		ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
 		glfwSwapBuffers(g_Window);
+	}
+
+	ImVec2 getSelectionBoxStartPos(const ImVec2& startClickPos, const ImVec2& endClickPos) {
+		ImVec2 topLeft;
+		if (startClickPos.x <= endClickPos.x && startClickPos.y <= endClickPos.y) {
+			topLeft = startClickPos; //normal top left to bottom right case
+		} else if (startClickPos.x >= endClickPos.x && startClickPos.y >= endClickPos.y) {
+			topLeft = endClickPos; //the start at bottom right, end at top left case
+		} else if (startClickPos.x >= endClickPos.x && startClickPos.y <= endClickPos.y) {
+			topLeft = ImVec2(endClickPos.x, startClickPos.y); //the start at top right, end at bottom left case
+		} else if (startClickPos.x <= endClickPos.x && startClickPos.y >= endClickPos.y) {
+			topLeft = ImVec2(startClickPos.x, endClickPos.y); //the start at bottom left, end at top right case
+		}
+		return topLeft;
 	}
 
 

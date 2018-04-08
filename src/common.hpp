@@ -2,8 +2,9 @@
 
 #include "config.hpp"
 #include "logger.hpp"
+#include "imgui.h" //for imvec2 constructor
 
-// stlib
+// stdlib
 #include <memory>
 #include <ostream>
 #include <string>
@@ -82,6 +83,7 @@ struct Coord {
 	Coord(int _colCoord, int _rowCoord) : colCoord(_colCoord), rowCoord(_rowCoord) {}
 
 	Coord(const glm::vec3& input) : colCoord(int(input.x + 0.5)), rowCoord(int(input.z + 0.5)) {}
+	Coord(const ImVec2& input) : colCoord(int(input.x + 0.5)), rowCoord(int(input.y + 0.5)) {}
 
 	bool operator==(const Coord& rhs) const {
 		return rowCoord == rhs.rowCoord &&

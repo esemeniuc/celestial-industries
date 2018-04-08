@@ -35,7 +35,7 @@ namespace Config {
 	//game tunable constants
 	constexpr const int OBSTACLE_COST = 1000;
 	constexpr const int DEFAULT_TRAVERSABLE_COST = 10;
-	constexpr const int POINT_CLICK_DISTANCE_THRESHOLD = 2;
+	constexpr const int POINT_CLICK_DISTANCE_THRESHOLD = 4;
 
 	//file paths
 	constexpr const char* FONTAWESOME_FILE_PATH = font_path("fa-solid-900.ttf");

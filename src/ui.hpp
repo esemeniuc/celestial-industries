@@ -36,10 +36,15 @@ namespace Ui {
 	static int uiHeight = 200;
 	static int spawnWindowWidth = 300;
 
+	static ImVec2 topLeft;
+	static ImVec2 bottomRight;
+
 	//funcs
 	void imguiSetup(GLFWwindow* window);
 
 	void imguiGenerateScreenObjects();
+
+	ImVec2 getSelectionBoxStartPos(const ImVec2& startClickPos, const ImVec2& endClickPos);
 
 	bool ImGui_ImplGlfwGL3_Init(GLFWwindow* window, bool install_callbacks, const char* glsl_version);
 

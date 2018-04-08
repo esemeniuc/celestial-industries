@@ -10,10 +10,10 @@ void initUnitFromMeshType(const std::shared_ptr<Entity>& e, Model::MeshType type
 	switch (type) {
 		case Model::MeshType::FRIENDLY_FIRE_UNIT:
 		case Model::MeshType::ENEMY_SPIKE_UNIT:
-			e->aiComp.initialHealth = 160;
+			e->aiComp.totalHealth = 160;
 			e->aiComp.visionRange = 8;
 			e->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
-			e->aiComp.currentHealth = e->aiComp.initialHealth;
+			e->aiComp.currentHealth = e->aiComp.totalHealth;
 			e->aiComp.value = 100;
 
 			e->unitComp.initialEnergyLevel = 50;
@@ -28,10 +28,10 @@ void initUnitFromMeshType(const std::shared_ptr<Entity>& e, Model::MeshType type
 		case Model::MeshType::ENEMY_RANGED_RADIUS_UNIT:
 		case Model::MeshType::BALL:
 		case Model::MeshType::ENEMY_RANGED_LINE_UNIT:
-			e->aiComp.initialHealth = 45;
+			e->aiComp.totalHealth = 45;
 			e->aiComp.visionRange = 8;
 			e->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
-			e->aiComp.currentHealth = e->aiComp.initialHealth;
+			e->aiComp.currentHealth = e->aiComp.totalHealth;
 			e->aiComp.value = 50;
 
 			e->unitComp.initialEnergyLevel = 50;
