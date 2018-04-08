@@ -35,7 +35,7 @@ namespace AI {
 				}
 			}
 
-			std::cout << "time: " << currentUnixTime << " cells seen recently: " << cellsVisible << '\n';
+//			std::cout << "time: " << currentUnixTime << " cells seen recently: " << cellsVisible << '\n';
 			percentVisible = (double) cellsVisible / (Global::levelHeight * Global::levelWidth);
 		}
 

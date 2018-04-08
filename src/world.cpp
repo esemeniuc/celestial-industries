@@ -431,15 +431,17 @@ void World::on_window_resize(GLFWwindow* window, int width, int height) {
 
 void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods) {
 	glm::vec3 coords = {selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord};
+	if (coords.x < 0 || coords.x + 1 > Global::levelWidth ||
+		coords.z < 0 || coords.z + 1 > Global::levelHeight)
+		return;
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-		if (coords.x < 0 || coords.x + 1 > Global::levelWidth)
-			return;
-		if (coords.z < 0 || coords.z + 1 > Global::levelHeight)
-			return;
+
 		level.placeTile(Model::MeshType::GUN_TURRET, coords);
 		logger(LogLevel::INFO) << "Right click detected " << '\n';
 	}
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+
+
 		if (m_dist(m_rng) < 0.5) {
 			Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, coords, GamePieceOwner::PLAYER);
 		} else {

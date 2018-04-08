@@ -93,13 +93,16 @@ struct Coord {
 		return os;
 	}
 
-
 	static Coord getInvalidCoord() {
 		return {INT32_MIN, INT32_MIN};
 	}
 
 	bool isInvalid() {
 		return *this == getInvalidCoord();
+	}
+
+	static int l1Norm(const Coord& a, const Coord& b )	{
+		return abs(b.colCoord - a.colCoord) + abs(b.rowCoord - a.rowCoord);
 	}
 
 	static Coord getRandomCoord(int levelWidth, int levelHeight) {

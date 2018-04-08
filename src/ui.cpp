@@ -14,11 +14,50 @@
 #include "GLFW/glfw3.h" //put before gl stuff (else break things)
 #include <GL/gl3w.h>
 
+ImVec2 operator-(ImVec2 a, ImVec2 b) {
+	return {a.x - b.x, a.y - b.y};
+}
+
+std::ostream& operator<<(std::ostream& os, const ImVec2& vec2) {
+	os << "x: " << vec2.x << " y: " << vec2.y;
+	return os;
+}
+
+ImVec2 abs(ImVec2 a) {
+	return {abs(a.x), abs(a.y)};
+}
+
+float minTerm(ImVec2 a) {
+	return std::min(a.x, a.y);
+}
+
+float l1Norm(ImVec2 a) {
+	return std::min(a.x, a.y);
+}
+
+float l2Norm(ImVec2 a) {
+	return sqrt(a.x * a.x + a.y * a.y);
+}
+
+ImVec2 min(ImVec2 a, ImVec2 b) {
+	if (l2Norm(a) <= l2Norm(b)) {
+		return a;
+	}
+	return b;
+}
+
+//ImVec2 max(ImVec2 a, ImVec2 b) {
+//	if (minTerm(a) >= minTerm(b)) {
+//		return a;
+//	}
+//	return b;
+//}
+
 namespace Ui {
-	void imguiSetup(GLFWwindow *window) {
+	void imguiSetup(GLFWwindow* window) {
 		// Setup ImGui binding
 		ImGui::CreateContext();
-		ImGuiIO &io = ImGui::GetIO();
+		ImGuiIO& io = ImGui::GetIO();
 		(void) io;
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
@@ -64,15 +103,68 @@ namespace Ui {
 		int windowWidth, windowHeight;
 		glfwGetWindowSize(g_Window, &windowWidth, &windowHeight);
 		ImGui_ImplGlfwGL3_NewFrame();
+		ImGui::ShowDemoWindow();
+
+		if (ImGui::IsMouseDragging()) {
+
+			ImVec2 startClick = ImGui::GetIO().MouseClickedPos[0];
+			ImVec2 endClick = ImGui::GetMousePos();
+
+
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+			ImVec2 selectionSize = abs(endClick - startClick);
+
+			ImVec2 topLeft;
+			if (startClick.x <= endClick.x && startClick.y <= endClick.y) {
+				std::cout << 1;
+				topLeft = startClick; //normal top left to bottom right case
+			} else if (startClick.x >= endClick.x && startClick.y >= endClick.y) {
+				std::cout << 2;
+				topLeft = endClick; //the start at bottom right, end at top left case
+			} else if (startClick.x >= endClick.x && startClick.y <= endClick.y) {
+				std::cout << 3;
+				topLeft = ImVec2(endClick.x, startClick.y); //the start at top right, end at bottom left case
+			} else if (startClick.x <= endClick.x && startClick.y >= endClick.y) {
+				std::cout << 4;
+				 //the start at bottom left, end at top right case
+				topLeft = ImVec2(startClick.x, endClick.y);
+			}
+			ImGui::SetNextWindowPos(topLeft);
+			ImGui::SetNextWindowSize(selectionSize);
+
+			std::cout << "start: " << startClick << " end: " << endClick << " size: " << selectionSize << " tl: "
+					  << topLeft << '\n';
+			ImGui::SetNextWindowBgAlpha(0.3f); // Transparent background
+			ImGui::Begin("Example: Fixed Overlay", nullptr,
+						 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+						 ImGuiWindowFlags_NoMove |
+						 ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
+						 ImGuiWindowFlags_NoNav);
+
+			ImGui::End();
+			ImGui::PopStyleVar();
+
+
+		} else if (ImGui::IsMouseDragging(1)) {
+			std::cout << "dragging2\n";
+			std::cout << ImGui::GetMouseDragDelta(1).x << ' ' << ImGui::GetMouseDragDelta(1).y << "\n";
+
+		}
+
 
 		{ //resources counter at top right
-			ImGui::SetNextWindowSize(ImVec2(resourceCounterWidth, resourceCounterHeight));
-			ImGui::SetNextWindowPos(ImVec2(windowWidth - resourceCounterWidthOffset, resourceCounterHeightOffset));
+			const float DISTANCE = 10.0f;
+			ImVec2 window_pos = ImVec2(ImGui::GetIO().DisplaySize.x - DISTANCE, DISTANCE);
+			ImVec2 window_pos_pivot = ImVec2(1.0f, 0.0f);
+			ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
 			ImGui::Begin("Resources", nullptr, ImGuiWindowFlags_NoSavedSettings |
 											   ImGuiWindowFlags_NoResize |
 											   ImGuiWindowFlags_NoCollapse |
 											   ImGuiWindowFlags_NoMove |
-											   ImGuiWindowFlags_NoTitleBar);
+											   ImGuiWindowFlags_NoTitleBar |
+											   ImGuiWindowFlags_AlwaysAutoResize |
+											   ImGuiWindowFlags_NoFocusOnAppearing |
+											   ImGuiWindowFlags_NoNav);
 
 			ImGui::Text(ICON_FA_HAND_HOLDING_USD " Resources:     %8d", Global::playerResources);
 			ImGui::Text(" " ICON_FA_DOLLAR_SIGN "  Resource Rate: %8d", Global::playerResourcesPerSec);
@@ -182,9 +274,9 @@ namespace Ui {
 // OpenGL3 Render function.
 // (this used to be set in io.RenderDrawListsFn and called by ImGui::Render(), but you can now call this directly from your main loop)
 // Note that this implementation is little overcomplicated because we are saving/setting up/restoring every OpenGL state explicitly, in order to be able to run within any OpenGL engine that doesn't do so.
-	void ImGui_ImplGlfwGL3_RenderDrawData(ImDrawData *draw_data) {
+	void ImGui_ImplGlfwGL3_RenderDrawData(ImDrawData* draw_data) {
 		// Avoid rendering when minimized, scale coordinates for retina displays (screen coordinates != framebuffer coordinates)
-		ImGuiIO &io = ImGui::GetIO();
+		ImGuiIO& io = ImGui::GetIO();
 		int fb_width = (int) (io.DisplaySize.x * io.DisplayFramebufferScale.x);
 		int fb_height = (int) (io.DisplaySize.y * io.DisplayFramebufferScale.y);
 		if (fb_width == 0 || fb_height == 0)
@@ -193,7 +285,7 @@ namespace Ui {
 
 		// Backup GL state
 		GLenum last_active_texture;
-		glGetIntegerv(GL_ACTIVE_TEXTURE, (GLint *) &last_active_texture);
+		glGetIntegerv(GL_ACTIVE_TEXTURE, (GLint*) &last_active_texture);
 		glActiveTexture(GL_TEXTURE0);
 		GLint last_program;
 		glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
@@ -214,17 +306,17 @@ namespace Ui {
 		GLint last_scissor_box[4];
 		glGetIntegerv(GL_SCISSOR_BOX, last_scissor_box);
 		GLenum last_blend_src_rgb;
-		glGetIntegerv(GL_BLEND_SRC_RGB, (GLint *) &last_blend_src_rgb);
+		glGetIntegerv(GL_BLEND_SRC_RGB, (GLint*) &last_blend_src_rgb);
 		GLenum last_blend_dst_rgb;
-		glGetIntegerv(GL_BLEND_DST_RGB, (GLint *) &last_blend_dst_rgb);
+		glGetIntegerv(GL_BLEND_DST_RGB, (GLint*) &last_blend_dst_rgb);
 		GLenum last_blend_src_alpha;
-		glGetIntegerv(GL_BLEND_SRC_ALPHA, (GLint *) &last_blend_src_alpha);
+		glGetIntegerv(GL_BLEND_SRC_ALPHA, (GLint*) &last_blend_src_alpha);
 		GLenum last_blend_dst_alpha;
-		glGetIntegerv(GL_BLEND_DST_ALPHA, (GLint *) &last_blend_dst_alpha);
+		glGetIntegerv(GL_BLEND_DST_ALPHA, (GLint*) &last_blend_dst_alpha);
 		GLenum last_blend_equation_rgb;
-		glGetIntegerv(GL_BLEND_EQUATION_RGB, (GLint *) &last_blend_equation_rgb);
+		glGetIntegerv(GL_BLEND_EQUATION_RGB, (GLint*) &last_blend_equation_rgb);
 		GLenum last_blend_equation_alpha;
-		glGetIntegerv(GL_BLEND_EQUATION_ALPHA, (GLint *) &last_blend_equation_alpha);
+		glGetIntegerv(GL_BLEND_EQUATION_ALPHA, (GLint*) &last_blend_equation_alpha);
 		GLboolean last_enable_blend = glIsEnabled(GL_BLEND);
 		GLboolean last_enable_cull_face = glIsEnabled(GL_CULL_FACE);
 		GLboolean last_enable_depth_test = glIsEnabled(GL_DEPTH_TEST);
@@ -263,27 +355,27 @@ namespace Ui {
 		glEnableVertexAttribArray(g_AttribLocationUV);
 		glEnableVertexAttribArray(g_AttribLocationColor);
 		glVertexAttribPointer(g_AttribLocationPosition, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert),
-							  (GLvoid *) IM_OFFSETOF(ImDrawVert, pos));
+							  (GLvoid*) IM_OFFSETOF(ImDrawVert, pos));
 		glVertexAttribPointer(g_AttribLocationUV, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert),
-							  (GLvoid *) IM_OFFSETOF(ImDrawVert, uv));
+							  (GLvoid*) IM_OFFSETOF(ImDrawVert, uv));
 		glVertexAttribPointer(g_AttribLocationColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert),
-							  (GLvoid *) IM_OFFSETOF(ImDrawVert, col));
+							  (GLvoid*) IM_OFFSETOF(ImDrawVert, col));
 
 		// Draw
 		for (int n = 0; n < draw_data->CmdListsCount; n++) {
-			const ImDrawList *cmd_list = draw_data->CmdLists[n];
-			const ImDrawIdx *idx_buffer_offset = 0;
+			const ImDrawList* cmd_list = draw_data->CmdLists[n];
+			const ImDrawIdx* idx_buffer_offset = 0;
 
 			glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
 			glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr) cmd_list->VtxBuffer.Size * sizeof(ImDrawVert),
-						 (const GLvoid *) cmd_list->VtxBuffer.Data, GL_STREAM_DRAW);
+						 (const GLvoid*) cmd_list->VtxBuffer.Data, GL_STREAM_DRAW);
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_ElementsHandle);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr) cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx),
-						 (const GLvoid *) cmd_list->IdxBuffer.Data, GL_STREAM_DRAW);
+						 (const GLvoid*) cmd_list->IdxBuffer.Data, GL_STREAM_DRAW);
 
 			for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++) {
-				const ImDrawCmd *pcmd = &cmd_list->CmdBuffer[cmd_i];
+				const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
 				if (pcmd->UserCallback) {
 					pcmd->UserCallback(cmd_list, pcmd);
 				} else {
@@ -318,22 +410,22 @@ namespace Ui {
 				  (GLsizei) last_scissor_box[3]);
 	}
 
-	static const char *ImGui_ImplGlfwGL3_GetClipboardText(void *user_data) {
-		return glfwGetClipboardString((GLFWwindow *) user_data);
+	static const char* ImGui_ImplGlfwGL3_GetClipboardText(void* user_data) {
+		return glfwGetClipboardString((GLFWwindow*) user_data);
 	}
 
-	static void ImGui_ImplGlfwGL3_SetClipboardText(void *user_data, const char *text) {
-		glfwSetClipboardString((GLFWwindow *) user_data, text);
+	static void ImGui_ImplGlfwGL3_SetClipboardText(void* user_data, const char* text) {
+		glfwSetClipboardString((GLFWwindow*) user_data, text);
 	}
 
-	void ImGui_ImplGlfw_CursorPosCallback(GLFWwindow *window, double xpos, double ypos) {
+	void ImGui_ImplGlfw_CursorPosCallback(GLFWwindow* window, double xpos, double ypos) {
 		//make sure to call the world mouse callback only game world and not ui
 //		if (ypos < Global::windowHeight - uiHeight) {
-			World::on_mouse_move(window, xpos, ypos); //cant do check because of camera panning
+		World::on_mouse_move(window, xpos, ypos); //cant do check because of camera panning
 //		}
 	}
 
-	void ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
+	void ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 		if (action == GLFW_PRESS && button >= 0 && button < 3) {
 			g_MouseJustPressed[button] = true;
 		}
@@ -346,16 +438,16 @@ namespace Ui {
 		}
 	}
 
-	void ImGui_ImplGlfw_ScrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
-		ImGuiIO &io = ImGui::GetIO();
+	void ImGui_ImplGlfw_ScrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+		ImGuiIO& io = ImGui::GetIO();
 		io.MouseWheelH += (float) xoffset;
 		io.MouseWheel += (float) yoffset;
 
 		World::on_mouse_scroll(window, xoffset, yoffset);
 	}
 
-	void ImGui_ImplGlfw_KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
-		ImGuiIO &io = ImGui::GetIO();
+	void ImGui_ImplGlfw_KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+		ImGuiIO& io = ImGui::GetIO();
 		if (action == GLFW_PRESS)
 			io.KeysDown[key] = true;
 		if (action == GLFW_RELEASE)
@@ -370,16 +462,16 @@ namespace Ui {
 		World::on_key(window, key, scancode, action, mods);
 	}
 
-	void ImGui_ImplGlfw_CharCallback(GLFWwindow *, unsigned int c) {
-		ImGuiIO &io = ImGui::GetIO();
+	void ImGui_ImplGlfw_CharCallback(GLFWwindow*, unsigned int c) {
+		ImGuiIO& io = ImGui::GetIO();
 		if (c > 0 && c < 0x10000)
 			io.AddInputCharacter((unsigned short) c);
 	}
 
 	bool ImGui_ImplGlfwGL3_CreateFontsTexture() {
 		// Build texture atlas
-		ImGuiIO &io = ImGui::GetIO();
-		unsigned char *pixels;
+		ImGuiIO& io = ImGui::GetIO();
+		unsigned char* pixels;
 		int width, height;
 		io.Fonts->GetTexDataAsRGBA32(&pixels, &width,
 									 &height);   // Load as RGBA 32-bits (75% of the memory is wasted, but default font is so small) because it is more likely to be compatible with user's existing shaders. If your ImTextureId represent a higher-level concept than just a GL texture id, consider calling GetTexDataAsAlpha8() instead to save on GPU memory.
@@ -395,7 +487,7 @@ namespace Ui {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
 		// Store our identifier
-		io.Fonts->TexID = (void *) (intptr_t) g_FontTexture;
+		io.Fonts->TexID = (void*) (intptr_t) g_FontTexture;
 
 		// Restore state
 		glBindTexture(GL_TEXTURE_2D, last_texture);
@@ -410,7 +502,7 @@ namespace Ui {
 		glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
 		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array);
 
-		const GLchar *vertex_shader =
+		const GLchar* vertex_shader =
 				"uniform mat4 ProjMtx;\n"
 				"in vec2 Position;\n"
 				"in vec2 UV;\n"
@@ -424,7 +516,7 @@ namespace Ui {
 				"	gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
 				"}\n";
 
-		const GLchar *fragment_shader =
+		const GLchar* fragment_shader =
 				"uniform sampler2D Texture;\n"
 				"in vec2 Frag_UV;\n"
 				"in vec4 Frag_Color;\n"
@@ -434,8 +526,8 @@ namespace Ui {
 				"	Out_Color = Frag_Color * texture( Texture, Frag_UV.st);\n"
 				"}\n";
 
-		const GLchar *vertex_shader_with_version[2] = {g_GlslVersion, vertex_shader};
-		const GLchar *fragment_shader_with_version[2] = {g_GlslVersion, fragment_shader};
+		const GLchar* vertex_shader_with_version[2] = {g_GlslVersion, vertex_shader};
+		const GLchar* fragment_shader_with_version[2] = {g_GlslVersion, fragment_shader};
 
 		g_ShaderHandle = glCreateProgram();
 		g_VertHandle = glCreateShader(GL_VERTEX_SHADER);
@@ -490,7 +582,7 @@ namespace Ui {
 		}
 	}
 
-	static void ImGui_ImplGlfw_InstallCallbacks(GLFWwindow *window) {
+	static void ImGui_ImplGlfw_InstallCallbacks(GLFWwindow* window) {
 		glfwSetCursorPosCallback(window, ImGui_ImplGlfw_CursorPosCallback);
 		glfwSetMouseButtonCallback(window, ImGui_ImplGlfw_MouseButtonCallback);
 		glfwSetScrollCallback(window, ImGui_ImplGlfw_ScrollCallback);
@@ -498,7 +590,7 @@ namespace Ui {
 		glfwSetCharCallback(window, ImGui_ImplGlfw_CharCallback);
 	}
 
-	bool ImGui_ImplGlfwGL3_Init(GLFWwindow *window, bool install_callbacks, const char *glsl_version) {
+	bool ImGui_ImplGlfwGL3_Init(GLFWwindow* window, bool install_callbacks, const char* glsl_version) {
 		g_Window = window;
 
 		// Store GL version string so we can refer to it later in case we recreate shaders.
@@ -509,7 +601,7 @@ namespace Ui {
 		strcat(g_GlslVersion, "\n");
 
 		// Setup back-end capabilities flags
-		ImGuiIO &io = ImGui::GetIO();
+		ImGuiIO& io = ImGui::GetIO();
 		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;   // We can honor GetMouseCursor() values (optional)
 		io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;    // We can honor io.WantSetMousePos requests (optional, rarely used)
 
@@ -573,7 +665,7 @@ namespace Ui {
 		if (!g_FontTexture)
 			ImGui_ImplGlfwGL3_CreateDeviceObjects();
 
-		ImGuiIO &io = ImGui::GetIO();
+		ImGuiIO& io = ImGui::GetIO();
 
 		// Setup display size (every frame to accommodate for window resizing)
 		int w, h;
@@ -629,8 +721,8 @@ namespace Ui {
 #define MAP_BUTTON(NAV_NO, BUTTON_NO)       { if (buttons_count > BUTTON_NO && buttons[BUTTON_NO] == GLFW_PRESS) io.NavInputs[NAV_NO] = 1.0f; }
 #define MAP_ANALOG(NAV_NO, AXIS_NO, V0, V1) { float v = (axes_count > AXIS_NO) ? axes[AXIS_NO] : V0; v = (v - V0) / (V1 - V0); if (v > 1.0f) v = 1.0f; if (io.NavInputs[NAV_NO] < v) io.NavInputs[NAV_NO] = v; }
 			int axes_count = 0, buttons_count = 0;
-			const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axes_count);
-			const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttons_count);
+			const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axes_count);
+			const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttons_count);
 			MAP_BUTTON(ImGuiNavInput_Activate, 0);     // Cross / A
 			MAP_BUTTON(ImGuiNavInput_Cancel, 1);     // Circle / B
 			MAP_BUTTON(ImGuiNavInput_Menu, 2);     // Square / X
