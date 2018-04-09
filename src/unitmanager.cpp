@@ -66,21 +66,21 @@ namespace UnitManager {
 		}
 	}
 
-	bool isWithinBounds(const std::shared_ptr<Entity>& entity, const Coord& startCorner, const Coord& endCorner) {
-		int colMin = std::min(startCorner.colCoord, endCorner.colCoord);
-		int colMax = std::max(startCorner.colCoord, endCorner.colCoord);
-		int rowMin = std::min(startCorner.rowCoord, endCorner.rowCoord);
-		int rowMax = std::max(startCorner.rowCoord, endCorner.rowCoord);
+	bool isWithinBounds(const std::shared_ptr<Entity>& entity, const glm::vec3& startCorner, const glm::vec3& endCorner) {
+		float colMin = std::min(startCorner.x, endCorner.x);
+		float colMax = std::max(startCorner.x, endCorner.x);
+		float rowMin = std::min(startCorner.z, endCorner.z);
+		float rowMax = std::max(startCorner.z, endCorner.z);
 
 		return entity->getPosition().x >= colMin &&
 			   entity->getPosition().x <= colMax &&
 			   entity->getPosition().z >= rowMin &&
-			   entity->getPosition().z >= rowMax;
+			   entity->getPosition().z <= rowMax;
 	}
 
 //highlight gets only friendly units, point click gets both friendly and enemy units
-//since player might want to inpsect enemy unit
-	void selectUnitsInRange(Coord startCorner, Coord endCorner) {
+//since player might want to inspect enemy unit
+	void selectUnitsInRange(glm::vec3 startCorner, glm::vec3 endCorner) {
 		selectedUnits.clear();
 
 		//add enemy units if just a point click

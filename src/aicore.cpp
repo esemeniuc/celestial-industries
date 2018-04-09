@@ -16,8 +16,8 @@ namespace aicore {
 	}
 
 	RandomDecision::RandomDecision() :
-			lastDecisionFrame(0),
-			lastDecision(false) {
+			lastDecision(false),
+			lastDecisionFrame(0) {
 	}
 
 	bool RandomDecision::getBranch() {

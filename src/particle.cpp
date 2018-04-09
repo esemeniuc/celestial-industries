@@ -86,9 +86,9 @@ namespace Particles {
             particleHeight(particleHeight),
             particleLifespan(particleLifespan),
             particleSpeed(particleSpeed),
-            ageInMilliseconds(0),
             shader(shader),
-            texture(std::move(texture))
+            texture(std::move(texture)),
+            ageInMilliseconds(0)
     {
         // generate VAO to link VBO and VIO
         glGenVertexArrays(1, &vao);

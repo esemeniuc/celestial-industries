@@ -15,7 +15,7 @@
 
 Tile::Tile(Model::MeshType geometry) : geometryRenderer(Model::meshRenderers[geometry]) {}
 
-Tile::~Tile() {}
+Tile::~Tile() = default;
 
 void Tile::update(float ms)
 {
@@ -43,7 +43,7 @@ void GunTowerTile::update(float ms)
 {
     timeCounter += ms;
     if (exploding) {
-        for (int i = 1; i < explosionDirections.size(); i++) {
+        for (size_t i = 1; i < explosionDirections.size(); i++) {
 			geometryRenderer.translate(i, explosionDirections[i] * (ms*explosionVelocity / 1000.0f), false);
             /*rotate(i, explosionVelocity*ms/1000, explosionRotationalAxes[i], false);*/
         }
@@ -70,7 +70,7 @@ void GunTowerTile::explode(glm::vec3 dir)
     exploding = true;
     explosionVelocity = randomDistribution(randomEngine) * 10.0f - 5.0f;
 	geometryRenderer.setModelMatricesFromComputed();
-    for (int i = 0; i < geometryRenderer.parent->subObjects.size(); i++) {
+    for (size_t i = 0; i < geometryRenderer.parent->subObjects.size(); i++) {
         // Calculate a random direction to send the subobject in and give it a velocity.
         glm::vec3 randomOffset = glm::normalize(glm::vec3(randomDistribution(randomEngine), randomDistribution(randomEngine), randomDistribution(randomEngine)));
         glm::vec3 result = glm::normalize(dir + randomOffset);

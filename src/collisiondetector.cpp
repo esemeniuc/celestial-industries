@@ -56,7 +56,7 @@ CollisionDetection::CollisionInfo CollisionDetector::getFirstCollision(int id)
 {
     CollisionDetection::CollisionInfo firstCollision;
     firstCollision.collided = false;
-    for (int i = 0; i < collisions[id].size(); i++) {
+    for (size_t i = 0; i < collisions[id].size(); i++) {
         if (!firstCollision.collided || (collisions[id][i].collided && collisions[id][i].time < firstCollision.time)) {
             firstCollision = collisions[id][i];
         }

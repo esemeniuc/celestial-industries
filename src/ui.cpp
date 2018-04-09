@@ -88,14 +88,17 @@ namespace Ui {
 			ImVec2 startClick = ImGui::GetIO().MouseClickedPos[0]; //0 for main mouse button
 			ImVec2 endClick = ImGui::GetMousePos();
 
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f); //make a square box
 			ImVec2 selectionSize = abs(endClick - startClick);
-
 			topLeft = getSelectionBoxStartPos(startClick, endClick);
 			bottomRight = topLeft + selectionSize;
+			ImGui::SetNextWindowSizeConstraints(ImVec2(0, 0), ImVec2(std::numeric_limits<float>::max(),
+																	 std::numeric_limits<float>::max()));
+
+
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f); //make a square box
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0, 0)); //make small
 			ImGui::SetNextWindowPos(topLeft); //window always starts from top left corner
 			ImGui::SetNextWindowSize(selectionSize);
-
 //			std::cout << "start: " << startClick << " end: " << endClick << " size: " << selectionSize << " tl: "
 //					  << topLeft << '\n';
 			ImGui::SetNextWindowBgAlpha(0.3f); // Transparent background
@@ -105,12 +108,13 @@ namespace Ui {
 						 ImGuiWindowFlags_NoMove |
 						 ImGuiWindowFlags_NoSavedSettings |
 						 ImGuiWindowFlags_NoFocusOnAppearing |
-						 ImGuiWindowFlags_NoNav);
+						 ImGuiWindowFlags_NoNav |
+						 ImGuiWindowFlags_NoInputs |
+						 ImGuiWindowFlags_NoScrollbar);
 
 			ImGui::End();
-			ImGui::PopStyleVar(); //must be after end
-
-			UnitManager::selectUnitsInRange(Coord(topLeft), Coord(bottomRight)); //need this for display
+			ImGui::PopStyleVar(); //size
+			ImGui::PopStyleVar(); //square
 		} else if (ImGui::IsMouseDragging(1)) {
 			std::cout << "dragging2\n";
 			std::cout << ImGui::GetMouseDragDelta(1).x << ' ' << ImGui::GetMouseDragDelta(1).y << "\n";
@@ -148,7 +152,22 @@ namespace Ui {
 												 ImGuiWindowFlags_NoMove |
 												 ImGuiWindowFlags_NoTitleBar);
 
+			//need this for display of selected units
+			std::pair<bool, glm::vec3> topLeftTileCoord = World::getTileCoordFromWindowCoords(topLeft.x, topLeft.y);
+			std::pair<bool, glm::vec3> bottomRightTileCoord = World::getTileCoordFromWindowCoords(bottomRight.x,
+																								  bottomRight.y);
+			if (topLeftTileCoord.first && bottomRightTileCoord.first) { //make sure both are valid
+				UnitManager::selectUnitsInRange(topLeftTileCoord.second, bottomRightTileCoord.second);
+//				std::cout << "coord:    " << UnitManager::selectedUnits.size() << "\t|| " <<
+//						  topLeft.x << ' ' << topLeft.y << ' ' <<
+//						  bottomRight.x << ' ' << bottomRight.y << ' ' <<
+//						  '\n';
 
+				std::cout << "selected: " << UnitManager::selectedUnits.size() << "\t|| " <<
+						  topLeftTileCoord.second.x << ' ' << topLeftTileCoord.second.z << ' ' <<
+						  bottomRightTileCoord.second.x << ' ' << bottomRightTileCoord.second.z << ' ' <<
+						  '\n';
+			}
 			if (UnitManager::selectedUnits.size() == 1) {
 				std::shared_ptr<Entity> unit = UnitManager::selectedUnits.front();
 //				ImGui::Text("Unit: %s\n", unit.a);
@@ -172,9 +191,9 @@ namespace Ui {
 			ImGui::SetNextWindowSize(ImVec2(spawnWindowWidth, uiHeight));
 			ImGui::SetNextWindowPos(ImVec2(windowWidth - spawnWindowWidth, windowHeight - uiHeight));
 			ImGui::Begin("Construct Building", nullptr, ImGuiWindowFlags_NoSavedSettings |
-												ImGuiWindowFlags_NoResize |
-												ImGuiWindowFlags_NoCollapse |
-												ImGuiWindowFlags_NoMove);
+														ImGuiWindowFlags_NoResize |
+														ImGuiWindowFlags_NoCollapse |
+														ImGuiWindowFlags_NoMove);
 
 			switch (spawnWindowState) {
 				case SpawnWindowState::SPAWN_SELECTOR: {
@@ -461,7 +480,9 @@ namespace Ui {
 		unsigned char* pixels;
 		int width, height;
 		io.Fonts->GetTexDataAsRGBA32(&pixels, &width,
-									 &height);   // Load as RGBA 32-bits (75% of the memory is wasted, but default font is so small) because it is more likely to be compatible with user's existing shaders. If your ImTextureId represent a higher-level concept than just a GL texture id, consider calling GetTexDataAsAlpha8() instead to save on GPU memory.
+									 &height);
+		// Load as RGBA 32-bits (75% of the memory is wasted, but default font is so small) because it is more likely to be compatible with user's existing shaders.
+		// If your ImTextureId represent a higher-level concept than just a GL texture id, consider calling GetTexDataAsAlpha8() instead to save on GPU memory.
 
 		// Upload texture to graphics system
 		GLint last_texture;

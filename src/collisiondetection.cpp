@@ -163,7 +163,7 @@ namespace CollisionDetection {
         Dy = Dy * theCos - Dx * theSin; Dx = newX;
 
         //  Fail if segment C-D doesn't cross line A-B.
-        if (Cy<0. && Dy<0. || Cy >= 0. && Dy >= 0.) return NO;
+        if ((Cy<0. && Dy<0.) || (Cy >= 0. && Dy >= 0.)) return NO;
 
         //  (3) Discover the position of the intersection point along line A-B.
         ABpos = Dx + (Cx - Dx)*Dy / (Dy - Cy);
