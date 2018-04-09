@@ -3,7 +3,8 @@
 #include "level.hpp"
 #include "logger.hpp"
 #include "particle.hpp"
-#include <fstream>
+#include "coord.hpp"
+
 std::map<Model::MeshType, std::pair<int, float>> Level::tileToCost{
 		{Model::MeshType::HROAD,      {Config::OBSTACLE_COST,            INF}},
 		{Model::MeshType::SAND_1,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},

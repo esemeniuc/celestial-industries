@@ -5,7 +5,7 @@
 #pragma once
 
 #include <vector>
-#include "common.hpp"
+#include "coord.hpp"
 
 enum class UnitState {
 	NONE, IDLE, RECHARGING, LOW_ENERGY, ATTACK, ATTACK_MOVE, MOVE, SCOUT, RETREAT, ACTION

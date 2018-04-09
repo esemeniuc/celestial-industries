@@ -61,6 +61,7 @@ set(PROJ_SOURCES
 		src/building.cpp
 		src/buildingmanager.cpp
 		src/camera.cpp
+		src/coord.cpp
 		src/collisiondetection.cpp
 		src/collisiondetector.cpp
 		src/collisionResolver.cpp

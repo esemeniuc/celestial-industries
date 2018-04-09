@@ -4,13 +4,12 @@
 
 #pragma once
 
-#include "common.hpp"
 #include "global.hpp"
 #include "building.hpp"
 #include "pathfinder.hpp"
+#include "coord.hpp"
 
 #include <array>
-#include <queue>
 
 //assume AI has goal to destroy main control building of player
 /*we do the tree thing like alla suggested

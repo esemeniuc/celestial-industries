@@ -5,11 +5,10 @@
 #include <chrono> //for getting unix time
 
 #include "common.hpp"
+#include <GL/gl3w.h>
 
 // Our stuff
 Logger logger;
-std::random_device rd;     // only used once to initialise (seed) engine
-std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
 
 char separator()
 {

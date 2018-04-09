@@ -1,6 +1,7 @@
 #pragma once
-#include "common.hpp"
+#include "glm/mat4x4.hpp"
 
+#include "common.hpp"
 
 // collision geometries
 struct BoundingBox {

@@ -1,4 +1,5 @@
 #include "renderer.hpp"
+#include <glm/ext.hpp>
 
 Renderer::Renderer(
     std::shared_ptr<Shader> initShader,

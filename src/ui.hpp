@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <GL/gl3w.h> //make sure this comes before any other opengl stuff
-#include "GLFW/glfw3.h"
+#include <GL/gl3w.h> //make sure this comes before any other opengl stuff, use for GLFWwindow, GLFWcursor
+#include "GLFW/glfw3.h" //for GLuint
 #include "imgui.h"
 
 namespace Ui {
