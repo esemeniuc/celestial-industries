@@ -12,9 +12,6 @@
 
 #include "IconsFontAwesome5.h" //for game icons
 
-#include "GLFW/glfw3.h" //put before gl stuff (else break things)
-#include <GL/gl3w.h>
-
 ImVec2 operator+(const ImVec2& a, const ImVec2& b) {
 	return {a.x + b.x, a.y + b.y};
 }
@@ -174,7 +171,7 @@ namespace Ui {
 		{    //spawn selector
 			ImGui::SetNextWindowSize(ImVec2(spawnWindowWidth, uiHeight));
 			ImGui::SetNextWindowPos(ImVec2(windowWidth - spawnWindowWidth, windowHeight - uiHeight));
-			ImGui::Begin("Spawn Unit", nullptr, ImGuiWindowFlags_NoSavedSettings |
+			ImGui::Begin("Construct Building", nullptr, ImGuiWindowFlags_NoSavedSettings |
 												ImGuiWindowFlags_NoResize |
 												ImGuiWindowFlags_NoCollapse |
 												ImGuiWindowFlags_NoMove);
