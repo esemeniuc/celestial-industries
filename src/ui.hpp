@@ -20,9 +20,9 @@ namespace Ui {
 	// OpenGL3 data
 	static char         g_GlslVersion[32] = "#version 150";
 	static GLuint       g_FontTexture = 0;
-	static int          g_ShaderHandle = 0, g_VertHandle = 0, g_FragHandle = 0;
+	static GLuint       g_ShaderHandle = 0, g_VertHandle = 0, g_FragHandle = 0;
 	static int          g_AttribLocationTex = 0, g_AttribLocationProjMtx = 0;
-	static int          g_AttribLocationPosition = 0, g_AttribLocationUV = 0, g_AttribLocationColor = 0;
+	static GLint       g_AttribLocationPosition = 0, g_AttribLocationUV = 0, g_AttribLocationColor = 0;
 	static unsigned int g_VboHandle = 0, g_ElementsHandle = 0;
 
 	//eric's stuff

@@ -82,7 +82,7 @@ namespace Ui {
 		ImGui_ImplGlfwGL3_NewFrame();
 //		ImGui::ShowDemoWindow();
 
-		//TODO: use World::getTileCoordFromWindowCoords() to get selected units
+		//TODO: dont allow pan callback if scrolling
 
 		if (ImGui::IsMouseDragging()) { //for selection window
 			ImVec2 startClick = ImGui::GetIO().MouseClickedPos[0]; //0 for main mouse button
