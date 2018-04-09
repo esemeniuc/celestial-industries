@@ -518,6 +518,7 @@
     <ClCompile Include="..\src\collisiondetection.cpp" />
     <ClCompile Include="..\src\collisiondetector.cpp" />
     <ClCompile Include="..\src\collisionResolver.cpp" />
+    <ClCompile Include="..\src\coord.cpp" />
     <ClCompile Include="..\src\entity.cpp" />
     <ClCompile Include="..\src\camera.cpp" />
     <ClCompile Include="..\src\global.cpp" />
@@ -538,6 +539,7 @@
     <ClCompile Include="..\src\tile.cpp" />
     <ClCompile Include="..\src\ui.cpp" />
     <ClCompile Include="..\src\unit.cpp" />
+    <ClCompile Include="..\src\unitmanager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ext\gl3w\GL\gl3w.h" />
@@ -550,6 +552,7 @@
     <ClInclude Include="..\src\collisionResolver.hpp" />
     <ClInclude Include="..\src\common.hpp" />
     <ClInclude Include="..\src\config.hpp" />
+    <ClInclude Include="..\src\coord.hpp" />
     <ClInclude Include="..\src\entity.hpp" />
     <ClInclude Include="..\src\global.hpp" />
     <ClInclude Include="..\src\level.hpp" />

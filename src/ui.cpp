@@ -618,9 +618,7 @@ namespace Ui {
 		io.SetClipboardTextFn = ImGui_ImplGlfwGL3_SetClipboardText;
 		io.GetClipboardTextFn = ImGui_ImplGlfwGL3_GetClipboardText;
 		io.ClipboardUserData = g_Window;
-#ifdef _WIN32
-		io.ImeWindowHandle = glfwGetWin32Window(g_Window);
-#endif
+
 
 		// Load cursors
 		// FIXME: GLFW doesn't expose suitable cursors for ResizeAll, ResizeNESW, ResizeNWSE. We revert to arrow cursor for those.
