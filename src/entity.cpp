@@ -7,12 +7,12 @@ Entity::Entity() : geometryRenderer(Model::meshRenderers[Model::MeshType::BALL])
 
 Entity::Entity(Model::MeshType geometry) : geometryRenderer(Model::meshRenderers[geometry]) {}
 
-Entity::~Entity() {}
+Entity::~Entity() = default;
 
 //example of using the animate function when overriding Entity
 void Entity::animate(float ms) {
 	attackingCooldown -= ms;
-	if (rigidBody.getAllCollisions().size() == 0) {
+	if (rigidBody.getAllCollisions().empty()) {
 		translate(rigidBody.getVelocity() * ms);
 	} else {
 		CollisionDetection::CollisionInfo collision = rigidBody.getFirstCollision();
