@@ -33,7 +33,7 @@ std::string pathBuilder(std::vector<std::string> parts) {
 #ifdef _WIN32
 		path << "../";
 #endif
-	for (auto part : parts) {
+	for (const auto& part : parts) {
 		path << part << separator();
 	}
 	return path.str();
@@ -44,7 +44,7 @@ std::string pathAppender(std::string base, std::vector<std::string> parts)
 	std::stringstream path;
 	path << base;
 	bool first = true;
-	for (auto part : parts) {
+	for (const auto& part : parts) {
 		if (!first) {
 			path << separator();
 		}
