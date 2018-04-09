@@ -20,7 +20,7 @@ namespace UnitManager {
 
 	void update(double elapsed_ms);
 
-	void selectUnitsInRange(Coord startCorner, Coord endCorner);
+	void selectUnitsInRange(glm::vec3 startCorner, glm::vec3 endCorner);
 
 }
 

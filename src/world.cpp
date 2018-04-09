@@ -154,7 +154,7 @@ bool World::init() {
 	temp1->moveTo(UnitState::MOVE, targetx, targetz);
 
 	startx = 39, startz = 19;
-	auto temp2 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {startx, 0, startz}, GamePieceOwner::AI);
+	auto temp2 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {startx, 0, startz}, GamePieceOwner::PLAYER);
 //	temp2->moveTo(targetx, targetz);
 
 	startx = 39, startz = 1;
@@ -162,7 +162,7 @@ bool World::init() {
 //	temp3->moveTo(UnitState::MOVE, targetx, targetz);
 
 	startx = 20, startz = 20;
-	auto temp4 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {startx, 0, startz}, GamePieceOwner::AI);
+	auto temp4 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {startx, 0, startz}, GamePieceOwner::PLAYER);
 
 	// Example use of targeting units.
 //	AttackManager::registerTargetUnit(temp2, temp1);
@@ -396,8 +396,8 @@ std::pair<bool, glm::vec3> World::getTileCoordFromWindowCoords(double xpos, doub
 	int framebufferWidth, framebufferHeight;
 	glfwGetFramebufferSize(m_window, &framebufferWidth, &framebufferHeight);
 
-	int computedFbX = int((xpos / Global::windowWidth * framebufferWidth) + 0.5);
-	int computedFbY = int((ypos / Global::windowHeight * framebufferHeight) + 0.5);
+	double computedFbX = (xpos / Global::windowWidth) * framebufferWidth;
+	double computedFbY = (ypos / Global::windowHeight) * framebufferHeight;
 
 	glm::vec2 windowCoordinates{computedFbX, computedFbY};
 	glm::vec2 viewport{framebufferWidth, framebufferHeight};
@@ -428,6 +428,8 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 //		printf("x: %f z: %f\n", result.second.x, result.second.z);
 		selectedTileCoordinates.colCoord = int(result.second.x + 0.5);
 		selectedTileCoordinates.rowCoord = int(result.second.z + 0.5);
+	} else{
+		printf("bad tile selector calculation: x: %f z: %f\n", xpos,ypos);
 	}
 }
 
@@ -441,28 +443,28 @@ void World::on_window_resize(GLFWwindow* window, int width, int height) {
 }
 
 void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods) {
-	glm::vec3 coords = {selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord};
-	if (coords.x < 0 || coords.x + 1 > Global::levelWidth ||
-		coords.z < 0 || coords.z + 1 > Global::levelHeight)
-		return;
-	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-
-		level.placeTile(Model::MeshType::GUN_TURRET, coords);
-		logger(LogLevel::INFO) << "Right click detected " << '\n';
-	}
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-
-
-		if (m_dist(m_rng) < 0.5) {
-			Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, coords, GamePieceOwner::PLAYER);
-		} else {
-			Unit::spawn(Model::MeshType::FRIENDLY_FIRE_UNIT, coords, GamePieceOwner::PLAYER);
-		}
-		logger(LogLevel::INFO) << "Left click detected " << '\n';
-	}
-	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
-		for (const auto& entity : Global::playerUnits) {
-			entity->rigidBody.setVelocity((coords - entity->rigidBody.getPosition()) / 5000.0f);
-		}
-	}
+//	glm::vec3 coords = {selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord};
+//	if (coords.x < 0 || coords.x + 1 > Global::levelWidth ||
+//		coords.z < 0 || coords.z + 1 > Global::levelHeight)
+//		return;
+//	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+//
+//		level.placeTile(Model::MeshType::GUN_TURRET, coords);
+//		logger(LogLevel::INFO) << "Right click detected " << '\n';
+//	}
+//	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+//
+//
+//		if (m_dist(m_rng) < 0.5) {
+//			Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, coords, GamePieceOwner::PLAYER);
+//		} else {
+//			Unit::spawn(Model::MeshType::FRIENDLY_FIRE_UNIT, coords, GamePieceOwner::PLAYER);
+//		}
+//		logger(LogLevel::INFO) << "Left click detected " << '\n';
+//	}
+//	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
+//		for (const auto& entity : Global::playerUnits) {
+//			entity->rigidBody.setVelocity((coords - entity->rigidBody.getPosition()) / 5000.0f);
+//		}
+//	}
 }
