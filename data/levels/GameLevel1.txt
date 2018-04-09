@@ -1,19 +1,19 @@
-TTTTTTTTTTTTTTTTTTTTTTTTTT#######################W##################################
+TTTTTTTTTTTTTTTTTTTTTTTTTT#######################WWWW###############################
 TTTTTTTTTTTTRRRTTTTTTTTTT.......................TWWWWTTGGGGGGGGGGGGGGGGGGGGGGGGGGGG#
 TTTTRRTRRRRRRTTTTTTTTTT ........................TWWWWTTGGGRRGGGGGGGGGGGRRRGGGGGGGGG#
 TTTTTTYYTTTYTTTTTTTTT   .........Y.............TTWWWTTGGGGRGGGGYYYYGGGGRGGGYYYYGGGG#
 TTTTTTTTTRTTTTTTTTTT   ........YYYY............TWWWTTGGGGGGRGGGGYYYGGGGGGGGYYYYGGGG#
-TTTTYTTTRRTTTTTTTTT   .........YYYRR..........TTWW TGGGGGGGGGGGGYYYGGGGGGGGGGGGGGGG#
+TTTTYTTTRRTTTTTTTTT   .........YYYRR..........TTWWWTGGGGGGGGGGGGYYYGGGGGGGGGGGGGGGG#
 TTTTYYTTRTTTTTTTTT  ...........YYRR...........TWWWTTGGGGGGGGGGGGYYYGGGGGGGGGGTTTTTT#
 TTTTYTTRRTTTTTTT   ............YYRR..........TTWWWTGGGGYYYGGGGGGGGGGGGGGTTTTTTTWWWW#
 TTTTYTTRTTTTTTTT  ...........................TWWWWTGGGGYYYGGGGGGGGGTTTTTTWWWWWWWWWW#
 TTTTYTRRTTTTTT   ............................TWWWWTGGGGYYGGGGTTTTTTTWWWWWWWWWWWWWWW#
 TYTTTRRTTTTTT   .............................TWWWWTTTTTTTTTTTTWWWWWWWWWWWWWWWWWWWWW#
-TTTTTRTTTTTT   ..............................TWWWWTWWWWWWWWWWWWWWWWWWWWWWWTTTTTTTTT#
-TTTTTRTTTTTT  .........PPP...................TWWWWTWWWWWWWWWWWWWWWWTTTTTTTTGGGGGGGG#
+TTTTTRTTTTTT   ..............................TWWWWWWWWWWWWWWWWWWWWWWWWWWWWTTTTTTTTT#
+TTTTTRTTTTTT  .........PPP...................TWWWWWWWWWWWWWWWWWWWWWTTTTTTTTGGGGGGGG#
 TYTYTTTTTTT   ...............................TWWWWWWGWWWWWWWWTTTTTTTGGGGGGGGGGGGGGG#
 TTTTYTTTTT   ...............................TTWWWWWWWWTTTTTTTTGGGGGGGGGGGGGGGGGGGGG#
-TTTTTYTTTT  ............YYRR................T WWWTTTTTTGGGGGGGGGGGGGGGGGGGGGGGGGGGG#
+TTTTTYTTTT  ............YYRR................TWWWWTTTTTTGGGGGGGGGGGGGGGGGGGGGGGGGGGG#
 TTTRTYTTT  .............YRRR...............TTWWWWTTGGGGGGGGGGGGGGGGRRRRRRRGGGGGGGGG#
 TTTRTTTTT .............YYR................TTWWWWTTGG GGGGGGGGRRRRRRGGGGGGRRRGGGGGGG#
 TTTTTTTT  . ...........YYR...............TTWWWWTTT     GGGGGGGGGRGGGGGGGGGRRRGGGGGG#
@@ -25,12 +25,12 @@ TTTRTT    ................RR...........TWWWWTT       YY  RR   GVVVGT,,,,GGGGGGGG
 TTTRTT    ..............R..............TWWWWTT       YYY RR   GVVVGT,,,,,,,GGGGGGGG#
 TTTTTT     .............RRR............TWWWWTT   RR  YYY R    GVVVGT,,,,,,,,GGGGGGG#
 TTTTTT     ............................TWWWWTT   RR  YYYY     GVVVGT,,,,,,,,GGGGGGG#
-TTTT      .............................TWWWWT    RR  YYYYYY   GVVVGT,,,,,,,,G,GGGGG#
+TTTT      .............................TWWWWT    RR  YYYYYY   GVVVGT,,,,,,,,GGGGGGG#
 TTT  ..................................TWWWWT     R  YYYYYY   GVVVGT,,,,,,,,GGGGGGG#
 TT  ......................... '''''''''TWWWWT     R  YYYYYY   GVVVGT,,,,,,,,,,,,,,,#
 #   ...........Y............. ''''''''TTWWWWT    RR   YYYYY   GVVVGT,,,,,,,,,,,,,,,#
 #  .........Y.YY............ ''''''''TTWWWWWT    R RR YYYY    GVVVGT,,,,,,,,,,,,,,,#
-#  .........Y..Y........... '''''''''T WWWWTT       R YYY     GVVVGT,,,,,RR,,,,,,,,#
+#  .........Y..Y........... '''''''''TWWWWWTT       R YYY     GVVVGT,,,,,RR,,,,,,,,#
 #  ........YYRR.......... .''''''''''TWWWWTT        RYYYRR    GVVVGT,,,,RRR,,,,,,,,#
 #  .........RR............ ''''''''''TWWWWT         YYY       GVVVGT,,,,RRR,,,,,,,,#
 # '.........RR..........'''''''''''''TWWWTT        YYYY R     GVVVGT,,,,RR,,,,,,,,,#
@@ -50,7 +50,7 @@ TT  ......................... '''''''''TWWWWT     R  YYYYYY   GVVVGT,,,,,,,,,,,,
 # ''''YRR''''''';;;;;;;;;;;;;;;;; TTWWWWT  ;;;;;;;;;;;;;;;;;;TGVVVGT,,,,,,,,,,,,,,,#
 # ''''YRR''''''';;;;;;;;;;;;;;;;; TTWWWWT  ;;;;;;;;YYYRR;;;;;TGVVVGT,,,,,,RR,Y,,,,,#
 # ''''RR'''''''';;;;;;;;;;;;;;;;; TTWWWWT  ;;;;;;;YYRRRR;;;;;TGVVVGT,,,,,,,RYY,,,,,#
-# '''''''''''''';;;;;;;;;;;;;;;;; TTWWW T  ;;;;;;;;;;;;;;;;;;TGVVVGT,,,,,,RRYY,,,,,#
+# '''''''''''''';;;;;;;;;;;;;;;;; TTWWWWT  ;;;;;;;;;;;;;;;;;;TGVVVGT,,,,,,RRYY,,,,,#
 # '''''''''''''';;;;;;RRRRR;;;;;; TTWWWWT  ;;;;;;;;;;;;;;;;;;TGVVVGT,,,,,,RRY,,,,,,#
 # '''''''''''''';;;;;;RYY;;;;;;;; TTWWWWT  ;;;;;;;;;Y;;;;;;;;TGVVVGT,,,,,,RRY,,,,,,#
 # ''''''Y''''''';;;;;RRYY;;;;;;;;;TTWWWWT  ;;;;;;;RRY;;;;;;;;TGVVVGT,,,,,,R,,, ,,,,#
@@ -60,10 +60,10 @@ TT  ......................... '''''''''TWWWWT     R  YYYYYY   GVVVGT,,,,,,,,,,,,
 # '''''YY''''''';;;;;;;Y;;;;;;;;;;TTTWWWWT ;;;;;;RYYYY;;;;;;;TGVVVGT,,,,,,,,,,,,,,,#
 # '''''''''''''';;;;;;;;;;;;;;;;;;TTTWWWWT ;;;;;;;YY;;;;;;;;;TGVVVGT,,,,,,,,,,,,,,,#
 # '''''''''''''';;;;;;;;;;;;;;;;;;TTTWWWWT ;;;;;;;YY;;;;;;;;;TGVVVGT,,,,,,,,,,,,,,,#
-# '''''''''''''';;;;;;;;;;;;;;;;;;T WWWWTT ;;;;;;;Y;;;;;;;;;;TGVVVGT,,,,,,,,,,,,,,,#
-# '''''''''''''';;;;;;;;;;;;;;;;TTTWWWW T ;;;;;;;;;;;;;;;;;;;TGVVVGT,,,,,,,,,,,,,,,#
+# '''''''''''''';;;;;;;;;;;;;;;;;;TWWWWWTT ;;;;;;;Y;;;;;;;;;;TGVVVGT,,,,,,,,,,,,,,,#
+# '''''''''''''';;;;;;;;;;;;;;;;TTTWWWWWT ;;;;;;;;;;;;;;;;;;;TGVVVGT,,,,,,,,,,,,,,,#
 # '''''''''''''';;;;;;;;;;;;;;;TTTWWWWWTT ;;;;;;;;;;;;;;;;;;;TGVVVGT,,,,,,,,,,,,,,,#
-# '''''''''''''';;;;;;;;;;;;;;;TWWWWW TT  ;;;;;;;;;;;;;;;;;;;TGVVVGT,,,,,,,,,,,,,,,#
+# '''''''''''''';;;;;;;;;;;;;;;TWWWWWWTT  ;;;;;;;;;;;;;;;;;;;TGVVVGT,,,,,,,,,,,,,,,#
 # '''''''''''''';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;TGVVVGT,,,,,,,,Y,,,,,,#
 # ''''''''''''TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTGVVVGT,,,,,R,YY,,,,,,#
 # ''''''''''''GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGVVVGT,,,,,RYYY,,,,,,#
@@ -75,10 +75,10 @@ TT  ......................... '''''''''TWWWWT     R  YYYYYY   GVVVGT,,,,,,,,,,,,
 # '''RYR''''''GVVVG                         ,,,,,,             ,,,,,,,,,,,',,,,,,,,#
 # '''R'R''''''GVVVG                         ,,,,,,     YYYYYY  ,,,,,,,,,,,R,,,,,,,,#
 # '''RR'''''''GVVVG     RRRR       TTWWWWTT ,,,,,,     YYYYRY  ,,,,,,,,,,,R,,,,,,,,#
-# ''''''''''''GVVVG     RRRR        TWWWW TT,,,,,,     YYYYYY  ,,,,,,,,,R,,,,,,,,,,#
+# ''''''''''''GVVVG     RRRR        TWWWWWTT,,,,,,     YYYYYY  ,,,,,,,,,R,,,,,,,,,,#
 # ''''''''''''GVVVG   YY  RR        TTWWWW T,,,,,,      YYYYYY ,,,,,,,,R,,,,,,,,,,,#
 # ''''''''''''GVVVG    Y  R          TWWWWWT,,,,,,        YYY  ,,,,,,,,,,,,,,,,,,,,#
 # ''''''''''''GVVVG    Y              TWWWWWT ,,,,             ,,,,,,,,,,,,,,,,,,,,#
 # ''''''''''''GVVVG                    TWWWWTTT,,,             ,,,,,,,,,,,,,,,,,,,,#
-# ''''''''''''GVVVG                     TWWWW T,,,             ,,,,,,,,,,,,,,,,,,,,#
+# ''''''''''''GVVVG                     TWWWWWT,,,             ,,,,,,,,,,,,,,,,,,,,#
 ####################################################################################
