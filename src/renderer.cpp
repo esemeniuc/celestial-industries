@@ -1,4 +1,5 @@
 #include "renderer.hpp"
+#include <glm/ext.hpp>
 
 Renderer::Renderer(
     std::shared_ptr<Shader> initShader,
@@ -110,7 +111,7 @@ SubObject Renderer::loadSubObject(SubObjectSource source)
 void Renderer::deleteInstance(unsigned int id)
 {
 	instances[id].shouldDraw = false;
-	for (int i = 0; i < subObjects.size(); i++) {
+	for (size_t i = 0; i < subObjects.size(); i++) {
 		instancesData.modelMatrices[subObjects.size()*id + i] = glm::mat4(0.0f); // Hacky way to make the whole object just a dimensionless point
 	}
 }

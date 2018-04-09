@@ -4,11 +4,6 @@
 #include "renderer.hpp"
 #include "collisiondetector.hpp"
 
-// glfw
-#define NOMINMAX
-#include <gl3w.h>
-#include <GLFW/glfw3.h>
-
 namespace Model {
 
 		enum MeshType { //avoid enum class to avoid casting to integers

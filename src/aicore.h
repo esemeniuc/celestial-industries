@@ -139,6 +139,6 @@ namespace aicore
 		virtual bool getBranch();
 	};
 
-}; // end of namespace
+} // end of namespace
 
 #endif // AICORE_DECTREE_H

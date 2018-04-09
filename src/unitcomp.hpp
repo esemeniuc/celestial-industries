@@ -5,10 +5,10 @@
 #pragma once
 
 #include <vector>
-#include "common.hpp"
+#include "coord.hpp"
 
 enum class UnitState {
-	NONE, IDLE, RECHARGING, LOW_ENERGY, ATTACK, ATTACK_MOVE, MOVE, RETREAT, ACTION
+	NONE, IDLE, RECHARGING, LOW_ENERGY, ATTACK, ATTACK_MOVE, MOVE, SCOUT, RETREAT, ACTION
 };
 
 
@@ -25,9 +25,11 @@ public:
 	int currentEnergyLevel;
 	UnitState state;
 	std::vector<Coord> targetPath;
+	Coord targetDest;
+	double targetPathStartTimestamp = 0; //needed to get delta time
+
 	glm::vec3 velocity;
 	glm::vec3 nextPos;
-	double targetPathStartTimestamp; //needed to get delta time
 
 
 	UnitComp() : initialEnergyLevel(50),
@@ -57,11 +59,6 @@ public:
 								 state(_state) {
 	}
 
-	void isLowHealth()
-	{
-		
-	}
-
 	void update() {
 
 //		if (Health == 100 && triggerL == false && triggerR == false && triggerM
@@ -84,16 +81,4 @@ public:
 			   targetPath == rhs.targetPath &&
 			   targetPathStartTimestamp == rhs.targetPathStartTimestamp;
 	}
-};
-
-//https://softwareengineering.stackexchange.com/questions/253704/when-is-type-testing-ok
-class RangedUnit : public UnitComp {
-
-public:
-
-	RangedUnit() : UnitComp(100, 50, 10, 6, 1, 1, 6, 50,
-							UnitState::IDLE) {
-		logger(LogLevel::DEBUG) << "ranged unit built" << Logger::endl;
-	}
-
 };

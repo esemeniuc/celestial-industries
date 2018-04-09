@@ -1,6 +1,7 @@
 // internal
 #include "common.hpp"
 #include "world.hpp"
+#include "ui.hpp"
 
 #define GL3W_IMPLEMENTATION
 
@@ -8,25 +9,25 @@
 
 // stlib
 #include <chrono>
-#include "global.hpp"
-
 using Clock = std::chrono::high_resolution_clock;
+void renderDrawData(ImDrawData* draw_data);
 
 // Entry point
 int main(int argc, char* argv[]) {
 	logger(LogLevel::DEBUG) << "Started game\n";
 	// Initializing world (after renderer.init().. sorry)
-	if (!world.init()) {
+	if (!World::init()) {
 		// Time to read the error message
 		logger(LogLevel::ERR) << "Press any key to exit" << '\n';
 		std::cin.get();
 		return EXIT_FAILURE;
 	}
 
-	auto t = Clock::now();
+	Ui::imguiSetup(World::m_window);
 
+	auto t = Clock::now();
 	// variable timestep loop.. can be improved (:
-	while (!world.is_over()) {
+	while (!World::is_over()) {
 		// Processes system messages, if this wasn't present the window would become unresponsive
 		glfwPollEvents();
 
@@ -40,11 +41,13 @@ int main(int argc, char* argv[]) {
 			elapsed_milliSec = 1000 / 60.0; //pretend we continue to next frame at 60fps
 		}
 
-		world.update(elapsed_milliSec);
-		world.draw();
+		World::update(elapsed_milliSec);
+		World::draw();
+		Ui::imguiGenerateScreenObjects();
 	}
 
-	world.destroy();
+	World::destroy();
 
 	return EXIT_SUCCESS;
 }
+

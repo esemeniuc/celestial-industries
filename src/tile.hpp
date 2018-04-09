@@ -14,6 +14,7 @@ class Tile
 {
 public:
     Tile(Model::MeshType geometry);
+    virtual ~Tile();
 	virtual void update(float ms);
 	void translate(glm::vec3 v);
 	void setPosition(glm::vec3 v);

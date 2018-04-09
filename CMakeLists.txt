@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 project(proj)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 # where to look for cmake modules
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_HOME_DIRECTORY}/cmake_modules)
@@ -18,7 +18,6 @@ if (CCACHE_PROGRAM)
 	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
 endif ()
 
-
 set(CUSTOM_COMPILE_FLAGS
 		-Wall
 		-Wpedantic
@@ -33,10 +32,12 @@ set(CUSTOM_COMPILE_FLAGS
 set(CUSTOM_INCLUDE_DIRS
 		src
 		src/unit
+		ext/iconFont
+		ext/imgui
 		ext/gl3w
 		ext/gl3w/GL
 		ext/stb_image
-		${SDL2_INCLUDE_DIRS}
+		${SDL2_INCLUDE_DIR}
 		${SDL2_MIXER_INCLUDE_DIRS}
 		)
 
@@ -45,16 +46,22 @@ set(CUSTOM_INCLUDE_LIBS
 		glfw
 		glm
 		${CMAKE_DL_LIBS}
-		${SDL2_LIBRARIES}
+		${SDL2_LIBRARY}
 		${SDL2_MIXER_LIBRARIES}
 		)
 
 set(PROJ_SOURCES
 		ext/gl3w/GL/gl3w.cpp
+		ext/imgui/imgui.cpp
+		ext/imgui/imgui_draw.cpp
+#		ext/imgui/imgui_demo.cpp
 		src/aicomp.cpp
 		src/aimanager.cpp
+		src/attackManger.cpp
 		src/building.cpp
+		src/buildingmanager.cpp
 		src/camera.cpp
+		src/coord.cpp
 		src/collisiondetection.cpp
 		src/collisiondetector.cpp
 		src/collisionResolver.cpp
@@ -77,34 +84,29 @@ set(PROJ_SOURCES
 		src/tile.cpp
 		src/world.cpp
 		src/unitcomp.cpp
-		src/unitmanager.cpp src/unitmanager.hpp
-		src/unit.cpp src/unit.hpp
-		src/building.cpp src/building.hpp
-		src/attackManger.cpp src/attackManger.hpp
-		src/buildingmanager.cpp src/buildingmanager.hpp
-		src/aicore.cpp src/aicore.h)
+		src/unitmanager.cpp
+		src/unit.cpp
+		src/aicore.cpp
+		src/ui.cpp)
 
 add_library(libproj ${PROJ_SOURCES})
 target_compile_options(libproj PUBLIC ${CUSTOM_COMPILE_FLAGS})
 if (APPLE)
 	target_link_libraries(libproj PUBLIC ${CUSTOM_INCLUDE_LIBS} "-framework CoreFoundation")
-else()
+else ()
 	target_link_libraries(libproj PUBLIC ${CUSTOM_INCLUDE_LIBS})
 endif ()
 target_include_directories(libproj PUBLIC ${CUSTOM_INCLUDE_DIRS})
+
+
+add_executable(proj src/main.cpp) #main.cpp gets compile flags through PUBLIC flag of libproj
+target_link_libraries(proj libproj)
+
 
 set(TEST_SUITE_SOURCES
 		test/example.cpp
 		test/genericunit_test.cpp
 		)
-
-add_executable(proj src/main.cpp) #main.cpp gets compile flags through PUBLIC flag of libproj
-
-
-
-target_link_libraries(proj libproj)
-
-
 # Prepare "Catch" library for other executables
 set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/catch2/single_include)
 add_library(Catch INTERFACE)

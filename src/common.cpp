@@ -2,8 +2,10 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <chrono> //for getting unix time
 
 #include "common.hpp"
+#include <GL/gl3w.h>
 
 // Our stuff
 Logger logger;
@@ -31,7 +33,7 @@ std::string pathBuilder(std::vector<std::string> parts) {
 #ifdef _WIN32
 		path << "../";
 #endif
-	for (auto part : parts) {
+	for (const auto& part : parts) {
 		path << part << separator();
 	}
 	return path.str();
@@ -42,7 +44,7 @@ std::string pathAppender(std::string base, std::vector<std::string> parts)
 	std::stringstream path;
 	path << base;
 	bool first = true;
-	for (auto part : parts) {
+	for (const auto& part : parts) {
 		if (!first) {
 			path << separator();
 		}
@@ -85,10 +87,17 @@ bool gl_has_errors()
         case GL_INVALID_FRAMEBUFFER_OPERATION:
             error_str = "INVALID_FRAMEBUFFER_OPERATION";
             break;
+		default:
+			break;
         }
 
         logger(LogLevel::DEBUG) << "OpenGL: " << error_str << '\n';
         error = glGetError();
     }
     return true;
+}
+
+long getUnixTime() {
+	return std::chrono::duration_cast<std::chrono::seconds>(
+			std::chrono::system_clock::now().time_since_epoch()).count();
 }
