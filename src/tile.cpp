@@ -15,6 +15,8 @@
 
 Tile::Tile(Model::MeshType geometry) : geometryRenderer(Model::meshRenderers[geometry]) {}
 
+Tile::~Tile() {}
+
 void Tile::update(float ms)
 {
     // Do nothing

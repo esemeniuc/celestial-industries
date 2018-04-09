@@ -7,6 +7,8 @@ Entity::Entity() : geometryRenderer(Model::meshRenderers[Model::MeshType::BALL])
 
 Entity::Entity(Model::MeshType geometry) : geometryRenderer(Model::meshRenderers[geometry]) {}
 
+Entity::~Entity() {}
+
 //example of using the animate function when overriding Entity
 void Entity::animate(float ms) {
 	attackingCooldown -= ms;

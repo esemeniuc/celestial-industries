@@ -28,7 +28,7 @@ public:
 
 	Entity(Model::MeshType geometry);
 
-
+	virtual ~Entity();
 	// functions
 	virtual void animate(float ms);
 
@@ -113,7 +113,7 @@ public:
 	unsigned int turretIndex;
 	float turretAngle;
 
-	PivotingGunEntity(Model::MeshType geometry, unsigned int turretIndex) : turretIndex(turretIndex), Entity(geometry) {};
+	PivotingGunEntity(Model::MeshType geometry, unsigned int turretIndex) : Entity(geometry), turretIndex(turretIndex) {};
 
 	void animate(float ms) override;
 };

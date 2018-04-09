@@ -138,11 +138,11 @@ namespace CollisionDetection {
         };
 
         //  Fail if either line segment is zero-length.
-        if (Ax == Bx && Ay == By || Cx == Dx && Cy == Dy) return NO;
+        if ((Ax == Bx && Ay == By) || (Cx == Dx && Cy == Dy)) return NO;
 
         //  Fail if the segments share an end-point.
-        if (Ax == Cx && Ay == Cy || Bx == Cx && By == Cy
-            || Ax == Dx && Ay == Dy || Bx == Dx && By == Dy) {
+        if ((Ax == Cx && Ay == Cy) || (Bx == Cx && By == Cy) ||
+            (Ax == Dx && Ay == Dy) || (Bx == Dx && By == Dy)) {
             return NO;
         }
 
@@ -152,7 +152,7 @@ namespace CollisionDetection {
         Dx -= Ax; Dy -= Ay;
 
         //  Discover the length of segment A-B.
-        distAB = sqrt(Bx*Bx + By * By);
+        distAB = sqrtf(Bx*Bx + By * By);
 
         //  (2) Rotate the system so that point B is on the positive X axis.
         theCos = Bx / distAB;
