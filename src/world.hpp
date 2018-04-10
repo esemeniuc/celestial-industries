@@ -47,6 +47,9 @@ namespace World {
 	extern Level level;
 	extern Skybox m_skybox;
 
+	// music
+	extern Mix_Music* m_background_music;
+
 	// Particle things
 	extern std::shared_ptr<Shader> particleShader;
 

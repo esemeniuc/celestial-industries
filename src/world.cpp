@@ -39,6 +39,9 @@ namespace World {
 	// Particle things
 	std::shared_ptr<Shader> particleShader;
 
+	// music
+	Mix_Music* m_background_music;
+
 	// C++ rng
 	std::default_random_engine m_rng = std::default_random_engine(std::random_device()());
 	std::uniform_real_distribution<float> m_dist; // default 0..1
@@ -90,15 +93,37 @@ bool World::init() {
 
 	//-------------------------------------------------------------------------
 	// Loading music and sounds
-	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-		logger(LogLevel::ERR) << "Failed to initialize SDL Audio\n";
+	if (SDL_Init(SDL_INIT_AUDIO) < 0)
+	{
+		logger(LogLevel::ERR) << "Failed to initialize SDL Audio\n";		
 		return false;
 	}
 
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
-		logger(LogLevel::ERR) << "Failed to open audio device\n";
+	// load support for the OGG audio format
+	int flags = MIX_INIT_OGG;
+	int initted = Mix_Init(flags);
+	if (initted&flags != flags) {
+		logger(LogLevel::ERR) << "Mix_Init: Failed to init required ogg support!\n";
+		logger(LogLevel::ERR) << "Mix_Init: %s\n", Mix_GetError();
+	}
+
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
+	{
+		logger(LogLevel::ERR) << "Failed to open audio device";
 		return false;
 	}
+
+	m_background_music = Mix_LoadMUS(audio_path("game_sound_track.ogg"));
+	
+	if (m_background_music == nullptr)
+	{
+		logger(LogLevel::ERR) << "Failed to load sounds, make sure the data directory is present";
+		return false;
+	}
+
+	// Playing background music undefinitely
+	Mix_PlayMusic(m_background_music, -1);
+	logger(LogLevel::DEBUG) << "Loaded music";
 
 	// setup skybox
 	if (!loadSkybox("skybox.obj", "skybox")) {
@@ -213,6 +238,10 @@ void World::destroy() {
 	Mix_CloseAudio();
 	m_skybox.destroy();
 	glfwDestroyWindow(m_window);
+
+	// force a quit
+	while (Mix_Init(0))
+		Mix_Quit();
 }
 
 // Update our game world
