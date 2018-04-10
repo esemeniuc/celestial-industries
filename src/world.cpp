@@ -130,7 +130,7 @@ bool World::init() {
 		logger(LogLevel::ERR) << "Failed to initialize renderers\n";
 	}
 
-	int windowWidth,windowHeight;
+	int windowWidth, windowHeight;
 	glfwGetWindowSize(m_window, &windowWidth, &windowHeight);
 	Global::windowWidth = static_cast<size_t>(windowWidth);
 	Global::windowHeight = static_cast<size_t>(windowHeight);
@@ -213,6 +213,7 @@ void World::destroy() {
 	Mix_CloseAudio();
 	m_skybox.destroy();
 	glfwDestroyWindow(m_window);
+	glfwTerminate();
 }
 
 // Update our game world
@@ -428,8 +429,8 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 //		printf("x: %f z: %f\n", result.second.x, result.second.z);
 		selectedTileCoordinates.colCoord = int(result.second.x + 0.5);
 		selectedTileCoordinates.rowCoord = int(result.second.z + 0.5);
-	} else{
-		printf("bad tile selector calculation: x: %f z: %f\n", xpos,ypos);
+	} else {
+		printf("bad tile selector calculation: x: %f z: %f\n", xpos, ypos);
 	}
 }
 
