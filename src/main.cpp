@@ -14,7 +14,7 @@ using Clock = std::chrono::high_resolution_clock;
 void gameLoop() {
 	auto t = Clock::now();
 	// variable timestep loop.. can be improved (:
-	while (!World::is_over()) {
+	while (!World::is_over() && Global::gameState == GameState::PLAY) {
 		// Calculating elapsed times in milliseconds from the previous iteration
 		auto now = Clock::now();
 		double elapsed_milliSec = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
 		switch (Global::gameState) {
 			case GameState::START_MENU: {
 				printf("menu\n");
-				Ui::imguiDrawGameLaunchMenu(); //once this finishes we draw the world
+				Ui::imguiDrawLaunchMenu(); //once this finishes we draw the world
 				break;
 			}
 			case GameState::PLAY: {
@@ -68,6 +68,7 @@ int main(int argc, char* argv[]) {
 			}
 			case GameState::PAUSED: {
 				//draw game pause menu
+				Ui::imguiDrawPauseMenu(); //once this finishes we draw the world
 				break;
 			}
 			case GameState::QUIT: {

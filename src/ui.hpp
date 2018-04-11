@@ -47,7 +47,9 @@ namespace Ui {
 
 	void imguiSetup(); //load imgui bits
 
-	void imguiDrawGameLaunchMenu(); //game launch menu
+	void imguiDrawLaunchMenu(); //game launch menu
+
+	void imguiDrawPauseMenu(); //game launch menu
 
 	void imguiGenerateScreenObjects(); //main ui
 

@@ -322,7 +322,7 @@ namespace Ui {
 	}
 
 
-	void imguiDrawGameLaunchMenu() {
+	void imguiDrawLaunchMenu() {
 // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
 		// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
 		// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
@@ -352,6 +352,46 @@ namespace Ui {
 			glfwSwapBuffers(g_Window);
 		}
 	}
+
+	void imguiDrawPauseMenu() {
+// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
+		// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
+		// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
+		// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+		while (Global::gameState == GameState::PAUSED) {
+			glfwPollEvents();
+			ImGui_ImplGlfwGL3_NewFrame();
+
+
+			ImGui::Begin("Pause Menu");
+			ImGui::Text("Continue playing?");
+			if (ImGui::Button("Resume")) {
+				Global::gameState = GameState::PLAY;
+			}
+
+			if (ImGui::Button("Quit")) {
+				Global::gameState = GameState::QUIT;
+			}
+
+			if (ImGui::GetIO().KeysDown[GLFW_KEY_ESCAPE]) {
+				Global::gameState = GameState::PLAY;
+			}
+
+			ImGui::End();
+
+
+			// Rendering
+			int display_w, display_h;
+			glfwGetFramebufferSize(g_Window, &display_w, &display_h);
+			glViewport(0, 0, display_w, display_h);
+			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+			glClear(GL_COLOR_BUFFER_BIT);
+			ImGui::Render();
+			ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+			glfwSwapBuffers(g_Window);
+		}
+	}
+
 
 	GLFWwindow* getWindow() {
 		return g_Window;

@@ -345,8 +345,13 @@ void World::on_key(GLFWwindow* window, int key, int scancode, int action, int mo
 	}
 
 	// File saving
-	if (action == GLFW_RELEASE && key == GLFW_KEY_P) {
+	if (action == GLFW_RELEASE && key == GLFW_KEY_O) {
 		level.save("savedLevel.txt");
+	}
+
+	// File saving
+	if (action == GLFW_PRESS && key == GLFW_KEY_P) {
+		Global::gameState = GameState::PAUSED;
 	}
 
 	// Tile selection controls:
