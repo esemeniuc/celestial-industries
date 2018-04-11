@@ -2,6 +2,7 @@
 // Created by eric on 3/16/18.
 //
 
+#include <complex>
 #include "unitmanager.hpp"
 
 namespace UnitManager {
@@ -78,25 +79,54 @@ namespace UnitManager {
 			   entity->getPosition().z <= rowMax;
 	}
 
+
+	//geometry stuff
+	typedef std::complex<double> pt;
+	typedef std::vector<pt> pol;
+
+	double cp(const pt& a, const pt& b) { return imag(conj(a) * b); }
+
+	double dp(const pt& a, const pt& b) { return real(conj(a) * b); }
+
+	bool pt_in_polygon(const pt& p, const pol& v) {
+		double res = 0;
+		for (size_t i = v.size() - 1, j = 0; j < v.size(); i = j++)
+			res += atan2(cp(v[i] - p, v[j] - p), dp(v[i] - p, v[j] - p));
+		return abs(res) > 1;
+	} // will be either 2*PI or 0
+
+
 //highlight gets only friendly units, point click gets both friendly and enemy units
 //since player might want to inspect enemy unit
-	void selectUnitsInRange(glm::vec3 startCorner, glm::vec3 endCorner) {
-		selectedUnits.clear();
+	std::vector<std::shared_ptr<Entity>>
+	getUnitsInRange(glm::vec3 topLeft, glm::vec3 topRight, glm::vec3 bottomLeft, glm::vec3 bottomRight) {
+		std::vector<std::shared_ptr<Entity>> returnUnits;
 
 		//add enemy units if just a point click
-		if (Coord::l1Norm(startCorner, endCorner) < Config::POINT_CLICK_DISTANCE_THRESHOLD) {
+		if (Coord::l1Norm(topLeft, bottomRight) < Config::POINT_CLICK_DISTANCE_THRESHOLD) {
 			for (const auto& aiUnit : Global::aiUnits) {
-				if (isWithinBounds(aiUnit, startCorner, endCorner)) { //start or end works since it is just a point
-					selectedUnits.push_back(aiUnit);
+				if (isWithinBounds(aiUnit, topLeft, bottomRight)) { //start or end works since it is just a point
+					returnUnits.push_back(aiUnit);
 				}
 			}
-
 		}
 
 		for (const auto& playerUnit : Global::playerUnits) {
-			if (isWithinBounds(playerUnit, startCorner, endCorner)) {//start or end works since it is just a point
-				selectedUnits.push_back(playerUnit);
+			pt playerUnitPos{playerUnit->getPosition().x, playerUnit->getPosition().z};
+			pt topLeftP{topLeft.x, topLeft.z};
+			pt topRightP{topRight.x, topRight.z};
+			pt bottomLeftP{bottomLeft.x, bottomLeft.z};
+			pt bottomRightP{bottomRight.x, bottomRight.z};
+			if (pt_in_polygon(playerUnitPos, {topLeftP, topRightP, bottomRightP, bottomLeftP})) {
+				returnUnits.push_back(playerUnit);
 			}
 		}
+
+		return returnUnits;
+	}
+
+	void selectUnitsInTrapezoid(glm::vec3 topLeft, glm::vec3 topRight, glm::vec3 bottomLeft, glm::vec3 bottomRight) {
+		selectedUnits.clear();
+		selectedUnits = getUnitsInRange(topLeft, topRight, bottomLeft, bottomRight);
 	}
 }

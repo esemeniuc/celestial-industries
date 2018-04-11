@@ -38,6 +38,7 @@ namespace Ui {
 
 	static ImVec2 topLeft;
 	static ImVec2 bottomRight;
+	static ImVec2 unitSelectionSize;
 
 	//funcs
 	void imguiSetup(GLFWwindow* window);

@@ -4,7 +4,6 @@
 #include "global.hpp"
 #include "aimanager.hpp"
 
-
 namespace UnitManager {
 
 	extern std::vector<std::shared_ptr<Entity>> selectedUnits;
@@ -20,7 +19,10 @@ namespace UnitManager {
 
 	void update(double elapsed_ms);
 
+	std::vector<std::shared_ptr<Entity>> getUnitsInRange(glm::vec3 startCorner, glm::vec3 endCorner);
+
 	void selectUnitsInRange(glm::vec3 startCorner, glm::vec3 endCorner);
 
+	void selectUnitsInTrapezoid(glm::vec3 topLeft, glm::vec3 topRight, glm::vec3 bottomLeft, glm::vec3 bottomRight);
 }
 

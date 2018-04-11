@@ -88,17 +88,16 @@ namespace Ui {
 			ImVec2 startClick = ImGui::GetIO().MouseClickedPos[0]; //0 for main mouse button
 			ImVec2 endClick = ImGui::GetMousePos();
 
-			ImVec2 selectionSize = abs(endClick - startClick);
+			unitSelectionSize = abs(endClick - startClick);
 			topLeft = getSelectionBoxStartPos(startClick, endClick);
-			bottomRight = topLeft + selectionSize;
+			bottomRight = topLeft + unitSelectionSize;
 			ImGui::SetNextWindowSizeConstraints(ImVec2(0, 0), ImVec2(std::numeric_limits<float>::max(),
 																	 std::numeric_limits<float>::max()));
-
 
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f); //make a square box
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0, 0)); //make small
 			ImGui::SetNextWindowPos(topLeft); //window always starts from top left corner
-			ImGui::SetNextWindowSize(selectionSize);
+			ImGui::SetNextWindowSize(unitSelectionSize);
 //			std::cout << "start: " << startClick << " end: " << endClick << " size: " << selectionSize << " tl: "
 //					  << topLeft << '\n';
 			ImGui::SetNextWindowBgAlpha(0.3f); // Transparent background
@@ -156,18 +155,24 @@ namespace Ui {
 			std::pair<bool, glm::vec3> topLeftTileCoord = World::getTileCoordFromWindowCoords(topLeft.x, topLeft.y);
 			std::pair<bool, glm::vec3> bottomRightTileCoord = World::getTileCoordFromWindowCoords(bottomRight.x,
 																								  bottomRight.y);
-			if (topLeftTileCoord.first && bottomRightTileCoord.first) { //make sure both are valid
-				UnitManager::selectUnitsInRange(topLeftTileCoord.second, bottomRightTileCoord.second);
-//				std::cout << "coord:    " << UnitManager::selectedUnits.size() << "\t|| " <<
-//						  topLeft.x << ' ' << topLeft.y << ' ' <<
-//						  bottomRight.x << ' ' << bottomRight.y << ' ' <<
-//						  '\n';
 
+			ImVec2 topRight = ImVec2(topLeft.x + unitSelectionSize.x, topLeft.y);
+			ImVec2 bottomLeft = ImVec2(topLeft.x, topLeft.y + unitSelectionSize.y);
+			std::pair<bool, glm::vec3> topRightTileCoord = World::getTileCoordFromWindowCoords(topRight.x, topRight.y);
+			std::pair<bool, glm::vec3> bottomLeftTileCoord = World::getTileCoordFromWindowCoords(bottomLeft.x,
+																								 bottomLeft.y);
+			if (topLeftTileCoord.first && topRightTileCoord.first && bottomRightTileCoord.first &&
+				bottomLeftTileCoord.first) { //make sure all are valid
+				if (ImGui::GetIO().KeyAlt)
+					printf(""); // Set a debugger breakpoint here!
+				UnitManager::selectUnitsInTrapezoid(topLeftTileCoord.second, topRightTileCoord.second,
+													bottomLeftTileCoord.second, bottomRightTileCoord.second);
 				std::cout << "selected: " << UnitManager::selectedUnits.size() << "\t|| " <<
 						  topLeftTileCoord.second.x << ' ' << topLeftTileCoord.second.z << ' ' <<
 						  bottomRightTileCoord.second.x << ' ' << bottomRightTileCoord.second.z << ' ' <<
 						  '\n';
 			}
+
 			if (UnitManager::selectedUnits.size() == 1) {
 				std::shared_ptr<Entity> unit = UnitManager::selectedUnits.front();
 //				ImGui::Text("Unit: %s\n", unit.a);

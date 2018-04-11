@@ -151,7 +151,7 @@ bool World::init() {
 	int startx = 25, startz = 11;
 	int targetx = 10, targetz = 10;
 	auto temp1 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
-	temp1->moveTo(UnitState::MOVE, targetx, targetz);
+//	temp1->moveTo(UnitState::MOVE, targetx, targetz);
 
 	startx = 39, startz = 19;
 	auto temp2 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {startx, 0, startz}, GamePieceOwner::PLAYER);
@@ -171,7 +171,7 @@ bool World::init() {
 	return true;
 }
 
-bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources) {
+bool World::initMeshTypes(const std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>>& sources) {
 	// All the models come from the same place
 	std::string path = pathBuilder({"data", "models"});
 	for (const auto& source : sources) {
@@ -331,7 +331,7 @@ bool World::is_over() {
 	return glfwWindowShouldClose(m_window) || escapePressed;
 }
 
-void World::updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<int> targetKeys) {
+void World::updateBoolFromKey(int action, int key, bool& toUpdate, const std::vector<int>& targetKeys) {
 	for (auto targetKey : targetKeys) {
 		if (key == targetKey) {
 			if (action == GLFW_PRESS) {
@@ -426,11 +426,12 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 
 	std::pair<bool, glm::vec3> result = World::getTileCoordFromWindowCoords(xpos, ypos);
 	if (result.first) { //if t>0
-//		printf("x: %f z: %f\n", result.second.x, result.second.z);
+		printf("x: %lf z: %lf\t\t", result.second.x, result.second.z);
+		printf("w:x:\t%lf\ty:\t%lf\n", xpos, ypos);
 		selectedTileCoordinates.colCoord = int(result.second.x + 0.5);
 		selectedTileCoordinates.rowCoord = int(result.second.z + 0.5);
 	} else {
-		printf("bad tile selector calculation: x: %f z: %f\n", xpos, ypos);
+		printf("bad tile selector calculation: x: %lf z: %lf\n", xpos, ypos);
 	}
 }
 

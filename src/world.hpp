@@ -83,11 +83,11 @@ namespace World {
 
 	void move_cursor_right();
 
-	void updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<int> targetKeys);
+	void updateBoolFromKey(int action, int key, bool& toUpdate, const std::vector<int>& targetKeys);
 
 	bool loadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder);
 
-	bool initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources);
+	bool initMeshTypes(const std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>>& sources);
 
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow* window, int key, int scancode, int action, int mods);
