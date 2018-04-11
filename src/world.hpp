@@ -15,6 +15,7 @@
 
 //sdl stuff
 #define SDL_MAIN_HANDLED
+
 #include <SDL.h>
 #include <SDL_mixer.h>
 
@@ -46,6 +47,10 @@ namespace World {
 	extern std::shared_ptr<Shader> objShader;
 	extern Level level;
 	extern Skybox m_skybox;
+
+	// Audio and music
+	extern Mix_Music* m_background_music;
+	extern Mix_Chunk* m_mouse_click;
 
 	// Particle things
 	extern std::shared_ptr<Shader> particleShader;
@@ -84,6 +89,8 @@ namespace World {
 	void move_cursor_right();
 
 	void updateBoolFromKey(int action, int key, bool& toUpdate, const std::vector<int>& targetKeys);
+
+	void play_mouse_click_sound();
 
 	bool loadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder);
 
