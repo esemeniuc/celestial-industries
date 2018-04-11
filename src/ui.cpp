@@ -323,7 +323,7 @@ namespace Ui {
 
 
 	void imguiDrawLaunchMenu() {
-		while (Global::gameState == GameState::START_MENU) {
+		while (Global::gameState == GameState::START_MENU && !glfwWindowShouldClose(Ui::getWindow())) {
 			glfwPollEvents();
 			ImGui_ImplGlfwGL3_NewFrame();
 
@@ -365,7 +365,7 @@ namespace Ui {
 	}
 
 	void imguiDrawPauseMenu() {
-		while (Global::gameState == GameState::PAUSED) {
+		while (Global::gameState == GameState::PAUSED && !glfwWindowShouldClose(Ui::getWindow())) {
 			glfwPollEvents();
 			ImGui_ImplGlfwGL3_NewFrame();
 

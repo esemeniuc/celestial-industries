@@ -55,6 +55,9 @@ int main(int argc, char* argv[]) {
 	while (Global::gameState != GameState::QUIT) {
 
 		//note that the functions will change Global::gameState
+		if (glfwWindowShouldClose(Ui::getWindow())) {
+			Global::gameState = GameState::QUIT;
+		}
 		switch (Global::gameState) {
 			case GameState::START_MENU: {
 				printf("menu\n");
