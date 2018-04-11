@@ -338,6 +338,10 @@ namespace Ui {
 													 ImGuiWindowFlags_AlwaysAutoResize |
 													 ImGuiWindowFlags_NoNav);
 				ImGui::Text("Celestial Industries");
+
+				ImTextureID logo ;
+				ImGui::Image();
+
 				if (ImGui::Button(ICON_FA_PLAY_CIRCLE " Start")) {
 					Global::gameState = GameState::PLAY;
 				}
@@ -934,6 +938,11 @@ namespace Ui {
 
 		// Start the frame. This call will update the io.WantCaptureMouse, io.WantCaptureKeyboard flag that you can use to dispatch inputs (or not) to your application.
 		ImGui::NewFrame();
+	}
+
+	void imguiShutdown() {
+		ImGui_ImplGlfwGL3_Shutdown();
+		ImGui::DestroyContext();
 	}
 
 }

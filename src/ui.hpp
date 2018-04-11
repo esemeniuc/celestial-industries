@@ -53,6 +53,8 @@ namespace Ui {
 
 	void imguiGenerateScreenObjects(); //main ui
 
+	void imguiShutdown(); //cleanup
+
 	ImVec2 getSelectionBoxStartPos(const ImVec2& startClickPos, const ImVec2& endClickPos);
 
 	bool ImGui_ImplGlfwGL3_Init(GLFWwindow* window, bool install_callbacks, const char* glsl_version);
@@ -74,4 +76,5 @@ namespace Ui {
 	bool ImGui_ImplGlfwGL3_CreateDeviceObjects();
 
 	void ImGui_ImplGlfwGL3_NewFrame();
+
 }
