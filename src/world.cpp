@@ -12,7 +12,6 @@
 namespace World {
 	GLFWwindow* m_window;
 
-	bool escapePressed = false;
 	glm::vec2 m_screen;
 
 	// Camera stuff
@@ -321,7 +320,7 @@ void World::play_mouse_click_sound() {
 
 // Should the game be over ?
 bool World::is_over() {
-	return glfwWindowShouldClose(m_window) || escapePressed;
+	return glfwWindowShouldClose(m_window);
 }
 
 void World::updateBoolFromKey(int action, int key, bool& toUpdate, const std::vector<int>& targetKeys) {
@@ -341,17 +340,14 @@ void World::updateBoolFromKey(int action, int key, bool& toUpdate, const std::ve
 void World::on_key(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	// Core controls
 	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
-		escapePressed = true;
+		Global::gameState = GameState::QUIT;
+	} else if (action == GLFW_PRESS && key == GLFW_KEY_P) {
+		Global::gameState = GameState::PAUSED;
 	}
 
 	// File saving
 	if (action == GLFW_RELEASE && key == GLFW_KEY_O) {
 		level.save("savedLevel.txt");
-	}
-
-	// File saving
-	if (action == GLFW_PRESS && key == GLFW_KEY_P) {
-		Global::gameState = GameState::PAUSED;
 	}
 
 	// Tile selection controls:

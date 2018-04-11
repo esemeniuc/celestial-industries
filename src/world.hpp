@@ -34,7 +34,6 @@ namespace World {
 	// Window handle
 	extern GLFWwindow* m_window;
 
-	extern bool escapePressed;
 	extern glm::vec2 m_screen;
 
 	// Camera stuff
