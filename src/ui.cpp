@@ -327,6 +327,7 @@ namespace Ui {
 			glfwPollEvents();
 			ImGui_ImplGlfwGL3_NewFrame();
 
+			static bool showTutorial = false;
 			{ //draw launch menu
 				ImGui::SetNextWindowPosCenter();
 				ImGui::Begin("Launch Menu", nullptr, ImGuiWindowFlags_NoSavedSettings |
@@ -341,12 +342,45 @@ namespace Ui {
 					Global::gameState = GameState::PLAY;
 				}
 
+				if (ImGui::Button(ICON_FA_QUESTION_CIRCLE " Tutorial")) {
+					showTutorial = true;
+				}
+
 				if (ImGui::Button(ICON_FA_TIMES_CIRCLE " Quit")) {
 					Global::gameState = GameState::QUIT;
 				}
+				ImGui::End();
 			}
 
-			ImGui::End();
+
+			if (showTutorial) {
+				ImGui::SetNextWindowPosCenter();
+				ImGui::Begin("How To Play", &showTutorial);
+				ImGui::NewLine();
+				ImGui::TextWrapped("Story\n\n"
+								   "It is the distant future. You are working for Celestial Industries,"
+								   " the omnipresent megacorporation that runs human civilization, and have been"
+								   " tasked with overseeing a robotic colony development team. You are offered a promotion"
+								   " if you can get the colony to produce [Amount(s)] of [Resource(s)] per"
+								   " [Time unit], at which point you’d get to supervise a much cooler planet.");
+
+				ImGui::NewLine();
+				ImGui::Text("Movement Keys:\n");
+				ImGui::Text("W\t\t\t\t\t\tMove camera up\n");
+				ImGui::Text("S\t\t\t\t\t\tMove camera down\n");
+				ImGui::Text("A\t\t\t\t\t\tMove camera left\n");
+				ImGui::Text("D\t\t\t\t\t\tMove camera right\n");
+				ImGui::NewLine();
+				ImGui::Text("Left click/drag\t\tSelect Units\n");
+				ImGui::Text("Right click\t\t\t\t\tMove/Attack\n");
+
+				ImGui::NewLine();
+				if (ImGui::Button("Close")) {
+					showTutorial = false;
+				}
+				
+				ImGui::End();
+			}
 
 			if (ImGui::GetIO().KeysDown[GLFW_KEY_ESCAPE]) {
 				Global::gameState = GameState::QUIT;
