@@ -41,9 +41,15 @@ namespace Ui {
 	static ImVec2 unitSelectionSize;
 
 	//funcs
-	void imguiSetup(GLFWwindow* window);
+	bool createWindow(); //does glfw stuff
 
-	void imguiGenerateScreenObjects();
+	GLFWwindow* getWindow();
+
+	void imguiSetup(); //load imgui bits
+
+	void imguiDrawGameLaunchMenu(); //game launch menu
+
+	void imguiGenerateScreenObjects(); //main ui
 
 	ImVec2 getSelectionBoxStartPos(const ImVec2& startClickPos, const ImVec2& endClickPos);
 

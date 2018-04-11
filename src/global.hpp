@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <vector>
 #include "entity.hpp"
+#include "gamestate.hpp"
 #include "level.hpp" //for AStarNode
 
 namespace Global {
@@ -12,6 +13,8 @@ namespace Global {
 
 	extern size_t windowWidth;
 	extern size_t windowHeight;
+
+	extern GameState gameState;
 
 	extern int playerResources;
 	extern int playerResourcesPerSec;

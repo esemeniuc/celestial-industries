@@ -9,16 +9,6 @@
 #include "attackManger.hpp"
 #include "buildingmanager.hpp"
 
-// Same as static in c, local to compilation unit
-namespace {
-	namespace {
-		void glfw_err_cb(int error, const char* desc) {
-			fprintf(stderr, "%d: %s", error, desc);
-		}
-	}
-}
-
-
 namespace World {
 	GLFWwindow* m_window;
 
@@ -47,41 +37,14 @@ namespace World {
 	Mix_Music* m_background_music;
 	Mix_Chunk* m_mouse_click;
 
-	double total_time = 0.0;
+	double gameElapsedTime = 0.0;
+
 }
 
 
 // World initialization
 bool World::init() {
-	//-------------------------------------------------------------------------
-	// GLFW / OGL Initialization
-	// Core Opengl 3.
-	glfwSetErrorCallback(glfw_err_cb);
-	if (!glfwInit()) {
-		logger(LogLevel::ERR) << "Failed to initialize GLFW\n";
-		return false;
-	}
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
-#if __APPLE__
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-	glfwWindowHint(GLFW_RESIZABLE, 1);
-	m_window = glfwCreateWindow(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT, Config::WINDOW_TITLE,
-								nullptr, nullptr);
 	m_screen = glm::vec2(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT);
-	if (m_window == nullptr)
-		return false;
-
-	glfwMakeContextCurrent(m_window);
-	glfwSwapInterval(1); // vsync
-
-	// Load OpenGL function pointers
-	gl3wInit();
-
 	//the 4 below are done in ui.cpp now
 //	// Setting callbacks to member functions (that's why the redirect is needed)
 //	// Input is handled using GLFW, for more info see
@@ -132,12 +95,6 @@ bool World::init() {
 		return false;
 	}
 
-	// WHY WASNT THIS ENABLED BEFORE?!
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-	glEnable(GL_CULL_FACE);
-
-
 	// Load shader for default meshSources
 	objShader = std::make_shared<Shader>();
 	if (!objShader->load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl"))) {
@@ -150,7 +107,6 @@ bool World::init() {
 		logger(LogLevel::ERR) << "Failed to load particle shader!" << '\n';
 		return false;
 	}
-
 
 	if (!initMeshTypes(Model::meshSources)) {
 		logger(LogLevel::ERR) << "Failed to initialize renderers\n";
@@ -255,10 +211,11 @@ void World::destroy() {
 
 // Update our game world
 bool World::update(double elapsed_ms) {
+	glfwPollEvents(); //Processes system messages, if this wasn't present the window would become unresponsive
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
 	camera.update(elapsed_ms);
-	total_time += elapsed_ms;
+	gameElapsedTime += elapsed_ms;
 
 	if (selectedTileCoordinates.rowCoord >= 0 &&
 		(unsigned long) selectedTileCoordinates.rowCoord < level.getLevelTraversalCostMap().size() &&

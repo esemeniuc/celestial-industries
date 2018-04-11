@@ -30,14 +30,14 @@ ImVec2 abs(const ImVec2& a) {
 }
 
 namespace Ui {
-	void imguiSetup(GLFWwindow* window) {
+	void imguiSetup() {
 		// Setup ImGui binding
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
 		(void) io;
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
-		ImGui_ImplGlfwGL3_Init(window, true, "#version 410");
+		ImGui_ImplGlfwGL3_Init(g_Window, true, "#version 410");
 
 		// Setup style
 		ImGui::StyleColorsDark();
@@ -281,8 +281,83 @@ namespace Ui {
 		return topLeft;
 	}
 
+	bool createWindow() {
+		//-------------------------------------------------------------------------
+		// GLFW / OGL Initialization
+		// Core Opengl 3.
+		auto glfw_err_cb = [](int error, const char* desc) {
+			fprintf(stderr, "Error %d: %s\n", error, desc);
+		};
+		glfwSetErrorCallback(glfw_err_cb);
+		if (!glfwInit()) {
+			logger(LogLevel::ERR) << "Failed to initialize GLFW\n";
+			return false;
+		}
 
-// OpenGL3 Render function.
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
+#if __APPLE__
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+		glfwWindowHint(GLFW_RESIZABLE, 1);
+		g_Window = glfwCreateWindow(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT, Config::WINDOW_TITLE,
+									nullptr, nullptr);
+		if (g_Window == nullptr)
+			return false;
+
+		glfwMakeContextCurrent(g_Window);
+		glfwSwapInterval(1); // vsync
+
+		// Load OpenGL function pointers
+		gl3wInit();
+
+		// WHY WASNT THIS ENABLED BEFORE?!
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+		glEnable(GL_CULL_FACE);
+
+		return true;
+	}
+
+
+	void imguiDrawGameLaunchMenu() {
+// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
+		// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
+		// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
+		// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+		while (Global::gameState == GameState::START_MENU) {
+			glfwPollEvents();
+			ImGui_ImplGlfwGL3_NewFrame();
+
+			static bool show_another_window = true;
+			ImGui::Begin("Another Window", &show_another_window);
+			ImGui::Text("Hello from another window!");
+			if (ImGui::Button("Start")) {
+				Global::gameState = GameState::PLAY;
+				show_another_window = false;
+			}
+			ImGui::End();
+
+
+			// Rendering
+			int display_w, display_h;
+			glfwGetFramebufferSize(g_Window, &display_w, &display_h);
+			glViewport(0, 0, display_w, display_h);
+			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+			glClear(GL_COLOR_BUFFER_BIT);
+			ImGui::Render();
+			ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+			glfwSwapBuffers(g_Window);
+		}
+	}
+
+	GLFWwindow* getWindow() {
+		return g_Window;
+	}
+
+	// OpenGL3 Render function.
 // (this used to be set in io.RenderDrawListsFn and called by ImGui::Render(), but you can now call this directly from your main loop)
 // Note that this implementation is little overcomplicated because we are saving/setting up/restoring every OpenGL state explicitly, in order to be able to run within any OpenGL engine that doesn't do so.
 	void ImGui_ImplGlfwGL3_RenderDrawData(ImDrawData* draw_data) {

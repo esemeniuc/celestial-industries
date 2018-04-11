@@ -2,41 +2,25 @@
 #include "common.hpp"
 #include "world.hpp"
 #include "ui.hpp"
+#include "global.hpp" //for gamestate
 
 #define GL3W_IMPLEMENTATION
 
 #include <gl3w.h>
-
-// stlib
 #include <chrono>
+
 using Clock = std::chrono::high_resolution_clock;
-void renderDrawData(ImDrawData* draw_data);
 
-// Entry point
-int main(int argc, char* argv[]) {
-	logger(LogLevel::DEBUG) << "Started game\n";
-	// Initializing world (after renderer.init().. sorry)
-	if (!World::init()) {
-		// Time to read the error message
-		logger(LogLevel::ERR) << "Press any key to exit" << '\n';
-		std::cin.get();
-		return EXIT_FAILURE;
-	}
-
-	Ui::imguiSetup(World::m_window);
-
+void gameLoop() {
 	auto t = Clock::now();
 	// variable timestep loop.. can be improved (:
 	while (!World::is_over()) {
-		// Processes system messages, if this wasn't present the window would become unresponsive
-		glfwPollEvents();
-
 		// Calculating elapsed times in milliseconds from the previous iteration
 		auto now = Clock::now();
-		double elapsed_microSec = (double) (std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count();
-		double elapsed_milliSec = elapsed_microSec / 1000;
+		double elapsed_milliSec = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(
+				now - t).count());
 		t = now;
-		//if time is too long (eg in breakpoint during debug, the clamp the elapsed time)
+		//if time is too long (eg in breakpoint during debug, then clamp the elapsed time)
 		if (elapsed_milliSec > 1000) {
 			elapsed_milliSec = 1000 / 60.0; //pretend we continue to next frame at 60fps
 		}
@@ -45,9 +29,54 @@ int main(int argc, char* argv[]) {
 		World::draw();
 		Ui::imguiGenerateScreenObjects();
 	}
-
-	World::destroy();
-
-	return EXIT_SUCCESS;
 }
 
+
+// Entry point
+int main(int argc, char* argv[]) {
+	logger(LogLevel::DEBUG) << "Started game\n";
+
+	if (!Ui::createWindow()) {
+		logger(LogLevel::ERR) << "Window creation failed\n";
+		return EXIT_FAILURE;
+	}
+
+	Ui::imguiSetup();
+	World::m_window = Ui::getWindow();
+
+	// Initializing world (after renderer.init().. sorry)
+	if (!World::init()) {
+		// Time to read the error message
+		logger(LogLevel::ERR) << "Press any key to exit\n";
+		std::cin.get();
+		return EXIT_FAILURE;
+	}
+
+	while (Global::gameState != GameState::QUIT) {
+
+		//note that the functions will change Global::gameState
+		switch (Global::gameState) {
+			case GameState::START_MENU: {
+				printf("menu\n");
+				Ui::imguiDrawGameLaunchMenu(); //once this finishes we draw the world
+				break;
+			}
+			case GameState::PLAY: {
+				printf("play\n");
+				gameLoop();
+				break;
+			}
+			case GameState::PAUSED: {
+				//draw game pause menu
+				break;
+			}
+			case GameState::QUIT: {
+				World::destroy();
+				return EXIT_SUCCESS;
+			}
+		}
+	}
+
+
+
+}

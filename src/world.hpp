@@ -59,7 +59,7 @@ namespace World {
 	extern std::default_random_engine m_rng;
 	extern std::uniform_real_distribution<float> m_dist; // default 0..1
 
-	extern double total_time;
+	extern double gameElapsedTime;
 
 	//funcs
 	// Creates a window, sets up events and begins the game
