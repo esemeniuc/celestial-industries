@@ -370,6 +370,11 @@ namespace Ui {
 				ImGui::Text("S\t\t\t\t\t\tMove camera down\n");
 				ImGui::Text("A\t\t\t\t\t\tMove camera left\n");
 				ImGui::Text("D\t\t\t\t\t\tMove camera right\n");
+
+				ImGui::NewLine();
+				ImGui::Text("P\t\t\t\t\t\tPause game\n");
+				ImGui::Text("Esc\t\t\t\t\tQuit game\n");
+
 				ImGui::NewLine();
 				ImGui::Text("Left click/drag\t\tSelect Units\n");
 				ImGui::Text("Right click\t\t\t\t\tMove/Attack\n");
@@ -378,7 +383,7 @@ namespace Ui {
 				if (ImGui::Button("Close")) {
 					showTutorial = false;
 				}
-				
+
 				ImGui::End();
 			}
 
