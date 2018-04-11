@@ -125,7 +125,7 @@ bool World::init() {
 		return false;
 	}
 
-	// Playing background music undefinitely
+	// Playing background music indefinitely
 	Mix_PlayMusic(m_background_music, -1);
 	logger(LogLevel::DEBUG) << "Loaded music";
 
