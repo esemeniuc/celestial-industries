@@ -337,11 +337,11 @@ namespace Ui {
 													 ImGuiWindowFlags_AlwaysAutoResize |
 													 ImGuiWindowFlags_NoNav);
 				ImGui::Text("Celestial Industries");
-				if (ImGui::Button("Start")) {
+				if (ImGui::Button(ICON_FA_PLAY_CIRCLE " Start")) {
 					Global::gameState = GameState::PLAY;
 				}
 
-				if (ImGui::Button("Quit")) {
+				if (ImGui::Button(ICON_FA_TIMES_CIRCLE " Quit")) {
 					Global::gameState = GameState::QUIT;
 				}
 			}
@@ -378,12 +378,13 @@ namespace Ui {
 													ImGuiWindowFlags_NoTitleBar |
 													ImGuiWindowFlags_AlwaysAutoResize |
 													ImGuiWindowFlags_NoNav);
+				ImGui::Text(ICON_FA_PAUSE_CIRCLE " Game Paused\n\n\n");
 				ImGui::Text("Continue playing?");
-				if (ImGui::Button("Resume")) {
+				if (ImGui::Button(ICON_FA_PLAY_CIRCLE " Resume")) {
 					Global::gameState = GameState::PLAY;
 				}
 
-				if (ImGui::Button("Quit")) {
+				if (ImGui::Button(ICON_FA_TIMES_CIRCLE " Quit")) {
 					Global::gameState = GameState::QUIT;
 				}
 
