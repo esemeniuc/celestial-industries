@@ -105,7 +105,7 @@ bool World::init() {
 	int initted = Mix_Init(flags);
 	if (initted&flags != flags) {
 		logger(LogLevel::ERR) << "Mix_Init: Failed to init required ogg support!\n";
-		logger(LogLevel::ERR) << "Mix_Init: %s\n", Mix_GetError();
+		logger(LogLevel::ERR) << "Mix_Init: " << Mix_GetError() << '\n';
 	}
 
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
@@ -248,9 +248,9 @@ void World::destroy() {
 	}	
 
 	// cleans up all dynamically loaded library handles used by sdl mixer
-	Mix_Quit();
-	
 	Mix_CloseAudio();
+	Mix_Quit();
+
 	m_skybox.destroy();
 	glfwDestroyWindow(m_window);	
 }
