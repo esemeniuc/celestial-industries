@@ -323,23 +323,34 @@ namespace Ui {
 
 
 	void imguiDrawLaunchMenu() {
-// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-		// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-		// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-		// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
 		while (Global::gameState == GameState::START_MENU) {
 			glfwPollEvents();
 			ImGui_ImplGlfwGL3_NewFrame();
 
-			static bool show_another_window = true;
-			ImGui::Begin("Another Window", &show_another_window);
-			ImGui::Text("Hello from another window!");
-			if (ImGui::Button("Start")) {
-				Global::gameState = GameState::PLAY;
-				show_another_window = false;
+			{ //draw launch menu
+				ImGui::SetNextWindowPosCenter();
+				ImGui::Begin("Launch Menu", nullptr, ImGuiWindowFlags_NoSavedSettings |
+													 ImGuiWindowFlags_NoResize |
+													 ImGuiWindowFlags_NoCollapse |
+													 ImGuiWindowFlags_NoMove |
+													 ImGuiWindowFlags_NoTitleBar |
+													 ImGuiWindowFlags_AlwaysAutoResize |
+													 ImGuiWindowFlags_NoNav);
+				ImGui::Text("Celestial Industries");
+				if (ImGui::Button("Start")) {
+					Global::gameState = GameState::PLAY;
+				}
+
+				if (ImGui::Button("Quit")) {
+					Global::gameState = GameState::QUIT;
+				}
 			}
+
 			ImGui::End();
 
+			if (ImGui::GetIO().KeysDown[GLFW_KEY_ESCAPE]) {
+				Global::gameState = GameState::QUIT;
+			}
 
 			// Rendering
 			int display_w, display_h;
@@ -587,7 +598,10 @@ namespace Ui {
 		io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
 		io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
 
-		World::on_key(window, key, scancode, action, mods);
+
+		if (Global::gameState == GameState::PLAY) { //only allow world key call backs when playing
+			World::on_key(window, key, scancode, action, mods);
+		}
 	}
 
 	void ImGui_ImplGlfw_CharCallback(GLFWwindow*, unsigned int c) {
