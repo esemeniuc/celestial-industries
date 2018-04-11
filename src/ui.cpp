@@ -434,6 +434,8 @@ namespace Ui {
 	void ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 		if (action == GLFW_PRESS && button >= 0 && button < 3) {
 			g_MouseJustPressed[button] = true;
+			// play mouse click sound
+			World::play_mouse_click_sound();
 		}
 
 		//make sure to call the world mouse callback only game world and not ui

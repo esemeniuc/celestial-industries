@@ -47,6 +47,10 @@ namespace World {
 	extern Level level;
 	extern Skybox m_skybox;
 
+	// Audio and music
+	extern Mix_Music* m_background_music;
+	extern Mix_Chunk* m_mouse_click;
+
 	// Particle things
 	extern std::shared_ptr<Shader> particleShader;
 
@@ -82,6 +86,8 @@ namespace World {
 	void move_cursor_left();
 
 	void move_cursor_right();
+
+	void play_mouse_click_sound();
 
 	void updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<int> targetKeys);
 

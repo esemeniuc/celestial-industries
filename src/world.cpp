@@ -43,6 +43,10 @@ namespace World {
 	std::default_random_engine m_rng = std::default_random_engine(std::random_device()());
 	std::uniform_real_distribution<float> m_dist; // default 0..1
 
+	// music and audio
+	Mix_Music* m_background_music;
+	Mix_Chunk* m_mouse_click;
+
 	double total_time = 0.0;
 }
 
@@ -90,15 +94,40 @@ bool World::init() {
 
 	//-------------------------------------------------------------------------
 	// Loading music and sounds
-	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-		logger(LogLevel::ERR) << "Failed to initialize SDL Audio\n";
+	if (SDL_Init(SDL_INIT_AUDIO) < 0)
+	{
+		logger(LogLevel::ERR) << "Failed to initialize SDL Audio\n";		
 		return false;
 	}
 
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
-		logger(LogLevel::ERR) << "Failed to open audio device\n";
+	// load support for the OGG audio format
+	int flags = MIX_INIT_OGG;
+	int initted = Mix_Init(flags);
+	if (initted&flags != flags) {
+		logger(LogLevel::ERR) << "Mix_Init: Failed to init required ogg support!\n";
+		logger(LogLevel::ERR) << "Mix_Init: " << Mix_GetError() << '\n';
+	}
+
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
+	{
+		logger(LogLevel::ERR) << "Failed to open audio device";
 		return false;
 	}
+
+	m_background_music = Mix_LoadMUS(audio_path("game_sound_track.ogg"));
+	// LoadWAV is actaully capable of loading other audio formats as well, the name is not accurate
+	// https://www.libsdl.org/projects/SDL_mixer/docs/SDL_mixer_19.html#SEC19
+	m_mouse_click = Mix_LoadWAV(audio_path("click3.ogg"));
+	
+	if (m_background_music == nullptr)
+	{
+		logger(LogLevel::ERR) << "Failed to load sounds, make sure the data directory is present";
+		return false;
+	}
+
+	// Playing background music indefinitely
+	Mix_PlayMusic(m_background_music, -1);
+	logger(LogLevel::DEBUG) << "Loaded music";
 
 	// setup skybox
 	if (!loadSkybox("skybox.obj", "skybox")) {
@@ -210,9 +239,20 @@ bool World::loadSkybox(const std::string& skyboxFilename, const std::string& sky
 
 // Releases all the associated resources
 void World::destroy() {
+	if (m_background_music != nullptr) {
+		Mix_FreeMusic(m_background_music);
+	}
+
+	if (m_mouse_click != nullptr) {
+		Mix_FreeChunk(m_mouse_click);
+	}	
+
+	// cleans up all dynamically loaded library handles used by sdl mixer
 	Mix_CloseAudio();
+	Mix_Quit();
+
 	m_skybox.destroy();
-	glfwDestroyWindow(m_window);
+	glfwDestroyWindow(m_window);	
 }
 
 // Update our game world
@@ -290,11 +330,6 @@ void World::draw() {
 		renderer->render(projectionView);
 	}
 
-
-	// make skybox rotate by 0.001 * pi/4 radians around y axis, every frame
-//	float y_rotation = 0.005 * glm::quarter_pi<float>();
-//	m_skybox.setRotation(glm::vec3(0.0, y_rotation, 0.0));
-//	m_skybox.applyTransformations();
 	m_skybox.getCameraPosition(camera.position);
 	m_skybox.draw(projection * view * m_skybox.getModelMatrix());
 
@@ -323,6 +358,10 @@ void World::move_cursor_left() {
 void World::move_cursor_right() {
 	selectedTileCoordinates.rowCoord++;
 	printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
+}
+
+void World::play_mouse_click_sound(){
+	Mix_PlayChannel(-1, m_mouse_click, 0);
 }
 
 // Should the game be over ?
@@ -443,6 +482,11 @@ void World::on_window_resize(GLFWwindow* window, int width, int height) {
 }
 
 void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods) {
+	// play mouse click sound
+	if (action == GLFW_PRESS && button >= 0 && button < 3) {		
+		World::play_mouse_click_sound();
+	}
+
 //	glm::vec3 coords = {selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord};
 //	if (coords.x < 0 || coords.x + 1 > Global::levelWidth ||
 //		coords.z < 0 || coords.z + 1 > Global::levelHeight)
