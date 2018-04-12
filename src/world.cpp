@@ -420,8 +420,6 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 
 	std::pair<bool, glm::vec3> result = World::getTileCoordFromWindowCoords(xpos, ypos);
 	if (result.first) { //if t>0
-		printf("x: %lf z: %lf\t\t", result.second.x, result.second.z);
-		printf("w:x:\t%lf\ty:\t%lf\n", xpos, ypos);
 		selectedTileCoordinates.colCoord = int(result.second.x + 0.5);
 		selectedTileCoordinates.rowCoord = int(result.second.z + 0.5);
 	} else {
@@ -438,11 +436,26 @@ void World::on_window_resize(GLFWwindow* window, int width, int height) {
 	Global::windowHeight = static_cast<size_t>(height);
 }
 
+bool withinLevelBounds(glm::vec3 coords) {
+	return coords.x >= 0 && coords.x < Global::levelWidth ||
+		   coords.z >= 0 && coords.z < Global::levelHeight;
+}
+
 void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods) {
 	// play mouse click sound
-	if (action == GLFW_PRESS && button >= 0 && button < 3) {
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		World::play_mouse_click_sound();
 	}
+
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+		std::pair<bool, glm::vec3> targetLocation = World::getTileCoordFromWindowCoords(xpos, ypos);
+		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
+			UnitManager::selectedUnitsAttackLocation(targetLocation.second);
+		}
+	}
+
 
 //	glm::vec3 coords = {selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord};
 //	if (coords.x < 0 || coords.x + 1 > Global::levelWidth ||

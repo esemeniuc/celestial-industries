@@ -152,19 +152,19 @@ namespace Ui {
 												 ImGuiWindowFlags_NoTitleBar);
 
 			//need this for display of selected units
+			ImVec2 topRight = ImVec2(topLeft.x + unitSelectionSize.x, topLeft.y); //not calculated during selection
+			ImVec2 bottomLeft = ImVec2(topLeft.x, topLeft.y + unitSelectionSize.y);
+
 			std::pair<bool, glm::vec3> topLeftTileCoord = World::getTileCoordFromWindowCoords(topLeft.x, topLeft.y);
 			std::pair<bool, glm::vec3> bottomRightTileCoord = World::getTileCoordFromWindowCoords(bottomRight.x,
 																								  bottomRight.y);
 
-			ImVec2 topRight = ImVec2(topLeft.x + unitSelectionSize.x, topLeft.y);
-			ImVec2 bottomLeft = ImVec2(topLeft.x, topLeft.y + unitSelectionSize.y);
 			std::pair<bool, glm::vec3> topRightTileCoord = World::getTileCoordFromWindowCoords(topRight.x, topRight.y);
 			std::pair<bool, glm::vec3> bottomLeftTileCoord = World::getTileCoordFromWindowCoords(bottomLeft.x,
 																								 bottomLeft.y);
-			if (topLeftTileCoord.first && topRightTileCoord.first && bottomRightTileCoord.first &&
-				bottomLeftTileCoord.first) { //make sure all are valid
-				if (ImGui::GetIO().KeyAlt)
-					printf(""); // Set a debugger breakpoint here!
+			if (topLeftTileCoord.first && topRightTileCoord.first &&
+				bottomRightTileCoord.first && bottomLeftTileCoord.first) { //check since might not be invertible
+
 				UnitManager::selectUnitsInTrapezoid(topLeftTileCoord.second, topRightTileCoord.second,
 													bottomLeftTileCoord.second, bottomRightTileCoord.second);
 				std::cout << "selected: " << UnitManager::selectedUnits.size() << "\t|| " <<

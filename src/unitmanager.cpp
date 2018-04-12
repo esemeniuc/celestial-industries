@@ -67,7 +67,8 @@ namespace UnitManager {
 		}
 	}
 
-	bool isWithinBounds(const std::shared_ptr<Entity>& entity, const glm::vec3& startCorner, const glm::vec3& endCorner) {
+	bool
+	isWithinBounds(const std::shared_ptr<Entity>& entity, const glm::vec3& startCorner, const glm::vec3& endCorner) {
 		float colMin = std::min(startCorner.x, endCorner.x);
 		float colMax = std::max(startCorner.x, endCorner.x);
 		float rowMin = std::min(startCorner.z, endCorner.z);
@@ -128,5 +129,29 @@ namespace UnitManager {
 	void selectUnitsInTrapezoid(glm::vec3 topLeft, glm::vec3 topRight, glm::vec3 bottomLeft, glm::vec3 bottomRight) {
 		selectedUnits.clear();
 		selectedUnits = getUnitsInRange(topLeft, topRight, bottomLeft, bottomRight);
+	}
+
+	void selectedUnitsAttackLocation(glm::vec3 targetLocation) {
+		//find unit closest to targetLocation
+		float bestDist = FLT_MAX;
+		std::shared_ptr<Entity> closestUnitToTarget;
+		for (const auto& unit : Global::aiUnits) {
+			float unitDist = glm::distance(unit->getPosition(), targetLocation);
+			if (unitDist <= bestDist) {
+				bestDist = unitDist;
+				closestUnitToTarget = unit;
+			}
+		}
+
+		if (bestDist < Config::RIGHT_CLICK_ATTACK_WITHIN_RANGE_THRESHOLD) {
+			for (auto& unit : selectedUnits) {
+				unit->moveTo(UnitState::ATTACK_MOVE, closestUnitToTarget->getPosition().x, closestUnitToTarget->getPosition().z); //attack that target
+			}
+		} else { // no unit found, so attackMove to that location
+			for (auto& unit : selectedUnits) {
+				unit->moveTo(UnitState::ATTACK_MOVE, targetLocation.x, targetLocation.z); //attack that target
+			}
+		}
+
 	}
 }
