@@ -16,6 +16,7 @@ namespace Model {
 			BRICK_CUBE,
 			MINING_TOWER,
 			PHOTON_TOWER,
+			SUPPLY_DEPOT,
 			TREE,
 			YELLOWTREE,
 			REDTREE,

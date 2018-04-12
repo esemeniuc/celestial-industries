@@ -75,8 +75,8 @@ int main(int argc, char* argv[]) {
 				break;
 			}
 			case GameState::QUIT: {
-				World::destroy();
 				Ui::imguiShutdown();
+				World::destroy();
 				return EXIT_SUCCESS;
 			}
 		}

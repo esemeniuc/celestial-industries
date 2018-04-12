@@ -16,6 +16,7 @@ namespace Model {
         { Model::MeshType::WALL,        { { "wall.obj",        -1 } } },
         { Model::MeshType::BRICK_CUBE,  { { "brickCube.obj",   -1 } } },
         { Model::MeshType::MINING_TOWER,{ { "miningTower.obj", -1 } } },
+        { Model::MeshType::SUPPLY_DEPOT,{ { "supply_depot.obj", -1 } } },
         { Model::MeshType::PHOTON_TOWER,{ { "photonTower.obj", -1 } } },
         { Model::MeshType::TREE,        { { "Tree1.obj",       -1 } } },
 		{ Model::MeshType::YELLOWTREE,	{ { "Tree2.obj",       -1 } } },

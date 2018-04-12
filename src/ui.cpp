@@ -214,7 +214,7 @@ namespace Ui {
 				case SpawnWindowState::SPAWN_DEFENSIVE_BUILDINGS : {
 
 					if (ImGui::Button("Gun Turret")) {
-						Building::spawn(Building::BuildingType::GUN_TURRET, glm::vec3(10, 0, 10),
+						Building::spawn(Model::GUN_TURRET, glm::vec3(10, 0, 10),
 										GamePieceOwner::PLAYER);
 					}
 
@@ -228,18 +228,18 @@ namespace Ui {
 				}
 				case SpawnWindowState::SPAWN_ECONOMIC_BUILDINGS : {
 
-					if (ImGui::Button("Command Center")) {
-						Building::spawn(Building::BuildingType::COMMAND_CENTER, glm::vec3(35, 0, 35),
-										GamePieceOwner::PLAYER);
-					}
+//					if (ImGui::Button("Command Center")) {
+//						Building::spawn(Model::, glm::vec3(35, 0, 35),
+//										GamePieceOwner::PLAYER);
+//					}
 
 					if (ImGui::Button("Refinery")) {
-						Building::spawn(Building::BuildingType::REFINERY, glm::vec3(15, 0, 15),
+						Building::spawn(Model::MINING_TOWER, glm::vec3(15, 0, 15),
 										GamePieceOwner::PLAYER);
 					}
 
 					if (ImGui::Button("Supply Depot")) {
-						Building::spawn(Building::BuildingType::SUPPLY_DEPOT, glm::vec3(25, 0, 25),
+						Building::spawn(Model::MeshType::SUPPLY_DEPOT, glm::vec3(25, 0, 25),
 										GamePieceOwner::PLAYER);
 					}
 
@@ -339,8 +339,11 @@ namespace Ui {
 													 ImGuiWindowFlags_NoNav);
 				ImGui::Text("Celestial Industries");
 
-				ImTextureID logo ;
-				ImGui::Image();
+				//for logo use
+//				Texture t;
+//				t.load_from_file("/home/eric/Desktop/test.png");
+//				ImTextureID logo = (void*)t.id;
+//				ImGui::Image(logo, ImVec2(32,32));
 
 				if (ImGui::Button(ICON_FA_PLAY_CIRCLE " Start")) {
 					Global::gameState = GameState::PLAY;
