@@ -11,6 +11,7 @@
 #include "unitmanager.hpp" //for unit selection info
 
 #include "IconsFontAwesome5.h" //for game icons
+#include "entityinfo.h"
 
 ImVec2 operator+(const ImVec2& a, const ImVec2& b) {
 	return {a.x + b.x, a.y + b.y};
@@ -175,8 +176,8 @@ namespace Ui {
 
 			if (UnitManager::selectedUnits.size() == 1) {
 				std::shared_ptr<Entity> unit = UnitManager::selectedUnits.front();
-//				ImGui::Text("Unit: %s\n", unit.a);
-				ImGui::Text("Health: %d/%d\n", unit->aiComp.currentHealth, unit->aiComp.totalHealth);
+				ImGui::Text("Unit: %s\n", EntityInfo::nameLookupTable[unit->meshType]);
+				ImGui::Text("Health: %.f/%d\n", unit->aiComp.currentHealth, unit->aiComp.totalHealth);
 				ImGui::Text("Damage: %d\n", unit->unitComp.attackDamage);
 				ImGui::Text("Attack Range: %d\n", unit->unitComp.attackRange);
 				ImGui::Text("Attack Speed: %d\n", unit->unitComp.attackSpeed);

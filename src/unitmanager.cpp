@@ -118,7 +118,7 @@ namespace UnitManager {
 			pt topRightP{topRight.x, topRight.z};
 			pt bottomLeftP{bottomLeft.x, bottomLeft.z};
 			pt bottomRightP{bottomRight.x, bottomRight.z};
-			if (pt_in_polygon(playerUnitPos, {topLeftP, topRightP, bottomRightP, bottomLeftP})) {
+			if (pt_in_polygon(playerUnitPos, {topLeftP, topRightP, bottomRightP, bottomLeftP})) { //the
 				returnUnits.push_back(playerUnit);
 			}
 		}
@@ -131,7 +131,7 @@ namespace UnitManager {
 		selectedUnits = getUnitsInRange(topLeft, topRight, bottomLeft, bottomRight);
 	}
 
-	void selectedUnitsAttackLocation(glm::vec3 targetLocation) {
+	void attackTargetLocationWithSelectedUnits(glm::vec3 targetLocation) {
 		//find unit closest to targetLocation
 		float bestDist = FLT_MAX;
 		std::shared_ptr<Entity> closestUnitToTarget;

@@ -87,7 +87,7 @@ set(PROJ_SOURCES
 		src/unitmanager.cpp
 		src/unit.cpp
 		src/aicore.cpp
-		src/ui.cpp src/gamestate.hpp)
+		src/ui.cpp src/gamestate.hpp src/entityinfo.cpp src/entityinfo.h)
 
 add_library(libproj ${PROJ_SOURCES})
 target_compile_options(libproj PUBLIC ${CUSTOM_COMPILE_FLAGS})

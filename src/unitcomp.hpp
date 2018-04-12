@@ -41,24 +41,6 @@ public:
 				 state(UnitState::IDLE) {
 	}
 
-
-	UnitComp(int _initialHealth,
-			 int _initialEnergyLevel,
-			 int _attackDamage,
-			 int _attackRange,
-			 int _attackSpeed,
-			 int _movementSpeed,
-			 int _visionRange,
-			 int _unitValue,
-			 UnitState _state) : initialEnergyLevel(_initialEnergyLevel),
-								 attackDamage(_attackDamage),
-								 attackRange(_attackRange),
-								 attackSpeed(_attackSpeed),
-								 movementSpeed(_movementSpeed),
-								 currentEnergyLevel(_initialEnergyLevel),
-								 state(_state) {
-	}
-
 	void update() {
 
 //		if (Health == 100 && triggerL == false && triggerR == false && triggerM

@@ -4,7 +4,6 @@
 
 #include "unit.hpp"
 
-
 // Sets AI comp and Unit comp
 void initUnitFromMeshType(const std::shared_ptr<Entity>& e, Model::MeshType type, GamePieceOwner owner) {
 	switch (type) {
@@ -51,22 +50,19 @@ void initUnitFromMeshType(const std::shared_ptr<Entity>& e, Model::MeshType type
 	if (owner == GamePieceOwner::PLAYER) {
 		Global::playerUnits.push_back(e);
 
-	}
-	else if (owner == GamePieceOwner::AI) {
+	} else if (owner == GamePieceOwner::AI) {
 		Global::aiUnits.push_back(e);
 	}
 }
 
-std::shared_ptr<Entity> Unit::spawn(Model::MeshType type, glm::vec3 spawnLocation, GamePieceOwner owner)
-{
+std::shared_ptr<Entity> Unit::spawn(Model::MeshType type, glm::vec3 spawnLocation, GamePieceOwner owner) {
 	std::shared_ptr<Entity> entity = entityFromMeshType(type);
 	entity->setPosition(spawnLocation);
 	initUnitFromMeshType(entity, type, owner);
 	return entity;
 }
 
-std::shared_ptr<Entity> Unit::entityFromMeshType(Model::MeshType type)
-{
+std::shared_ptr<Entity> Unit::entityFromMeshType(Model::MeshType type) {
 	switch (type) {
 		case Model::MeshType::FRIENDLY_RANGED_UNIT:
 			return std::make_shared<PivotingGunEntity>(type, 2);
@@ -74,3 +70,4 @@ std::shared_ptr<Entity> Unit::entityFromMeshType(Model::MeshType type)
 			return std::make_shared<Entity>(type);
 	}
 }
+

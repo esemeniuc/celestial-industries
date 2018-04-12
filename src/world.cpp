@@ -452,7 +452,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 		glfwGetCursorPos(window, &xpos, &ypos);
 		std::pair<bool, glm::vec3> targetLocation = World::getTileCoordFromWindowCoords(xpos, ypos);
 		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
-			UnitManager::selectedUnitsAttackLocation(targetLocation.second);
+			UnitManager::attackTargetLocationWithSelectedUnits(targetLocation.second);
 		}
 	}
 
