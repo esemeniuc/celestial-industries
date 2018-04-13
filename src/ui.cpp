@@ -338,13 +338,11 @@ namespace Ui {
 													 ImGuiWindowFlags_NoTitleBar |
 													 ImGuiWindowFlags_AlwaysAutoResize |
 													 ImGuiWindowFlags_NoNav);
-				ImGui::Text("Celestial Industries");
 
-				//for logo use
-//				Texture t;
-//				t.load_from_file("/home/eric/Desktop/test.png");
-//				ImTextureID logo = (void*)t.id;
-//				ImGui::Image(logo, ImVec2(32,32));
+				//display game logo as part of start up screen
+				ImGui::Text("Celestial Industries");
+				ImTextureID gameLogo = (void*) World::logoTexture.id;				
+				ImGui::Image(gameLogo, ImVec2(World::logoTexture.width, World::logoTexture.height));
 
 				if (ImGui::Button(ICON_FA_PLAY_CIRCLE " Start")) {
 					Global::gameState = GameState::PLAY;
