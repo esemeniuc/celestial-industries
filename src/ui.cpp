@@ -681,10 +681,8 @@ namespace Ui {
 			World::play_mouse_click_sound();
 		}
 
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
 		//make sure to call the world mouse callback only game world and not ui
-		if (ypos < Global::windowHeight - uiHeight) {
+		if (ImGui::GetIO().MousePos.y < Global::windowHeight - uiHeight) {
 			World::on_mouse_button(window, button, action, mods); //use callback in the game area
 		}
 	}
@@ -694,7 +692,9 @@ namespace Ui {
 		io.MouseWheelH += (float) xoffset;
 		io.MouseWheel += (float) yoffset;
 
-		World::on_mouse_scroll(window, xoffset, yoffset);
+		if (ImGui::GetIO().MousePos.y < Global::windowHeight - uiHeight) {
+			World::on_mouse_scroll(window, xoffset, yoffset);
+		}
 	}
 
 	void ImGui_ImplGlfw_KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
