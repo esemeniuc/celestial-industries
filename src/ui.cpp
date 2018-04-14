@@ -76,7 +76,7 @@ namespace Ui {
 		if (!logoTexture.is_valid()) {
 			throw "failed to load logo texture!";
 		}
-		gameLogo = (void*) logoTexture.id;
+		gameLogo = reinterpret_cast<void*>(logoTexture.id);
 		gameLogoSize = ImVec2(logoTexture.width, logoTexture.height);
 	}
 

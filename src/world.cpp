@@ -64,7 +64,7 @@ bool World::init() {
 	// load support for the OGG audio format
 	int flags = MIX_INIT_OGG;
 	int initted = Mix_Init(flags);
-	if (initted & flags != flags) {
+	if ((initted & flags) != flags) {
 		logger(LogLevel::ERR) << "Mix_Init: Failed to init required ogg support!\n";
 		logger(LogLevel::ERR) << "Mix_Init: " << Mix_GetError() << '\n';
 	}
@@ -437,8 +437,8 @@ void World::on_window_resize(GLFWwindow* window, int width, int height) {
 }
 
 bool withinLevelBounds(glm::vec3 coords) {
-	return coords.x >= 0 && coords.x < Global::levelWidth ||
-		   coords.z >= 0 && coords.z < Global::levelHeight;
+	return (coords.x >= 0 && coords.x < Global::levelWidth) ||
+		   (coords.z >= 0 && coords.z < Global::levelHeight);
 }
 
 void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods) {
