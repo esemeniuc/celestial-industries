@@ -40,6 +40,10 @@ namespace Ui {
 	static ImVec2 bottomRight;
 	static ImVec2 unitSelectionSize;
 
+	// UI logos and textures
+	static ImTextureID gameLogo;
+	static ImVec2 gameLogoSize;
+
 	// andy's stuff
 	enum BuildingSelected {
 		NONE,
@@ -49,7 +53,7 @@ namespace Ui {
 	};
 
 	extern BuildingSelected selectedBuilding;
-	
+
 	//funcs
 	bool createWindow(); //does glfw stuff
 

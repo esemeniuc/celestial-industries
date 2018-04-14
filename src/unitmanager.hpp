@@ -19,10 +19,11 @@ namespace UnitManager {
 
 	void update(double elapsed_ms);
 
-	std::vector<std::shared_ptr<Entity>> getUnitsInRange(glm::vec3 startCorner, glm::vec3 endCorner);
+	void selectUnit(const glm::vec3& targetLocation);
 
-	void selectUnitsInRange(glm::vec3 startCorner, glm::vec3 endCorner);
+	void selectUnitsInTrapezoid(const glm::vec3& topLeft, const glm::vec3& topRight,
+								const glm::vec3& bottomLeft, const glm::vec3& bottomRight);
 
-	void selectUnitsInTrapezoid(glm::vec3 topLeft, glm::vec3 topRight, glm::vec3 bottomLeft, glm::vec3 bottomRight);
+	void attackTargetLocationWithSelectedUnits(const glm::vec3& targetLocation);
 }
 

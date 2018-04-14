@@ -14,6 +14,7 @@
 class Entity {
 public:
 	//members
+	Model::MeshType meshType; //for what unit this (lookup in other tables)
 	Renderable geometryRenderer;
 	AiComp aiComp;
 	UnitComp unitComp;

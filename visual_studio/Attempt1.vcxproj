@@ -513,6 +513,7 @@
     <ClCompile Include="..\ext\gl3w\GL\gl3w.cpp" />
     <ClCompile Include="..\ext\imgui\imgui.cpp" />
     <ClCompile Include="..\ext\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\src\aicomp.cpp" />
     <ClCompile Include="..\src\aimanager.cpp" />
     <ClCompile Include="..\src\building.cpp" />
     <ClCompile Include="..\src\collisiondetection.cpp" />
@@ -521,6 +522,7 @@
     <ClCompile Include="..\src\coord.cpp" />
     <ClCompile Include="..\src\entity.cpp" />
     <ClCompile Include="..\src\camera.cpp" />
+    <ClCompile Include="..\src\entityinfo.cpp" />
     <ClCompile Include="..\src\global.cpp" />
     <ClCompile Include="..\src\level.cpp" />
     <ClCompile Include="..\src\logger.cpp" />
@@ -544,6 +546,7 @@
   <ItemGroup>
     <ClInclude Include="..\ext\gl3w\GL\gl3w.h" />
     <ClInclude Include="..\ext\gl3w\GL\glcorearb.h" />
+    <ClInclude Include="..\src\aicomp.hpp" />
     <ClInclude Include="..\src\aimanager.hpp" />
     <ClInclude Include="..\src\building.hpp" />
     <ClInclude Include="..\src\camera.hpp" />
@@ -554,6 +557,7 @@
     <ClInclude Include="..\src\config.hpp" />
     <ClInclude Include="..\src\coord.hpp" />
     <ClInclude Include="..\src\entity.hpp" />
+    <ClInclude Include="..\src\entityinfo.hpp" />
     <ClInclude Include="..\src\global.hpp" />
     <ClInclude Include="..\src\level.hpp" />
     <ClInclude Include="..\src\logger.hpp" />

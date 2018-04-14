@@ -4,9 +4,6 @@
 #include "ui.hpp"
 #include "global.hpp" //for gamestate
 
-#define GL3W_IMPLEMENTATION
-
-#include <gl3w.h>
 #include <chrono>
 
 using Clock = std::chrono::high_resolution_clock;

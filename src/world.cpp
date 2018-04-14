@@ -39,7 +39,6 @@ namespace World {
 	Mix_Chunk* m_error_sound;
 
 	double gameElapsedTime = 0.0;
-
 }
 
 
@@ -57,6 +56,7 @@ bool World::init() {
 	glfwSetWindowSizeCallback(m_window, on_window_resize);
 
 	//-------------------------------------------------------------------------
+
 	// Loading music and sounds
 	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
 		logger(LogLevel::ERR) << "Failed to initialize SDL Audio\n";
@@ -66,7 +66,7 @@ bool World::init() {
 	// load support for the OGG audio format
 	int flags = MIX_INIT_OGG;
 	int initted = Mix_Init(flags);
-	if (initted & flags != flags) { // Bitwise & intentional; follows SDL docs
+	if ((initted & flags) != flags) { // Bitwise & intentional; follows SDL docs
 		logger(LogLevel::ERR) << "Mix_Init: Failed to init required ogg support!\n";
 		logger(LogLevel::ERR) << "Mix_Init: " << Mix_GetError() << '\n';
 	}
@@ -439,13 +439,10 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 	camera.pan(xpos, ypos);
 
 	std::pair<bool, glm::vec3> result = World::getTileCoordFromWindowCoords(xpos, ypos);
-	if (result.first) { //if t>0
-		//printf("x: %lf z: %lf\t\t", result.second.x, result.second.z);
-		//printf("w:x:\t%lf\ty:\t%lf\n", xpos, ypos);
+	if (result.first) {
 		selectedTileCoordinates.colCoord = int(result.second.x + 0.5);
 		selectedTileCoordinates.rowCoord = int(result.second.z + 0.5);
 	} else {
-		//printf("bad tile selector calculation: x: %lf z: %lf\n", xpos, ypos);
 	}
 }
 
@@ -458,10 +455,27 @@ void World::on_window_resize(GLFWwindow* window, int width, int height) {
 	Global::windowHeight = static_cast<size_t>(height);
 }
 
+bool withinLevelBounds(glm::vec3 coords) {
+	return (coords.x >= 0 && coords.x < Global::levelWidth) ||
+		   (coords.z >= 0 && coords.z < Global::levelHeight);
+}
+
 void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods) {
-	// play mouse click sound
-	if (action == GLFW_PRESS && button >= 0 && button < 3) {
-		World::play_mouse_click_sound();
+	// single click select units
+	double xpos, ypos;
+	glfwGetCursorPos(window, &xpos, &ypos);
+	std::pair<bool, glm::vec3> targetLocation = World::getTileCoordFromWindowCoords(xpos, ypos);
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
+			std::cout << "clicked " << targetLocation.second.x << " " << targetLocation.second.z << "\n";
+			UnitManager::selectUnit(targetLocation.second);
+		}
+	};
+
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
+		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
+			UnitManager::attackTargetLocationWithSelectedUnits(targetLocation.second);
+		}
 	}
 	ImVec2 leftClickLoc = ImGui::GetIO().MouseClickedPos[0];
 
