@@ -56,12 +56,22 @@ namespace UnitManager {
 		int currentUnixTime = (int) getUnixTime();
 		for (auto& playerUnit : Global::playerUnits) {
 			playerUnit->unitComp.update();
+			playerUnit->computeNextMoveLocation(elapsed_ms);
+		}
+
+		for (auto& aiUnit : Global::aiUnits) {
+			aiUnit->unitComp.update();
+			aiUnit->computeNextMoveLocation(elapsed_ms);
+		}
+
+		Model::collisionDetector.findCollisions(elapsed_ms);
+
+		for (auto& playerUnit : Global::playerUnits) {
 			playerUnit->move(elapsed_ms);
 			updateAreaSeenByUnit(playerUnit, currentUnixTime, Global::playerVisibilityMap);
 		}
 
 		for (auto& aiUnit : Global::aiUnits) {
-			aiUnit->unitComp.update();
 			aiUnit->move(elapsed_ms);
 			updateAreaSeenByUnit(aiUnit, currentUnixTime, Global::aiVisibilityMap);
 		}

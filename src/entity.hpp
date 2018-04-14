@@ -24,6 +24,7 @@ public:
 
 	std::shared_ptr<Entity> target;
 	glm::vec3 targetPosition = {0.0f, 0.0f, 0.0f};
+	glm::vec3 nextPosition;
 	float attackingCooldown;
 
 	// constructors
@@ -96,6 +97,8 @@ public:
 
 	void cleanUpTargetPath();
 
+	void computeNextMoveLocation(double elapsed_time);
+	
 	virtual void move(double elapsed_time);
 
 	std::pair<int, double> getInterpolationPercentage();

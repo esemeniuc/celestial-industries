@@ -249,7 +249,6 @@ bool World::update(double elapsed_ms) {
 	AttackManager::update(elapsed_ms);
 	BuildingManager::update(elapsed_ms);
 
-	Model::collisionDetector.findCollisions(elapsed_ms);
 	for (const auto& tile : level.tiles) {
 		tile->update(elapsed_ms);
 	}
@@ -500,6 +499,12 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 		case Ui::BuildingSelected::NONE:
 		default:
 			break;
+		}
+	}
+
+	if (action == GLFW_PRESS && button == 1) {
+		for (auto unit : UnitManager::selectedUnits) {
+			unit->moveTo(UnitState::MOVE, coords.x, coords.z);
 		}
 	}
 }

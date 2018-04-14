@@ -162,7 +162,8 @@ bool Entity::hasMoveTarget() {
 	return !this->unitComp.targetPath.empty();
 }
 
-void Entity::move(double elapsed_time) {
+void Entity::computeNextMoveLocation(double elapsed_time)
+{
 	if (!hasMoveTarget()) {
 		return;
 	}
@@ -170,7 +171,7 @@ void Entity::move(double elapsed_time) {
 	unitComp.targetPathStartTimestamp += elapsed_time;
 	std::pair<int, double> index = getInterpolationPercentage(); //first is index into path, second is interp amount (0 to 1)
 	glm::vec3 newPos;
-	if (index.first < (int) unitComp.targetPath.size() - 1) {
+	if (index.first < (int)unitComp.targetPath.size() - 1) {
 		Coord curr = unitComp.targetPath[index.first];
 		Coord next = unitComp.targetPath[index.first + 1];
 
@@ -182,16 +183,29 @@ void Entity::move(double elapsed_time) {
 		double destCol = curr.colCoord + (dCol * index.second);
 		double destRow = curr.rowCoord + (dRow * index.second);
 
-		newPos = {destCol, 0, destRow};
-	} else { //move to the last coord in the path
-		newPos = {unitComp.targetPath.back().colCoord, 0, unitComp.targetPath.back().rowCoord};
+		newPos = { destCol, 0, destRow };
+	}
+	else { //move to the last coord in the path
+		newPos = { unitComp.targetPath.back().colCoord, 0, unitComp.targetPath.back().rowCoord };
 		cleanUpTargetPath();
 	}
+	nextPosition = newPos;
+	rigidBody.setVelocity(nextPosition - rigidBody.getPosition());
+}
 
-	// TODO: Split this in calculate and update so this can do collisions
-
-	setPositionFast(0, newPos); //for rendering
-	rigidBody.setPosition(newPos); //for phys
+void Entity::move(double elapsed_time) {
+	if (!hasMoveTarget()) {
+		return;
+	}
+	if (!hasPhysics || rigidBody.getAllCollisions().empty()) {
+		setPositionFast(0, nextPosition); //for rendering
+		rigidBody.setPosition(nextPosition); //for phys
+	}
+	else {
+		CollisionDetection::CollisionInfo collision = rigidBody.getFirstCollision();
+		// TODO
+		// Collision resolution
+	}
 }
 
 //dont erase targetDest so aimanager can clean up the in progress scouting targets
