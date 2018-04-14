@@ -178,8 +178,6 @@ void Entity::computeNextMoveLocation(double elapsed_time)
 		double dRow = next.rowCoord - curr.rowCoord;
 		double dCol = next.colCoord - curr.colCoord;
 
-		// TODO: Calculate future velocity for collisions
-
 		double destCol = curr.colCoord + (dCol * index.second);
 		double destRow = curr.rowCoord + (dRow * index.second);
 

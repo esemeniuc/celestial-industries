@@ -57,9 +57,9 @@ public:
     void updateModelMatrixStack(unsigned int modelIndex, bool updateHierarchically=true);
     glm::mat4 getModelMatrix(unsigned int id, unsigned int modelIndex);
 private:
-    // TODO: replace with uniform buffers
     GLuint viewProjectionUniform, modelIndexUniform, instanceDataAttribute, materialUniformBlock, positionAttribute, texcoordAttribute, normalAttribute, instancesDataBuffer;
     static const unsigned int maxInstances = Config::MAX_TOTAL_SUBOBJECTS_PER_RENDERER;
+	std::vector<int> graveyardIdStack;
 
     struct ShaderInstancesData {
         unsigned int stride;

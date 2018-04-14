@@ -114,10 +114,20 @@ void Renderer::deleteInstance(unsigned int id)
 	for (size_t i = 0; i < subObjects.size(); i++) {
 		instancesData.modelMatrices[subObjects.size()*id + i] = glm::mat4(0.0f); // Hacky way to make the whole object just a dimensionless point
 	}
+	graveyardIdStack.push_back(id);
 }
 
 unsigned int Renderer::getNextId()
 {
+	if (!graveyardIdStack.empty()) {
+		int id = graveyardIdStack.back();
+		graveyardIdStack.pop_back();
+		instances[id].shouldDraw = true;
+		for (size_t i = 0; i < subObjects.size(); i++) {
+			instancesData.modelMatrices[subObjects.size()*id + i] = glm::mat4(1.0f); // Unhack the element
+		}
+		return id;
+	}
     if (instances.size() + 1 > maxInstances / subObjects.size()) {
         throw "Too many instances! Increase maxInstances if you want to do this";
     }
@@ -200,10 +210,15 @@ Renderable::Renderable(std::shared_ptr<Renderer> initParent)
     for (size_t i = 0; i < parent->subObjects.size(); i++) {
         matrixStack.push_back(glm::mat4(1.0f));
     }
-    parent->instances.push_back({
-        true,
-        matrixStack,
-    });
+	if (id == parent->instances.size()) {
+		parent->instances.push_back({
+			true,
+			matrixStack,
+			});
+	}
+	else {
+		parent->instances[id].matrixStack = matrixStack;
+	}
 }
 
 void Renderable::shouldUpdate(bool val)
