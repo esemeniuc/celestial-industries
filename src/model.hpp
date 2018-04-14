@@ -17,6 +17,7 @@ namespace Model {
 			MINING_TOWER,
 			PHOTON_TOWER,
 			SUPPLY_DEPOT,
+			REFINERY,
 			TREE,
 			YELLOWTREE,
 			REDTREE,

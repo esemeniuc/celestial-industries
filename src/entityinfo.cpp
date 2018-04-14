@@ -5,7 +5,8 @@
 #include "entityinfo.hpp"
 std::array<const char*, Model::MeshType::MESHTYPES_COUNT> init() {
 	std::array<const char*, Model::MeshType::MESHTYPES_COUNT> tempNameLookupTable{};
-	tempNameLookupTable[Model::MeshType::MINING_TOWER] = "Refinery";
+	tempNameLookupTable[Model::MeshType::REFINERY] = "Refinery";
+	tempNameLookupTable[Model::MeshType::MINING_TOWER] = "Mining Tower";
 	tempNameLookupTable[Model::MeshType::PHOTON_TOWER] = "Photon Tower";
 	tempNameLookupTable[Model::MeshType::SUPPLY_DEPOT] = "Supply Depot";
 	tempNameLookupTable[Model::MeshType::BALL] = "Ball";

@@ -242,8 +242,13 @@ namespace Ui {
 //										GamePieceOwner::PLAYER);
 //					}
 
-					if (ImGui::Button("Refinery")) {
+					if (ImGui::Button("Mining Tower")) {
 						Building::spawn(Model::MINING_TOWER, glm::vec3(15, 0, 15),
+										GamePieceOwner::PLAYER);
+					}
+
+					if (ImGui::Button("Refinery")) {
+						Building::spawn(Model::REFINERY, glm::vec3(12, 0, 12),
 										GamePieceOwner::PLAYER);
 					}
 
