@@ -21,7 +21,7 @@ public:
 	GamePieceOwner owner = GamePieceOwner::NONE;
 	GamePieceClass type = GamePieceClass::NONE;
 	float currentHealth = totalHealth;
-	int value; //used for AI to prioritize targets
+	int value = 0; //used for AI to prioritize targets
 
 	//constructors
 	AiComp() {}

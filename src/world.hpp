@@ -15,6 +15,7 @@
 
 //sdl stuff
 #define SDL_MAIN_HANDLED
+
 #include <SDL.h>
 #include <SDL_mixer.h>
 
@@ -33,7 +34,6 @@ namespace World {
 	// Window handle
 	extern GLFWwindow* m_window;
 
-	extern bool escapePressed;
 	extern glm::vec2 m_screen;
 
 	// Camera stuff
@@ -58,7 +58,7 @@ namespace World {
 	extern std::default_random_engine m_rng;
 	extern std::uniform_real_distribution<float> m_dist; // default 0..1
 
-	extern double total_time;
+	extern double gameElapsedTime;
 
 	//funcs
 	// Creates a window, sets up events and begins the game
@@ -87,13 +87,13 @@ namespace World {
 
 	void move_cursor_right();
 
-	void play_mouse_click_sound();
+	void updateBoolFromKey(int action, int key, bool& toUpdate, const std::vector<int>& targetKeys);
 
-	void updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<int> targetKeys);
+	void play_mouse_click_sound();
 
 	bool loadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder);
 
-	bool initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources);
+	bool initMeshTypes(const std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>>& sources);
 
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow* window, int key, int scancode, int action, int mods);

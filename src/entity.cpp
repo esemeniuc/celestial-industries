@@ -1,11 +1,12 @@
 #define _USE_MATH_DEFINES // Needed for M_PI
+
 #include "entity.hpp"
 #include "pathfinder.hpp"  //for astar stuff
 #include "coord.hpp"
 
-Entity::Entity() : geometryRenderer(Model::meshRenderers[Model::MeshType::BALL]) {}
+Entity::Entity() : meshType(Model::MeshType::BALL), geometryRenderer(Model::meshRenderers[Model::MeshType::BALL]) {}
 
-Entity::Entity(Model::MeshType geometry) : geometryRenderer(Model::meshRenderers[geometry]) {}
+Entity::Entity(Model::MeshType geometry) : meshType(geometry), geometryRenderer(Model::meshRenderers[geometry]) {}
 
 Entity::~Entity() = default;
 
@@ -134,7 +135,7 @@ void Entity::setPositionFast(int modelIndex, glm::vec3 position) {
 void Entity::setTargetPath(const std::vector<Coord>& targetPath, int x, int z) {
 	unitComp.targetPathStartTimestamp = 0;
 	unitComp.targetPath = targetPath;
-	unitComp.targetDest = Coord(x,z);
+	unitComp.targetDest = Coord(x, z);
 }
 
 //expects the caller to set the unit state before calling this

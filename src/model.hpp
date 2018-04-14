@@ -16,6 +16,8 @@ namespace Model {
 			BRICK_CUBE,
 			MINING_TOWER,
 			PHOTON_TOWER,
+			SUPPLY_DEPOT,
+			REFINERY,
 			TREE,
 			YELLOWTREE,
 			REDTREE,
@@ -32,6 +34,7 @@ namespace Model {
 			GRASS,
 			HROAD,
 			VROAD,
+			MESHTYPES_COUNT //see https://stackoverflow.com/a/2102615
 		};
 
     extern std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> meshSources;

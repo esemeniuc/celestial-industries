@@ -9,6 +9,8 @@ namespace Global {
 	int playerCurrentSupply = 0;
 	int playerMaxSupply = 0;
 
+	GameState gameState = GameState::START_MENU;
+
 	size_t windowWidth = Config::INITIAL_WINDOW_WIDTH; //gets overwritten by the resize callback
 	size_t windowHeight = Config::INITIAL_WINDOW_HEIGHT;
 

@@ -16,6 +16,6 @@ namespace Building {
 		COMMAND_CENTER
 	};
 
-	std::shared_ptr<Entity> spawn(BuildingType buildingType, glm::vec3 spawnLocation, GamePieceOwner owner);
+	std::shared_ptr<Entity> spawn(Model::MeshType meshType, glm::vec3 spawnLocation, GamePieceOwner owner);
 
 }

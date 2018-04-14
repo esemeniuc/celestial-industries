@@ -11,6 +11,7 @@
 #include "unitmanager.hpp" //for unit selection info
 
 #include "IconsFontAwesome5.h" //for game icons
+#include "entityinfo.hpp"
 
 ImVec2 operator+(const ImVec2& a, const ImVec2& b) {
 	return {a.x + b.x, a.y + b.y};
@@ -30,14 +31,14 @@ ImVec2 abs(const ImVec2& a) {
 }
 
 namespace Ui {
-	void imguiSetup(GLFWwindow* window) {
+	void imguiSetup() {
 		// Setup ImGui binding
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
 		(void) io;
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
-		ImGui_ImplGlfwGL3_Init(window, true, "#version 410");
+		ImGui_ImplGlfwGL3_Init(g_Window, true, "#version 410");
 
 		// Setup style
 		ImGui::StyleColorsDark();
@@ -68,6 +69,15 @@ namespace Ui {
 		icons_config.PixelSnapH = true;
 		io.Fonts->AddFontFromFileTTF(Config::FONTAWESOME_FILE_PATH, 16.0f, &icons_config, icons_ranges);
 		// use FONT_ICON_FILE_NAME_FAR if you want regular instead of solid
+
+		// load game logo texture
+		static Texture logoTexture; //make static since destructor will free the texture
+		logoTexture.load_from_file(textures_path("Celestial-Industries.png"));
+		if (!logoTexture.is_valid()) {
+			throw "failed to load logo texture!";
+		}
+		gameLogo = reinterpret_cast<void*>(logoTexture.id);
+		gameLogoSize = ImVec2(logoTexture.width, logoTexture.height);
 	}
 
 
@@ -82,23 +92,22 @@ namespace Ui {
 		ImGui_ImplGlfwGL3_NewFrame();
 //		ImGui::ShowDemoWindow();
 
-		//TODO: use World::getTileCoordFromWindowCoords() to get selected units
+		//TODO: dont allow pan callback if scrolling
 
 		if (ImGui::IsMouseDragging()) { //for selection window
 			ImVec2 startClick = ImGui::GetIO().MouseClickedPos[0]; //0 for main mouse button
 			ImVec2 endClick = ImGui::GetMousePos();
 
-			ImVec2 selectionSize = abs(endClick - startClick);
+			unitSelectionSize = abs(endClick - startClick);
 			topLeft = getSelectionBoxStartPos(startClick, endClick);
-			bottomRight = topLeft + selectionSize;
+			bottomRight = topLeft + unitSelectionSize;
 			ImGui::SetNextWindowSizeConstraints(ImVec2(0, 0), ImVec2(std::numeric_limits<float>::max(),
 																	 std::numeric_limits<float>::max()));
-
 
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f); //make a square box
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0, 0)); //make small
 			ImGui::SetNextWindowPos(topLeft); //window always starts from top left corner
-			ImGui::SetNextWindowSize(selectionSize);
+			ImGui::SetNextWindowSize(unitSelectionSize);
 //			std::cout << "start: " << startClick << " end: " << endClick << " size: " << selectionSize << " tl: "
 //					  << topLeft << '\n';
 			ImGui::SetNextWindowBgAlpha(0.3f); // Transparent background
@@ -115,12 +124,7 @@ namespace Ui {
 			ImGui::End();
 			ImGui::PopStyleVar(); //size
 			ImGui::PopStyleVar(); //square
-		} else if (ImGui::IsMouseDragging(1)) {
-			std::cout << "dragging2\n";
-			std::cout << ImGui::GetMouseDragDelta(1).x << ' ' << ImGui::GetMouseDragDelta(1).y << "\n";
-
 		}
-
 
 		{ //resources counter at top right
 			const float DISTANCE = 10.0f;
@@ -153,25 +157,35 @@ namespace Ui {
 												 ImGuiWindowFlags_NoTitleBar);
 
 			//need this for display of selected units
-			std::pair<bool, glm::vec3> topLeftTileCoord = World::getTileCoordFromWindowCoords(topLeft.x, topLeft.y);
-			std::pair<bool, glm::vec3> bottomRightTileCoord = World::getTileCoordFromWindowCoords(bottomRight.x,
-																								  bottomRight.y);
-			if (topLeftTileCoord.first && bottomRightTileCoord.first) { //make sure both are valid
-				UnitManager::selectUnitsInRange(topLeftTileCoord.second, bottomRightTileCoord.second);
-//				std::cout << "coord:    " << UnitManager::selectedUnits.size() << "\t|| " <<
-//						  topLeft.x << ' ' << topLeft.y << ' ' <<
-//						  bottomRight.x << ' ' << bottomRight.y << ' ' <<
-//						  '\n';
+			if (ImGui::IsMouseDragging()) { //update selected units only when dragging (otherwise get keyboard panning updates this)
+				ImVec2 topRight = ImVec2(topLeft.x + unitSelectionSize.x, topLeft.y); //not calculated during selection
+				ImVec2 bottomLeft = ImVec2(topLeft.x, topLeft.y + unitSelectionSize.y);
 
-				std::cout << "selected: " << UnitManager::selectedUnits.size() << "\t|| " <<
-						  topLeftTileCoord.second.x << ' ' << topLeftTileCoord.second.z << ' ' <<
-						  bottomRightTileCoord.second.x << ' ' << bottomRightTileCoord.second.z << ' ' <<
-						  '\n';
+				std::pair<bool, glm::vec3> topLeftTileCoord = World::getTileCoordFromWindowCoords(topLeft.x, topLeft.y);
+				std::pair<bool, glm::vec3> bottomRightTileCoord = World::getTileCoordFromWindowCoords(bottomRight.x,
+																									  bottomRight.y);
+
+				std::pair<bool, glm::vec3> topRightTileCoord = World::getTileCoordFromWindowCoords(topRight.x,
+																								   topRight.y);
+				std::pair<bool, glm::vec3> bottomLeftTileCoord = World::getTileCoordFromWindowCoords(bottomLeft.x,
+																									 bottomLeft.y);
+
+				if (topLeftTileCoord.first && topRightTileCoord.first &&
+					bottomRightTileCoord.first && bottomLeftTileCoord.first) { //check since might not be invertible
+
+					UnitManager::selectUnitsInTrapezoid(topLeftTileCoord.second, topRightTileCoord.second,
+														bottomLeftTileCoord.second, bottomRightTileCoord.second);
+					std::cout << "selected: " << UnitManager::selectedUnits.size() << "\t|| " <<
+							  topLeftTileCoord.second.x << ' ' << topLeftTileCoord.second.z << ' ' <<
+							  bottomRightTileCoord.second.x << ' ' << bottomRightTileCoord.second.z << ' ' <<
+							  '\n';
+				}
 			}
+
 			if (UnitManager::selectedUnits.size() == 1) {
 				std::shared_ptr<Entity> unit = UnitManager::selectedUnits.front();
-//				ImGui::Text("Unit: %s\n", unit.a);
-				ImGui::Text("Health: %d/%d\n", unit->aiComp.currentHealth, unit->aiComp.totalHealth);
+				ImGui::Text("Unit: %s\n", EntityInfo::nameLookupTable[unit->meshType]);
+				ImGui::Text("Health: %.f/%d\n", unit->aiComp.currentHealth, unit->aiComp.totalHealth);
 				ImGui::Text("Damage: %d\n", unit->unitComp.attackDamage);
 				ImGui::Text("Attack Range: %d\n", unit->unitComp.attackRange);
 				ImGui::Text("Attack Speed: %d\n", unit->unitComp.attackSpeed);
@@ -209,7 +223,7 @@ namespace Ui {
 				case SpawnWindowState::SPAWN_DEFENSIVE_BUILDINGS : {
 
 					if (ImGui::Button("Gun Turret")) {
-						Building::spawn(Building::BuildingType::GUN_TURRET, glm::vec3(10, 0, 10),
+						Building::spawn(Model::GUN_TURRET, glm::vec3(10, 0, 10),
 										GamePieceOwner::PLAYER);
 					}
 
@@ -223,18 +237,23 @@ namespace Ui {
 				}
 				case SpawnWindowState::SPAWN_ECONOMIC_BUILDINGS : {
 
-					if (ImGui::Button("Command Center")) {
-						Building::spawn(Building::BuildingType::COMMAND_CENTER, glm::vec3(35, 0, 35),
+//					if (ImGui::Button("Command Center")) {
+//						Building::spawn(Model::, glm::vec3(35, 0, 35),
+//										GamePieceOwner::PLAYER);
+//					}
+
+					if (ImGui::Button("Mining Tower")) {
+						Building::spawn(Model::MINING_TOWER, glm::vec3(15, 0, 15),
 										GamePieceOwner::PLAYER);
 					}
 
 					if (ImGui::Button("Refinery")) {
-						Building::spawn(Building::BuildingType::REFINERY, glm::vec3(15, 0, 15),
+						Building::spawn(Model::REFINERY, glm::vec3(12, 0, 12),
 										GamePieceOwner::PLAYER);
 					}
 
 					if (ImGui::Button("Supply Depot")) {
-						Building::spawn(Building::BuildingType::SUPPLY_DEPOT, glm::vec3(25, 0, 25),
+						Building::spawn(Model::MeshType::SUPPLY_DEPOT, glm::vec3(25, 0, 25),
 										GamePieceOwner::PLAYER);
 					}
 
@@ -276,8 +295,184 @@ namespace Ui {
 		return topLeft;
 	}
 
+	bool createWindow() {
+		//-------------------------------------------------------------------------
+		// GLFW / OGL Initialization
+		// Core Opengl 3.
+		auto glfw_err_cb = [](int error, const char* desc) {
+			fprintf(stderr, "Error %d: %s\n", error, desc);
+		};
+		glfwSetErrorCallback(glfw_err_cb);
+		if (!glfwInit()) {
+			logger(LogLevel::ERR) << "Failed to initialize GLFW\n";
+			return false;
+		}
 
-// OpenGL3 Render function.
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
+#if __APPLE__
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+		glfwWindowHint(GLFW_RESIZABLE, 1);
+		g_Window = glfwCreateWindow(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT, Config::WINDOW_TITLE,
+									nullptr, nullptr);
+		if (g_Window == nullptr)
+			return false;
+
+		glfwMakeContextCurrent(g_Window);
+		glfwSwapInterval(1); // vsync
+
+		// Load OpenGL function pointers
+		gl3wInit();
+
+		// WHY WASNT THIS ENABLED BEFORE?!
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+		glEnable(GL_CULL_FACE);
+
+		return true;
+	}
+
+
+	void imguiDrawLaunchMenu() {
+		while (Global::gameState == GameState::START_MENU && !glfwWindowShouldClose(Ui::getWindow())) {
+			glfwPollEvents();
+			ImGui_ImplGlfwGL3_NewFrame();
+
+			static bool showTutorial = false;
+			{ //draw launch menu
+				ImGui::SetNextWindowPosCenter();
+				ImGui::Begin("Launch Menu", nullptr, ImGuiWindowFlags_NoSavedSettings |
+													 ImGuiWindowFlags_NoResize |
+													 ImGuiWindowFlags_NoCollapse |
+													 ImGuiWindowFlags_NoMove |
+													 ImGuiWindowFlags_NoTitleBar |
+													 ImGuiWindowFlags_AlwaysAutoResize |
+													 ImGuiWindowFlags_NoNav);
+
+				//display game logo as part of start up screen
+				ImGui::Image(gameLogo, gameLogoSize);
+				ImGui::NewLine();
+
+				if (ImGui::Button(ICON_FA_PLAY_CIRCLE " Start") || ImGui::GetIO().KeysDown[GLFW_KEY_SPACE]) {
+					Global::gameState = GameState::PLAY;
+				}
+
+				if (ImGui::Button(ICON_FA_QUESTION_CIRCLE " Tutorial")) {
+					showTutorial = true;
+				}
+
+				if (ImGui::Button(ICON_FA_TIMES_CIRCLE " Quit")) {
+					Global::gameState = GameState::QUIT;
+				}
+				ImGui::End();
+			}
+
+
+			if (showTutorial) { //display tutorial window
+				ImGui::SetNextWindowSizeConstraints(ImVec2(Global::windowWidth / 2, Global::windowHeight / 2),
+													ImVec2(std::numeric_limits<float>::max(),
+														   std::numeric_limits<float>::max()));
+				ImGui::SetNextWindowPosCenter();
+				ImGui::Begin("How To Play", &showTutorial);
+				ImGui::NewLine();
+				ImGui::TextWrapped("Story\n\n"
+								   "It is the distant future. You are working for Celestial Industries,"
+								   " the omnipresent megacorporation that runs human civilization, and have been"
+								   " tasked with overseeing a robotic colony development team. You are offered a promotion"
+								   " if you can get the colony to produce [Amount(s)] of [Resource(s)] per"
+								   " [Time unit], at which point you’d get to supervise a much cooler planet.");
+
+				ImGui::NewLine();
+				ImGui::Text("Movement Keys:\n");
+				ImGui::Text("W\t\t\t\t\t\tMove camera up\n");
+				ImGui::Text("S\t\t\t\t\t\tMove camera down\n");
+				ImGui::Text("A\t\t\t\t\t\tMove camera left\n");
+				ImGui::Text("D\t\t\t\t\t\tMove camera right\n");
+
+				ImGui::NewLine();
+				ImGui::Text("P\t\t\t\t\t\tPause game\n");
+				ImGui::Text("Esc\t\t\t\t\tQuit game\n");
+
+				ImGui::NewLine();
+				ImGui::Text("Left click/drag\t\tSelect Units\n");
+				ImGui::Text("Right click\t\t\t\t\tMove/Attack\n");
+
+				ImGui::NewLine();
+				if (ImGui::Button("Close")) {
+					showTutorial = false;
+				}
+
+				ImGui::End();
+			}
+
+			if (ImGui::GetIO().KeysDown[GLFW_KEY_ESCAPE]) {
+				Global::gameState = GameState::QUIT;
+			}
+
+			// Rendering
+			int display_w, display_h;
+			glfwGetFramebufferSize(g_Window, &display_w, &display_h);
+			glViewport(0, 0, display_w, display_h);
+			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+			glClear(GL_COLOR_BUFFER_BIT);
+			ImGui::Render();
+			ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+			glfwSwapBuffers(g_Window);
+		}
+	}
+
+	void imguiDrawPauseMenu() {
+		while (Global::gameState == GameState::PAUSED && !glfwWindowShouldClose(Ui::getWindow())) {
+			glfwPollEvents();
+			ImGui_ImplGlfwGL3_NewFrame();
+
+			{ //draw menu
+				ImGui::SetNextWindowPosCenter();
+				ImGui::Begin("Pause Menu", nullptr, ImGuiWindowFlags_NoSavedSettings |
+													ImGuiWindowFlags_NoResize |
+													ImGuiWindowFlags_NoCollapse |
+													ImGuiWindowFlags_NoMove |
+													ImGuiWindowFlags_NoTitleBar |
+													ImGuiWindowFlags_AlwaysAutoResize |
+													ImGuiWindowFlags_NoNav);
+				ImGui::Text(ICON_FA_PAUSE_CIRCLE " Game Paused\n\n\n");
+				ImGui::Text("Continue playing?");
+				if (ImGui::Button(ICON_FA_PLAY_CIRCLE " Resume")) {
+					Global::gameState = GameState::PLAY;
+				}
+
+				if (ImGui::Button(ICON_FA_TIMES_CIRCLE " Quit")) {
+					Global::gameState = GameState::QUIT;
+				}
+
+				ImGui::End();
+			}
+
+			if (ImGui::GetIO().KeysDown[GLFW_KEY_ESCAPE]) {
+				Global::gameState = GameState::PLAY;
+			}
+
+			// Rendering
+			int display_w, display_h;
+			glfwGetFramebufferSize(g_Window, &display_w, &display_h);
+			glViewport(0, 0, display_w, display_h);
+			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+			glClear(GL_COLOR_BUFFER_BIT);
+			ImGui::Render();
+			ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+			glfwSwapBuffers(g_Window);
+		}
+	}
+
+
+	GLFWwindow* getWindow() {
+		return g_Window;
+	}
+
+	// OpenGL3 Render function.
 // (this used to be set in io.RenderDrawListsFn and called by ImGui::Render(), but you can now call this directly from your main loop)
 // Note that this implementation is little overcomplicated because we are saving/setting up/restoring every OpenGL state explicitly, in order to be able to run within any OpenGL engine that doesn't do so.
 	void ImGui_ImplGlfwGL3_RenderDrawData(ImDrawData* draw_data) {
@@ -438,11 +633,11 @@ namespace Ui {
 			World::play_mouse_click_sound();
 		}
 
-		//make sure to call the world mouse callback only game world and not ui
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
+		//make sure to call the world mouse callback only game world and not ui
 		if (ypos < Global::windowHeight - uiHeight) {
-			World::on_mouse_button(window, button, action, mods);
+			World::on_mouse_button(window, button, action, mods); //use callback in the game area
 		}
 	}
 
@@ -467,7 +662,10 @@ namespace Ui {
 		io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
 		io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
 
-		World::on_key(window, key, scancode, action, mods);
+
+		if (Global::gameState == GameState::PLAY) { //only allow world key call backs when playing
+			World::on_key(window, key, scancode, action, mods);
+		}
 	}
 
 	void ImGui_ImplGlfw_CharCallback(GLFWwindow*, unsigned int c) {
@@ -757,6 +955,11 @@ namespace Ui {
 
 		// Start the frame. This call will update the io.WantCaptureMouse, io.WantCaptureKeyboard flag that you can use to dispatch inputs (or not) to your application.
 		ImGui::NewFrame();
+	}
+
+	void imguiShutdown() {
+		ImGui_ImplGlfwGL3_Shutdown();
+		ImGui::DestroyContext();
 	}
 
 }
