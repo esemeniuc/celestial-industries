@@ -160,6 +160,8 @@ inline bool tilesOverlap(glm::vec3 locA, glm::vec3 sizeA, glm::vec3 locB, glm::v
 	return true;
 }
 
+// extraArg is used to pass in any extra int info that a tile might need - this is specifically intended to pass along counts of tiles being replaced to the constructor of the new tile
+// for stuff like refineries
 std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location, GamePieceOwner owner, unsigned int width, unsigned int height, int extraArg, Model::MeshType replacingMesh)
 {
 	// Update graphics

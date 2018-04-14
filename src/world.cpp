@@ -309,26 +309,6 @@ void World::draw() {
 //	glfwSwapBuffers(m_window);
 }
 
-void World::move_cursor_up() {
-	selectedTileCoordinates.colCoord--;
-	//printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
-}
-
-void World::move_cursor_down() {
-	selectedTileCoordinates.colCoord++;
-	//printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
-}
-
-void World::move_cursor_left() {
-	selectedTileCoordinates.rowCoord--;
-	//printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
-}
-
-void World::move_cursor_right() {
-	selectedTileCoordinates.rowCoord++;
-	//printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
-}
-
 void World::play_mouse_click_sound() {
 	Mix_PlayChannel(-1, m_mouse_click, 0);
 }
@@ -368,22 +348,6 @@ void World::on_key(GLFWwindow* window, int key, int scancode, int action, int mo
 	// File saving
 	if (action == GLFW_RELEASE && key == GLFW_KEY_O) {
 		level.save("savedLevel.txt");
-	}
-
-	// Tile selection controls:
-	if (action == GLFW_RELEASE) {
-		if (key == GLFW_KEY_I) {
-			move_cursor_up();
-		}
-		if (key == GLFW_KEY_K) {
-			move_cursor_down();
-		}
-		if (key == GLFW_KEY_L) {
-			move_cursor_left();
-		}
-		if (key == GLFW_KEY_J) {
-			move_cursor_right();
-		}
 	}
 
 	// We do what we must because we can. Also we only can if we support C++11.
@@ -456,7 +420,7 @@ void World::on_window_resize(GLFWwindow* window, int width, int height) {
 }
 
 bool withinLevelBounds(glm::vec3 coords) {
-	return (coords.x >= 0 && coords.x < Global::levelWidth) ||
+	return (coords.x >= 0 && coords.x < Global::levelWidth) &&
 		   (coords.z >= 0 && coords.z < Global::levelHeight);
 }
 
@@ -465,60 +429,49 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
 	std::pair<bool, glm::vec3> targetLocation = World::getTileCoordFromWindowCoords(xpos, ypos);
+	glm::vec3 coords = { selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord };
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
 			std::cout << "clicked " << targetLocation.second.x << " " << targetLocation.second.z << "\n";
 			UnitManager::selectUnit(targetLocation.second);
+		}
+
+		if (withinLevelBounds(coords)) {
+			switch (Ui::selectedBuilding) {
+			case Ui::BuildingSelected::REFINERY: {
+				int numFriendlyTiles = level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, 3, 3);
+				int numGeysers = level.numTilesOfTypeInArea(Model::MeshType::GEYSER, coords, 3, 3);
+				if (numFriendlyTiles > 0 || numGeysers == 0) {
+					play_error_sound();
+					break;
+				}
+				level.placeTile(Model::MeshType::REFINERY, coords, GamePieceOwner::PLAYER, 3, 3, numGeysers);
+				break;
+			}
+			case Ui::BuildingSelected::SUPPLY_DEPOT:
+				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0) {
+					play_error_sound();
+					break;
+				}
+				level.placeTile(Model::MeshType::SUPPLY_DEPOT, coords);
+				break;
+			case Ui::BuildingSelected::GUN_TURRET:
+				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0) {
+					play_error_sound();
+					break;
+				}
+				level.placeTile(Model::MeshType::GUN_TURRET, coords);
+				break;
+			case Ui::BuildingSelected::NONE:
+			default:
+				break;
+			}
 		}
 	};
 
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
 		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
 			UnitManager::attackTargetLocationWithSelectedUnits(targetLocation.second);
-		}
-	}
-	ImVec2 leftClickLoc = ImGui::GetIO().MouseClickedPos[0];
-
-	glm::vec3 coords = {selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord};
-	if (coords.x < 0 || coords.x >= Global::levelWidth ||
-		coords.z < 0 || coords.z >= Global::levelHeight)
-		return;
-
-	if (action == GLFW_PRESS && button == 0) {
-		switch (Ui::selectedBuilding){
-		case Ui::BuildingSelected::REFINERY: {
-			int numFriendlyTiles = level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, 3, 3);
-			int numGeysers = level.numTilesOfTypeInArea(Model::MeshType::GEYSER, coords, 3, 3);
-			if (numFriendlyTiles > 0 || numGeysers == 0) {
-				play_error_sound();
-				break;
-			}
-			level.placeTile(Model::MeshType::REFINERY, coords, GamePieceOwner::PLAYER, 3, 3, numGeysers);
-			break;
-		}
-		case Ui::BuildingSelected::SUPPLY_DEPOT:
-			if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0) {
-				play_error_sound();
-				break;
-			}
-			level.placeTile(Model::MeshType::SUPPLY_DEPOT, coords);
-			break;
-		case Ui::BuildingSelected::GUN_TURRET:
-			if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0) {
-				play_error_sound();
-				//break;
-			}
-			level.placeTile(Model::MeshType::GUN_TURRET, coords);
-			break;
-		case Ui::BuildingSelected::NONE:
-		default:
-			break;
-		}
-	}
-
-	if (action == GLFW_PRESS && button == 1) {
-		for (auto unit : UnitManager::selectedUnits) {
-			unit->moveTo(UnitState::MOVE, coords.x, coords.z);
 		}
 	}
 }
