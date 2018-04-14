@@ -20,9 +20,8 @@ std::array<const char*, Model::MeshType::MESHTYPES_COUNT> init() {
 }
 
 
-namespace Entity {
-	namespace Info {
+namespace EntityInfo {
 		std::array<const char*, Model::MeshType::MESHTYPES_COUNT> nameLookupTable = init();
 
-	}
+	
 }

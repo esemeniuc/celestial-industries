@@ -36,8 +36,8 @@ namespace Ui {
 	static int uiHeight = 200;
 	static int spawnWindowWidth = 300;
 
-	static glm::vec3 topLeft;
-	static glm::vec3 bottomRight;
+	static ImVec2 topLeft;
+	static ImVec2 bottomRight;
 	static ImVec2 unitSelectionSize;
 
 	//funcs

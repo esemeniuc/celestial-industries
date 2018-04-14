@@ -8,9 +8,8 @@
 
 //stores info that never changes
 namespace EntityInfo {
-		extern std::array<const char*, Model::MeshType::MESHTYPES_COUNT> nameLookupTable;
-		extern std::array<const char*, Model::MeshType::MESHTYPES_COUNT> nameLookupTable;
-		extern std::array<const char*, Model::MeshType::MESHTYPES_COUNT> gamePieceClassLookupTable;
+	extern std::array<const char*, Model::MeshType::MESHTYPES_COUNT> nameLookupTable;
+	extern std::array<const char*, Model::MeshType::MESHTYPES_COUNT> gamePieceClassLookupTable;
 
 };
 
