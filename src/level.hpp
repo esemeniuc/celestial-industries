@@ -82,6 +82,8 @@ public:
 
 	int numTilesOfOwnerInArea(GamePieceOwner owner, glm::vec3 location, unsigned int height = 1, unsigned int width = 1);
 
+	bool unpathableTilesInArea(glm::vec3 location, unsigned int height = 1, unsigned int width = 1);
+
 	std::shared_ptr<Tile> tileFromMeshType(Model::MeshType type, int extraArg = 0);
 
 	void setupAiCompForTile(std::shared_ptr<Tile> tile, GamePieceOwner owner);

@@ -226,6 +226,18 @@ int Level::numTilesOfOwnerInArea(GamePieceOwner owner, glm::vec3 location, unsig
 	return total;
 }
 
+bool Level::unpathableTilesInArea(glm::vec3 location, unsigned int height, unsigned int width)
+{
+	glm::vec3 size = { width, 0, height };
+	for (auto& tile : tiles) {
+		if (!tile->isDeleted && tilesOverlap(tile->position, tile->size, location, size)) {
+			std::pair<int, float> cost = tileToCost[tile->type];
+			if (cost.first == Config::OBSTACLE_COST)return true;
+		}
+	}
+	return false;
+}
+
 std::shared_ptr<Tile> Level::tileFromMeshType(Model::MeshType type, int extraArg)
 {
 	switch (type) {

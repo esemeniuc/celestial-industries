@@ -255,21 +255,6 @@ bool World::update(double elapsed_ms) {
 	for (const auto& entity : Global::playerUnits) {
 		entity->animate(elapsed_ms);
 	}
-//	if (m_dist(m_rng) < 0.005) {
-//		int row = m_dist(m_rng) * Global::levelWidth;
-//		int col = m_dist(m_rng) * Global::levelHeight;
-//		if (level.getLevelTraversalCostMap()[col][row].movementCost < 50.0f) {
-//			glm::vec3 pos = glm::vec3(row, 0, col);
-//			float unitRand = m_dist(m_rng);
-//			if (unitRand < 0.33) {
-//				level.placeEntity(Model::MeshType::ENEMY_SPIKE_UNIT, pos, GamePieceOwner::AI);
-//			} else if (unitRand < 0.66) {
-//				level.placeEntity(Model::MeshType::ENEMY_RANGED_LINE_UNIT, pos, GamePieceOwner::AI);
-//			} else {
-//				level.placeEntity(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, pos, GamePieceOwner::AI);
-//			}
-//		}
-//	}
 	return true;
 }
 
@@ -436,12 +421,15 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 			UnitManager::selectUnit(targetLocation.second);
 		}
 
+		std::vector<Model::MeshType> trees = { Model::MeshType::REDTREE, Model::MeshType::TREE, Model::MeshType::YELLOWTREE };
 		if (withinLevelBounds(coords)) {
 			switch (Ui::selectedBuilding) {
 			case Ui::BuildingSelected::REFINERY: {
-				int numFriendlyTiles = level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, 3, 3);
-				int numGeysers = level.numTilesOfTypeInArea(Model::MeshType::GEYSER, coords, 3, 3);
-				if (numFriendlyTiles > 0 || numGeysers == 0) {
+				const int refinerySize = 3;
+				int numFriendlyTiles = level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, refinerySize, refinerySize);
+				int numGeysers = level.numTilesOfTypeInArea(Model::MeshType::GEYSER, coords, refinerySize, refinerySize);
+				bool unpathableTiles = level.unpathableTilesInArea(coords, refinerySize, refinerySize);
+				if (numFriendlyTiles > 0 || numGeysers == 0 || unpathableTiles) {
 					play_error_sound();
 					break;
 				}
@@ -449,14 +437,14 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 				break;
 			}
 			case Ui::BuildingSelected::SUPPLY_DEPOT:
-				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0) {
+				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 || level.unpathableTilesInArea(coords)) {
 					play_error_sound();
 					break;
 				}
 				level.placeTile(Model::MeshType::SUPPLY_DEPOT, coords);
 				break;
 			case Ui::BuildingSelected::GUN_TURRET:
-				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0) {
+				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 || level.unpathableTilesInArea(coords)) {
 					play_error_sound();
 					break;
 				}
