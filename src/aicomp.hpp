@@ -3,12 +3,21 @@
 #include "rigidBody.hpp"
 #include <memory>
 
-enum class GamePieceOwner {
-	NONE, PLAYER, AI
+//make sure to update entityinfo.cpp if you add new enums here
+enum class GamePieceOwner :size_t {
+	NONE,
+	PLAYER,
+	AI,
 };
 
-enum class GamePieceClass {
-	NONE, BUILDING_NON_ATTACKING, UNIT_NON_ATTACKING, BUILDING_DEFENSIVE_PASSIVE, BUILDING_DEFENSIVE_ACTIVE, UNIT_DEFENSIVE_ACTIVE, UNIT_OFFENSIVE
+enum class GamePieceClass :size_t {
+	NONE,
+	BUILDING_NON_ATTACKING,
+	UNIT_NON_ATTACKING,
+	BUILDING_DEFENSIVE_PASSIVE,
+	BUILDING_DEFENSIVE_ACTIVE,
+	UNIT_DEFENSIVE_ACTIVE,
+	UNIT_OFFENSIVE,
 };
 
 

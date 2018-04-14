@@ -7,10 +7,10 @@
 #include "unit.hpp" //for spawning
 #include "world.hpp" //for key callbacks
 #include "config.hpp" //for font file path
+#include "entityinfo.hpp" //for entity string lookups
 #include "unitmanager.hpp" //for unit selection info
 
 #include "IconsFontAwesome5.h" //for game icons
-#include "entityinfo.hpp"
 
 ImVec2 operator+(const ImVec2& a, const ImVec2& b) {
 	return {a.x + b.x, a.y + b.y};
@@ -189,8 +189,8 @@ namespace Ui {
 				ImGui::Text("Damage: %d\n", unit->unitComp.attackDamage);
 				ImGui::Text("Attack Range: %d\n", unit->unitComp.attackRange);
 				ImGui::Text("Attack Speed: %d\n", unit->unitComp.attackSpeed);
-				ImGui::Text("Owner: %d\n", unit->aiComp.owner);
-				ImGui::Text("Type: %d:", unit->aiComp.type);
+				ImGui::Text("Allegiance: %s\n", EntityInfo::gamePieceOwnerLookupTable[unit->aiComp.owner]);
+				ImGui::Text("Type: %s\n", EntityInfo::gamePieceClassLookupTable[unit->aiComp.type]);
 			} else if (UnitManager::selectedUnits.size() > 1) {
 				for (const auto& unit : UnitManager::selectedUnits) {
 //draw something
