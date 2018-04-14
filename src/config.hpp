@@ -36,7 +36,7 @@ namespace Config {
 	constexpr const int OBSTACLE_COST = 1000;
 	constexpr const int DEFAULT_TRAVERSABLE_COST = 10;
 	constexpr const int POINT_CLICK_DISTANCE_THRESHOLD = 1;
-	constexpr const int RIGHT_CLICK_ATTACK_WITHIN_RANGE_THRESHOLD = 10;
+	constexpr const int RIGHT_CLICK_ATTACK_WITHIN_RANGE_THRESHOLD = 1;
 
 	//file paths
 	constexpr const char* FONTAWESOME_FILE_PATH = font_path("fa-solid-900.ttf");

@@ -178,12 +178,14 @@ namespace UnitManager {
 
 		if (closestUnit.first < Config::RIGHT_CLICK_ATTACK_WITHIN_RANGE_THRESHOLD) {
 			for (auto& unit : selectedUnits) {
+				logger(LogLevel::DEBUG) << "attackmove\n";
 				unit->moveTo(UnitState::ATTACK_MOVE, closestUnit.second->getPosition().x,
 							 closestUnit.second->getPosition().z); //attack that target
 			}
 		} else { // no unit found, so attackMove to that location
 			for (auto& unit : selectedUnits) {
-				unit->moveTo(UnitState::ATTACK_MOVE, targetLocation.x, targetLocation.z); //attack that target
+				logger(LogLevel::DEBUG) << "move\n";
+				unit->moveTo(UnitState::MOVE, targetLocation.x, targetLocation.z); //attack that target
 			}
 		}
 	}
