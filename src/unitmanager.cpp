@@ -81,7 +81,9 @@ namespace UnitManager {
 	}
 
 
-	//geometry stuff
+	//geometry stuff from UBC CPSC 490 code archive. this is used by selectUnitsInTrapezoid() since
+	//we rectangle select creates trapezoids in the game world
+	//this helps check if a unit is in the trapezoid
 	typedef std::complex<double> pt;
 	typedef std::vector<pt> pol;
 
@@ -100,17 +102,8 @@ namespace UnitManager {
 //highlight gets only friendly units, point click gets both friendly and enemy units
 //since player might want to inspect enemy unit
 	std::vector<std::shared_ptr<Entity>>
-	getUnitsInRange(glm::vec3 topLeft, glm::vec3 topRight, glm::vec3 bottomLeft, glm::vec3 bottomRight) {
+	getUnitsInPolygon(glm::vec3 topLeft, glm::vec3 topRight, glm::vec3 bottomLeft, glm::vec3 bottomRight) {
 		std::vector<std::shared_ptr<Entity>> returnUnits;
-
-		//add enemy units if just a point click
-		if (Coord::l1Norm(topLeft, bottomRight) < Config::POINT_CLICK_DISTANCE_THRESHOLD) {
-			for (const auto& aiUnit : Global::aiUnits) {
-				if (isWithinBounds(aiUnit, topLeft, bottomRight)) { //start or end works since it is just a point
-					returnUnits.push_back(aiUnit);
-				}
-			}
-		}
 
 		for (const auto& playerUnit : Global::playerUnits) {
 			pt playerUnitPos{playerUnit->getPosition().x, playerUnit->getPosition().z};
@@ -126,32 +119,52 @@ namespace UnitManager {
 		return returnUnits;
 	}
 
-	void selectUnitsInTrapezoid(glm::vec3 topLeft, glm::vec3 topRight, glm::vec3 bottomLeft, glm::vec3 bottomRight) {
-		selectedUnits.clear();
-		selectedUnits = getUnitsInRange(topLeft, topRight, bottomLeft, bottomRight);
-	}
-
-	void attackTargetLocationWithSelectedUnits(glm::vec3 targetLocation) {
-		//find unit closest to targetLocation
+	std::pair<float, std::shared_ptr<Entity>> getClosestUnitToTarget(const glm::vec3& targetLocation) {
 		float bestDist = FLT_MAX;
 		std::shared_ptr<Entity> closestUnitToTarget;
-		for (const auto& unit : Global::aiUnits) {
-			float unitDist = glm::distance(unit->getPosition(), targetLocation);
+		for (const auto& aiUnit : Global::aiUnits) {
+			float unitDist = glm::distance(aiUnit->getPosition(), targetLocation);
 			if (unitDist <= bestDist) {
 				bestDist = unitDist;
-				closestUnitToTarget = unit;
+				closestUnitToTarget = aiUnit;
 			}
 		}
 
-		if (bestDist < Config::RIGHT_CLICK_ATTACK_WITHIN_RANGE_THRESHOLD) {
+		return {bestDist, closestUnitToTarget};
+	}
+
+	void selectUnit(const glm::vec3& targetLocation) {
+		selectedUnits.clear();
+
+		std::pair<float, std::shared_ptr<Entity>> bestUnit = getClosestUnitToTarget(targetLocation);
+
+		//add enemy units if just a point click
+		if (bestUnit.first < Config::POINT_CLICK_DISTANCE_THRESHOLD) {
+			selectedUnits.push_back(bestUnit.second);
+		}
+	}
+
+	void selectUnitsInTrapezoid(const glm::vec3& topLeft, const glm::vec3& topRight,
+								const glm::vec3& bottomLeft, const glm::vec3& bottomRight) {
+		selectedUnits.clear();
+		selectedUnits = getUnitsInPolygon(topLeft, topRight, bottomLeft, bottomRight);
+	}
+
+
+	void attackTargetLocationWithSelectedUnits(const glm::vec3& targetLocation) {
+		//find unit closest to targetLocation
+		std::pair<float, std::shared_ptr<Entity>> closestUnit = getClosestUnitToTarget(targetLocation);
+
+		if (closestUnit.first < Config::RIGHT_CLICK_ATTACK_WITHIN_RANGE_THRESHOLD) {
 			for (auto& unit : selectedUnits) {
-				unit->moveTo(UnitState::ATTACK_MOVE, closestUnitToTarget->getPosition().x, closestUnitToTarget->getPosition().z); //attack that target
+				unit->moveTo(UnitState::ATTACK_MOVE, closestUnit.second->getPosition().x,
+							 closestUnit.second->getPosition().z); //attack that target
 			}
 		} else { // no unit found, so attackMove to that location
 			for (auto& unit : selectedUnits) {
 				unit->moveTo(UnitState::ATTACK_MOVE, targetLocation.x, targetLocation.z); //attack that target
 			}
 		}
-
 	}
+
 }

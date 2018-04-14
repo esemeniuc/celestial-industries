@@ -36,7 +36,7 @@ namespace World {
 	Mix_Music* m_background_music;
 	Mix_Chunk* m_mouse_click;
 
-	double gameElapsedTime = 0.0;	
+	double gameElapsedTime = 0.0;
 }
 
 
@@ -442,15 +442,18 @@ bool withinLevelBounds(glm::vec3 coords) {
 }
 
 void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods) {
-	// play mouse click sound
+	// single click select units
+	double xpos, ypos;
+	glfwGetCursorPos(window, &xpos, &ypos);
+	std::pair<bool, glm::vec3> targetLocation = World::getTileCoordFromWindowCoords(xpos, ypos);
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		World::play_mouse_click_sound();
-	}
+		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
+			std::cout << "clicked" << targetLocation.second.x << " " << targetLocation.second.z << "\n";
+			UnitManager::selectUnit(targetLocation.second);
+		}
+	};
 
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
-		std::pair<bool, glm::vec3> targetLocation = World::getTileCoordFromWindowCoords(xpos, ypos);
 		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
 			UnitManager::attackTargetLocationWithSelectedUnits(targetLocation.second);
 		}

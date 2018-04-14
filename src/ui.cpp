@@ -124,11 +124,7 @@ namespace Ui {
 			ImGui::End();
 			ImGui::PopStyleVar(); //size
 			ImGui::PopStyleVar(); //square
-		} else if (ImGui::IsMouseDragging(1)) {
-			std::cout << "dragging2\n";
-			std::cout << ImGui::GetMouseDragDelta(1).x << ' ' << ImGui::GetMouseDragDelta(1).y << "\n";
 		}
-
 
 		{ //resources counter at top right
 			const float DISTANCE = 10.0f;
@@ -161,7 +157,7 @@ namespace Ui {
 												 ImGuiWindowFlags_NoTitleBar);
 
 			//need this for display of selected units
-			if(ImGui::IsMouseDragging()) { //update selected units only when dragging (otherwise get keyboard panning updates this)
+			if (ImGui::IsMouseDragging()) { //update selected units only when dragging (otherwise get keyboard panning updates this)
 				ImVec2 topRight = ImVec2(topLeft.x + unitSelectionSize.x, topLeft.y); //not calculated during selection
 				ImVec2 bottomLeft = ImVec2(topLeft.x, topLeft.y + unitSelectionSize.y);
 
@@ -355,7 +351,7 @@ namespace Ui {
 				ImGui::Image(gameLogo, gameLogoSize);
 				ImGui::NewLine();
 
-				if (ImGui::Button(ICON_FA_PLAY_CIRCLE " Start")) {
+				if (ImGui::Button(ICON_FA_PLAY_CIRCLE " Start") || ImGui::GetIO().KeysDown[GLFW_KEY_SPACE]) {
 					Global::gameState = GameState::PLAY;
 				}
 
@@ -632,11 +628,11 @@ namespace Ui {
 			World::play_mouse_click_sound();
 		}
 
-		//make sure to call the world mouse callback only game world and not ui
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
+		//make sure to call the world mouse callback only game world and not ui
 		if (ypos < Global::windowHeight - uiHeight) {
-			World::on_mouse_button(window, button, action, mods);
+			World::on_mouse_button(window, button, action, mods); //in game area
 		}
 	}
 

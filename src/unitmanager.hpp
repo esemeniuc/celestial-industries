@@ -19,8 +19,11 @@ namespace UnitManager {
 
 	void update(double elapsed_ms);
 
-	void selectUnitsInTrapezoid(glm::vec3 topLeft, glm::vec3 topRight, glm::vec3 bottomLeft, glm::vec3 bottomRight);
+	void selectUnit(const glm::vec3& targetLocation);
 
-	void attackTargetLocationWithSelectedUnits(glm::vec3 targetLocation);
+	void selectUnitsInTrapezoid(const glm::vec3& topLeft, const glm::vec3& topRight,
+								const glm::vec3& bottomLeft, const glm::vec3& bottomRight);
+
+	void attackTargetLocationWithSelectedUnits(const glm::vec3& targetLocation);
 }
 
