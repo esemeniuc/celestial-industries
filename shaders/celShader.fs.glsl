@@ -48,7 +48,7 @@ void main()
 	vec3 light_DFF = diffuseComponent * diffuseColor;
 
 	//SPECULAR	
-	specularComponent = pow(max(0.0, dot(halfwayVector, normalizedNormal)), 2.0); // shininess = 10
+	specularComponent = pow(max(0.0, dot(halfwayVector, normalizedNormal)), 2.0); // shininess = 2
 	vec3 light_SPC = vec3(specularComponent * mat.specular);	
 	
 	vec3 TOTAL = light_AMB + light_DFF + light_SPC;
