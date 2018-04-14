@@ -96,7 +96,7 @@ bool World::init() {
 
 	// Load shader for default meshSources
 	objShader = std::make_shared<Shader>();
-	if (!objShader->load_from_file(shader_path("CelShader.vs.glsl"), shader_path("CelShader.fs.glsl"))) {
+	if (!objShader->load_from_file(shader_path("celShader.vs.glsl"), shader_path("celShader.fs.glsl"))) {
 		logger(LogLevel::ERR) << "Failed to load obj shader!" << '\n';
 		return false;
 	}
