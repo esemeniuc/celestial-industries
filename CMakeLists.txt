@@ -58,7 +58,6 @@ set(PROJ_SOURCES
 		src/aicomp.cpp
 		src/aimanager.cpp
 		src/attackManger.cpp
-		src/building.cpp
 		src/buildingmanager.cpp
 		src/camera.cpp
 		src/coord.cpp
