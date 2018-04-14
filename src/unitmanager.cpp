@@ -187,4 +187,11 @@ namespace UnitManager {
 			}
 		}
 	}
+
+	void sortSelectedUnits() {
+		auto comparator = [](const std::shared_ptr<Entity>& l, const std::shared_ptr<Entity>& r) {
+			return l->meshType < r->meshType;
+		};
+		sort(selectedUnits.begin(), selectedUnits.end(), comparator);
+	}
 }

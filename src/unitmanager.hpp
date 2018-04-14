@@ -24,6 +24,8 @@ namespace UnitManager {
 	void selectUnitsInTrapezoid(const glm::vec3& topLeft, const glm::vec3& topRight,
 								const glm::vec3& bottomLeft, const glm::vec3& bottomRight);
 
+	void sortSelectedUnits(); //use this for displaying selected units (want to group them nicely)
+
 	void attackTargetLocationWithSelectedUnits(const glm::vec3& targetLocation);
 }
 

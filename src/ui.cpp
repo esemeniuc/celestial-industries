@@ -72,13 +72,47 @@ namespace Ui {
 		// use FONT_ICON_FILE_NAME_FAR if you want regular instead of solid
 
 		// load game logo texture
-		static Texture logoTexture; //make static since destructor will free the texture
-		logoTexture.load_from_file(textures_path("Celestial-Industries.png"));
-		if (!logoTexture.is_valid()) {
+		static Texture tempTextureLoader; //make static since destructor will free the texture
+		tempTextureLoader.load_from_file(textures_path("Celestial-Industries.png"));
+		if (!tempTextureLoader.is_valid()) {
 			throw "failed to load logo texture!";
 		}
-		gameLogo = reinterpret_cast<void*>(logoTexture.id);
-		gameLogoSize = ImVec2(logoTexture.width, logoTexture.height);
+		gameLogo = reinterpret_cast<void*>(tempTextureLoader.id);
+		gameLogoSize = ImVec2(tempTextureLoader.width, tempTextureLoader.height);
+		imguiLoadUnitSprites();
+	}
+
+	void imguiLoadUnitSprites() {
+		//load in the entity wireframe like sprites
+		std::vector<std::pair<Model::MeshType, const char*>> texturePaths = {
+				//level tile textures
+				{Model::MeshType::REFINERY,                 textures_path("letterPlaceholders/letter_R.png")},
+				{Model::MeshType::MINING_TOWER,             textures_path("letterPlaceholders/letter_M.png")},
+				{Model::MeshType::PHOTON_TOWER,             textures_path("letterPlaceholders/letter_P.png")},
+				{Model::MeshType::SUPPLY_DEPOT,             textures_path("letterPlaceholders/letter_S.png")},
+				{Model::MeshType::GUN_TURRET,               textures_path("letterPlaceholders/letter_G.png")},
+
+				{Model::MeshType::GEYSER,                   textures_path("letterPlaceholders/letter_G.png")},
+
+				{Model::MeshType::BALL,                     textures_path("letterPlaceholders/letter_B.png")},
+				{Model::MeshType::ENEMY_SPIKE_UNIT,         textures_path("letterPlaceholders/letter_S.png")},
+				{Model::MeshType::ENEMY_RANGED_LINE_UNIT,   textures_path("letterPlaceholders/letter_L.png")},
+				{Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, textures_path("letterPlaceholders/letter_R.png")},
+				{Model::MeshType::FRIENDLY_FIRE_UNIT,       textures_path("letterPlaceholders/letter_F.png")},
+				{Model::MeshType::FRIENDLY_RANGED_UNIT,     textures_path("letterPlaceholders/letter_R.png")}
+		};
+
+		static Texture tempTextureLoader; //make static since destructor will free the texture
+
+		for (const auto& elem : texturePaths) {
+			tempTextureLoader.load_from_file(elem.second);
+			if (!tempTextureLoader.is_valid()) {
+				throw std::runtime_error(
+						std::string("failed to load logo texture with path ") + std::string(elem.second));
+			}
+			entitySprite[elem.first] = reinterpret_cast<void*>(tempTextureLoader.id);
+			entitySpriteSize[elem.first] = ImVec2(32, 32);
+		}
 	}
 
 	void imguiGenerateScreenObjects() {
@@ -158,10 +192,12 @@ namespace Ui {
 
 			//need this for display of selected units
 			if (ImGui::IsMouseDragging()) { //update selected units only when dragging (otherwise get keyboard panning updates this)
-				ImVec2 topRight = ImVec2(topLeft.x + unitSelectionSize.x, topLeft.y); //not calculated during selection
+				ImVec2 topRight = ImVec2(topLeft.x + unitSelectionSize.x,
+										 topLeft.y); //not calculated during selection
 				ImVec2 bottomLeft = ImVec2(topLeft.x, topLeft.y + unitSelectionSize.y);
 
-				std::pair<bool, glm::vec3> topLeftTileCoord = World::getTileCoordFromWindowCoords(topLeft.x, topLeft.y);
+				std::pair<bool, glm::vec3> topLeftTileCoord = World::getTileCoordFromWindowCoords(topLeft.x,
+																								  topLeft.y);
 				std::pair<bool, glm::vec3> bottomRightTileCoord = World::getTileCoordFromWindowCoords(bottomRight.x,
 																									  bottomRight.y);
 
@@ -192,8 +228,10 @@ namespace Ui {
 				ImGui::Text("Allegiance: %s\n", EntityInfo::gamePieceOwnerLookupTable[unit->aiComp.owner]);
 				ImGui::Text("Type: %s\n", EntityInfo::gamePieceClassLookupTable[unit->aiComp.type]);
 			} else if (UnitManager::selectedUnits.size() > 1) {
+				UnitManager::sortSelectedUnits(); //group them up
 				for (const auto& unit : UnitManager::selectedUnits) {
-//draw something
+					ImGui::Image(entitySprite[unit->meshType], entitySpriteSize[unit->meshType]);
+					ImGui::SameLine();
 				}
 			}
 
@@ -310,7 +348,8 @@ namespace Ui {
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 		glfwWindowHint(GLFW_RESIZABLE, 1);
-		g_Window = glfwCreateWindow(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT, Config::WINDOW_TITLE,
+		g_Window = glfwCreateWindow(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT,
+									Config::WINDOW_TITLE,
 									nullptr, nullptr);
 		if (g_Window == nullptr)
 			return false;
@@ -576,7 +615,8 @@ namespace Ui {
 				} else {
 					glBindTexture(GL_TEXTURE_2D, (GLuint) (intptr_t) pcmd->TextureId);
 					glScissor((int) pcmd->ClipRect.x, (int) (fb_height - pcmd->ClipRect.w),
-							  (int) (pcmd->ClipRect.z - pcmd->ClipRect.x), (int) (pcmd->ClipRect.w - pcmd->ClipRect.y));
+							  (int) (pcmd->ClipRect.z - pcmd->ClipRect.x),
+							  (int) (pcmd->ClipRect.w - pcmd->ClipRect.y));
 					glDrawElements(GL_TRIANGLES, (GLsizei) pcmd->ElemCount,
 								   sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, idx_buffer_offset);
 				}
@@ -873,7 +913,8 @@ namespace Ui {
 		glfwGetWindowSize(g_Window, &w, &h);
 		glfwGetFramebufferSize(g_Window, &display_w, &display_h);
 		io.DisplaySize = ImVec2((float) w, (float) h);
-		io.DisplayFramebufferScale = ImVec2(w > 0 ? ((float) display_w / w) : 0, h > 0 ? ((float) display_h / h) : 0);
+		io.DisplayFramebufferScale = ImVec2(w > 0 ? ((float) display_w / w) : 0,
+											h > 0 ? ((float) display_h / h) : 0);
 
 		// Setup time step
 		double current_time = glfwGetTime();
@@ -909,7 +950,8 @@ namespace Ui {
 				glfwSetInputMode(g_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 			} else {
 				glfwSetCursor(g_Window,
-							  g_MouseCursors[cursor] ? g_MouseCursors[cursor] : g_MouseCursors[ImGuiMouseCursor_Arrow]);
+							  g_MouseCursors[cursor] ? g_MouseCursors[cursor]
+													 : g_MouseCursors[ImGuiMouseCursor_Arrow]);
 				glfwSetInputMode(g_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			}
 		}
