@@ -52,11 +52,12 @@ namespace AI {
 			/* costOfForwardMove = std::get<2>(graph[row][col + 1]);
 			a cost value of 1000 or larger is considered an obstacle
 			that the algorithm should avoid*/
+			if (col < 0 || col >= numOfColumns || row < 0 || col >= numOfRows) {
+				logger(LogLevel::ERR) << "ENTITY PATHING FROM OUT OF LEVEL \n";
+				throw "ENTITY PATHING FROM OUT OF LEVEL";
+			}
 
 			// check if we can move forward a column
-			if (col < 0 || col >= numOfColumns || row < 0 || col >= numOfRows)
-				return neighbors;
-
 			if ((col != numOfColumns - 1) && (((row == goalRow) && (col + 1 == goalCol)) ||
 											  graph[row][col + 1].movementCost < Config::OBSTACLE_COST)) {
 				neighbors.push_back(graph[row][col + 1]);
