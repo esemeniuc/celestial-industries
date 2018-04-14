@@ -21,7 +21,7 @@ int CollisionDetector::createBoundingBox(glm::vec3 position, glm::vec3 size, glm
 void CollisionDetector::findCollisions(float elapsed_ms)
 {
     // O(n^2) lol
-    for (int i = 0; i < boxes.size(); i++) {
+    for (size_t i = 0; i < boxes.size(); i++) {
         collisions[i].clear();
 		if (!boxes[i].removed) {
 			for (int j = 0; j < boxes.size(); j++) {
