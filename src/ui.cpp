@@ -69,6 +69,15 @@ namespace Ui {
 		icons_config.PixelSnapH = true;
 		io.Fonts->AddFontFromFileTTF(Config::FONTAWESOME_FILE_PATH, 16.0f, &icons_config, icons_ranges);
 		// use FONT_ICON_FILE_NAME_FAR if you want regular instead of solid
+
+		// load game logo texture
+		static Texture logoTexture; //make static since destructor will corrupt the texture
+		logoTexture.load_from_file(textures_path("Celestial-Industries.png"));
+		if (!logoTexture.is_valid()) {
+			throw "failed to load logo texture!";
+		}
+		gameLogo = (void*) logoTexture.id;
+		gameLogoSize = ImVec2(logoTexture.width, logoTexture.height);
 	}
 
 
@@ -340,9 +349,8 @@ namespace Ui {
 													 ImGuiWindowFlags_NoNav);
 
 				//display game logo as part of start up screen
-				ImGui::Text("Celestial Industries");
-				ImTextureID gameLogo = (void*) World::logoTexture.id;
-				ImGui::Image(gameLogo, ImVec2(World::logoTexture.width, World::logoTexture.height));
+				ImGui::Image(gameLogo, gameLogoSize);
+				ImGui::NewLine();
 
 				if (ImGui::Button(ICON_FA_PLAY_CIRCLE " Start")) {
 					Global::gameState = GameState::PLAY;

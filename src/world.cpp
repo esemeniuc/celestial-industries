@@ -36,9 +36,6 @@ namespace World {
 	Mix_Music* m_background_music;
 	Mix_Chunk* m_mouse_click;
 
-	// UI logos and textures
-	Texture logoTexture;
-
 	double gameElapsedTime = 0.0;	
 }
 
@@ -57,11 +54,6 @@ bool World::init() {
 	glfwSetWindowSizeCallback(m_window, on_window_resize);
 
 	//-------------------------------------------------------------------------
-	// load game logo texture	
-	logoTexture.load_from_file(textures_path("Celestial-Industries.png"));
-	if (!logoTexture.is_valid()) {
-		throw "failed to load logo texture!";
-	}
 
 	// Loading music and sounds
 	if (SDL_Init(SDL_INIT_AUDIO) < 0) {

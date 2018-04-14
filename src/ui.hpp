@@ -40,6 +40,10 @@ namespace Ui {
 	static ImVec2 bottomRight;
 	static ImVec2 unitSelectionSize;
 
+	// UI logos and textures
+	static ImTextureID gameLogo;
+	static ImVec2 gameLogoSize;
+
 	//funcs
 	bool createWindow(); //does glfw stuff
 

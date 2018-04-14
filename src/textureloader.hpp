@@ -3,7 +3,6 @@
 
 #include <string>
 #include <gl3w.h>
-#include <GLFW/glfw3.h>
 
 struct cube_textures {
 	std::string front;
@@ -28,6 +27,6 @@ struct Texture
 	// Loads texture from file specified by path
 	bool load_from_file(const char* path);
 	bool is_valid()const; // True if texture is valid
-	bool load_side_texture (GLuint texture, GLenum side, const std::string texture_image_path);
+	bool load_side_texture (GLuint texture, GLenum side, const std::string& texture_image_path);
 	void generate_cube_map (const cube_textures & faces, GLuint * cube_texture);	
 };
