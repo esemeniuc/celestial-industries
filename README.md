@@ -21,12 +21,13 @@
 - OpenGL 4.1
 - GLFW3
 
-### How to run
-- Git clone
-- Pull in submodule dependencies: `git submodule update --init --recursive`
-
+### How to Download
+```bash
+git clone https://github.com/esemeniuc/celestial-industries.git
+git submodule update --init --recursive
+```
 ### Linux Instructions
-Requires G++ 6.x/Clang++ 4.x or newer
+Requires g++ 6.x/clang++ 4.x or newer
 
 #### Dependency Installation on Ubuntu
 ```bash
@@ -56,6 +57,8 @@ CMake (from within the build folder)
 ```bash
 ctest
 ```
+
+### Windows Instructions
 
 #### Installation on Windows
 
