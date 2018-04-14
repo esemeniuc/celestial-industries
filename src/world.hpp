@@ -80,14 +80,6 @@ namespace World {
 	//funcs
 	std::pair<bool, glm::vec3> getTileCoordFromWindowCoords(double xpos, double ypos);
 
-	void move_cursor_up();
-
-	void move_cursor_down();
-
-	void move_cursor_left();
-
-	void move_cursor_right();
-
 	void updateBoolFromKey(int action, int key, bool& toUpdate, const std::vector<int>& targetKeys);
 
 	void play_mouse_click_sound();
