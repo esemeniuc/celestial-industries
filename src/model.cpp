@@ -28,6 +28,7 @@ namespace Model {
 		{ Model::MeshType::GRASS,		{ { "grass1.obj",      -1 } } },
 		{ Model::MeshType::HROAD,		{ { "Road2.obj",       -1 } } },
 		{ Model::MeshType::VROAD,		{ { "Road1.obj",       -1 } } },
+		{ Model::MeshType::REFINERY,	{ { "Refinery.obj",	   -1 }	} },
     };
 	
     std::vector<std::shared_ptr<Renderer>> meshRenderers(meshSources.size());

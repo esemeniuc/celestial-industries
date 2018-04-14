@@ -146,10 +146,12 @@ namespace Particles {
     }
 
     void ParticleEmitter::update(float elapsed_ms) {
+		if (isDeleted)return;
         ageInMilliseconds += elapsed_ms;
     }
 
     void ParticleEmitter::render(glm::mat4 viewProjection, glm::vec3 cameraPosition) {
+		if (isDeleted)return;
         glUseProgram(shader->program);
         glBindVertexArray(vao);
 

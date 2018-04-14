@@ -17,6 +17,9 @@ public:
 	Renderable geometryRenderer;
 	AiComp aiComp;
 	UnitComp unitComp;
+
+	bool hasPhysics = true; // Set to false if we want to avoid any expensive physics computations for the object
+	bool isDeleted = false;
 	RigidBody rigidBody;
 
 	std::shared_ptr<Entity> target;
@@ -49,7 +52,7 @@ public:
 
 	void takeAttack(const Entity& attackingEntity, double elapsed_ms);
 
-	void setPosition(glm::vec3 position);
+	virtual void setPosition(glm::vec3 position);
 
 	void setPositionFast(int modelIndex, glm::vec3 position);
 
@@ -89,11 +92,11 @@ public:
 
 	bool hasMoveTarget();
 
-	void moveTo(UnitState unitState, int x, int z);
+	virtual void moveTo(UnitState unitState, int x, int z);
 
 	void cleanUpTargetPath();
 
-	void move(double elapsed_time);
+	virtual void move(double elapsed_time);
 
 	std::pair<int, double> getInterpolationPercentage();
 

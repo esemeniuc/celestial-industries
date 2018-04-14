@@ -260,9 +260,9 @@ namespace CollisionDetection {
         glm::vec3 r = l1.end - l1.start;
         glm::vec3 s = l2.end - l2.start;
 
-        float s_r_crossProduct = weirdCrossProduct(r, s);
-        float t = weirdCrossProduct(q - p, s) / s_r_crossProduct;
-        float u = weirdCrossProduct(q - p, r) / s_r_crossProduct;
+        double s_r_crossProduct = weirdCrossProduct(r, s);
+		double t = weirdCrossProduct(q - p, s) / s_r_crossProduct;
+		double u = weirdCrossProduct(q - p, r) / s_r_crossProduct;
 
         IntersectionCollisionInfo NO = {
             false, 0.0f,{ 0.0f,0.0f,0.0f }
@@ -276,8 +276,8 @@ namespace CollisionDetection {
         {
             return {
                 true,
-                t,
-                p + (r * t)
+				static_cast<float>(t),
+                p + (r * static_cast<float>(t))
             };
         }
     }

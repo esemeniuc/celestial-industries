@@ -40,6 +40,16 @@ namespace Ui {
 	static ImVec2 bottomRight;
 	static ImVec2 unitSelectionSize;
 
+	// andy's stuff
+	enum BuildingSelected {
+		NONE,
+		REFINERY,
+		GUN_TURRET,
+		SUPPLY_DEPOT,
+	};
+
+	extern BuildingSelected selectedBuilding;
+	
 	//funcs
 	bool createWindow(); //does glfw stuff
 

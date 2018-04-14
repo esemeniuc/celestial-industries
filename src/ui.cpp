@@ -30,6 +30,8 @@ ImVec2 abs(const ImVec2& a) {
 }
 
 namespace Ui {
+	BuildingSelected selectedBuilding;
+
 	void imguiSetup() {
 		// Setup ImGui binding
 		ImGui::CreateContext();
@@ -69,7 +71,6 @@ namespace Ui {
 		io.Fonts->AddFontFromFileTTF(Config::FONTAWESOME_FILE_PATH, 16.0f, &icons_config, icons_ranges);
 		// use FONT_ICON_FILE_NAME_FAR if you want regular instead of solid
 	}
-
 
 	void imguiGenerateScreenObjects() {
 // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -167,10 +168,10 @@ namespace Ui {
 					printf(""); // Set a debugger breakpoint here!
 				UnitManager::selectUnitsInTrapezoid(topLeftTileCoord.second, topRightTileCoord.second,
 													bottomLeftTileCoord.second, bottomRightTileCoord.second);
-				std::cout << "selected: " << UnitManager::selectedUnits.size() << "\t|| " <<
-						  topLeftTileCoord.second.x << ' ' << topLeftTileCoord.second.z << ' ' <<
-						  bottomRightTileCoord.second.x << ' ' << bottomRightTileCoord.second.z << ' ' <<
-						  '\n';
+				//std::cout << "selected: " << UnitManager::selectedUnits.size() << "\t|| " <<
+				//		  topLeftTileCoord.second.x << ' ' << topLeftTileCoord.second.z << ' ' <<
+				//		  bottomRightTileCoord.second.x << ' ' << bottomRightTileCoord.second.z << ' ' <<
+				//		  '\n';
 			}
 
 			if (UnitManager::selectedUnits.size() == 1) {
@@ -214,8 +215,9 @@ namespace Ui {
 				case SpawnWindowState::SPAWN_DEFENSIVE_BUILDINGS : {
 
 					if (ImGui::Button("Gun Turret")) {
-						Building::spawn(Model::GUN_TURRET, glm::vec3(10, 0, 10),
-										GamePieceOwner::PLAYER);
+						/*Building::spawn(Model::GUN_TURRET, glm::vec3(10, 0, 10),
+										GamePieceOwner::PLAYER);*/
+						selectedBuilding = GUN_TURRET;
 					}
 
 					//back button alignment
@@ -223,6 +225,7 @@ namespace Ui {
 											   uiHeight - ImGui::GetFontSize() * 3));
 					if (ImGui::Button("Back")) {
 						spawnWindowState = SpawnWindowState::SPAWN_SELECTOR;
+						selectedBuilding = NONE;
 					}
 					break;
 				}
@@ -234,19 +237,23 @@ namespace Ui {
 //					}
 
 					if (ImGui::Button("Refinery")) {
-						Building::spawn(Model::MINING_TOWER, glm::vec3(15, 0, 15),
-										GamePieceOwner::PLAYER);
+						/*Building::spawn(Model::MINING_TOWER, glm::vec3(15, 0, 15),
+										GamePieceOwner::PLAYER);*/
+						selectedBuilding = REFINERY;
+
 					}
 
 					if (ImGui::Button("Supply Depot")) {
-						Building::spawn(Model::MeshType::SUPPLY_DEPOT, glm::vec3(25, 0, 25),
-										GamePieceOwner::PLAYER);
+						/*Building::spawn(Model::MeshType::SUPPLY_DEPOT, glm::vec3(25, 0, 25),
+										GamePieceOwner::PLAYER);*/
+						selectedBuilding = SUPPLY_DEPOT;
 					}
 
 					ImGui::SetCursorPos(ImVec2(spawnWindowWidth - ImGui::GetFontSize() * 5,
 											   uiHeight - ImGui::GetFontSize() * 3));
 					if (ImGui::Button("Back")) {
 						spawnWindowState = SpawnWindowState::SPAWN_SELECTOR;
+						selectedBuilding = NONE;
 					}
 					break;
 				}

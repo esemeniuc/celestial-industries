@@ -8,6 +8,7 @@
 #include "unit.hpp"
 #include "attackManger.hpp"
 #include "buildingmanager.hpp"
+#include "ui.hpp"
 
 namespace World {
 	GLFWwindow* m_window;
@@ -35,6 +36,7 @@ namespace World {
 	// music and audio
 	Mix_Music* m_background_music;
 	Mix_Chunk* m_mouse_click;
+	Mix_Chunk* m_error_sound;
 
 	double gameElapsedTime = 0.0;
 
@@ -64,7 +66,7 @@ bool World::init() {
 	// load support for the OGG audio format
 	int flags = MIX_INIT_OGG;
 	int initted = Mix_Init(flags);
-	if (initted & flags != flags) {
+	if (initted & flags != flags) { // Bitwise & intentional; follows SDL docs
 		logger(LogLevel::ERR) << "Mix_Init: Failed to init required ogg support!\n";
 		logger(LogLevel::ERR) << "Mix_Init: " << Mix_GetError() << '\n';
 	}
@@ -78,6 +80,8 @@ bool World::init() {
 	// LoadWAV is actaully capable of loading other audio formats as well, the name is not accurate
 	// https://www.libsdl.org/projects/SDL_mixer/docs/SDL_mixer_19.html#SEC19
 	m_mouse_click = Mix_LoadWAV(audio_path("click3.ogg"));
+
+	m_error_sound = Mix_LoadWAV(audio_path("switch23.ogg"));
 
 	if (m_background_music == nullptr) {
 		logger(LogLevel::ERR) << "Failed to load sounds, make sure the data directory is present";
@@ -106,6 +110,14 @@ bool World::init() {
 		logger(LogLevel::ERR) << "Failed to load particle shader!" << '\n';
 		return false;
 	}
+	level.particleShader = particleShader;
+
+	std::shared_ptr<Texture> particleTexture = std::make_shared<Texture>();
+	particleTexture->load_from_file(textures_path("turtle.png"));
+	if (!particleTexture->is_valid()) {
+		throw "Particle texture failed to load!";
+	}
+	level.particleTexture = particleTexture;
 
 	if (!initMeshTypes(Model::meshSources)) {
 		logger(LogLevel::ERR) << "Failed to initialize renderers\n";
@@ -119,7 +131,7 @@ bool World::init() {
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
 
-	Global::levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "GameLevel1.txt", particleShader);
+	Global::levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "GameLevel1.txt");
 	Global::levelHeight = Global::levelArray.size();
 	Global::levelWidth = Global::levelArray.front().size();
 	level.init(Model::meshRenderers);
@@ -199,6 +211,10 @@ void World::destroy() {
 		Mix_FreeChunk(m_mouse_click);
 	}
 
+	if (m_error_sound != nullptr) {
+		Mix_FreeChunk(m_error_sound);
+	}
+
 	// cleans up all dynamically loaded library handles used by sdl mixer
 	Mix_CloseAudio();
 	Mix_Quit();
@@ -213,7 +229,7 @@ bool World::update(double elapsed_ms) {
 	glfwPollEvents(); //Processes system messages, if this wasn't present the window would become unresponsive
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
-	camera.update(elapsed_ms);
+	camera.update((float)elapsed_ms);
 	gameElapsedTime += elapsed_ms;
 
 	if (selectedTileCoordinates.rowCoord >= 0 &&
@@ -224,7 +240,7 @@ bool World::update(double elapsed_ms) {
 		level.tileCursor->setPosition({selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord});
 	}
 
-	for (const auto& emitter : level.emitters) {
+	for (const auto& emitter : Global::emitters) {
 		emitter->update(elapsed_ms);
 	}
 
@@ -287,7 +303,7 @@ void World::draw() {
 	m_skybox.getCameraPosition(camera.position);
 	m_skybox.draw(projection * view * m_skybox.getModelMatrix());
 
-	for (const auto& emitter : level.emitters) {
+	for (const auto& emitter : Global::emitters) {
 		emitter->render(projectionView, camera.position);
 	}
 	// Presenting
@@ -296,26 +312,31 @@ void World::draw() {
 
 void World::move_cursor_up() {
 	selectedTileCoordinates.colCoord--;
-	printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
+	//printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
 }
 
 void World::move_cursor_down() {
 	selectedTileCoordinates.colCoord++;
-	printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
+	//printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
 }
 
 void World::move_cursor_left() {
 	selectedTileCoordinates.rowCoord--;
-	printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
+	//printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
 }
 
 void World::move_cursor_right() {
 	selectedTileCoordinates.rowCoord++;
-	printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
+	//printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
 }
 
 void World::play_mouse_click_sound() {
 	Mix_PlayChannel(-1, m_mouse_click, 0);
+}
+
+void World::play_error_sound()
+{
+	Mix_PlayChannel(-1, m_error_sound, 0);
 }
 
 // Should the game be over ?
@@ -420,12 +441,12 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 
 	std::pair<bool, glm::vec3> result = World::getTileCoordFromWindowCoords(xpos, ypos);
 	if (result.first) { //if t>0
-		printf("x: %lf z: %lf\t\t", result.second.x, result.second.z);
-		printf("w:x:\t%lf\ty:\t%lf\n", xpos, ypos);
+		//printf("x: %lf z: %lf\t\t", result.second.x, result.second.z);
+		//printf("w:x:\t%lf\ty:\t%lf\n", xpos, ypos);
 		selectedTileCoordinates.colCoord = int(result.second.x + 0.5);
 		selectedTileCoordinates.rowCoord = int(result.second.z + 0.5);
 	} else {
-		printf("bad tile selector calculation: x: %lf z: %lf\n", xpos, ypos);
+		//printf("bad tile selector calculation: x: %lf z: %lf\n", xpos, ypos);
 	}
 }
 
@@ -443,29 +464,42 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 	if (action == GLFW_PRESS && button >= 0 && button < 3) {
 		World::play_mouse_click_sound();
 	}
+	ImVec2 leftClickLoc = ImGui::GetIO().MouseClickedPos[0];
 
-//	glm::vec3 coords = {selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord};
-//	if (coords.x < 0 || coords.x + 1 > Global::levelWidth ||
-//		coords.z < 0 || coords.z + 1 > Global::levelHeight)
-//		return;
-//	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-//
-//		level.placeTile(Model::MeshType::GUN_TURRET, coords);
-//		logger(LogLevel::INFO) << "Right click detected " << '\n';
-//	}
-//	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-//
-//
-//		if (m_dist(m_rng) < 0.5) {
-//			Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, coords, GamePieceOwner::PLAYER);
-//		} else {
-//			Unit::spawn(Model::MeshType::FRIENDLY_FIRE_UNIT, coords, GamePieceOwner::PLAYER);
-//		}
-//		logger(LogLevel::INFO) << "Left click detected " << '\n';
-//	}
-//	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
-//		for (const auto& entity : Global::playerUnits) {
-//			entity->rigidBody.setVelocity((coords - entity->rigidBody.getPosition()) / 5000.0f);
-//		}
-//	}
+	glm::vec3 coords = {selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord};
+	if (coords.x < 0 || coords.x >= Global::levelWidth ||
+		coords.z < 0 || coords.z >= Global::levelHeight)
+		return;
+
+	if (action == GLFW_PRESS && button == 0) {
+		switch (Ui::selectedBuilding){
+		case Ui::BuildingSelected::REFINERY: {
+			int numFriendlyTiles = level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, 3, 3);
+			int numGeysers = level.numTilesOfTypeInArea(Model::MeshType::GEYSER, coords, 3, 3);
+			if (numFriendlyTiles > 0 || numGeysers == 0) {
+				play_error_sound();
+				break;
+			}
+			level.placeTile(Model::MeshType::REFINERY, coords, GamePieceOwner::PLAYER, 3, 3, numGeysers);
+			break;
+		}
+		case Ui::BuildingSelected::SUPPLY_DEPOT:
+			if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0) {
+				play_error_sound();
+				break;
+			}
+			level.placeTile(Model::MeshType::SUPPLY_DEPOT, coords);
+			break;
+		case Ui::BuildingSelected::GUN_TURRET:
+			if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0) {
+				play_error_sound();
+				//break;
+			}
+			level.placeTile(Model::MeshType::GUN_TURRET, coords);
+			break;
+		case Ui::BuildingSelected::NONE:
+		default:
+			break;
+		}
+	}
 }

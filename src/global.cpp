@@ -33,4 +33,6 @@ namespace Global {
 	std::unordered_set<Coord, CoordHasher> scoutingTargetsInProgress;
 
 	std::vector<std::vector<AStarNode>> aStarCostMap;
+
+	std::vector<std::shared_ptr<Particles::ParticleEmitter>> emitters;
 }

@@ -1,6 +1,7 @@
 // Header
 #include "tile.hpp"
 #include "objloader.hpp"
+#include "global.hpp"
 
 #include <cmath>
 #include <vector>
@@ -13,38 +14,18 @@
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-Tile::Tile(Model::MeshType geometry) : geometryRenderer(Model::meshRenderers[geometry]) {}
 
-Tile::~Tile() = default;
-
-void Tile::update(float ms)
-{
-    // Do nothing
-}
-
-void Tile::translate(glm::vec3 v)
-{
-	position += v;
-	geometryRenderer.translate(v);
-}
-
-void Tile::setPosition(glm::vec3 v)
-{
-	position = v;
-	geometryRenderer.setModelMatrix(0, glm::translate(glm::mat4(1.0f), v));
-}
-
-GunTowerTile::GunTowerTile() : Tile(Model::MeshType::GUN_TURRET)
+GunTowerTile::GunTowerTile(): Tile(Model::MeshType::GUN_TURRET)
 {
      randomDistribution = std::uniform_real_distribution<double>(0.0, 1.0);
 }
 
-void GunTowerTile::update(float ms)
+void GunTowerTile::move(double ms)
 {
     timeCounter += ms;
     if (exploding) {
         for (size_t i = 1; i < explosionDirections.size(); i++) {
-			geometryRenderer.translate(i, explosionDirections[i] * (ms*explosionVelocity / 1000.0f), false);
+			geometryRenderer.translate(i, explosionDirections[i] * (float)(ms*explosionVelocity / 1000.0f), false);
             /*rotate(i, explosionVelocity*ms/1000, explosionRotationalAxes[i], false);*/
         }
     }
@@ -63,6 +44,16 @@ void GunTowerTile::update(float ms)
 
 		geometryRenderer.rotate(1, ms / 1000, { 0,1,0 });
     }
+}
+
+void Tile::moveTo(UnitState unitState, int x, int z)
+{
+	// Do nothing
+}
+
+void Tile::removeSelf()
+{
+	softDelete();
 }
 
 void GunTowerTile::explode(glm::vec3 dir)
@@ -86,17 +77,59 @@ void GunTowerTile::explode(glm::vec3 dir)
     timeCounter = 0.0f;
 }
 
-void Tile::softDelete()
+Tile::Tile(Model::MeshType mesh) : Entity(mesh) {
+	hasPhysics = false;
+	type = mesh;
+	rigidBody.removeSelf();
+}
+void Tile::update(double ms)
 {
-	geometryRenderer.removeSelf();
+	// Because its called move on entities  -_-
+	move(ms);
 }
 
-void Tile::setCost(float value)
+void RefineryTile::move(double ms)
 {
-	this->cost = value;
+	Global::playerResources += static_cast<int>(ms) / 1000 * resourceCollectionRate;
 }
 
-float Tile::getCost()
+void RefineryTile::removeSelf()
 {
-	return this->cost;
+	Global::playerResourcesPerSec -= resourceCollectionRate;
+	Tile::removeSelf();
+}
+
+RefineryTile::RefineryTile(unsigned int numberOfGeysersReplaced): Tile(Model::MeshType::REFINERY)
+{
+	resourceCollectionRate = numberOfGeysersReplaced * 10;
+	Global::playerResourcesPerSec += resourceCollectionRate;
+	size = { 3, 0, 3 };
+}
+
+GeyserTile::GeyserTile(std::shared_ptr<Shader> particleShader, std::shared_ptr<Texture> particleTexture) : Tile(Model::MeshType::GEYSER)
+{
+	emitter = std::make_shared<Particles::ParticleEmitter>(
+		position, // emitter position
+		glm::vec3{ 0,1,0 }, // emitter direction
+		0.8f,    // spread
+		0.5f,    // particle width
+		0.5f,    // particle height
+		2.0f,    // lifespan
+		5.0f,    // speed
+		particleShader,
+		particleTexture
+		);
+	Global::emitters.push_back(emitter);
+}
+
+void GeyserTile::setPosition(glm::vec3 position)
+{
+	emitter->setPosition(position);
+	Tile::setPosition(position); // like calling super
+}
+
+void GeyserTile::removeSelf()
+{
+	emitter->isDeleted = true;
+	Tile::removeSelf();
 }

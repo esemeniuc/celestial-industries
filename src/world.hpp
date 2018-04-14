@@ -50,6 +50,7 @@ namespace World {
 	// Audio and music
 	extern Mix_Music* m_background_music;
 	extern Mix_Chunk* m_mouse_click;
+	extern Mix_Chunk* m_error_sound;
 
 	// Particle things
 	extern std::shared_ptr<Shader> particleShader;
@@ -90,6 +91,8 @@ namespace World {
 	void updateBoolFromKey(int action, int key, bool& toUpdate, const std::vector<int>& targetKeys);
 
 	void play_mouse_click_sound();
+
+	void play_error_sound();
 
 	bool loadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder);
 

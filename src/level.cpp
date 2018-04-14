@@ -52,6 +52,7 @@ bool Level::init(const std::vector<std::shared_ptr<Renderer>>& meshRenderers) {
 			std::shared_ptr<Tile> tilePointer = tileFromMeshType(type);
 			// TODO: Standardize tile size and resize the model to be the correct size
             tilePointer->setPosition({ j, 0, i });
+			tilePointer->position = { j, 0, i };	// Because the tile needs its position on its own as well
             tiles.push_back(tilePointer);
 		}
 	}
@@ -94,20 +95,12 @@ AStarNode Level::nodeFromCost(int row, int col, Model::MeshType type) {
 	return AStarNode(col, row, cost.first, cost.second, (short)type);
 }
 
-std::vector<std::vector<Model::MeshType>> Level::levelLoader(
-        const std::string& levelTextFile,
-        const std::shared_ptr<Shader>& particleShader
-) {
+std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& levelTextFile) {
 	std::ifstream level(levelTextFile);
 	std::string line;
 	std::vector<std::vector<Model::MeshType>> levelData;
 	std::vector<Model::MeshType> row;
 	std::vector<AStarNode> tileData;
-	std::shared_ptr<Texture> particleTexture = std::make_shared<Texture>();
-	particleTexture->load_from_file(textures_path("turtle.png"));
-	if (!particleTexture->is_valid()) {
-		throw "Particle texture failed to load!";
-	}
 
 	if (!level.is_open()) {
 		logger(LogLevel::ERR) << "Failed to open level data file '" << levelTextFile << "'\n";
@@ -119,27 +112,6 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(
 		tileData.clear();
 		int colNumber = 0;
 		for (const char tile : line) {
-			// Handles special stuff to do on special tiles
-			switch (tile) {
-				case 'P': {
-					auto emitter = std::make_shared<Particles::ParticleEmitter>(
-                            glm::vec3{colNumber, 0, rowNumber}, // emitter position
-                            glm::vec3{0,1,0}, // emitter direction
-                            0.8f,    // spread
-                            0.5f,    // particle width
-                            0.5f,    // particle height
-                            2.0f,    // lifespan
-                            5.0f,    // speed
-                            particleShader,
-							particleTexture
-                    );
-					emitters.push_back(emitter);
-                    break;
-                }
-				default:
-					break;
-			}
-
 			// Actually add the tiles
 			if (charToType.find(tile) == charToType.end()) {
 				// Not in map
@@ -164,38 +136,153 @@ std::vector<std::vector<AStarNode>> Level::getLevelTraversalCostMap() {
 	return Global::levelTraversalCostMap;
 }
 
-std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location, unsigned int width, unsigned int height)
+inline bool tilesOverlap(glm::vec3 locA, glm::vec3 sizeA, glm::vec3 locB, glm::vec3 sizeB) {
+	int aLowerCornerX = locA.x;
+	int aLowerCornerZ = locA.z - sizeA.z;
+	int bLowerCornerX = locB.x;
+	int bLowerCornerZ = locB.z - sizeB.z;
+	int aUpperCornerX = locA.x + sizeA.x;
+	int aUpperCornerZ = locA.z;
+	int bUpperCornerX = locB.x + sizeB.x;
+	int bUpperCornerZ = locB.z;
+
+	int abx = bLowerCornerX - aUpperCornerX;
+	int bax = aLowerCornerX - bUpperCornerX;
+	int aby = bLowerCornerZ - aUpperCornerZ;
+	int bay = aLowerCornerZ - bUpperCornerZ;
+
+	if (abx >= 0 || aby >= 0)
+		return false;
+
+	if (bax >= 0 || bay >= 0)
+		return false;
+
+	return true;
+}
+
+std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location, GamePieceOwner owner, unsigned int width, unsigned int height, int extraArg, Model::MeshType replacingMesh)
 {
+	// Update graphics
+	glm::vec3 size = { width, 0, height };
 	for (auto& tile : tiles) {
-		if (tile->position.x >= location.x &&
-			tile->position.x < location.x + width &&
-			tile->position.z >= location.z &&
-			tile->position.z < location.z + height) {
-			tile->softDelete();
+		if(!tile->isDeleted && tilesOverlap(tile->position, tile->size, location, size)) {
+			// Get rid of old tile
+			tile->removeSelf();
+
+			// Handle case in which we would end up with empty tiles
+			int minX = tile->position.x;
+			int maxX = (tile->position + tile->size).x;
+			int minZ = (tile->position - tile->size).z;
+			int maxZ = tile->position.z;
+			for (int x = minX; x < maxX; x++) {
+				for (int z = maxZ; z > minZ; z--) {
+					if (z <= minZ) {
+					}
+					if (!tilesOverlap({ x,0,z }, { 1,0,1 }, location, size)) {
+						placeTile(replacingMesh, { x, 0, z }, GamePieceOwner::NONE);
+					}
+				}
+			}
 			// TODO: Actually remove the tiles lol (memory is still allocated)
 		}
 	}
 
+	// Update AI info
 	for (unsigned int x = location.x; x < location.x + width; x++) {
 		for (unsigned int y = location.z; y < location.z + height; y++) {
 			Global::levelTraversalCostMap[y][x] = nodeFromCost(x,y, type);
 		}
 	}
-	std::shared_ptr<Tile> newTile = tileFromMeshType(type);
+
+	std::shared_ptr<Tile> newTile = tileFromMeshType(type, extraArg);
 	newTile->setPosition(location);
+	newTile->position = location;
+	setupAiCompForTile(newTile, owner);
 	tiles.push_back(newTile);
 	return newTile;
 }
 
+int Level::numTilesOfTypeInArea(Model::MeshType type, glm::vec3 location, unsigned int height, unsigned int width)
+{
+	int total = 0;
+	glm::vec3 size = { width, 0, height };
+	for (auto& tile : tiles) {
+		if (!tile->isDeleted && tilesOverlap(tile->position, tile->size, location, size)) {
+			if (tile->type == type)total++;
+		}
+	}
+	return total;
+}
 
-std::shared_ptr<Tile> Level::tileFromMeshType(Model::MeshType type)
+int Level::numTilesOfOwnerInArea(GamePieceOwner owner, glm::vec3 location, unsigned int height, unsigned int width)
+{
+	int total = 0;
+	glm::vec3 size = { width, 0, height };
+	for (auto& tile : tiles) {
+		if (!tile->isDeleted && tilesOverlap(tile->position, tile->size, location, size)) {
+			if (tile->aiComp.owner == owner)total++;
+		}
+	}
+	return total;
+}
+
+std::shared_ptr<Tile> Level::tileFromMeshType(Model::MeshType type, int extraArg)
 {
 	switch (type) {
 		case Model::MeshType::GUN_TURRET:
 			return std::make_shared<GunTowerTile>();
+		case Model::MeshType::REFINERY:
+			return std::make_shared<RefineryTile>(extraArg);
+		case Model::MeshType::GEYSER:
+			return std::make_shared<GeyserTile>(particleShader, particleTexture);
 		default:
 			return std::make_shared<Tile>(type);
 	}
+}
+
+void Level::setupAiCompForTile(std::shared_ptr<Tile> tile, GamePieceOwner owner)
+{
+	tile->aiComp.owner = owner;
+	switch (tile->type)	{
+		case (Model::SUPPLY_DEPOT): {
+			tile->aiComp.totalHealth = 400;
+			tile->aiComp.visionRange = 10;
+			tile->aiComp.type = GamePieceClass::BUILDING_NON_ATTACKING;
+			tile->aiComp.currentHealth = tile->aiComp.totalHealth;
+			tile->aiComp.value = 100;
+			tile->unitComp.state = UnitState::NONE;
+			break;
+		}
+		case (Model::MINING_TOWER): {
+			tile->aiComp.totalHealth = 500;
+			tile->aiComp.visionRange = 10;
+			tile->aiComp.type = GamePieceClass::BUILDING_NON_ATTACKING;
+			tile->aiComp.currentHealth = tile->aiComp.totalHealth;
+			tile->aiComp.value = 75;
+			tile->unitComp.state = UnitState::NONE;
+			break;
+		}
+		case (Model::GUN_TURRET): {
+			tile->aiComp.totalHealth = 250;
+			tile->aiComp.visionRange = 10;
+			tile->aiComp.type = GamePieceClass::BUILDING_DEFENSIVE_ACTIVE;
+			tile->aiComp.currentHealth = tile->aiComp.totalHealth;
+			tile->aiComp.value = 100;
+			tile->unitComp.state = UnitState::NONE;
+			break;
+		}
+		case (Model::PHOTON_TOWER): {
+			tile->aiComp.totalHealth = 250;
+			tile->aiComp.visionRange = 10;
+			tile->aiComp.type = GamePieceClass::BUILDING_DEFENSIVE_ACTIVE;
+			tile->aiComp.currentHealth = tile->aiComp.totalHealth;
+			tile->aiComp.value = 100;
+			tile->unitComp.state = UnitState::NONE;
+			break;
+		}
+		default:
+			break;
+		}
 }
 
 void Level::displayPath(const std::vector<Coord>& path) {

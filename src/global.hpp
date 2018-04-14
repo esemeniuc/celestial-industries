@@ -8,6 +8,7 @@
 #include "level.hpp" //for AStarNode
 
 namespace Global {
+
 	extern size_t levelWidth;
 	extern size_t levelHeight;
 
@@ -41,4 +42,5 @@ namespace Global {
 
 	extern std::vector<std::vector<AStarNode>> aStarCostMap; //ai should be able to see the level traversal costs
 
+	extern std::vector<std::shared_ptr<Particles::ParticleEmitter>> emitters;
 }

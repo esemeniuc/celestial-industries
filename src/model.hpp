@@ -33,6 +33,7 @@ namespace Model {
 			GRASS,
 			HROAD,
 			VROAD,
+			REFINERY,
 		};
 
     extern std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> meshSources;

@@ -20,7 +20,7 @@ public:
 	int visionRange = 5;
 	GamePieceOwner owner = GamePieceOwner::NONE;
 	GamePieceClass type = GamePieceClass::NONE;
-	float currentHealth = totalHealth;
+	float currentHealth = (float)totalHealth;
 	int value; //used for AI to prioritize targets
 
 	//constructors
@@ -31,14 +31,14 @@ public:
 			  visionRange(visionRange),
 			  owner(owner),
 			  type(type),
-			  currentHealth(initialHealth),
+			  currentHealth((float)initialHealth),
 			  value(value) {}
 
 	AiComp(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceClass type,
 			  int currentHealth, int value) : totalHealth(initialHealth),
 											  visionRange(visionRange),
 											  owner(owner), type(type),
-											  currentHealth(currentHealth),
+											  currentHealth((float)currentHealth),
 											  value(value) {}
 
 

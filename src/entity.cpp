@@ -12,7 +12,7 @@ Entity::~Entity() = default;
 //example of using the animate function when overriding Entity
 void Entity::animate(float ms) {
 	attackingCooldown -= ms;
-	if (rigidBody.getAllCollisions().empty()) {
+	if (!hasPhysics || rigidBody.getAllCollisions().empty()) {
 		translate(rigidBody.getVelocity() * ms);
 	} else {
 		CollisionDetection::CollisionInfo collision = rigidBody.getFirstCollision();
@@ -22,6 +22,8 @@ void Entity::animate(float ms) {
 
 void Entity::softDelete() {
 	geometryRenderer.removeSelf();
+	rigidBody.removeSelf();
+	isDeleted = true;
 	// TODO: AI Comp, Unit Comp soft deletes
 }
 
