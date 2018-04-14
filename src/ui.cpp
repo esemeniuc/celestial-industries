@@ -71,7 +71,7 @@ namespace Ui {
 		// use FONT_ICON_FILE_NAME_FAR if you want regular instead of solid
 
 		// load game logo texture
-		static Texture logoTexture; //make static since destructor will corrupt the texture
+		static Texture logoTexture; //make static since destructor will free the texture
 		logoTexture.load_from_file(textures_path("Celestial-Industries.png"));
 		if (!logoTexture.is_valid()) {
 			throw "failed to load logo texture!";
@@ -127,7 +127,6 @@ namespace Ui {
 		} else if (ImGui::IsMouseDragging(1)) {
 			std::cout << "dragging2\n";
 			std::cout << ImGui::GetMouseDragDelta(1).x << ' ' << ImGui::GetMouseDragDelta(1).y << "\n";
-
 		}
 
 
@@ -162,25 +161,29 @@ namespace Ui {
 												 ImGuiWindowFlags_NoTitleBar);
 
 			//need this for display of selected units
-			ImVec2 topRight = ImVec2(topLeft.x + unitSelectionSize.x, topLeft.y); //not calculated during selection
-			ImVec2 bottomLeft = ImVec2(topLeft.x, topLeft.y + unitSelectionSize.y);
+			if(ImGui::IsMouseDragging()) { //update selected units only when dragging (otherwise get keyboard panning updates this)
+				ImVec2 topRight = ImVec2(topLeft.x + unitSelectionSize.x, topLeft.y); //not calculated during selection
+				ImVec2 bottomLeft = ImVec2(topLeft.x, topLeft.y + unitSelectionSize.y);
 
-			std::pair<bool, glm::vec3> topLeftTileCoord = World::getTileCoordFromWindowCoords(topLeft.x, topLeft.y);
-			std::pair<bool, glm::vec3> bottomRightTileCoord = World::getTileCoordFromWindowCoords(bottomRight.x,
-																								  bottomRight.y);
+				std::pair<bool, glm::vec3> topLeftTileCoord = World::getTileCoordFromWindowCoords(topLeft.x, topLeft.y);
+				std::pair<bool, glm::vec3> bottomRightTileCoord = World::getTileCoordFromWindowCoords(bottomRight.x,
+																									  bottomRight.y);
 
-			std::pair<bool, glm::vec3> topRightTileCoord = World::getTileCoordFromWindowCoords(topRight.x, topRight.y);
-			std::pair<bool, glm::vec3> bottomLeftTileCoord = World::getTileCoordFromWindowCoords(bottomLeft.x,
-																								 bottomLeft.y);
-			if (topLeftTileCoord.first && topRightTileCoord.first &&
-				bottomRightTileCoord.first && bottomLeftTileCoord.first) { //check since might not be invertible
+				std::pair<bool, glm::vec3> topRightTileCoord = World::getTileCoordFromWindowCoords(topRight.x,
+																								   topRight.y);
+				std::pair<bool, glm::vec3> bottomLeftTileCoord = World::getTileCoordFromWindowCoords(bottomLeft.x,
+																									 bottomLeft.y);
 
-				UnitManager::selectUnitsInTrapezoid(topLeftTileCoord.second, topRightTileCoord.second,
-													bottomLeftTileCoord.second, bottomRightTileCoord.second);
-				std::cout << "selected: " << UnitManager::selectedUnits.size() << "\t|| " <<
-						  topLeftTileCoord.second.x << ' ' << topLeftTileCoord.second.z << ' ' <<
-						  bottomRightTileCoord.second.x << ' ' << bottomRightTileCoord.second.z << ' ' <<
-						  '\n';
+				if (topLeftTileCoord.first && topRightTileCoord.first &&
+					bottomRightTileCoord.first && bottomLeftTileCoord.first) { //check since might not be invertible
+
+					UnitManager::selectUnitsInTrapezoid(topLeftTileCoord.second, topRightTileCoord.second,
+														bottomLeftTileCoord.second, bottomRightTileCoord.second);
+					std::cout << "selected: " << UnitManager::selectedUnits.size() << "\t|| " <<
+							  topLeftTileCoord.second.x << ' ' << topLeftTileCoord.second.z << ' ' <<
+							  bottomRightTileCoord.second.x << ' ' << bottomRightTileCoord.second.z << ' ' <<
+							  '\n';
+				}
 			}
 
 			if (UnitManager::selectedUnits.size() == 1) {
