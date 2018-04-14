@@ -130,17 +130,28 @@ namespace UnitManager {
 			}
 		}
 
+		for (const auto& playerUnit : Global::playerUnits) {
+			float unitDist = glm::distance(playerUnit->getPosition(), targetLocation);
+			if (unitDist <= bestDist) {
+				bestDist = unitDist;
+				closestUnitToTarget = playerUnit;
+			}
+		}
+
 		return {bestDist, closestUnitToTarget};
 	}
 
 	void selectUnit(const glm::vec3& targetLocation) {
 		selectedUnits.clear();
-
 		std::pair<float, std::shared_ptr<Entity>> bestUnit = getClosestUnitToTarget(targetLocation);
 
 		//add enemy units if just a point click
 		if (bestUnit.first < Config::POINT_CLICK_DISTANCE_THRESHOLD) {
 			selectedUnits.push_back(bestUnit.second);
+			std::cout << "selected: " << UnitManager::selectedUnits.size() << "\t target: " <<
+					  bestUnit.second->getPosition().x << ' ' << bestUnit.second->getPosition().z << "\tactual loc: " <<
+					  targetLocation.x << ' ' << targetLocation.z << ' ' <<
+					  '\n';
 		}
 	}
 

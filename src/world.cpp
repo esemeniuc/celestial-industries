@@ -448,7 +448,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 	std::pair<bool, glm::vec3> targetLocation = World::getTileCoordFromWindowCoords(xpos, ypos);
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
-			std::cout << "clicked" << targetLocation.second.x << " " << targetLocation.second.z << "\n";
+			std::cout << "clicked " << targetLocation.second.x << " " << targetLocation.second.z << "\n";
 			UnitManager::selectUnit(targetLocation.second);
 		}
 	};
