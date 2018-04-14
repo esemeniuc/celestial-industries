@@ -113,7 +113,7 @@ namespace Ui {
 						std::string("failed to load logo texture with path ") + std::string(elem.second));
 			}
 			entitySprite[elem.first] = reinterpret_cast<void*>(tempTextureLoader.id);
-			entitySpriteSize[elem.first] = ImVec2(32, 32);
+			entitySpriteSize[elem.first] = ImVec2(tempTextureLoader.width, tempTextureLoader.height);
 		}
 	}
 
@@ -223,7 +223,7 @@ namespace Ui {
 			if (UnitManager::selectedUnits.size() == 1) {
 				std::shared_ptr<Entity> unit = UnitManager::selectedUnits.front();
 				float portraitSize = uiHeight - 16; //in px
-				ImGui::Image(entitySprite[unit->meshType], ImVec2(portraitSize,portraitSize));
+				ImGui::Image(entitySprite[unit->meshType], ImVec2(portraitSize, portraitSize));
 				ImGui::SameLine();
 				ImGui::BeginGroup();
 				ImGui::Text("Unit: %s\n", EntityInfo::nameLookupTable[unit->meshType]);
@@ -236,12 +236,19 @@ namespace Ui {
 				ImGui::EndGroup();
 			} else if (UnitManager::selectedUnits.size() > 1) {
 				UnitManager::sortSelectedUnits(); //group them up
+				int entityInfoPaneWidth = static_cast<int>(Global::windowWidth) - spawnWindowWidth;
+				const int portraitSize = 32; //use 32 for smallish icons
+				const int paddingSize = int(ImGui::GetStyle().ItemSpacing.x + 0.5);
+				const int maxPortraits = entityInfoPaneWidth / (portraitSize + paddingSize);
+				int currentIndex = 0;
 				for (const auto& unit : UnitManager::selectedUnits) {
-					ImGui::Image(entitySprite[unit->meshType], entitySpriteSize[unit->meshType]);
-					ImGui::SameLine();
+					ImGui::Image(entitySprite[unit->meshType], ImVec2(portraitSize, portraitSize));
+					currentIndex++; //must be before if statement otherwise it'll look weird
+					if (currentIndex % maxPortraits != 0) {
+						ImGui::SameLine();//if we reach dont reach a new new line
+					}
 				}
 			}
-
 
 			ImGui::End();
 		}
