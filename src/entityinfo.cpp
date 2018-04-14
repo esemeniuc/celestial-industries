@@ -2,7 +2,7 @@
 // Created by eric on 4/11/18.
 //
 #include "model.hpp"
-#include "entityinfo.h"
+#include "entityinfo.hpp"
 std::array<const char*, Model::MeshType::MESHTYPES_COUNT> init() {
 	std::array<const char*, Model::MeshType::MESHTYPES_COUNT> tempNameLookupTable{};
 	tempNameLookupTable[Model::MeshType::MINING_TOWER] = "Refinery";
@@ -23,5 +23,5 @@ std::array<const char*, Model::MeshType::MESHTYPES_COUNT> init() {
 namespace EntityInfo {
 		std::array<const char*, Model::MeshType::MESHTYPES_COUNT> nameLookupTable = init();
 
-	
+
 }

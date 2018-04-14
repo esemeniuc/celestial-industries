@@ -11,7 +11,7 @@
 #include "unitmanager.hpp" //for unit selection info
 
 #include "IconsFontAwesome5.h" //for game icons
-#include "entityinfo.h"
+#include "entityinfo.hpp"
 
 ImVec2 operator+(const ImVec2& a, const ImVec2& b) {
 	return {a.x + b.x, a.y + b.y};
@@ -341,7 +341,7 @@ namespace Ui {
 
 				//display game logo as part of start up screen
 				ImGui::Text("Celestial Industries");
-				ImTextureID gameLogo = (void*) World::logoTexture.id;				
+				ImTextureID gameLogo = (void*) World::logoTexture.id;
 				ImGui::Image(gameLogo, ImVec2(World::logoTexture.width, World::logoTexture.height));
 
 				if (ImGui::Button(ICON_FA_PLAY_CIRCLE " Start")) {
@@ -359,7 +359,10 @@ namespace Ui {
 			}
 
 
-			if (showTutorial) {
+			if (showTutorial) { //display tutorial window
+				ImGui::SetNextWindowSizeConstraints(ImVec2(Global::windowWidth / 2, Global::windowHeight / 2),
+													ImVec2(std::numeric_limits<float>::max(),
+														   std::numeric_limits<float>::max()));
 				ImGui::SetNextWindowPosCenter();
 				ImGui::Begin("How To Play", &showTutorial);
 				ImGui::NewLine();
