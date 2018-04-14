@@ -71,14 +71,7 @@ namespace Ui {
 		io.Fonts->AddFontFromFileTTF(Config::FONTAWESOME_FILE_PATH, 16.0f, &icons_config, icons_ranges);
 		// use FONT_ICON_FILE_NAME_FAR if you want regular instead of solid
 
-		// load game logo texture
-		static Texture tempTextureLoader; //make static since destructor will free the texture
-		tempTextureLoader.load_from_file(textures_path("Celestial-Industries.png"));
-		if (!tempTextureLoader.is_valid()) {
-			throw "failed to load logo texture!";
-		}
-		gameLogo = reinterpret_cast<void*>(tempTextureLoader.id);
-		gameLogoSize = ImVec2(tempTextureLoader.width, tempTextureLoader.height);
+		// load our 2d textures for ui
 		imguiLoadUnitSprites();
 	}
 
@@ -102,8 +95,17 @@ namespace Ui {
 				{Model::MeshType::FRIENDLY_RANGED_UNIT,     textures_path("letterPlaceholders/letter_R.png")}
 		};
 
-		static Texture tempTextureLoader; //make static since destructor will free the texture
+		static Texture tempTextureLoader; //make static since destructor will free the texture and corrupt it
 
+		//for the game logo
+		tempTextureLoader.load_from_file(textures_path("Celestial-Industries.png"));
+		if (!tempTextureLoader.is_valid()) {
+			throw "failed to load logo texture!";
+		}
+		gameLogo = reinterpret_cast<void*>(tempTextureLoader.id);
+		gameLogoSize = ImVec2(tempTextureLoader.width, tempTextureLoader.height);
+
+		//for 2d sprites
 		for (const auto& elem : texturePaths) {
 			tempTextureLoader.load_from_file(elem.second);
 			if (!tempTextureLoader.is_valid()) {
@@ -220,6 +222,10 @@ namespace Ui {
 
 			if (UnitManager::selectedUnits.size() == 1) {
 				std::shared_ptr<Entity> unit = UnitManager::selectedUnits.front();
+				float portraitSize = uiHeight - 16; //in px
+				ImGui::Image(entitySprite[unit->meshType], ImVec2(portraitSize,portraitSize));
+				ImGui::SameLine();
+				ImGui::BeginGroup();
 				ImGui::Text("Unit: %s\n", EntityInfo::nameLookupTable[unit->meshType]);
 				ImGui::Text("Health: %.f/%d\n", unit->aiComp.currentHealth, unit->aiComp.totalHealth);
 				ImGui::Text("Damage: %d\n", unit->unitComp.attackDamage);
@@ -227,6 +233,7 @@ namespace Ui {
 				ImGui::Text("Attack Speed: %d\n", unit->unitComp.attackSpeed);
 				ImGui::Text("Allegiance: %s\n", EntityInfo::gamePieceOwnerLookupTable[unit->aiComp.owner]);
 				ImGui::Text("Type: %s\n", EntityInfo::gamePieceClassLookupTable[unit->aiComp.type]);
+				ImGui::EndGroup();
 			} else if (UnitManager::selectedUnits.size() > 1) {
 				UnitManager::sortSelectedUnits(); //group them up
 				for (const auto& unit : UnitManager::selectedUnits) {
