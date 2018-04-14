@@ -54,6 +54,9 @@ namespace AI {
 			that the algorithm should avoid*/
 
 			// check if we can move forward a column
+			if (col < 0 || col >= numOfColumns || row < 0 || col >= numOfRows)
+				return neighbors;
+
 			if ((col != numOfColumns - 1) && (((row == goalRow) && (col + 1 == goalCol)) ||
 											  graph[row][col + 1].movementCost < Config::OBSTACLE_COST)) {
 				neighbors.push_back(graph[row][col + 1]);

@@ -147,7 +147,7 @@ bool World::init() {
 //	temp1->moveTo(UnitState::MOVE, targetx, targetz);
 
 	startx = 39, startz = 19;
-	auto temp2 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	auto temp2 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
 //	temp2->moveTo(targetx, targetz);
 
 	startx = 39, startz = 1;
@@ -155,7 +155,7 @@ bool World::init() {
 //	temp3->moveTo(UnitState::MOVE, targetx, targetz);
 
 	startx = 20, startz = 20;
-	auto temp4 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	auto temp4 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
 
 	// Example use of targeting units.
 //	AttackManager::registerTargetUnit(temp2, temp1);

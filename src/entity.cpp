@@ -12,13 +12,7 @@ Entity::~Entity() = default;
 
 //example of using the animate function when overriding Entity
 void Entity::animate(float ms) {
-	attackingCooldown -= ms;
-	if (!hasPhysics || rigidBody.getAllCollisions().empty()) {
-		translate(rigidBody.getVelocity() * ms);
-	} else {
-		CollisionDetection::CollisionInfo collision = rigidBody.getFirstCollision();
-		translate(rigidBody.getVelocity() * collision.time);
-	}
+	// Do nothing
 }
 
 void Entity::softDelete() {
