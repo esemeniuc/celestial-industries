@@ -1,5 +1,7 @@
 # cpsc436d
 
+![alt text](https://github.com/esemeniuc/celestial-industries/blob/master/data/textures/Celestial-Industries.png "Celestial Industries Logo")
+
 ## Project Info
 
 ### Info
@@ -29,8 +31,7 @@ apt-get install -y cmake g++ libsdl2-dev libsdl2-mixer-dev libglfw3-dev
 
 #### Compiling
 ```bash
-mkdir build
-cd build 
+mkdir build && cd build
 cmake ..
 make -j4
 ```
@@ -49,6 +50,11 @@ CMake (from within the build folder)
 ctest
 ```
 
+#### Running the game (Linux)
+From the git root, run
+```bash
+build/proj
+```
 ## Milestone 1
 
 ### Requirements
