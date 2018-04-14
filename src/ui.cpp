@@ -637,7 +637,7 @@ namespace Ui {
 		glfwGetCursorPos(window, &xpos, &ypos);
 		//make sure to call the world mouse callback only game world and not ui
 		if (ypos < Global::windowHeight - uiHeight) {
-			World::on_mouse_button(window, button, action, mods); //in game area
+			World::on_mouse_button(window, button, action, mods); //use callback in the game area
 		}
 	}
 
