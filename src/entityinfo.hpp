@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#include <array>
 #include "aicomp.hpp"
 
 //stores info that never changes

@@ -25,9 +25,6 @@ std::array<const char*, Model::MeshType::MESHTYPES_COUNT> init() {
 	return tempNameLookupTable;
 }
 
-
 namespace EntityInfo {
 		std::array<const char*, Model::MeshType::MESHTYPES_COUNT> nameLookupTable = init();
-
-
 }
