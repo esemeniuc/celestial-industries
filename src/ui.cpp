@@ -5,7 +5,6 @@
 #include "ui.hpp"
 #include "global.hpp" //for window size
 #include "unit.hpp" //for spawning
-#include "building.hpp" //for spawning
 #include "world.hpp" //for key callbacks
 #include "config.hpp" //for font file path
 #include "unitmanager.hpp" //for unit selection info

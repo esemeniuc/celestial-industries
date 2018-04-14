@@ -176,8 +176,6 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 			int maxZ = tile->position.z;
 			for (int x = minX; x < maxX; x++) {
 				for (int z = maxZ; z > minZ; z--) {
-					if (z <= minZ) {
-					}
 					if (!tilesOverlap({ x,0,z }, { 1,0,1 }, location, size)) {
 						placeTile(replacingMesh, { x, 0, z }, GamePieceOwner::NONE);
 					}
@@ -279,6 +277,14 @@ void Level::setupAiCompForTile(std::shared_ptr<Tile> tile, GamePieceOwner owner)
 			tile->aiComp.value = 100;
 			tile->unitComp.state = UnitState::NONE;
 			break;
+		}
+		case (Model::REFINERY): {
+			tile->aiComp.totalHealth = 500;
+			tile->aiComp.visionRange = 10;
+			tile->aiComp.type = GamePieceClass::BUILDING_NON_ATTACKING;
+			tile->aiComp.currentHealth = tile->aiComp.totalHealth;
+			tile->aiComp.value = 75;
+			tile->unitComp.state = UnitState::NONE;
 		}
 		default:
 			break;
