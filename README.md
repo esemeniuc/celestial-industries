@@ -26,6 +26,7 @@
 git clone https://github.com/esemeniuc/celestial-industries.git
 git submodule update --init --recursive
 ```
+
 ### Linux Instructions
 Requires g++ 6.x/clang++ 4.x or newer
 
