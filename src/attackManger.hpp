@@ -7,7 +7,6 @@
 #include "global.hpp"
 
 namespace AttackManager {
-
     void registerTargetUnit(std::shared_ptr<Entity> unit1, std::shared_ptr<Entity> unit2);
 
 	void initiateAttacks(std::vector<std::shared_ptr<Entity>>& entities1, std::vector<std::shared_ptr<Entity>>& entities2, double elapsed_ms);
@@ -17,5 +16,6 @@ namespace AttackManager {
 	void removeDeadEntities(std::vector<std::shared_ptr<Entity>>& entities);
 
 	void executeTargetAttacks(double elapsed_ms);
+
     void update(double elapsed_ms);
-};
+}

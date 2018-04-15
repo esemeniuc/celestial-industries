@@ -17,8 +17,8 @@ namespace AttackManager {
     }
 
     void initiateAttacks(std::vector<std::shared_ptr<Entity>>& entities1, std::vector<std::shared_ptr<Entity>>& entities2, double elapsed_ms) {
-        for (std::shared_ptr<Entity> entity1 : entities1) {
-            for (std::shared_ptr<Entity> entity2 : entities2) {
+        for (std::shared_ptr<Entity>& entity1 : entities1) {
+            for (std::shared_ptr<Entity>& entity2 : entities2) {
                 if (entity1->inAttackRange(entity2)) {
                     // Entity1 attacks entity2 for elapsed_ms amount of time.
                     entity1->attack(entity2);
@@ -71,10 +71,8 @@ namespace AttackManager {
         executeTargetAttacks(elapsed_ms);
 
         // Set the attacking entities' state back to IDLE so that next frame they are avaliable to attack again.
-        for (std::shared_ptr<Entity> entity : attackingEntities) {
+        for (std::shared_ptr<Entity>& entity : attackingEntities) {
             entity->unitComp.state = UnitState::IDLE;
         }
     }
-};
-
-
+}
