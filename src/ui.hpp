@@ -44,6 +44,18 @@ namespace Ui {
 	static ImTextureID gameLogo;
 	static ImVec2 gameLogoSize;
 
+	// andy's stuff
+	enum BuildingSelected {
+		NONE,
+		REFINERY,
+		GUN_TURRET,
+		SUPPLY_DEPOT,
+		COMMAND_CENTER,
+		FACTORY,
+	};
+
+	extern BuildingSelected selectedBuilding;
+
 	//funcs
 	bool createWindow(); //does glfw stuff
 

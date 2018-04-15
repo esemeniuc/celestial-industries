@@ -5,7 +5,6 @@
 #pragma once
 
 #include "global.hpp"
-#include "building.hpp"
 #include "pathfinder.hpp"
 #include "coord.hpp"
 

@@ -12,17 +12,13 @@ Entity::~Entity() = default;
 
 //example of using the animate function when overriding Entity
 void Entity::animate(float ms) {
-	attackingCooldown -= ms;
-	if (rigidBody.getAllCollisions().empty()) {
-		translate(rigidBody.getVelocity() * ms);
-	} else {
-		CollisionDetection::CollisionInfo collision = rigidBody.getFirstCollision();
-		translate(rigidBody.getVelocity() * collision.time);
-	}
+	// Do nothing
 }
 
 void Entity::softDelete() {
 	geometryRenderer.removeSelf();
+	rigidBody.removeSelf();
+	isDeleted = true;
 	// TODO: AI Comp, Unit Comp soft deletes
 }
 
@@ -139,13 +135,12 @@ void Entity::setTargetPath(const std::vector<Coord>& targetPath, int x, int z) {
 }
 
 //expects the caller to set the unit state before calling this
-void Entity::moveTo(UnitState unitState, int x, int z) {
+void Entity::moveTo(UnitState unitState, int x, int z, bool queueMove) {
 	this->unitComp.state = unitState;
-
-	setTargetPath(AI::aStar::findPath(1, this->getPositionInt().colCoord, this->getPositionInt().rowCoord, x,
-									  z).second, x, z); //might need fixing with respect to int start positions
-
-	unitComp.targetPath.insert(unitComp.targetPath.begin(), {getPositionInt().colCoord, getPositionInt().rowCoord});
+	if (!queueMove)
+		destinations.clear(); // Clear the queue
+	destinations.emplace_back(x, 0, z);
+	hasDestination = true;
 }
 
 //returns a pathIndex and a 0.00 - 0.99 value to interpolate between steps in a path
@@ -161,7 +156,8 @@ bool Entity::hasMoveTarget() {
 	return !this->unitComp.targetPath.empty();
 }
 
-void Entity::move(double elapsed_time) {
+void Entity::computeNextMoveLocation(double elapsed_time)
+{
 	if (!hasMoveTarget()) {
 		return;
 	}
@@ -169,28 +165,64 @@ void Entity::move(double elapsed_time) {
 	unitComp.targetPathStartTimestamp += elapsed_time;
 	std::pair<int, double> index = getInterpolationPercentage(); //first is index into path, second is interp amount (0 to 1)
 	glm::vec3 newPos;
-	if (index.first < (int) unitComp.targetPath.size() - 1) {
+	if (index.first < (int)unitComp.targetPath.size() - 1) {
 		Coord curr = unitComp.targetPath[index.first];
 		Coord next = unitComp.targetPath[index.first + 1];
 
 		double dRow = next.rowCoord - curr.rowCoord;
 		double dCol = next.colCoord - curr.colCoord;
 
-		// TODO: Calculate future velocity for collisions
-
 		double destCol = curr.colCoord + (dCol * index.second);
 		double destRow = curr.rowCoord + (dRow * index.second);
 
-		newPos = {destCol, 0, destRow};
-	} else { //move to the last coord in the path
-		newPos = {unitComp.targetPath.back().colCoord, 0, unitComp.targetPath.back().rowCoord};
+		newPos = { destCol, 0, destRow };
+	}
+	else { //move to the last coord in the path
+		newPos = { unitComp.targetPath.back().colCoord, 0, unitComp.targetPath.back().rowCoord };
 		cleanUpTargetPath();
 	}
+	nextPosition = newPos;
+	rigidBody.setVelocity(nextPosition - rigidBody.getPosition());
+}
 
-	// TODO: Split this in calculate and update so this can do collisions
+void Entity::move(double elapsed_time) {
+	if (!hasMoveTarget()) {
+		if (!destinations.empty()) {
+			glm::vec3 destination = destinations.front();
+			currentDestination = destination;
+			destinations.pop_front();
+			setTargetPath(AI::aStar::findPath(1, this->getPositionInt().colCoord, this->getPositionInt().rowCoord, destination.x,
+				destination.z).second, destination.x, destination.z);
 
-	setPositionFast(0, newPos); //for rendering
-	rigidBody.setPosition(newPos); //for phys
+			unitComp.targetPath.insert(unitComp.targetPath.begin(), {getPositionInt().colCoord, getPositionInt().rowCoord});
+
+		}
+		return;
+	}
+	bool hasCollision = !rigidBody.getAllCollisions().empty();
+	if (!hasPhysics || !hasCollision || collisionCooldown > 0) {
+		setPositionFast(0, nextPosition); //for rendering
+		rigidBody.setPosition(nextPosition); //for phys
+		if (collisionCooldown > 0)collisionCooldown -= elapsed_time;
+	}
+	else {
+		CollisionDetection::CollisionInfo collision = rigidBody.getFirstCollision();
+		if (hasDestination) {
+			glm::vec3 vecFromOther = getPosition() - collision.otherPos;
+			glm::vec3 bounceDir = glm::cross(vecFromOther, { 0,1,0 });
+			glm::vec3 destination = getPosition() + vecFromOther;
+			destinations.emplace_front(currentDestination);
+			destinations.emplace_front(destination);
+			currentDestination = destination;
+			unitComp.targetPath.clear();
+			//translate((bounceDir) / 10.0f);
+			//setTargetPath(AI::aStar::findPath(1, this->getPositionInt().colCoord, this->getPositionInt().rowCoord, destination.x,
+			//	destination.z).second, destination.x, destination.z); //might need fixing with respect to int start positions
+
+			//unitComp.targetPath.insert(unitComp.targetPath.begin(), { getPositionInt().colCoord, getPositionInt().rowCoord });
+			collisionCooldown = 10.0f;
+		}
+	}
 }
 
 //dont erase targetDest so aimanager can clean up the in progress scouting targets

@@ -21,6 +21,7 @@ namespace CollisionDetection {
     struct CollisionInfo {
         bool collided;
         float time;
+		glm::vec3 otherPos;
     };
 
     struct IntersectionCollisionInfo {

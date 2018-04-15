@@ -41,6 +41,7 @@ namespace World {
 
 	// Selection
 	extern Coord selectedTileCoordinates;
+	extern bool shiftBeingHeld;
 
 	// Game entities
 	extern std::shared_ptr<Shader> objShader;
@@ -50,6 +51,7 @@ namespace World {
 	// Audio and music
 	extern Mix_Music* m_background_music;
 	extern Mix_Chunk* m_mouse_click;
+	extern Mix_Chunk* m_error_sound;
 
 	// Particle things
 	extern std::shared_ptr<Shader> particleShader;
@@ -79,17 +81,11 @@ namespace World {
 	//funcs
 	std::pair<bool, glm::vec3> getTileCoordFromWindowCoords(double xpos, double ypos);
 
-	void move_cursor_up();
-
-	void move_cursor_down();
-
-	void move_cursor_left();
-
-	void move_cursor_right();
-
 	void updateBoolFromKey(int action, int key, bool& toUpdate, const std::vector<int>& targetKeys);
 
 	void play_mouse_click_sound();
+
+	void play_error_sound();
 
 	bool loadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder);
 

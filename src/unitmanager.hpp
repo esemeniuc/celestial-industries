@@ -24,6 +24,8 @@ namespace UnitManager {
 	void selectUnitsInTrapezoid(const glm::vec3& topLeft, const glm::vec3& topRight,
 								const glm::vec3& bottomLeft, const glm::vec3& bottomRight);
 
-	void attackTargetLocationWithSelectedUnits(const glm::vec3& targetLocation);
+	void attackTargetLocationWithSelectedUnits(const glm::vec3& targetLocation, bool queueCommand);
+
+	glm::vec3 spiralOffset(int n);
 }
 
