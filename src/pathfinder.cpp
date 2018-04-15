@@ -6,7 +6,7 @@ namespace AI {
 
 		//returns true if a spot can be traversed upon
 		bool isTraversable(int x, int z) {
-			return Global::levelTraversalCostMap[z][x].movementCost < Config::OBSTACLE_COST;
+			return Global::levelWithUnitsTraversalCostMap[z][x].movementCost < Config::OBSTACLE_COST;
 		}
 
 		std::vector<Coord> reconstruct_path(const std::unordered_map<AStarNode, AStarNode, aStarHasher>& came_from,

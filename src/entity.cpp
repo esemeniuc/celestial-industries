@@ -135,13 +135,12 @@ void Entity::setTargetPath(const std::vector<Coord>& targetPath, int x, int z) {
 }
 
 //expects the caller to set the unit state before calling this
-void Entity::moveTo(UnitState unitState, int x, int z) {
+void Entity::moveTo(UnitState unitState, int x, int z, bool queueMove) {
 	this->unitComp.state = unitState;
-
-	setTargetPath(AI::aStar::findPath(1, this->getPositionInt().colCoord, this->getPositionInt().rowCoord, x,
-									  z).second, x, z); //might need fixing with respect to int start positions
-
-	unitComp.targetPath.insert(unitComp.targetPath.begin(), {getPositionInt().colCoord, getPositionInt().rowCoord});
+	if (!queueMove)
+		destinations.clear(); // Clear the queue
+	destinations.emplace_back(x, 0, z);
+	hasDestination = true;
 }
 
 //returns a pathIndex and a 0.00 - 0.99 value to interpolate between steps in a path
@@ -188,16 +187,41 @@ void Entity::computeNextMoveLocation(double elapsed_time)
 
 void Entity::move(double elapsed_time) {
 	if (!hasMoveTarget()) {
+		if (!destinations.empty()) {
+			glm::vec3 destination = destinations.front();
+			currentDestination = destination;
+			destinations.pop_front();
+			setTargetPath(AI::aStar::findPath(1, this->getPositionInt().colCoord, this->getPositionInt().rowCoord, destination.x,
+				destination.z).second, destination.x, destination.z);
+
+			unitComp.targetPath.insert(unitComp.targetPath.begin(), {getPositionInt().colCoord, getPositionInt().rowCoord});
+
+		}
 		return;
 	}
-	if (!hasPhysics || rigidBody.getAllCollisions().empty()) {
+	bool hasCollision = !rigidBody.getAllCollisions().empty();
+	if (!hasPhysics || !hasCollision || collisionCooldown > 0) {
 		setPositionFast(0, nextPosition); //for rendering
 		rigidBody.setPosition(nextPosition); //for phys
+		if (collisionCooldown > 0)collisionCooldown -= elapsed_time;
 	}
 	else {
 		CollisionDetection::CollisionInfo collision = rigidBody.getFirstCollision();
-		// TODO
-		// Collision resolution
+		if (hasDestination) {
+			glm::vec3 vecFromOther = getPosition() - collision.otherPos;
+			glm::vec3 bounceDir = glm::cross(vecFromOther, { 0,1,0 });
+			glm::vec3 destination = getPosition() + vecFromOther;
+			destinations.emplace_front(currentDestination);
+			destinations.emplace_front(destination);
+			currentDestination = destination;
+			unitComp.targetPath.clear();
+			//translate((bounceDir) / 10.0f);
+			//setTargetPath(AI::aStar::findPath(1, this->getPositionInt().colCoord, this->getPositionInt().rowCoord, destination.x,
+			//	destination.z).second, destination.x, destination.z); //might need fixing with respect to int start positions
+
+			//unitComp.targetPath.insert(unitComp.targetPath.begin(), { getPositionInt().colCoord, getPositionInt().rowCoord });
+			collisionCooldown = 10.0f;
+		}
 	}
 }
 

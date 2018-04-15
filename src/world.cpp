@@ -20,6 +20,7 @@ namespace World {
 
 	// Selection
 	Coord selectedTileCoordinates;
+	bool shiftBeingHeld = false;
 
 	// Game entities
 	std::shared_ptr<Shader> objShader;
@@ -244,6 +245,7 @@ bool World::update(double elapsed_ms) {
 		emitter->update(elapsed_ms);
 	}
 
+	Global::levelWithUnitsTraversalCostMap = Global::levelTraversalCostMap;
 	AI::Manager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
 	AttackManager::update(elapsed_ms);
@@ -348,6 +350,9 @@ void World::on_key(GLFWwindow* window, int key, int scancode, int action, int mo
 			{camera.rotate_right,  {GLFW_KEY_E}},
 			{camera.rotate_left,   {GLFW_KEY_Q}},
 			{camera.z_held,        {GLFW_KEY_Z}},
+
+			// Shift
+			{shiftBeingHeld,	   {GLFW_KEY_RIGHT_SHIFT, GLFW_KEY_LEFT_SHIFT}},
 	};
 
 	for (auto stickyKey : stickyKeys) {
@@ -459,7 +464,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
 		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
-			UnitManager::attackTargetLocationWithSelectedUnits(targetLocation.second);
+			UnitManager::attackTargetLocationWithSelectedUnits(targetLocation.second, shiftBeingHeld);
 		}
 	}
 }

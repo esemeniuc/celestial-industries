@@ -10,6 +10,7 @@
 #include "renderer.hpp"
 #include "rigidBody.hpp"
 #include "unitcomp.hpp"
+#include <deque>
 
 class Entity {
 public:
@@ -18,6 +19,10 @@ public:
 	Renderable geometryRenderer;
 	AiComp aiComp;
 	UnitComp unitComp;
+	bool hasDestination = false;
+	std::deque<glm::vec3> destinations;
+	glm::vec3 currentDestination;
+	float collisionCooldown = 0;
 
 	bool hasPhysics = true; // Set to false if we want to avoid any expensive physics computations for the object
 	bool isDeleted = false;
@@ -94,7 +99,7 @@ public:
 
 	bool hasMoveTarget();
 
-	virtual void moveTo(UnitState unitState, int x, int z);
+	virtual void moveTo(UnitState unitState, int x, int z, bool queueMove=false);
 
 	void cleanUpTargetPath();
 

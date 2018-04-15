@@ -41,6 +41,7 @@ namespace World {
 
 	// Selection
 	extern Coord selectedTileCoordinates;
+	extern bool shiftBeingHeld;
 
 	// Game entities
 	extern std::shared_ptr<Shader> objShader;

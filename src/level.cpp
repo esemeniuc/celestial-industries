@@ -87,6 +87,8 @@ void Level::update(float ms)
     for (auto& tile : tiles) {
 		tile->update(ms);
     }
+
+	Global::levelWithUnitsTraversalCostMap = Global::levelTraversalCostMap;
 }
 
 AStarNode Level::nodeFromCost(int row, int col, Model::MeshType type) {
@@ -128,7 +130,7 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 		Global::levelTraversalCostMap.push_back(tileData);
 	}
 	level.close();
-
+	Global::levelWithUnitsTraversalCostMap = Global::levelTraversalCostMap;
 	return levelData;
 }
 

@@ -57,11 +57,13 @@ namespace UnitManager {
 		for (auto& playerUnit : Global::playerUnits) {
 			playerUnit->unitComp.update();
 			playerUnit->computeNextMoveLocation(elapsed_ms);
+			Global::levelWithUnitsTraversalCostMap[(int)(playerUnit->getPosition().z + 0.5)][(int)(playerUnit->getPosition().x + 0.5)].movementCost = Config::OBSTACLE_COST;
 		}
 
 		for (auto& aiUnit : Global::aiUnits) {
 			aiUnit->unitComp.update();
 			aiUnit->computeNextMoveLocation(elapsed_ms);
+			Global::levelWithUnitsTraversalCostMap[(int)(aiUnit->getPosition().z + 0.5)][(int)(aiUnit->getPosition().x + 0.5)].movementCost = Config::OBSTACLE_COST;
 		}
 
 		Model::collisionDetector.findCollisions(elapsed_ms);
@@ -172,19 +174,43 @@ namespace UnitManager {
 	}
 
 
-	void attackTargetLocationWithSelectedUnits(const glm::vec3& targetLocation) {
+	void attackTargetLocationWithSelectedUnits(const glm::vec3& targetLocation, bool queueCommand) {
 		//find unit closest to targetLocation
 		std::pair<float, std::shared_ptr<Entity>> closestUnit = getClosestUnitToTarget(targetLocation);
-
+		glm::vec3 position;
 		if (closestUnit.first < Config::RIGHT_CLICK_ATTACK_WITHIN_RANGE_THRESHOLD) {
-			for (auto& unit : selectedUnits) {
-				unit->moveTo(UnitState::ATTACK_MOVE, closestUnit.second->getPosition().x,
-							 closestUnit.second->getPosition().z); //attack that target
-			}
+			position = closestUnit.second->getPosition();
 		} else { // no unit found, so attackMove to that location
-			for (auto& unit : selectedUnits) {
-				unit->moveTo(UnitState::ATTACK_MOVE, targetLocation.x, targetLocation.z); //attack that target
-			}
+			position = targetLocation;
 		}
+		int n = 0;
+		int nCutoff = 10; // We give up at that point
+		for (auto& unit : selectedUnits) {
+			glm::vec3 specificPosition = position + spiralOffset(n);
+			while (!AI::aStar::isTraversable(specificPosition.x, specificPosition.z) && n < nCutoff	) {
+				n++;
+				glm::vec3 specificPosition = position + spiralOffset(n);
+			}
+			unit->moveTo(UnitState::ATTACK_MOVE, specificPosition.x, specificPosition.z, queueCommand);
+			n++;
+		}
+	}
+	glm::vec3 spiralOffset(int n)
+	{
+		float k = ceil((sqrt(n) - 1) / 2);
+		float t = 2 * k + 1;
+		float m = t * t;
+		if (n >= (m - t))
+			return { k - (m - n), 0, -k };
+		else
+			m = m - t;
+		if (n >= (m - t))
+			return { -k, 0, -k + (m - n) };
+		else
+			m = m - t;
+		if (n >= (m - t))
+			return { -k + (m - n), 0, k };
+		else
+			return { k, 0, k - (m - n - t) };
 	}
 }

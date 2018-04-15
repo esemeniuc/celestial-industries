@@ -46,7 +46,7 @@ void GunTowerTile::move(double ms)
     }
 }
 
-void Tile::moveTo(UnitState unitState, int x, int z)
+void Tile::moveTo(UnitState unitState, int x, int z, bool queueMove)
 {
 	// Do nothing
 }
