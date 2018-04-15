@@ -232,11 +232,11 @@ namespace AiManager {
 		for (const auto& playerUnit : playerUnits) {
 
 			for (const auto& aiUnit : aiUnits) {
-				if (playerUnit->canSee(aiUnit)) {
+				if (playerUnit->canSee(*aiUnit)) {
 					playerUnitsSeenByAI.insert(aiUnit);
 				}
 
-				if (aiUnit->canSee(playerUnit)) {
+				if (aiUnit->canSee(*playerUnit)) {
 					aiUnitsSeenByPlayer.insert(playerUnit);
 				}
 			}

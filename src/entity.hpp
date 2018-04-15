@@ -45,9 +45,9 @@ public:
 
 	Coord getPositionInt();
 
-    void attack(const std::shared_ptr<Entity> entityToAttack);
+    void attack(const Entity& entityToAttack);
 
-    void takeAttack(const std::shared_ptr<Entity> attackingEntity, double elapsed_ms);
+    void takeAttack(const Entity& attackingEntity, double elapsed_ms);
 
 	void setPosition(glm::vec3 position);
 
@@ -95,9 +95,9 @@ public:
 
 	std::pair<int, double> getInterpolationPercentage();
 
-	bool canSee(const std::shared_ptr<Entity> other);
+	bool canSee(const Entity& other);
 
-	bool inAttackRange(const std::shared_ptr<Entity> other);
+	bool inAttackRange(const Entity& other);
 
 	bool operator==(const Entity& rhs) const;
 
