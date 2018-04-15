@@ -57,13 +57,15 @@ namespace UnitManager {
 		for (auto& playerUnit : Global::playerUnits) {
 			playerUnit->unitComp.update();
 			playerUnit->computeNextMoveLocation(elapsed_ms);
-			Global::levelWithUnitsTraversalCostMap[(int)(playerUnit->getPosition().z + 0.5)][(int)(playerUnit->getPosition().x + 0.5)].movementCost = Config::OBSTACLE_COST;
+			Global::levelWithUnitsTraversalCostMap[(int) (playerUnit->getPosition().z + 0.5)][(int) (
+					playerUnit->getPosition().x + 0.5)].movementCost = Config::OBSTACLE_COST;
 		}
 
 		for (auto& aiUnit : Global::aiUnits) {
 			aiUnit->unitComp.update();
 			aiUnit->computeNextMoveLocation(elapsed_ms);
-			Global::levelWithUnitsTraversalCostMap[(int)(aiUnit->getPosition().z + 0.5)][(int)(aiUnit->getPosition().x + 0.5)].movementCost = Config::OBSTACLE_COST;
+			Global::levelWithUnitsTraversalCostMap[(int) (aiUnit->getPosition().z + 0.5)][(int) (
+					aiUnit->getPosition().x + 0.5)].movementCost = Config::OBSTACLE_COST;
 		}
 
 		Model::collisionDetector.findCollisions(elapsed_ms);
@@ -162,8 +164,7 @@ namespace UnitManager {
 			selectedUnits.push_back(bestUnit.second);
 			std::cout << "selected: " << UnitManager::selectedUnits.size() << "\t target: " <<
 					  bestUnit.second->getPosition().x << ' ' << bestUnit.second->getPosition().z << "\tactual loc: " <<
-					  targetLocation.x << ' ' << targetLocation.z << ' ' <<
-					  '\n';
+					  targetLocation.x << ' ' << targetLocation.z << ' ' << '\n';
 		}
 	}
 
@@ -187,7 +188,7 @@ namespace UnitManager {
 		int nCutoff = 10; // We give up at that point
 		for (auto& unit : selectedUnits) {
 			glm::vec3 specificPosition = position + spiralOffset(n);
-			while (!AI::aStar::isTraversable(specificPosition.x, specificPosition.z) && n < nCutoff	) {
+			while (!AI::aStar::isTraversable(specificPosition.x, specificPosition.z) && n < nCutoff) {
 				n++;
 				glm::vec3 specificPosition = position + spiralOffset(n);
 			}
@@ -203,22 +204,21 @@ namespace UnitManager {
 		sort(selectedUnits.begin(), selectedUnits.end(), comparator);
 	}
 
-	glm::vec3 spiralOffset(int n)
-	{
+	glm::vec3 spiralOffset(int n) {
 		float k = ceil((sqrt(n) - 1) / 2);
 		float t = 2 * k + 1;
 		float m = t * t;
 		if (n >= (m - t))
-			return { k - (m - n), 0, -k };
+			return {k - (m - n), 0, -k};
 		else
 			m = m - t;
 		if (n >= (m - t))
-			return { -k, 0, -k + (m - n) };
+			return {-k, 0, -k + (m - n)};
 		else
 			m = m - t;
 		if (n >= (m - t))
-			return { -k + (m - n), 0, k };
+			return {-k + (m - n), 0, k};
 		else
-			return { k, 0, k - (m - n - t) };
+			return {k, 0, k - (m - n - t)};
 	}
 }

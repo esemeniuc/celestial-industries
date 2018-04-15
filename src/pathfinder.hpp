@@ -21,8 +21,8 @@ namespace AI {
 		/* generate hash key which is fairly unique for each tile*/
 		struct aStarHasher {
 			std::size_t operator()(const AStarNode& in) const noexcept {
-				size_t result = std::hash<float>{}(in.rowCoord);
-				hash_combine(result, std::hash<float>{}(in.colCoord));
+				size_t result = std::hash<int>{}(in.rowCoord);
+				hash_combine(result, std::hash<int>{}(in.colCoord));
 				return result;
 			}
 		};
@@ -38,7 +38,7 @@ namespace AI {
 
 		//main pathfinding algorithm
 		std::pair<bool, std::vector<glm::vec3>>
-		findPath(float startX, float startZ, float goalX, float goalZ, int tileSize = 1);
+		findPath(const glm::vec3& start, const glm::vec3& goal, int tileSize = 1);
 
 		std::vector<glm::vec3> reconstruct_path(const std::unordered_map<AStarNode, AStarNode, aStarHasher>& came_from,
 												const AStarNode& start, const AStarNode& goal);

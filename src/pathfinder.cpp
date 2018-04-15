@@ -10,16 +10,17 @@ namespace AI {
 		}
 
 		std::vector<glm::vec3> reconstruct_path(const std::unordered_map<AStarNode, AStarNode, aStarHasher>& came_from,
-												const AStarNode& start, const AStarNode& goal) {
-			AStarNode current = goal;
+												const AStarNode& startNode, const AStarNode& goalNode,
+												const glm::vec3& startPos, const glm::vec3& goalPos) {
+			AStarNode current = goalNode;
 			std::vector<glm::vec3> path;
-			path.emplace_back(goal.colCoord, 0, goal.rowCoord); //add the start as we need to interpolate start to first movement
+			path.push_back(goalPos); //add the end as we need to interpolate from aStar int to last movement
 
-			while (current != start) {
+			while (current != startNode) {
 				path.emplace_back(current.colCoord, 0, current.rowCoord);
 				current = came_from.at(current); //use at() to satisfy const constraint
 			}
-			path.emplace_back(start.colCoord, 0, start.rowCoord); //add the start as we need to interpolate start to first movement
+			path.push_back(startPos); //add the start as we need to interpolate start to first movement
 
 			std::reverse(path.begin(), path.end());
 			return path;
@@ -28,14 +29,14 @@ namespace AI {
 		/* using L1 Norm (Manhattan norm) for stairstep like movement, for diagonal movement
 		we can consider either L-Infinity or L2 norm, leaving it for later*/
 		float l1_norm(const AStarNode& startNode, const AStarNode& goal) {
-			float rowDiff = std::abs(startNode.rowCoord - goal.rowCoord);
-			float colDiff = std::abs(startNode.colCoord - goal.colCoord);
+			int rowDiff = std::abs(startNode.rowCoord - goal.rowCoord);
+			int colDiff = std::abs(startNode.colCoord - goal.colCoord);
 			return rowDiff + colDiff;
 		}
 
 		float l2_norm(const AStarNode& startNode, const AStarNode& goal) {
-			float rowDiff = startNode.rowCoord - goal.rowCoord;
-			float colDiff = startNode.colCoord - goal.colCoord;
+			int rowDiff = startNode.rowCoord - goal.rowCoord;
+			int colDiff = startNode.colCoord - goal.colCoord;
 			return sqrtf((rowDiff * rowDiff) + (colDiff * colDiff));
 		}
 
@@ -44,11 +45,10 @@ namespace AI {
 					 const AStarNode& goal) {
 			int numOfRows = (int) graph.size();
 			int numOfColumns = (int) graph.front().size();
-			int row = int(currentPos.rowCoord + 0.5); //need to round since floats will cause the hashing to not work
-			int col = int(currentPos.colCoord + 0.5);
-			int goalRow = int(goal.rowCoord + 0.5);
-			int goalCol = int(goal.colCoord + 0.5);
-
+			int row = currentPos.rowCoord;
+			int col = currentPos.colCoord;
+			int goalRow = goal.rowCoord;
+			int goalCol = goal.colCoord;
 			std::vector<AStarNode> neighbors;
 
 			/* costOfForwardMove = std::get<2>(graph[row][col + 1]);
@@ -59,8 +59,44 @@ namespace AI {
 				throw "ENTITY PATHING FROM OUT OF LEVEL";
 			}
 
+//			// check if we can move forward a column
+//			if ((col < numOfColumns - 1) &&
+//				(((row == goalRow) && (col + 1 == goalCol)) ||
+//				 graph[row][col + 1].movementCost < Config::OBSTACLE_COST)) {
+//				neighbors.push_back(graph[row][col + 1]);
+//			}
+//
+//			// check if we can move backward a column
+//			// costOfBackwardMove = std::get<2>(graph[row][col - 1]);
+//			if ((col > 0) &&
+//				(((row == goalRow) && (col - 1 == goalCol)) ||
+//				 graph[row][col - 1].movementCost < Config::OBSTACLE_COST)) {
+//				neighbors.push_back(graph[row][col - 1]);
+//			}
+//
+//			// check if we can move up a row
+//			// costOfUpMove = std::get<2>(graph[row][col + 1]);
+//			if ((row > 0) &&
+//				(((row - 1 == goalRow) && (col == goalCol)) ||
+//				 graph[row - 1][col].movementCost < Config::OBSTACLE_COST)) {
+//				neighbors.push_back(graph[row - 1][col]);
+//			}
+//
+//			// check if we can move down a row
+//			// costOfDownMove = std::get<2>(graph[row][col + 1]);
+//			if ((row < numOfRows - 1) &&
+//				(((row + 1 == goalRow) && (col == goalCol)) ||
+//				 graph[row + 1][col].movementCost < Config::OBSTACLE_COST)) {
+//				neighbors.push_back(graph[row + 1][col]);
+//			}
+
+			if (col < 0 || col >= numOfColumns || row < 0 || col >= numOfRows) {
+				logger(LogLevel::ERR) << "ENTITY PATHING FROM OUT OF LEVEL \n";
+				throw "ENTITY PATHING FROM OUT OF LEVEL";
+			}
+
 			// check if we can move forward a column
-			if ((col < numOfColumns - 1) &&
+			if ((col != numOfColumns - 1) &&
 				(((row == goalRow) && (col + 1 == goalCol)) ||
 				 graph[row][col + 1].movementCost < Config::OBSTACLE_COST)) {
 				neighbors.push_back(graph[row][col + 1]);
@@ -68,7 +104,7 @@ namespace AI {
 
 			// check if we can move backward a column
 			// costOfBackwardMove = std::get<2>(graph[row][col - 1]);
-			if ((col > 0) &&
+			if ((col != 0) &&
 				(((row == goalRow) && (col - 1 == goalCol)) ||
 				 graph[row][col - 1].movementCost < Config::OBSTACLE_COST)) {
 				neighbors.push_back(graph[row][col - 1]);
@@ -76,7 +112,7 @@ namespace AI {
 
 			// check if we can move up a row
 			// costOfUpMove = std::get<2>(graph[row][col + 1]);
-			if ((row > 0) &&
+			if ((row != 0) &&
 				(((row - 1 == goalRow) && (col == goalCol)) ||
 				 graph[row - 1][col].movementCost < Config::OBSTACLE_COST)) {
 				neighbors.push_back(graph[row - 1][col]);
@@ -84,7 +120,7 @@ namespace AI {
 
 			// check if we can move down a row
 			// costOfDownMove = std::get<2>(graph[row][col + 1]);
-			if ((row < numOfRows - 1) &&
+			if ((row != numOfRows - 1) &&
 				(((row + 1 == goalRow) && (col == goalCol)) ||
 				 graph[row + 1][col].movementCost < Config::OBSTACLE_COST)) {
 				neighbors.push_back(graph[row + 1][col]);
@@ -95,7 +131,7 @@ namespace AI {
 
 		//returns a pair indicating whether the path was found, and the path itself
 		std::pair<bool, std::vector<glm::vec3>>
-		findPath(float startX, float startZ, float goalX, float goalZ, int tileSize) {
+		findPath(const glm::vec3& start, const glm::vec3& goal, int tileSize) {
 
 			/* a min heap that will store nodes we have not explored yet in the level map
 			will use it to fetch the tile node with the smallest f-score*/
@@ -112,39 +148,34 @@ namespace AI {
 
 			// check which tiles the given positions lie in
 			// TODO: check coordinate signs ( -Z as opposed to +Z for tile positions)
-			float startRow = startZ / tileSize; //floating point numbers get floored when stored in ints
-			float startCol = startX / tileSize;
-			float goalRow = goalZ / tileSize;
-			float goalCol = goalX / tileSize;
+			int startRow = int((start.z + 0.5) / tileSize); //floating point numbers get floored when stored in ints
+			int startCol = int((start.x + 0.5) / tileSize);
+			int goalRow = int((goal.z + 0.5) / tileSize);
+			int goalCol = int((goal.x + 0.5) / tileSize);
 
-			AStarNode start = AStarNode(startCol, startRow, Config::DEFAULT_TRAVERSABLE_COST,
-										0.0f, Model::MeshType::NONE);
-			AStarNode goal = AStarNode(goalCol, goalRow, Config::DEFAULT_TRAVERSABLE_COST,
-									   INF, Model::MeshType::NONE);
+			AStarNode startNode = AStarNode(startCol, startRow, Config::DEFAULT_TRAVERSABLE_COST,
+											0.0f, Model::MeshType::NONE);
+			AStarNode goalNode = AStarNode(goalCol, goalRow, Config::DEFAULT_TRAVERSABLE_COST,
+										   INF, Model::MeshType::NONE);
 
 			//required to use this because of hashing being weird on floats
 
-			AStarNode startRounded = AStarNode(roundf(startCol), roundf(startRow), Config::DEFAULT_TRAVERSABLE_COST,
-											   0.0f, Model::MeshType::NONE);
-
-			AStarNode goalRounded = AStarNode(roundf(goalCol), roundf(goalRow), Config::DEFAULT_TRAVERSABLE_COST,
-											  INF, Model::MeshType::NONE);
-			frontier.push(startRounded);
-			came_from[startRounded] = startRounded;
-			cost_so_far[startRounded] = 0.0;
+			frontier.push(startNode);
+			came_from[startNode] = startNode;
+			cost_so_far[startNode] = 0.0;
 
 			while (!frontier.empty()) {
 				// top() does not remove the node, so call pop() after it
 				AStarNode current = frontier.top();
 				frontier.pop();
 
-				if (current == goalRounded) {
-					auto path = reconstruct_path(came_from, start, goal);
+				if (current == goalNode) {
+					auto path = reconstruct_path(came_from, startNode, goalNode,start, goal);
 					logger(LogLevel::INFO) << "Found path with length " << path.size() << " \n";
 					return {true, path}; //true for bool because we found a path
 				}
 
-				std::vector<AStarNode> neighbors = getNeighbors(Global::aStarCostMap, current, goalRounded);
+				std::vector<AStarNode> neighbors = getNeighbors(Global::aStarCostMap, current, goalNode);
 				for (auto& next : neighbors) {
 					// total movement cost to next node: path cost of current node + cost of taking
 					// a step from current to next node
@@ -156,7 +187,7 @@ namespace AI {
 						// if not, the [] operator will insert a new entry
 						cost_so_far[next] = gScore;
 						// calculate f-score based on g-score and heuristic
-						next.fScore = gScore + l1_norm(next, goal);
+						next.fScore = gScore + l1_norm(next, goalNode);
 						// add neighbor to open list of nodes to explore
 						frontier.push(next);
 						// update predecessor of next node to our current node

@@ -190,11 +190,8 @@ void Entity::move(double elapsed_time) {
 			glm::vec3 destination = destinations.front();
 			currentDestination = destination;
 			destinations.pop_front();
-			setTargetPath(AI::aStar::findPath(this->getPosition().x, this->getPosition().z, destination.x,
-											  destination.z).second);
-
+			setTargetPath(AI::aStar::findPath(this->getPosition(), destination).second);
 			unitComp.targetPath.insert(unitComp.targetPath.begin(), getPosition());
-
 		}
 		return;
 	}

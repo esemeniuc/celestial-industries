@@ -9,15 +9,15 @@
 
 // used to build a graph of nodes for the AI pathfinder to traverse each tile node.
 struct AStarNode {
-	float rowCoord, colCoord, movementCost;
+	int rowCoord, colCoord, movementCost;
 	float fScore;
 	Model::MeshType type;
 
 	AStarNode() = default;
 
-	AStarNode(float _colCoord,
-			  float _rowCoord,
-			  float _movementCost,
+	AStarNode(int _colCoord,
+			  int _rowCoord,
+			  int _movementCost,
 			  float _fScore,
 			  Model::MeshType _type) : rowCoord(_rowCoord),
 									   colCoord(_colCoord),
@@ -26,8 +26,8 @@ struct AStarNode {
 									   type(_type) {}
 
 	bool operator==(const AStarNode& rhs) const {
-		return rowCoord - rhs.rowCoord < FLT_EPSILON &&
-			   colCoord - rhs.colCoord < FLT_EPSILON;
+		return rowCoord == rhs.rowCoord &&
+			   colCoord == rhs.colCoord;
 	}
 
 	bool operator!=(const AStarNode& rhs) const {
