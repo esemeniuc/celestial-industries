@@ -438,7 +438,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 					play_error_sound();
 					break;
 				}
-				level.placeTile(Model::MeshType::REFINERY, coords, GamePieceOwner::PLAYER, 3, 3, numGeysers);
+				level.placeTile(Model::MeshType::REFINERY, coords, GamePieceOwner::PLAYER, refinerySize, refinerySize, numGeysers);
 				break;
 			}
 			case Ui::BuildingSelected::SUPPLY_DEPOT:
@@ -448,6 +448,26 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 				}
 				level.placeTile(Model::MeshType::SUPPLY_DEPOT, coords);
 				break;
+			case Ui::BuildingSelected::COMMAND_CENTER: {
+				const int width = 3;
+				const int height = 2;
+				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, width, height) > 0 || level.unpathableTilesInArea(coords, width, height)) {
+					play_error_sound();
+					break;
+				}
+				level.placeTile(Model::MeshType::COMMAND_CENTER, coords, GamePieceOwner::PLAYER, width, height);
+				break;
+			}
+			case Ui::BuildingSelected::FACTORY: {
+				const int width = 3;
+				const int height = 2;
+				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, width, height) > 0 || level.unpathableTilesInArea(coords, width, height)) {
+					play_error_sound();
+					break;
+				}
+				level.placeTile(Model::MeshType::FACTORY, coords, GamePieceOwner::PLAYER, width, height);
+				break;
+			}
 			case Ui::BuildingSelected::GUN_TURRET:
 				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 || level.unpathableTilesInArea(coords)) {
 					play_error_sound();

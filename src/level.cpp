@@ -301,6 +301,27 @@ void Level::setupAiCompForTile(std::shared_ptr<Tile> tile, GamePieceOwner owner)
 			tile->aiComp.currentHealth = tile->aiComp.totalHealth;
 			tile->aiComp.value = 75;
 			tile->unitComp.state = UnitState::NONE;
+			break;
+		}
+		case (Model::FACTORY): {
+			tile->aiComp.totalHealth = 400;
+			tile->aiComp.visionRange = 10;
+			tile->aiComp.type = GamePieceClass::BUILDING_NON_ATTACKING;
+			tile->aiComp.currentHealth = tile->aiComp.totalHealth;
+			tile->aiComp.value = 75;
+			
+			tile->unitComp.state = UnitState::NONE;
+			break;
+		}
+		case (Model::COMMAND_CENTER): {
+			tile->aiComp.totalHealth = 1500;
+			tile->aiComp.visionRange = 10;
+			tile->aiComp.type = GamePieceClass::BUILDING_NON_ATTACKING;
+			tile->aiComp.currentHealth = tile->aiComp.totalHealth;
+			tile->aiComp.value = 400;
+								   
+			tile->unitComp.state = UnitState::NONE;
+			break;
 		}
 		default:
 			break;
