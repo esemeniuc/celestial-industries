@@ -24,6 +24,7 @@ namespace Model {
 		{ Model::MeshType::TREE,					{ { "Tree1.obj",		-1 } } },
 		{ Model::MeshType::YELLOWTREE,				{ { "Tree2.obj",		-1 } } },
 		{ Model::MeshType::REDTREE,					{ { "Tree3.obj",		-1 } } },
+		{ Model::MeshType::ENEMY_PORTAL,			{ { "portal`.obj",		-1 } } },
 
 		//buildable things
 		{ Model::MeshType::MINING_TOWER,			{ { "miningTower.obj",	-1 } } },

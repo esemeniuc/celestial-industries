@@ -1,7 +1,7 @@
 TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTWWWWTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
 TGGTGTGTTGTGTTTRTTTGTTGTT.......................TWWWWTTGGGGGGGGGGGGGGGGGGGGGGGGGGGGT
 TTGGGTTTTGGGGGTRRTTTTTT ........................TWWWWTTGGGRRGGGGGGGGGGGRRRGGGGGGGGGT
-TGYGGGGTGTTGTGTGGGGGT   .........Y.............TTWWWTTGGGGRGGGGYYYYGGGGRGGGYYYYGGGGT
+TGYGGGGTGTTGTGTGGGGGT   .........Y.............TTWWWTTGGGGRGGGGYYYYGGGGRGGGYYYYGGOGT
 TTRTGGGGGTTGGGTRYTGG   ........YYGY............TWWWTTGGGGGGRGGGGYYYGGGGGGGGYYYYGGGGT
 TYRRRTGTGGTTTGTYYTT   .........YGYRR..........TTWWWTGGGGGGGGGGGGYYYGGGGGGGGGGGGGGGGT
 TTGTRTTGGGTTGGTTTT  ...........YYRR...........TWWWTTGGGGGGGGGGGGYYYGGGGGGGGGGTTTTTTT
@@ -73,12 +73,12 @@ T '''RRYY'''''GHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHGT,,,,,,RYY,,,
 T '''RGY''''''GVVVGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGT,,,,,,,YY,,,,,,T
 T '''RYY''''''GVVVGTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT,,,,,,,Y,,,,,,,T
 T '''RYR''''''GVVVG                         ,,,,,,             ,,,,,,,,,,,',,,,,,,,T
-T '''RGR''''''GVVVG                         ,,,,,,     YYGYRY  ,,,,,,,,,,,R,,,,,,,,T
+T '''RGR''''''GVVVG                         ,,,,,,     YYGYRY  ,,,,,,,,,,,R,,,,O,,,T
 T '''RR'''''''GVVVG     RRRR       TTWWWWTT ,,,,,,     YYRYRY  ,,,,,,,,,,,R,,,,,,,,T
 T ''''''''''''GVVVG     RRRR        TWWWWWTT,,,,,,     YYRYYY  ,,,,,,,,,R,,,,,,,,,,T
 T ''''''''''''GVVVG   YYGGRR        TTWWWWWT,,,,,,      YYRGRY ,,,,,,,,R,,,,,,,,,,,T
 T ''''''''''''GVVVG    YGGR          TWWWWWT,,,,,,        YGY  ,,,,,,,,,,,,,,,,,,,,T
 T ''''''''''''GVVVG    YGG            TWWWWWT ,,,,             ,,,,,,,,,,,,,,,,,,,,T
-T ''''''''''''GVVVG                    TWWWWTTT,,,             ,,,,,,,,,,,,,,,,,,,,T
+T ''''''''''''GVVVG                    TWWWWTTT,,,             ,,,,,,,,,,,,,,,,,O,,T
 T ''''''''''''GVVVG                     TWWWWWT,,,             ,,,,,,,,,,,,,,,,,,,,T
 TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT

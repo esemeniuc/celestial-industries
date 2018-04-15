@@ -30,6 +30,7 @@ namespace Model {
 		TREE,
 		YELLOWTREE,
 		REDTREE,
+		ENEMY_PORTAL,
 
 		//buildable things
 		MINING_TOWER,
