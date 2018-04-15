@@ -5,7 +5,8 @@
 #include <vector>
 #include "entity.hpp"
 #include "gamestate.hpp"
-#include "level.hpp" //for AStarNode
+#include "particle.hpp"
+#include "astarnode.hpp"
 
 namespace Global {
 

@@ -1,13 +1,13 @@
 #pragma once
 
 #include <limits>
-#include <ostream> //for overloaded << operator
 #include <map>
+
+#include "astarnode.hpp"
 #include "common.hpp"
 #include "config.hpp"
 #include "tile.hpp"
 #include "model.hpp"
-#include "particle.hpp"
 #include "entity.hpp"
 
 
@@ -16,37 +16,6 @@
 struct TimeTile {
 	OBJ::Data present;
 	OBJ::Data past;
-};
-
-// used to build a graph of nodes for the AI pathfinder to traverse each tile node.
-struct AStarNode {
-	int rowCoord, colCoord, movementCost;
-	float fScore;
-	short type;
-
-	AStarNode() = default;
-
-	AStarNode(int _colCoord, int _rowCoord, int _movementCost, float _fScore, short _type) : rowCoord(_rowCoord),
-																							 colCoord(_colCoord),
-																							 movementCost(
-																									 _movementCost),
-																							 fScore(_fScore),
-																							 type(_type) {}
-
-	bool operator==(const AStarNode& rhs) const {
-		return rowCoord == rhs.rowCoord &&
-			   colCoord == rhs.colCoord;
-	}
-
-	bool operator!=(const AStarNode& rhs) const {
-		return !(rhs == *this);
-	}
-
-	friend std::ostream& operator<<(std::ostream& os, const AStarNode& state) {
-		os << "rowCoord: " << state.rowCoord << " colCoord: " << state.colCoord << " movementCost: "
-		   << state.movementCost << " fScore: " << state.fScore;
-		return os;
-	}
 };
 
 class Level {
@@ -76,11 +45,14 @@ public:
 
 	// Places a tile, replacing anything there before. If the tile is larger than standard specify the width and height.
 	// The location refers to the tile's top left corner (0,0,0) being the minimum accepted. The location is NOT the center of the tile.
-	std::shared_ptr<Tile> placeTile(Model::MeshType type, glm::vec3 location, GamePieceOwner owner = GamePieceOwner::PLAYER, unsigned int width = 1, unsigned int height = 1, int extraArg = 0, Model::MeshType replacingMesh = Model::MeshType::SAND_1);
+	std::shared_ptr<Tile>
+	placeTile(Model::MeshType type, glm::vec3 location, GamePieceOwner owner = GamePieceOwner::PLAYER,
+			  unsigned int width = 1, unsigned int height = 1, int extraArg = 0,
+			  Model::MeshType replacingMesh = Model::MeshType::SAND_1);
 
 	int numTilesOfTypeInArea(Model::MeshType type, glm::vec3 location, unsigned int height = 1, unsigned int width = 1);
 
-	int numTilesOfOwnerInArea(GamePieceOwner owner, glm::vec3 location, unsigned int height = 1, unsigned int width = 1);
+	int	numTilesOfOwnerInArea(GamePieceOwner owner, glm::vec3 location, unsigned int height = 1, unsigned int width = 1);
 
 	bool unpathableTilesInArea(glm::vec3 location, unsigned int height = 1, unsigned int width = 1);
 

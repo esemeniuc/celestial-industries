@@ -46,7 +46,7 @@ namespace Model {
 
 	};
 	
-    std::vector<std::shared_ptr<Renderer>> meshRenderers(meshSources.size());
+    std::vector<std::shared_ptr<Renderer>> meshRenderers(Model::MeshType::MESHTYPES_COUNT);
 	CollisionDetector collisionDetector;
     
     Renderable createRenderable(MeshType type)

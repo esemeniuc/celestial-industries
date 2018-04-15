@@ -8,6 +8,8 @@
 namespace Model {
 
 	enum MeshType { //avoid enum class to avoid casting to integers
+		NONE = -1, //for pathfinding.cpp, it needs a meshtype in aStarNode
+
 		//level tile textures
 		SAND_1,
 		SAND_2,

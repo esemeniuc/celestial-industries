@@ -110,8 +110,8 @@ namespace AI {
 			int goalRow = goalZ / tileSize;
 			int goalCol = goalX / tileSize;
 
-			AStarNode start = AStarNode(startCol, startRow, 10, 0.0f, 0);
-			AStarNode goal = AStarNode(goalCol, goalRow, 10, INF, 0);
+			AStarNode start = AStarNode(startCol, startRow, Config::DEFAULT_TRAVERSABLE_COST, 0.0f, Model::MeshType::NONE);
+			AStarNode goal = AStarNode(goalCol, goalRow, Config::DEFAULT_TRAVERSABLE_COST, INF, Model::MeshType::NONE);
 
 			frontier.push(start);
 			came_from[start] = start;
