@@ -137,8 +137,10 @@ void Entity::setTargetPath(const std::vector<Coord>& targetPath, int x, int z) {
 //expects the caller to set the unit state before calling this
 void Entity::moveTo(UnitState unitState, int x, int z, bool queueMove) {
 	this->unitComp.state = unitState;
-	if (!queueMove)
+	if (!queueMove)	{
 		destinations.clear(); // Clear the queue
+		cleanUpTargetPath();
+	}
 	destinations.emplace_back(x, 0, z);
 	hasDestination = true;
 }
@@ -236,11 +238,11 @@ glm::vec3 Entity::getPosition() const {
 }
 
 bool Entity::canSee(const std::shared_ptr<Entity>& entity) const {
-	return glm::length(glm::vec2(entity->getPosition() - this->getPosition())) <= aiComp.visionRange;
+	return glm::distance(entity->getPosition(), this->getPosition()) <= aiComp.visionRange;
 }
 
 bool Entity::inAttackRange(const std::shared_ptr<Entity>& entity) const {
-	return glm::length(glm::vec2(entity->getPosition() - this->getPosition())) <= unitComp.attackRange;
+	return glm::distance(entity->getPosition(), this->getPosition()) <= unitComp.attackRange;
 }
 
 bool Entity::operator==(const Entity& rhs) const {
