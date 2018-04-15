@@ -10,6 +10,7 @@
 #include "renderer.hpp"
 #include "rigidBody.hpp"
 #include "unitcomp.hpp"
+#include <deque>
 
 class Entity {
 public:
@@ -18,10 +19,18 @@ public:
 	Renderable geometryRenderer;
 	AiComp aiComp;
 	UnitComp unitComp;
+	bool hasDestination = false;
+	std::deque<glm::vec3> destinations;
+	glm::vec3 currentDestination;
+	float collisionCooldown = 0;
+
+	bool hasPhysics = true; // Set to false if we want to avoid any expensive physics computations for the object
+	bool isDeleted = false;
 	RigidBody rigidBody;
 
 	std::shared_ptr<Entity> target;
 	glm::vec3 targetPosition = {0.0f, 0.0f, 0.0f};
+	glm::vec3 nextPosition;
 	float attackingCooldown;
 
 	// constructors
@@ -50,7 +59,7 @@ public:
 
 	void takeAttack(const std::shared_ptr<Entity>& attackingEntity, double elapsed_ms);
 
-	void setPosition(glm::vec3 position);
+	virtual void setPosition(glm::vec3 position);
 
 	void setPositionFast(int modelIndex, glm::vec3 position);
 
@@ -90,11 +99,13 @@ public:
 
 	bool hasMoveTarget();
 
-	void moveTo(UnitState unitState, int x, int z);
+	virtual void moveTo(UnitState unitState, int x, int z, bool queueMove=false);
 
 	void cleanUpTargetPath();
 
-	void move(double elapsed_time);
+	void computeNextMoveLocation(double elapsed_time);
+	
+	virtual void move(double elapsed_time);
 
 	std::pair<int, double> getInterpolationPercentage();
 

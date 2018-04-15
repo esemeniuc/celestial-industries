@@ -8,6 +8,7 @@
 #include "level.hpp" //for AStarNode
 
 namespace Global {
+
 	extern size_t levelWidth;
 	extern size_t levelHeight;
 
@@ -36,9 +37,11 @@ namespace Global {
 
 	extern std::vector<std::vector<Model::MeshType>> levelArray; //the tiles that make up the level
 	extern std::vector<std::vector<AStarNode>> levelTraversalCostMap; //costs for going over each tile
+	extern std::vector<std::vector<AStarNode>> levelWithUnitsTraversalCostMap;
 
 	extern std::unordered_set<Coord, CoordHasher> scoutingTargetsInProgress; //ai uses this to avoid double scouting a position
 
 	extern std::vector<std::vector<AStarNode>> aStarCostMap; //ai should be able to see the level traversal costs
 
+	extern std::vector<std::shared_ptr<Particles::ParticleEmitter>> emitters;
 }

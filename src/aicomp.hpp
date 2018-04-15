@@ -31,14 +31,14 @@ public:
 			  visionRange(visionRange),
 			  owner(owner),
 			  type(type),
-			  currentHealth(initialHealth),
+			  currentHealth((float)initialHealth),
 			  value(value) {}
 
 	AiComp(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceClass type,
 			  int currentHealth, int value) : totalHealth(initialHealth),
 											  visionRange(visionRange),
 											  owner(owner), type(type),
-											  currentHealth(currentHealth),
+											  currentHealth((float)currentHealth),
 											  value(value) {}
 
 

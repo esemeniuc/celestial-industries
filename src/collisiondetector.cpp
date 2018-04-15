@@ -1,6 +1,7 @@
 #include "collisiondetector.hpp"
 #include "collisiondetection.hpp"
 #include "rigidBody.hpp"
+#include <unordered_map>
 
 #include <map>
 
@@ -30,14 +31,17 @@ void CollisionDetector::findCollisions(float elapsed_ms)
 					CollisionDetection::CollisionInfo collision = CollisionDetection::aabbMinkowskiCollisions(boxes[i], boxes[j], elapsed_ms);
 					if (collision.collided) {
 						// TODO: Currently only tracks the time of collision, not anything else
-						collisions[i].push_back(collision);
+						collision.otherPos = boxes[j].position;
+						glm::vec3 distance = boxes[j].position - boxes[i].position;
+						//collisions[i].push_back(collision);
 					}
 
 					// Static collisions
 					if (CollisionDetection::aabbsOverlap(boxes[i], boxes[j])) {
 						CollisionDetection::CollisionInfo collision = {
 							true,
-							0.0f
+							0.0f,
+							boxes[j].position
 						};
 						collisions[i].push_back(collision);
 					}
@@ -45,6 +49,7 @@ void CollisionDetector::findCollisions(float elapsed_ms)
 			}
 		}
     }
+	return;
 }
 
 std::vector<CollisionDetection::CollisionInfo> CollisionDetector::getAllCollisions(int id)

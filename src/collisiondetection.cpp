@@ -24,9 +24,10 @@ namespace CollisionDetection {
         glm::vec3 aVelocity = (aEnd - aStart);
         glm::vec3 bVelocity = (bEnd - bStart);
 
-        glm::vec3 relativeVelocity = bVelocity - aVelocity;
+        glm::vec3 relativeVelocity = aVelocity - bVelocity;
+		glm::vec3 relativeDistance = relativeVelocity * totalTime;
         //// using velocity as a vertex to then check it against the minkowski sum to see if there is a collision
-        LineSegment segment = originToVertex(relativeVelocity);
+        LineSegment segment = originToVertex(relativeDistance);
 
         return segmentAABBCollision(segment, difference, totalTime);
     }
@@ -46,10 +47,10 @@ namespace CollisionDetection {
         float aby = b.lowerCorner.z - a.upperCorner.z;
         float bay = a.lowerCorner.z - b.upperCorner.z;
 
-        if (abx > 0.0f || aby > 0.0f)
+        if (abx >= 0.0f || aby >= 0.0f)
             return false;
 
-        if (bax > 0.0f || bay > 0.0f)
+        if (bax >= 0.0f || bay >= 0.0f)
             return false;
 
         return true;
@@ -260,9 +261,9 @@ namespace CollisionDetection {
         glm::vec3 r = l1.end - l1.start;
         glm::vec3 s = l2.end - l2.start;
 
-        float s_r_crossProduct = weirdCrossProduct(r, s);
-        float t = weirdCrossProduct(q - p, s) / s_r_crossProduct;
-        float u = weirdCrossProduct(q - p, r) / s_r_crossProduct;
+        double s_r_crossProduct = weirdCrossProduct(r, s);
+		double t = weirdCrossProduct(q - p, s) / s_r_crossProduct;
+		double u = weirdCrossProduct(q - p, r) / s_r_crossProduct;
 
         IntersectionCollisionInfo NO = {
             false, 0.0f,{ 0.0f,0.0f,0.0f }
@@ -276,8 +277,8 @@ namespace CollisionDetection {
         {
             return {
                 true,
-                t,
-                p + (r * t)
+				static_cast<float>(t),
+                p + (r * static_cast<float>(t))
             };
         }
     }
@@ -334,7 +335,7 @@ namespace CollisionDetection {
         IntersectionCollisionInfo collision;
         collision.collided = false;
         for (auto side : boxSides) {
-            IntersectionCollisionInfo newCollision = segmentsCollision3(segment, side);
+            IntersectionCollisionInfo newCollision = segmentsCollision1(segment, side);
             if ((!collision.collided && newCollision.collided) || (newCollision.collided && newCollision.t < collision.t)) {
                 collision = newCollision;
             }

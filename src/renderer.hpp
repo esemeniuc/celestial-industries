@@ -57,6 +57,7 @@ public:
     void updateModelMatrixStack(unsigned int modelIndex, bool updateHierarchically=true);
     glm::mat4 getModelMatrix(unsigned int id, unsigned int modelIndex);
 private:
+	std::vector<int> graveyardIdStack;
     // TODO: replace with uniform buffers
 	GLuint viewProjectionUniform, viewMatrixUniform, modelIndexUniform, instanceDataAttribute, directionalLightUniform;
 	GLuint texcoordAttribute, normalAttribute, instancesDataBuffer, materialUniformBlock, positionAttribute;

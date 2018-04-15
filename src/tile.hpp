@@ -2,6 +2,8 @@
 
 #include "renderer.hpp"
 #include "model.hpp"
+#include "entity.hpp"
+#include "particle.hpp"
 
 #include <random>
 
@@ -10,22 +12,21 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 // The base class for every tile in the game
-class Tile
+class Tile : public Entity
 {
 public:
-    Tile(Model::MeshType geometry);
-    virtual ~Tile();
-	virtual void update(float ms);
-	void translate(glm::vec3 v);
-	void setPosition(glm::vec3 v);
-	Renderable geometryRenderer;
 	glm::vec3 position;
-	void softDelete();
+	glm::vec3 size = { 1, 0 ,1 };
+	Tile(Model::MeshType mesh);
+	Model::MeshType type;
+	void update(double ms);
+	void moveTo(UnitState unitState, int x, int z, bool queueMove=false) override; // Buildings dont path to places
+	virtual void removeSelf();
 private:
-	void setCost(float);
-	float getCost();
-    // cost to traverse a tile, used by AI for path finding
-    float cost;
+	//void setCost(float);
+	//float getCost();
+ //   // cost to traverse a tile, used by AI for path finding
+ //   float cost;
 };
 
 class GunTowerTile : public Tile {
@@ -43,7 +44,24 @@ private:
 
 public:
     GunTowerTile();
-    void update(float ms) override;
+    void move(double ms) override;
     void explode(glm::vec3 dir);
 
+};
+
+class RefineryTile : public Tile {
+public:
+	unsigned int resourceCollectionRate;
+	void move(double ms) override;
+	void removeSelf() override;
+	RefineryTile(unsigned int numberOfGeysersReplaced);
+};
+
+class GeyserTile : public Tile {
+private:
+	std::shared_ptr<Particles::ParticleEmitter> emitter;
+public:
+	GeyserTile(std::shared_ptr<Shader> particleShader, std::shared_ptr<Texture> particleTexture);
+	void setPosition(glm::vec3 position) override;
+	void removeSelf() override;
 };
