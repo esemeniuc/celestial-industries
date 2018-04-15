@@ -47,8 +47,8 @@ namespace AI {
 		}
 
 		bool withinLevelBounds(int col, int row) {
-			return (col >= 0 && col < Global::levelWidth) &&
-				   (row >= 0 && row < Global::levelHeight);
+			return (col >= 0 && col < (int)Global::levelWidth) &&
+				   (row >= 0 && row < (int)Global::levelHeight);
 		}
 
 		std::vector<AStarNode>

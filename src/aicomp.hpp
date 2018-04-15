@@ -4,13 +4,13 @@
 #include <memory>
 
 //make sure to update entityinfo.cpp if you add new enums here
-enum class GamePieceOwner :size_t {
+enum class GamePieceOwner {
 	NONE,
 	PLAYER,
 	AI,
 };
 
-enum class GamePieceClass :size_t {
+enum class GamePieceClass {
 	NONE,
 	BUILDING_NON_ATTACKING,
 	UNIT_NON_ATTACKING,
@@ -40,15 +40,15 @@ public:
 			  visionRange(visionRange),
 			  owner(owner),
 			  type(type),
-			  currentHealth((float)initialHealth),
+			  currentHealth((float) initialHealth),
 			  value(value) {}
 
 	AiComp(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceClass type,
-			  int currentHealth, int value) : totalHealth(initialHealth),
-											  visionRange(visionRange),
-											  owner(owner), type(type),
-											  currentHealth((float)currentHealth),
-											  value(value) {}
+		   int currentHealth, int value) : totalHealth(initialHealth),
+										   visionRange(visionRange),
+										   owner(owner), type(type),
+										   currentHealth((float) currentHealth),
+										   value(value) {}
 
 
 	bool operator==(const AiComp& rhs) const {

@@ -190,7 +190,7 @@ namespace UnitManager {
 			glm::vec3 specificPosition = position + spiralOffset(n);
 			while (!AI::aStar::isTraversable(specificPosition.x, specificPosition.z) && n < nCutoff) {
 				n++;
-				glm::vec3 specificPosition = position + spiralOffset(n);
+				specificPosition = position + spiralOffset(n);
 			}
 			unit->moveTo(UnitState::ATTACK_MOVE, specificPosition, queueCommand);
 			n++;

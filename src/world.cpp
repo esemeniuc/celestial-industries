@@ -142,20 +142,12 @@ bool World::init() {
 	Global::aStarCostMap = level.getLevelTraversalCostMap();
 
 	//display a path
-	int startx = 25, startz = 11;
-	int targetx = 10, targetz = 10;
-	auto temp1 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
-//	temp1->moveTo(UnitState::MOVE, targetx, targetz);
+	auto temp1 = Unit::spawn(Model::MeshType::BALL, {25, 0, 11}, GamePieceOwner::PLAYER);
 
-	startx = 39, startz = 19;
-	auto temp2 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
-//	temp2->moveTo(targetx, targetz);
+	auto temp2 = Unit::spawn(Model::MeshType::BALL, {39, 0, 19}, GamePieceOwner::PLAYER);
 
-	startx = 39, startz = 1;
-	auto temp3 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
-//	temp3->moveTo(UnitState::MOVE, targetx, targetz);
+	auto temp3 = Unit::spawn(Model::MeshType::BALL, {39, 0, 1}, GamePieceOwner::PLAYER);
 
-	startx = 20, startz = 20;
 	auto temp4 = Unit::spawn(Model::MeshType::BALL, {20.5, 0, 15.5}, GamePieceOwner::PLAYER);
 
 	// Example use of targeting units.

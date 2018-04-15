@@ -141,9 +141,6 @@ void Entity::moveTo(UnitState unitState, const glm::vec3& moveToTarget, bool que
 		cleanUpTargetPath();
 	}
 	destinations.push_back(moveToTarget);
-	printf("current: %f %f\n", getPosition().x, getPosition().z);
-	printf("moveto: %f %f\n", moveToTarget.x, moveToTarget.z);
-
 }
 
 //returns a pathIndex and a 0.00 - 0.99 value to interpolate between steps in a path
@@ -183,18 +180,12 @@ void Entity::move(double elapsed_time) {
 		if (!destinations.empty()) {
 			currentDestination = destinations.front(); //get the next dest
 			destinations.pop_front();
-			const std::vector<glm::vec3>& path = AI::aStar::findPath(this->getPosition(), currentDestination).second;
-			for (auto elem: path) {
-				printf("[%.3f %.3f] ", elem.x, elem.z);
-			}
-			printf("\n");
-			setTargetPath(path);
+			setTargetPath(AI::aStar::findPath(this->getPosition(), currentDestination).second);
 		}
 		return;
 	}
 	bool hasCollision = !rigidBody.getAllCollisions().empty();
 
-	printf("next: %f %f\n", nextPosition.x, nextPosition.z);
 	if (!hasPhysics || !hasCollision || collisionCooldown > 0) {
 		setPositionFast(0, nextPosition); //for rendering
 		rigidBody.setPosition(nextPosition); //for phys
