@@ -298,6 +298,14 @@ namespace Ui {
 						selectedBuilding = REFINERY;
 					}
 
+					if (ImGui::Button("Command center")) {
+						selectedBuilding = COMMAND_CENTER;
+					}
+
+					if (ImGui::Button("Factory")) {
+						selectedBuilding = FACTORY;
+					}
+
 					if (ImGui::Button("Supply Depot")) {
 						selectedBuilding = SUPPLY_DEPOT;
 					}

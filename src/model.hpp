@@ -37,6 +37,8 @@ namespace Model {
 		SUPPLY_DEPOT,
 		REFINERY,
 		GUN_TURRET,
+		FACTORY,
+		COMMAND_CENTER,
 
 		//movable units
 		BALL,
@@ -57,4 +59,5 @@ namespace Model {
 	extern CollisionDetector collisionDetector;
 
 	Renderable createRenderable(MeshType type);
+
 }

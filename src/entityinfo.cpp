@@ -12,6 +12,9 @@ std::array<const char*, Model::MeshType::MESHTYPES_COUNT> initNameLookupTable() 
 	tempNameLookupTable[Model::MeshType::PHOTON_TOWER] = "Photon Tower";
 	tempNameLookupTable[Model::MeshType::SUPPLY_DEPOT] = "Supply Depot";
 	tempNameLookupTable[Model::MeshType::GUN_TURRET] = "Gun Turret";
+	tempNameLookupTable[Model::MeshType::FACTORY] = "Factory";
+	tempNameLookupTable[Model::MeshType::COMMAND_CENTER] = "Command center";
+
 
 	//geyser
 	tempNameLookupTable[Model::MeshType::GEYSER] = "Resource Geyser";

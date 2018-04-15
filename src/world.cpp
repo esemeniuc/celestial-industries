@@ -101,7 +101,7 @@ bool World::init() {
 
 	// Load shader for default meshSources
 	objShader = std::make_shared<Shader>();
-	if (!objShader->load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl"))) {
+	if (!objShader->load_from_file(shader_path("celShader.vs.glsl"), shader_path("celShader.fs.glsl"))) {
 		logger(LogLevel::ERR) << "Failed to load obj shader!" << '\n';
 		return false;
 	}
@@ -283,7 +283,7 @@ void World::draw() {
 	glm::mat4 projectionView = projection * view;
 
 	for (const auto& renderer : Model::meshRenderers) {
-		renderer->render(projectionView);
+		renderer->render(projectionView, view);
 	}
 
 	m_skybox.getCameraPosition(camera.position);
@@ -438,7 +438,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 					play_error_sound();
 					break;
 				}
-				level.placeTile(Model::MeshType::REFINERY, coords, GamePieceOwner::PLAYER, 3, 3, numGeysers);
+				level.placeTile(Model::MeshType::REFINERY, coords, GamePieceOwner::PLAYER, refinerySize, refinerySize, numGeysers);
 				break;
 			}
 			case Ui::BuildingSelected::SUPPLY_DEPOT:
@@ -448,6 +448,26 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 				}
 				level.placeTile(Model::MeshType::SUPPLY_DEPOT, coords);
 				break;
+			case Ui::BuildingSelected::COMMAND_CENTER: {
+				const int width = 3;
+				const int height = 2;
+				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, width, height) > 0 || level.unpathableTilesInArea(coords, width, height)) {
+					play_error_sound();
+					break;
+				}
+				level.placeTile(Model::MeshType::COMMAND_CENTER, coords, GamePieceOwner::PLAYER, width, height);
+				break;
+			}
+			case Ui::BuildingSelected::FACTORY: {
+				const int width = 3;
+				const int height = 2;
+				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, width, height) > 0 || level.unpathableTilesInArea(coords, width, height)) {
+					play_error_sound();
+					break;
+				}
+				level.placeTile(Model::MeshType::FACTORY, coords, GamePieceOwner::PLAYER, width, height);
+				break;
+			}
 			case Ui::BuildingSelected::GUN_TURRET:
 				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 || level.unpathableTilesInArea(coords)) {
 					play_error_sound();

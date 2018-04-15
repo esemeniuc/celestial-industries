@@ -31,13 +31,14 @@ namespace Model {
         { Model::MeshType::REFINERY,	{ { "Refinery.obj",	   -1 } } },
         { Model::MeshType::PHOTON_TOWER,{ { "photonTower.obj", -1 } } },
 		{ Model::MeshType::GUN_TURRET,  { { "TurretBase.obj",  -1 },{ "TurretTop.obj", 0 },{ "TurretGunsLeft.obj", 1 },{ "TurretGunsRight.obj", 1 } } },
-
+		{ Model::MeshType::FACTORY,                 { { "factory.obj",                      -1 } } },
+		{ Model::MeshType::COMMAND_CENTER,          { { "command_center.obj",               -1 } } },
 
 		//movable units
-		{ Model::MeshType::BALL,        { { "ball.obj",        -1 } } },
+		{ Model::MeshType::BALL,					{ { "ball.obj",     					-1 } } },
 		{ Model::MeshType::ENEMY_SPIKE_UNIT,		{ { "enemySpikeUnit.obj",				-1 } } },
 		{ Model::MeshType::ENEMY_RANGED_LINE_UNIT,	{ { "enemyRangedLineUnit.obj",			-1 } } },
-		{ Model::MeshType::ENEMY_RANGED_RADIUS_UNIT,{ { "enemyRangeRadiusUnitBase.obj",	-1 },{ "enemyRangeRadiusUnitTop.obj", 0} } },
+		{ Model::MeshType::ENEMY_RANGED_RADIUS_UNIT,{ { "enemyRangeRadiusUnitBase.obj",		-1 },{ "enemyRangeRadiusUnitTop.obj", 0} } },
 		{ Model::MeshType::FRIENDLY_FIRE_UNIT,		{ { "friendlyFireUnit.obj",				-1 } } },
 		{ Model::MeshType::FRIENDLY_RANGED_UNIT,	{ { "friendlyRangedUnitBase.obj",		-1 },{ "friendlyRangedUnitPillar.obj", 0 } ,{ "friendlyRangedUnitTop.obj", 1 } } },
 
@@ -45,10 +46,11 @@ namespace Model {
 		{ Model::MeshType::TILE_CURSOR,				{ { "tileSelector.obj",					-1 } } },
 
 	};
-	
+
+
     std::vector<std::shared_ptr<Renderer>> meshRenderers(Model::MeshType::MESHTYPES_COUNT);
 	CollisionDetector collisionDetector;
-    
+
     Renderable createRenderable(MeshType type)
     {
         return Renderable(meshRenderers[type]);

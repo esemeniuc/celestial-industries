@@ -55,6 +55,8 @@ namespace Ui {
 		REFINERY,
 		GUN_TURRET,
 		SUPPLY_DEPOT,
+		COMMAND_CENTER,
+		FACTORY,
 	};
 
 	extern BuildingSelected selectedBuilding;
