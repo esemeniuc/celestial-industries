@@ -36,6 +36,7 @@ namespace Particles {
         void update(float elapsed_ms);
         void render(glm::mat4 viewProjection, glm::vec3 cameraPosition);
 
+		bool isDeleted = false;
     private:
         // For rendering state
         GLuint vao;

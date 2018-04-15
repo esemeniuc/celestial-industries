@@ -8,6 +8,7 @@
 #include "unit.hpp"
 #include "attackManger.hpp"
 #include "buildingmanager.hpp"
+#include "ui.hpp"
 
 namespace World {
 	GLFWwindow* m_window;
@@ -19,6 +20,7 @@ namespace World {
 
 	// Selection
 	Coord selectedTileCoordinates;
+	bool shiftBeingHeld = false;
 
 	// Game entities
 	std::shared_ptr<Shader> objShader;
@@ -35,6 +37,7 @@ namespace World {
 	// music and audio
 	Mix_Music* m_background_music;
 	Mix_Chunk* m_mouse_click;
+	Mix_Chunk* m_error_sound;
 
 	double gameElapsedTime = 0.0;
 }
@@ -64,7 +67,7 @@ bool World::init() {
 	// load support for the OGG audio format
 	int flags = MIX_INIT_OGG;
 	int initted = Mix_Init(flags);
-	if ((initted & flags) != flags) {
+	if ((initted & flags) != flags) { // Bitwise & intentional; follows SDL docs
 		logger(LogLevel::ERR) << "Mix_Init: Failed to init required ogg support!\n";
 		logger(LogLevel::ERR) << "Mix_Init: " << Mix_GetError() << '\n';
 	}
@@ -78,6 +81,8 @@ bool World::init() {
 	// LoadWAV is actaully capable of loading other audio formats as well, the name is not accurate
 	// https://www.libsdl.org/projects/SDL_mixer/docs/SDL_mixer_19.html#SEC19
 	m_mouse_click = Mix_LoadWAV(audio_path("click3.ogg"));
+
+	m_error_sound = Mix_LoadWAV(audio_path("switch23.ogg"));
 
 	if (m_background_music == nullptr) {
 		logger(LogLevel::ERR) << "Failed to load sounds, make sure the data directory is present";
@@ -106,6 +111,14 @@ bool World::init() {
 		logger(LogLevel::ERR) << "Failed to load particle shader!" << '\n';
 		return false;
 	}
+	level.particleShader = particleShader;
+
+	std::shared_ptr<Texture> particleTexture = std::make_shared<Texture>();
+	particleTexture->load_from_file(textures_path("turtle.png"));
+	if (!particleTexture->is_valid()) {
+		throw "Particle texture failed to load!";
+	}
+	level.particleTexture = particleTexture;
 
 	if (!initMeshTypes(Model::meshSources)) {
 		logger(LogLevel::ERR) << "Failed to initialize renderers\n";
@@ -119,7 +132,7 @@ bool World::init() {
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
 
-	Global::levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "GameLevel1.txt", particleShader);
+	Global::levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "GameLevel1.txt");
 	Global::levelHeight = Global::levelArray.size();
 	Global::levelWidth = Global::levelArray.front().size();
 	level.init(Model::meshRenderers);
@@ -135,7 +148,7 @@ bool World::init() {
 //	temp1->moveTo(UnitState::MOVE, targetx, targetz);
 
 	startx = 39, startz = 19;
-	auto temp2 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	auto temp2 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
 //	temp2->moveTo(targetx, targetz);
 
 	startx = 39, startz = 1;
@@ -143,7 +156,7 @@ bool World::init() {
 //	temp3->moveTo(UnitState::MOVE, targetx, targetz);
 
 	startx = 20, startz = 20;
-	auto temp4 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	auto temp4 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
 
 	// Example use of targeting units.
 //	AttackManager::registerTargetUnit(temp2, temp1);
@@ -199,6 +212,10 @@ void World::destroy() {
 		Mix_FreeChunk(m_mouse_click);
 	}
 
+	if (m_error_sound != nullptr) {
+		Mix_FreeChunk(m_error_sound);
+	}
+
 	// cleans up all dynamically loaded library handles used by sdl mixer
 	Mix_CloseAudio();
 	Mix_Quit();
@@ -213,7 +230,7 @@ bool World::update(double elapsed_ms) {
 	glfwPollEvents(); //Processes system messages, if this wasn't present the window would become unresponsive
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
-	camera.update(elapsed_ms);
+	camera.update((float)elapsed_ms);
 	gameElapsedTime += elapsed_ms;
 
 	if (selectedTileCoordinates.rowCoord >= 0 &&
@@ -224,37 +241,22 @@ bool World::update(double elapsed_ms) {
 		level.tileCursor->setPosition({selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord});
 	}
 
-	for (const auto& emitter : level.emitters) {
+	for (const auto& emitter : Global::emitters) {
 		emitter->update(elapsed_ms);
 	}
 
+	Global::levelWithUnitsTraversalCostMap = Global::levelTraversalCostMap;
 	AI::Manager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
 	AttackManager::update(elapsed_ms);
 	BuildingManager::update(elapsed_ms);
 
-	Model::collisionDetector.findCollisions(elapsed_ms);
 	for (const auto& tile : level.tiles) {
 		tile->update(elapsed_ms);
 	}
 	for (const auto& entity : Global::playerUnits) {
 		entity->animate(elapsed_ms);
 	}
-//	if (m_dist(m_rng) < 0.005) {
-//		int row = m_dist(m_rng) * Global::levelWidth;
-//		int col = m_dist(m_rng) * Global::levelHeight;
-//		if (level.getLevelTraversalCostMap()[col][row].movementCost < 50.0f) {
-//			glm::vec3 pos = glm::vec3(row, 0, col);
-//			float unitRand = m_dist(m_rng);
-//			if (unitRand < 0.33) {
-//				level.placeEntity(Model::MeshType::ENEMY_SPIKE_UNIT, pos, GamePieceOwner::AI);
-//			} else if (unitRand < 0.66) {
-//				level.placeEntity(Model::MeshType::ENEMY_RANGED_LINE_UNIT, pos, GamePieceOwner::AI);
-//			} else {
-//				level.placeEntity(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, pos, GamePieceOwner::AI);
-//			}
-//		}
-//	}
 	return true;
 }
 
@@ -287,35 +289,20 @@ void World::draw() {
 	m_skybox.getCameraPosition(camera.position);
 	m_skybox.draw(projection * view * m_skybox.getModelMatrix());
 
-	for (const auto& emitter : level.emitters) {
+	for (const auto& emitter : Global::emitters) {
 		emitter->render(projectionView, camera.position);
 	}
 	// Presenting
 //	glfwSwapBuffers(m_window);
 }
 
-void World::move_cursor_up() {
-	selectedTileCoordinates.colCoord--;
-	printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
-}
-
-void World::move_cursor_down() {
-	selectedTileCoordinates.colCoord++;
-	printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
-}
-
-void World::move_cursor_left() {
-	selectedTileCoordinates.rowCoord--;
-	printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
-}
-
-void World::move_cursor_right() {
-	selectedTileCoordinates.rowCoord++;
-	printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
-}
-
 void World::play_mouse_click_sound() {
 	Mix_PlayChannel(-1, m_mouse_click, 0);
+}
+
+void World::play_error_sound()
+{
+	Mix_PlayChannel(-1, m_error_sound, 0);
 }
 
 // Should the game be over ?
@@ -350,22 +337,6 @@ void World::on_key(GLFWwindow* window, int key, int scancode, int action, int mo
 		level.save("savedLevel.txt");
 	}
 
-	// Tile selection controls:
-	if (action == GLFW_RELEASE) {
-		if (key == GLFW_KEY_I) {
-			move_cursor_up();
-		}
-		if (key == GLFW_KEY_K) {
-			move_cursor_down();
-		}
-		if (key == GLFW_KEY_L) {
-			move_cursor_left();
-		}
-		if (key == GLFW_KEY_J) {
-			move_cursor_right();
-		}
-	}
-
 	// We do what we must because we can. Also we only can if we support C++11.
 	std::vector<std::tuple<bool&, std::vector<int>>> stickyKeys = {
 			// Format of this monstrosity:
@@ -379,6 +350,9 @@ void World::on_key(GLFWwindow* window, int key, int scancode, int action, int mo
 			{camera.rotate_right,  {GLFW_KEY_E}},
 			{camera.rotate_left,   {GLFW_KEY_Q}},
 			{camera.z_held,        {GLFW_KEY_Z}},
+
+			// Shift
+			{shiftBeingHeld,	   {GLFW_KEY_RIGHT_SHIFT, GLFW_KEY_LEFT_SHIFT}},
 	};
 
 	for (auto stickyKey : stickyKeys) {
@@ -419,11 +393,10 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 	camera.pan(xpos, ypos);
 
 	std::pair<bool, glm::vec3> result = World::getTileCoordFromWindowCoords(xpos, ypos);
-	if (result.first) { //if t>0
+	if (result.first) {
 		selectedTileCoordinates.colCoord = int(result.second.x + 0.5);
 		selectedTileCoordinates.rowCoord = int(result.second.z + 0.5);
 	} else {
-		printf("bad tile selector calculation: x: %lf z: %lf\n", xpos, ypos);
 	}
 }
 
@@ -437,7 +410,7 @@ void World::on_window_resize(GLFWwindow* window, int width, int height) {
 }
 
 bool withinLevelBounds(glm::vec3 coords) {
-	return (coords.x >= 0 && coords.x < Global::levelWidth) ||
+	return (coords.x >= 0 && coords.x < Global::levelWidth) &&
 		   (coords.z >= 0 && coords.z < Global::levelHeight);
 }
 
@@ -446,42 +419,52 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
 	std::pair<bool, glm::vec3> targetLocation = World::getTileCoordFromWindowCoords(xpos, ypos);
+	glm::vec3 coords = { selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord };
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
 			std::cout << "clicked " << targetLocation.second.x << " " << targetLocation.second.z << "\n";
 			UnitManager::selectUnit(targetLocation.second);
 		}
+
+		std::vector<Model::MeshType> trees = { Model::MeshType::REDTREE, Model::MeshType::TREE, Model::MeshType::YELLOWTREE };
+		if (withinLevelBounds(coords)) {
+			switch (Ui::selectedBuilding) {
+			case Ui::BuildingSelected::REFINERY: {
+				const int refinerySize = 3;
+				int numFriendlyTiles = level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, refinerySize, refinerySize);
+				int numGeysers = level.numTilesOfTypeInArea(Model::MeshType::GEYSER, coords, refinerySize, refinerySize);
+				bool unpathableTiles = level.unpathableTilesInArea(coords, refinerySize, refinerySize);
+				if (numFriendlyTiles > 0 || numGeysers == 0 || unpathableTiles) {
+					play_error_sound();
+					break;
+				}
+				level.placeTile(Model::MeshType::REFINERY, coords, GamePieceOwner::PLAYER, 3, 3, numGeysers);
+				break;
+			}
+			case Ui::BuildingSelected::SUPPLY_DEPOT:
+				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 || level.unpathableTilesInArea(coords)) {
+					play_error_sound();
+					break;
+				}
+				level.placeTile(Model::MeshType::SUPPLY_DEPOT, coords);
+				break;
+			case Ui::BuildingSelected::GUN_TURRET:
+				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 || level.unpathableTilesInArea(coords)) {
+					play_error_sound();
+					break;
+				}
+				level.placeTile(Model::MeshType::GUN_TURRET, coords);
+				break;
+			case Ui::BuildingSelected::NONE:
+			default:
+				break;
+			}
+		}
 	};
 
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
 		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
-			UnitManager::attackTargetLocationWithSelectedUnits(targetLocation.second);
+			UnitManager::attackTargetLocationWithSelectedUnits(targetLocation.second, shiftBeingHeld);
 		}
 	}
-
-
-//	glm::vec3 coords = {selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord};
-//	if (coords.x < 0 || coords.x + 1 > Global::levelWidth ||
-//		coords.z < 0 || coords.z + 1 > Global::levelHeight)
-//		return;
-//	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-//
-//		level.placeTile(Model::MeshType::GUN_TURRET, coords);
-//		logger(LogLevel::INFO) << "Right click detected " << '\n';
-//	}
-//	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-//
-//
-//		if (m_dist(m_rng) < 0.5) {
-//			Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, coords, GamePieceOwner::PLAYER);
-//		} else {
-//			Unit::spawn(Model::MeshType::FRIENDLY_FIRE_UNIT, coords, GamePieceOwner::PLAYER);
-//		}
-//		logger(LogLevel::INFO) << "Left click detected " << '\n';
-//	}
-//	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
-//		for (const auto& entity : Global::playerUnits) {
-//			entity->rigidBody.setVelocity((coords - entity->rigidBody.getPosition()) / 5000.0f);
-//		}
-//	}
 }

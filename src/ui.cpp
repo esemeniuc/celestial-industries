@@ -5,7 +5,6 @@
 #include "ui.hpp"
 #include "global.hpp" //for window size
 #include "unit.hpp" //for spawning
-#include "building.hpp" //for spawning
 #include "world.hpp" //for key callbacks
 #include "config.hpp" //for font file path
 #include "unitmanager.hpp" //for unit selection info
@@ -31,6 +30,8 @@ ImVec2 abs(const ImVec2& a) {
 }
 
 namespace Ui {
+	BuildingSelected selectedBuilding;
+
 	void imguiSetup() {
 		// Setup ImGui binding
 		ImGui::CreateContext();
@@ -79,7 +80,6 @@ namespace Ui {
 		gameLogo = reinterpret_cast<void*>(logoTexture.id);
 		gameLogoSize = ImVec2(logoTexture.width, logoTexture.height);
 	}
-
 
 	void imguiGenerateScreenObjects() {
 // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -223,8 +223,7 @@ namespace Ui {
 				case SpawnWindowState::SPAWN_DEFENSIVE_BUILDINGS : {
 
 					if (ImGui::Button("Gun Turret")) {
-						Building::spawn(Model::GUN_TURRET, glm::vec3(10, 0, 10),
-										GamePieceOwner::PLAYER);
+						selectedBuilding = GUN_TURRET;
 					}
 
 					//back button alignment
@@ -232,6 +231,7 @@ namespace Ui {
 											   uiHeight - ImGui::GetFontSize() * 3));
 					if (ImGui::Button("Back")) {
 						spawnWindowState = SpawnWindowState::SPAWN_SELECTOR;
+						selectedBuilding = NONE;
 					}
 					break;
 				}
@@ -242,25 +242,19 @@ namespace Ui {
 //										GamePieceOwner::PLAYER);
 //					}
 
-					if (ImGui::Button("Mining Tower")) {
-						Building::spawn(Model::MINING_TOWER, glm::vec3(15, 0, 15),
-										GamePieceOwner::PLAYER);
-					}
-
 					if (ImGui::Button("Refinery")) {
-						Building::spawn(Model::REFINERY, glm::vec3(12, 0, 12),
-										GamePieceOwner::PLAYER);
+						selectedBuilding = REFINERY;
 					}
 
 					if (ImGui::Button("Supply Depot")) {
-						Building::spawn(Model::MeshType::SUPPLY_DEPOT, glm::vec3(25, 0, 25),
-										GamePieceOwner::PLAYER);
+						selectedBuilding = SUPPLY_DEPOT;
 					}
 
 					ImGui::SetCursorPos(ImVec2(spawnWindowWidth - ImGui::GetFontSize() * 5,
 											   uiHeight - ImGui::GetFontSize() * 3));
 					if (ImGui::Button("Back")) {
 						spawnWindowState = SpawnWindowState::SPAWN_SELECTOR;
+						selectedBuilding = NONE;
 					}
 					break;
 				}
