@@ -261,6 +261,18 @@ namespace Ui {
 														ImGuiWindowFlags_NoCollapse |
 														ImGuiWindowFlags_NoMove);
 
+			auto highlightBuildingHelper = [](BuildingSelected type, const char* buttonString) {
+				if (selectedBuilding == type) {
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 255, 0, 255));
+					ImGui::Button(buttonString);
+					ImGui::PopStyleColor();
+				} else {
+					if (ImGui::Button(buttonString)) {
+						selectedBuilding = type;
+					}
+				}
+			};
+
 			switch (spawnWindowState) {
 				case SpawnWindowState::SPAWN_SELECTOR: {
 					if (ImGui::Button(ICON_FA_BUILDING " Economic")) {
@@ -274,9 +286,7 @@ namespace Ui {
 				}
 				case SpawnWindowState::SPAWN_DEFENSIVE_BUILDINGS : {
 
-					if (ImGui::Button("Gun Turret")) {
-						selectedBuilding = GUN_TURRET;
-					}
+					highlightBuildingHelper(GUN_TURRET, "Gun Turret");
 
 					//back button alignment
 					ImGui::SetCursorPos(ImVec2(spawnWindowWidth - ImGui::GetFontSize() * 5,
@@ -289,26 +299,10 @@ namespace Ui {
 				}
 				case SpawnWindowState::SPAWN_ECONOMIC_BUILDINGS : {
 
-//					if (ImGui::Button("Command Center")) {
-//						Building::spawn(Model::, glm::vec3(35, 0, 35),
-//										GamePieceOwner::PLAYER);
-//					}
-
-					if (ImGui::Button("Refinery")) {
-						selectedBuilding = REFINERY;
-					}
-
-					if (ImGui::Button("Command center")) {
-						selectedBuilding = COMMAND_CENTER;
-					}
-
-					if (ImGui::Button("Factory")) {
-						selectedBuilding = FACTORY;
-					}
-
-					if (ImGui::Button("Supply Depot")) {
-						selectedBuilding = SUPPLY_DEPOT;
-					}
+					highlightBuildingHelper(COMMAND_CENTER,"Command Center");
+					highlightBuildingHelper(REFINERY, "Refinery");
+					highlightBuildingHelper(FACTORY, "Factory");
+					highlightBuildingHelper(SUPPLY_DEPOT, "Supply Depot");
 
 					ImGui::SetCursorPos(ImVec2(spawnWindowWidth - ImGui::GetFontSize() * 5,
 											   uiHeight - ImGui::GetFontSize() * 3));

@@ -241,10 +241,8 @@ namespace AI {
 
 			//simple ai spawning strategy
 			//if ai has less units than players, then spawn an ai unit
-
 			int playerValue = playerUnitValue + playerBuildingValue;
 			logger(LogLevel::DEBUG) << "playerValue: " << playerValue << ", aiValue: " << aiUnitValue << '\n';
-
 			if (playerValue > aiUnitValue) {
 				//spawns a unit once per 500 ms (since thats how often this runs)
 				Coord spawnLocation = getRandomSpawnLocation();
