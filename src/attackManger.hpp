@@ -19,10 +19,10 @@ namespace AttackManager {
 	void initiateAttacks(std::vector<std::shared_ptr<Entity>> entities1, std::vector<std::shared_ptr<Entity>> entities2, double elapsed_ms) {
 		for (std::shared_ptr<Entity> entity1 : entities1) {
 			for (std::shared_ptr<Entity> entity2 : entities2) {
-				if (entity1->inAttackRange(*entity2)) {
+				if (entity1->inAttackRange(entity2)) {
 					// Entity1 attacks entity2 for elapsed_ms amount of time.
-					entity1->attack(*entity2);
-					entity2->takeAttack(*entity1, elapsed_ms);
+					entity1->attack(entity2);
+					entity2->takeAttack(entity1, elapsed_ms);
 					attackingEntities.push_back(entity1);
 				}
 			}

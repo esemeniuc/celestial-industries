@@ -162,11 +162,11 @@ namespace AI {
 			for (const auto& playerUnit : Global::playerUnits) {
 
 				for (const auto& aiUnit : Global::aiUnits) {
-					if (playerUnit->canSee(*aiUnit)) {
+					if (playerUnit->canSee(aiUnit)) {
 						Global::playerUnitsSeenByAI.insert(aiUnit);
 					}
 
-					if (aiUnit->canSee(*playerUnit)) {
+					if (aiUnit->canSee(playerUnit)) {
 						Global::aiUnitsSeenByPlayer.insert(playerUnit);
 					}
 				}
