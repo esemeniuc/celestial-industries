@@ -71,23 +71,6 @@ namespace AI {
 			}
 
 			int nextRow, nextCol;
-
-			//in delta x, delta z or (col,row) format
-			constexpr std::array<std::pair<int, int>, 8> directions = {
-					{{0, 1}, //down
-							{0, -1}, //up
-							{1, 0}, //right
-							{-1, 0}, //left
-
-							{1, 1}, //bottom right
-							{-1, 1}, //bottom left
-							{1, -1}, //top right
-							{-1, -1} //top left
-
-					}};
-
-			// check if we can move forward a column
-
 			for (const auto& dir : directions) {
 				nextCol = currentPos.colCoord + dir.first, nextRow = currentPos.rowCoord + dir.second;
 				if (withinLevelBounds(nextCol, nextRow) &&
