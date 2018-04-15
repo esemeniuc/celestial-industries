@@ -13,7 +13,6 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
 
 # Fortran module files
 *.mod
@@ -45,3 +44,4 @@ cmake-build-release
 build/
 debug.log
 valgrind.supp
+imgui.ini

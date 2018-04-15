@@ -41,14 +41,14 @@ void Camera::update(float ms) {
 	if (rotate_right)angle.x -= rotateSpeed * ms;
 
 	//pan left right update
-	position += horizontalVector * ms * (float) deltaX * mousePanSensitivity;
+	position += horizontalVector * ms * deltaX * mousePanSensitivity;
 	//pan up down update
-	position += cameraVector2 * ms * (float) deltaY * mousePanSensitivity;
+	position += cameraVector2 * ms * deltaZ * mousePanSensitivity;
 
 }
 
 glm::mat4 Camera::getProjectionMatrix(float screen_x, float screen_y) {
-	return glm::perspective(glm::radians(fieldOfView), screen_x / screen_y, 0.1f, 750.0f);
+	return glm::perspective(glm::radians(fieldOfView), screen_x / screen_y, 5.0f, 400.0f);
 }
 
 glm::mat4 Camera::getViewMatrix() {
@@ -56,37 +56,37 @@ glm::mat4 Camera::getViewMatrix() {
 }
 
 //delta get set to 0 on every update() call
-void Camera::pan(int x, int y) {
+void Camera::pan(double xpos, double ypos) {
 	int leftBound = panDetectionWidth;
-	int rightBound = world.getWindowSize().first - panDetectionWidth;
+	int rightBound = (int) Global::windowWidth - panDetectionWidth;
 	int topBound = panDetectionWidth; //top border
-	int botBound = world.getWindowSize().second - panDetectionWidth; //bottom border
-	if (x <= leftBound) { //handles NW, SW, and W cases
-		if (y <= topBound) {
-			deltaY = 1;
-		} else if (y >= botBound) {
-			deltaY = -1;
+	int botBound = (int) Global::windowHeight - panDetectionWidth; //bottom border
+	if (xpos <= leftBound) { //handles NW, SW, and W cases
+		if (ypos <= topBound) {
+			deltaZ = 1;
+		} else if (ypos >= botBound) {
+			deltaZ = -1;
 		} else {
-			deltaY = 0;
+			deltaZ = 0;
 		}
 		deltaX = -1;
-	} else if (x >= rightBound) { //handles NE, SE, and E cases
-		if (y <= topBound) {
-			deltaY = 1;
-		} else if (y >= botBound) {
-			deltaY = -1;
+	} else if (xpos >= rightBound) { //handles NE, SE, and E cases
+		if (ypos <= topBound) {
+			deltaZ = 1;
+		} else if (ypos >= botBound) {
+			deltaZ = -1;
 		} else {
-			deltaY = 0;
+			deltaZ = 0;
 		}
 		deltaX = 1;
-	} else if (y <= topBound) { //N case
-		deltaY = 1;
+	} else if (ypos <= topBound) { //N case
+		deltaZ = 1;
 		deltaX = 0;
-	} else if (y >= botBound) { //S case
-		deltaY = -1;
+	} else if (ypos >= botBound) { //S case
+		deltaZ = -1;
 		deltaX = 0;
 	} else { //not along edges
 		deltaX = 0;
-		deltaY = 0;
+		deltaZ = 0;
 	}
 }

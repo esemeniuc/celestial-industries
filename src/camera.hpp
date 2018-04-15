@@ -26,18 +26,18 @@ public:
 	glm::vec3 direction;
 	glm::vec3 position; //gets overwritten in world.cpp
 	glm::vec3 angle = {M_PI, -M_PI / 4, 0}; //pi/4 for isomorphic view
-	glm::vec3 verticalVector; // Note: This is what is typically referred to as "up" for the viewer
+	glm::vec3 verticalVector; // Note: This is what is typically referred to as "up" in the game world for the viewer
 	glm::vec3 horizontalVector;
 	glm::mat4 view;
 
 	bool move_forward, move_backward, move_left, move_right, rotate_left, rotate_right, z_held;
 
-	int deltaX = 0;
-	int deltaY = 0;
+	float deltaX = 0; //start at 0 so we don't pan at game launch
+	float deltaZ = 0;
 
 	void update(float ms);
 
-	void pan(int x, int y);
+	void pan(double xpos, double ypos);
 
 	glm::mat4 getProjectionMatrix(float screen_x, float screen_y);
 

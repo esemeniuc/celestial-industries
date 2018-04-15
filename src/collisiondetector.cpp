@@ -21,10 +21,10 @@ int CollisionDetector::createBoundingBox(glm::vec3 position, glm::vec3 size, glm
 void CollisionDetector::findCollisions(float elapsed_ms)
 {
     // O(n^2) lol
-    for (int i = 0; i < boxes.size(); i++) {
+    for (size_t i = 0; i < boxes.size(); i++) {
         collisions[i].clear();
 		if (!boxes[i].removed) {
-			for (int j = 0; j < boxes.size(); j++) {
+			for (size_t j = 0; j < boxes.size(); j++) {
 				if (i != j && !boxes[j].removed) {
 					// Detect moving collisions
 					CollisionDetection::CollisionInfo collision = CollisionDetection::aabbMinkowskiCollisions(boxes[i], boxes[j], elapsed_ms);
@@ -56,7 +56,7 @@ CollisionDetection::CollisionInfo CollisionDetector::getFirstCollision(int id)
 {
     CollisionDetection::CollisionInfo firstCollision;
     firstCollision.collided = false;
-    for (int i = 0; i < collisions[id].size(); i++) {
+    for (size_t i = 0; i < collisions[id].size(); i++) {
         if (!firstCollision.collided || (collisions[id][i].collided && collisions[id][i].time < firstCollision.time)) {
             firstCollision = collisions[id][i];
         }

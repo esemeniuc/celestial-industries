@@ -1,0 +1,32 @@
+# Made using Asset Forge (www.assetforge.io) version 1.3 
+
+newmtl Brick (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.918 0.898 0.812 
+Ks 0.330000 0.330000 0.330000 
+
+newmtl Glass (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.612 0.831 0.886 
+Ks 0.330000 0.330000 0.330000 
+
+newmtl FrontColor (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 1 1 1 
+Ks 0.330000 0.330000 0.330000 
+
+newmtl Roof (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.267 0.267 0.267 
+Ks 0.330000 0.330000 0.330000 
+
+newmtl element (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.945 0.949 0.965 
+Ks 0.330000 0.330000 0.330000 
+
+newmtl glass (Instance)
+Ka 0.000000 0.000000 0.000000 
+Kd 0.298 0.314 0.365 
+Ks 0.330000 0.330000 0.330000 
+

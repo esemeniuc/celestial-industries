@@ -5,7 +5,7 @@
 namespace BuildingManager {
 
 	void init(size_t levelHeight, size_t levelWidth) {
-		buildingMap.reserve(levelHeight * levelWidth);
+		Global::buildingMap.reserve(levelHeight * levelWidth);
 	}
 
 	void update(double elapsed_ms) {

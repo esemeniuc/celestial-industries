@@ -14,13 +14,14 @@
 class Entity {
 public:
 	//members
+	Model::MeshType meshType; //for what unit this (lookup in other tables)
 	Renderable geometryRenderer;
 	AiComp aiComp;
 	UnitComp unitComp;
 	RigidBody rigidBody;
 
 	std::shared_ptr<Entity> target;
-	glm::vec3 targetPosition = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 targetPosition = {0.0f, 0.0f, 0.0f};
 	float attackingCooldown;
 
 	// constructors
@@ -28,7 +29,7 @@ public:
 
 	Entity(Model::MeshType geometry);
 
-
+	virtual ~Entity();
 	// functions
 	virtual void animate(float ms);
 
@@ -45,9 +46,9 @@ public:
 
 	Coord getPositionInt();
 
-    void attack(const Entity& entityToAttack);
+	void attack(const Entity& entityToAttack);
 
-    void takeAttack(const Entity& attackingEntity, double elapsed_ms);
+	void takeAttack(const Entity& attackingEntity, double elapsed_ms);
 
 	void setPosition(glm::vec3 position);
 
@@ -84,34 +85,36 @@ public:
 	RigidBody getRigidBody();
 
 	glm::vec3 getPosition() const;
-	
-	void setTargetPath(const std::vector<Coord>& targetPath);
 
-	void moveTo(int x, int z);
+	void setTargetPath(const std::vector<Coord>& targetPath, int x, int z);
 
-	void scoutPosition(int x, int z);
+	bool hasMoveTarget();
+
+	void moveTo(UnitState unitState, int x, int z);
+
+	void cleanUpTargetPath();
 
 	void move(double elapsed_time);
 
 	std::pair<int, double> getInterpolationPercentage();
 
-	bool canSee(const Entity& other);
+	bool canSee(const Entity& other) const;
 
-	bool inAttackRange(const Entity& other);
+	bool inAttackRange(const Entity& other) const;
 
 	bool operator==(const Entity& rhs) const;
 
 protected:
 	float angle = 0.0f;
-
 };
 
 // TODO: Override rotate methods so that they also update angle
-class TurretUnit : public Entity {
+class PivotingGunEntity : public Entity {
 public:
 	unsigned int turretIndex;
 	float turretAngle;
-	TurretUnit(Model::MeshType geometry, unsigned int turretIndex) : turretIndex(turretIndex), Entity(geometry) {};
+
+	PivotingGunEntity(Model::MeshType geometry, unsigned int turretIndex) : Entity(geometry), turretIndex(turretIndex) {};
 
 	void animate(float ms) override;
 };

@@ -4,7 +4,6 @@
 #include "camera.hpp"
 #include "common.hpp"
 #include "level.hpp"
-#include "pathfinder.hpp"
 #include "skybox.hpp"
 #include "tile.hpp"
 #include "model.hpp"
@@ -16,6 +15,7 @@
 
 //sdl stuff
 #define SDL_MAIN_HANDLED
+
 #include <SDL.h>
 #include <SDL_mixer.h>
 
@@ -29,17 +29,38 @@
 
 // Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
-class World {
-public:
+namespace World {
 	//members
-	size_t levelWidth;
-	size_t levelHeight;
+	// Window handle
+	extern GLFWwindow* m_window;
+
+	extern glm::vec2 m_screen;
+
+	// Camera stuff
+	extern Camera camera;
+
+	// Selection
+	extern Coord selectedTileCoordinates;
+
+	// Game entities
+	extern std::shared_ptr<Shader> objShader;
+	extern Level level;
+	extern Skybox m_skybox;
+
+	// Audio and music
+	extern Mix_Music* m_background_music;
+	extern Mix_Chunk* m_mouse_click;
+
+	// Particle things
+	extern std::shared_ptr<Shader> particleShader;
+
+	// C++ rng
+	extern std::default_random_engine m_rng;
+	extern std::uniform_real_distribution<float> m_dist; // default 0..1
+
+	extern double gameElapsedTime;
 
 	//funcs
-	World();
-
-	~World();
-
 	// Creates a window, sets up events and begins the game
 	bool init();
 
@@ -53,37 +74,11 @@ public:
 	void draw();
 
 	// Should the game be over ?
-	bool is_over() const;
-
-	//returns w x h
-	std::pair<int, int> getWindowSize();
-
-private:
-	//members
-	// Window handle
-	GLFWwindow* m_window;
-	bool escapePressed = false;
-	glm::vec2 m_screen;
-
-	// Camera stuff
-	Camera camera;
-
-	// Selection
-	Coord selectedTileCoordinates;
-
-	// Game entities
-	std::shared_ptr<Shader> objShader;
-	Level level;
-	Skybox m_skybox;
-
-	// Particle things
-	std::shared_ptr<Shader> particleShader;
-
-	// C++ rng
-	std::default_random_engine m_rng;
-	std::uniform_real_distribution<float> m_dist; // default 0..1
+	bool is_over();
 
 	//funcs
+	std::pair<bool, glm::vec3> getTileCoordFromWindowCoords(double xpos, double ypos);
+
 	void move_cursor_up();
 
 	void move_cursor_down();
@@ -92,18 +87,22 @@ private:
 
 	void move_cursor_right();
 
-	void updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<int> targetKeys);
+	void updateBoolFromKey(int action, int key, bool& toUpdate, const std::vector<int>& targetKeys);
+
+	void play_mouse_click_sound();
 
 	bool loadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder);
 
-	bool initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources);
+	bool initMeshTypes(const std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>>& sources);
 
 	// !!! INPUT CALLBACK FUNCTIONS
-	void on_key(GLFWwindow*, int key, int, int action, int mod);
+	void on_key(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
 	void on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset);
 
 	void on_mouse_button(GLFWwindow* window, int button, int action, int mods);
-};
+
+	void on_window_resize(GLFWwindow* window, int width, int height);
+}

@@ -2,26 +2,28 @@
 
 #include <vector>
 #include "global.hpp"
-
+#include "aimanager.hpp"
 
 namespace UnitManager {
 
-	void init(size_t levelHeight, size_t levelWidth) {
-		playerUnits.reserve(levelHeight * levelWidth);
-		aiUnits.reserve(levelHeight * levelWidth);
-	}
+	extern std::vector<std::shared_ptr<Entity>> selectedUnits;
 
-	void update(double elapsed_ms) {
-		for (auto& playerUnit : playerUnits) {
-				playerUnit->unitComp.update();
-				playerUnit->move(elapsed_ms);
-		}
+	void init(size_t levelHeight, size_t levelWidth);
 
-		for (auto& aiUnit : aiUnits) {
-			aiUnit->unitComp.update();
-			aiUnit->move(elapsed_ms);
-		}
-	}
+	bool isDead(std::shared_ptr<Entity>& unit);
 
+	void removeDead();
+
+	void updateAreaSeenByUnit(const std::shared_ptr<Entity>& unit, int currentUnixTime,
+							  std::vector<std::vector<int>>& visibilityMap);
+
+	void update(double elapsed_ms);
+
+	void selectUnit(const glm::vec3& targetLocation);
+
+	void selectUnitsInTrapezoid(const glm::vec3& topLeft, const glm::vec3& topRight,
+								const glm::vec3& bottomLeft, const glm::vec3& bottomRight);
+
+	void attackTargetLocationWithSelectedUnits(const glm::vec3& targetLocation);
 }
 

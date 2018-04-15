@@ -1,93 +1,92 @@
 // Header
 #include "unitmanager.hpp"
-#include "unitcomp.hpp"
 #include "logger.hpp"
 #include "world.hpp"
-#include "collisiondetection.hpp"
+//#include "collisiondetection.hpp"
 #include "particle.hpp"
 #include "aimanager.hpp"
 #include "unit.hpp"
 #include "attackManger.hpp"
 #include "buildingmanager.hpp"
 
-// Same as static in c, local to compilation unit
-namespace {
-	namespace {
-		void glfw_err_cb(int error, const char* desc) {
-			fprintf(stderr, "%d: %s", error, desc);
-		}
-	}
+namespace World {
+	GLFWwindow* m_window;
+
+	glm::vec2 m_screen;
+
+	// Camera stuff
+	Camera camera;
+
+	// Selection
+	Coord selectedTileCoordinates;
+
+	// Game entities
+	std::shared_ptr<Shader> objShader;
+	Level level;
+	Skybox m_skybox;
+
+	// Particle things
+	std::shared_ptr<Shader> particleShader;
+
+	// C++ rng
+	std::default_random_engine m_rng = std::default_random_engine(std::random_device()());
+	std::uniform_real_distribution<float> m_dist; // default 0..1
+
+	// music and audio
+	Mix_Music* m_background_music;
+	Mix_Chunk* m_mouse_click;
+
+	double gameElapsedTime = 0.0;
 }
 
-World::World() {
-	// Seeding rng with random device`
-	m_rng = std::default_random_engine(std::random_device()());
-}
-
-World::~World() = default;
 
 // World initialization
 bool World::init() {
-	//-------------------------------------------------------------------------
-	// GLFW / OGL Initialization
-	// Core Opengl 3.
-	glfwSetErrorCallback(glfw_err_cb);
-	if (!glfwInit()) {
-		logger(LogLevel::ERR) << "Failed to initialize GLFW\n";
-		return false;
-	}
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
-#if __APPLE__
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-	glfwWindowHint(GLFW_RESIZABLE, 1);
-	m_window = glfwCreateWindow(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT, Config::WINDOW_TITLE, nullptr, nullptr);
 	m_screen = glm::vec2(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT);
-	if (m_window == nullptr)
-		return false;
-
-	glfwMakeContextCurrent(m_window);
-	glfwSwapInterval(1); // vsync
-
-	// Load OpenGL function pointers
-	gl3wInit();
-
-	// Setting callbacks to member functions (that's why the redirect is needed)
-	// Input is handled using GLFW, for more info see
-	// http://www.glfw.org/docs/latest/input_guide.html
-	glfwSetWindowUserPointer(m_window, this);
-	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) {
-		((World*) glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3);
-	};
-	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) {
-		((World*) glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1);
-	};
-	auto scroll_offset_redirect = [](GLFWwindow* wnd, double _0, double _1) {
-		((World*) glfwGetWindowUserPointer(wnd))->on_mouse_scroll(wnd, _0, _1);
-	};
-	auto mouse_button_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2) {
-		((World*)glfwGetWindowUserPointer(wnd))->on_mouse_button(wnd, _0, _1, _2);
-	};
-	glfwSetKeyCallback(m_window, key_redirect);
-	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
-	glfwSetScrollCallback(m_window, scroll_offset_redirect);
-	glfwSetMouseButtonCallback(m_window, mouse_button_redirect);
+	//the 4 below are done in ui.cpp now
+//	// Setting callbacks to member functions (that's why the redirect is needed)
+//	// Input is handled using GLFW, for more info see
+//	// http://www.glfw.org/docs/latest/input_guide.html
+//	glfwSetKeyCallback(m_window, on_key);
+//	glfwSetCursorPosCallback(m_window, on_mouse_move);
+//	glfwSetScrollCallback(m_window, on_mouse_scroll);
+//	glfwSetMouseButtonCallback(m_window, on_mouse_button);
+	glfwSetWindowSizeCallback(m_window, on_window_resize);
 
 	//-------------------------------------------------------------------------
+
 	// Loading music and sounds
 	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
 		logger(LogLevel::ERR) << "Failed to initialize SDL Audio\n";
 		return false;
 	}
 
+	// load support for the OGG audio format
+	int flags = MIX_INIT_OGG;
+	int initted = Mix_Init(flags);
+	if ((initted & flags) != flags) {
+		logger(LogLevel::ERR) << "Mix_Init: Failed to init required ogg support!\n";
+		logger(LogLevel::ERR) << "Mix_Init: " << Mix_GetError() << '\n';
+	}
+
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
-		logger(LogLevel::ERR) << "Failed to open audio device\n";
+		logger(LogLevel::ERR) << "Failed to open audio device";
 		return false;
 	}
+
+	m_background_music = Mix_LoadMUS(audio_path("game_sound_track.ogg"));
+	// LoadWAV is actaully capable of loading other audio formats as well, the name is not accurate
+	// https://www.libsdl.org/projects/SDL_mixer/docs/SDL_mixer_19.html#SEC19
+	m_mouse_click = Mix_LoadWAV(audio_path("click3.ogg"));
+
+	if (m_background_music == nullptr) {
+		logger(LogLevel::ERR) << "Failed to load sounds, make sure the data directory is present";
+		return false;
+	}
+
+	// Playing background music indefinitely
+	Mix_PlayMusic(m_background_music, -1);
+	logger(LogLevel::DEBUG) << "Loaded music";
 
 	// setup skybox
 	if (!loadSkybox("skybox.obj", "skybox")) {
@@ -95,71 +94,68 @@ bool World::init() {
 		return false;
 	}
 
-	// WHY WASNT THIS ENABLED BEFORE?!
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-	glEnable(GL_CULL_FACE);
-
-
 	// Load shader for default meshSources
 	objShader = std::make_shared<Shader>();
-	if (!objShader->load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl"))) {
+	if (!objShader->load_from_file(shader_path("celShader.vs.glsl"), shader_path("celShader.fs.glsl"))) {
 		logger(LogLevel::ERR) << "Failed to load obj shader!" << '\n';
 		return false;
 	}
 
 	particleShader = std::make_shared<Shader>();
-    if (!particleShader->load_from_file(shader_path("particles.vs.glsl"), shader_path("particles.fs.glsl"))) {
-        logger(LogLevel::ERR) << "Failed to load particle shader!" << '\n';
-        return false;
-    }
-
-
-	if(!initMeshTypes(Model::meshSources)) {
-		logger(LogLevel::ERR) << "Failed to initialize renderers \n";
+	if (!particleShader->load_from_file(shader_path("particles.vs.glsl"), shader_path("particles.fs.glsl"))) {
+		logger(LogLevel::ERR) << "Failed to load particle shader!" << '\n';
+		return false;
 	}
+
+	if (!initMeshTypes(Model::meshSources)) {
+		logger(LogLevel::ERR) << "Failed to initialize renderers\n";
+	}
+
+	int windowWidth, windowHeight;
+	glfwGetWindowSize(m_window, &windowWidth, &windowHeight);
+	Global::windowWidth = static_cast<size_t>(windowWidth);
+	Global::windowHeight = static_cast<size_t>(windowHeight);
 
 	camera.position = {Config::CAMERA_START_POSITION_X, Config::CAMERA_START_POSITION_Y,
 					   Config::CAMERA_START_POSITION_Z};
 
-	levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "GameLevel1.txt", particleShader);
+	Global::levelArray = level.levelLoader(pathBuilder({"data", "levels"}) + "GameLevel1.txt", particleShader);
+	Global::levelHeight = Global::levelArray.size();
+	Global::levelWidth = Global::levelArray.front().size();
 	level.init(Model::meshRenderers);
-	this->levelHeight = levelArray.size();
-	this->levelWidth = levelArray.front().size();
 
-	UnitManager::init(levelHeight, levelWidth);
-	AiManager::init(levelHeight, levelWidth);
-	aiCostMap = level.getLevelTraversalCostMap();
+	UnitManager::init(Global::levelHeight, Global::levelWidth);
+	AI::Manager::init(Global::levelHeight, Global::levelWidth);
+	Global::aStarCostMap = level.getLevelTraversalCostMap();
 
 	//display a path
-	int startx = 20, startz = 11;
+	int startx = 25, startz = 11;
 	int targetx = 10, targetz = 10;
-	auto temp1 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
-	temp1->moveTo(targetx, targetz);
+	auto temp1 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
+//	temp1->moveTo(UnitState::MOVE, targetx, targetz);
 
 	startx = 39, startz = 19;
-	auto temp2 = Unit::spawn(Unit::UnitType::TANK, {startx, 0, startz}, GamePieceOwner::AI);
-	//temp2->moveTo(targetx, targetz);
+	auto temp2 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {startx, 0, startz}, GamePieceOwner::PLAYER);
+//	temp2->moveTo(targetx, targetz);
 
 	startx = 39, startz = 1;
-	auto temp3 = Unit::spawn(Unit::UnitType::SPHERICAL_DEATH, {startx, 0, startz}, GamePieceOwner::PLAYER);
-	temp3->moveTo(targetx, targetz);
+	auto temp3 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
+//	temp3->moveTo(UnitState::MOVE, targetx, targetz);
+
+	startx = 20, startz = 20;
+	auto temp4 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {startx, 0, startz}, GamePieceOwner::PLAYER);
 
 	// Example use of targeting units.
-	AttackManager::registerTargetUnit(temp2, temp1);
+	// AttackManager::registerTargetUnit(temp2, temp1);
 
-	selectedTileCoordinates.rowCoord = levelWidth / 2;
-	selectedTileCoordinates.colCoord = levelHeight / 2;
-
-	// Unit test stuff
-
+	//don't set selectedTileCoords at launch because glfwGetCursorPos() returns weird stuff
 	return true;
 }
 
-bool World::initMeshTypes(std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>> sources) {
+bool World::initMeshTypes(const std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>>& sources) {
 	// All the models come from the same place
 	std::string path = pathBuilder({"data", "models"});
-	for (auto source : sources) {
+	for (const auto& source : sources) {
 		Model::MeshType tileType = source.first;
 		std::vector<SubObjectSource> objSources = source.second;
 		Model::meshRenderers[tileType] = std::make_shared<Renderer>(objShader, objSources);
@@ -195,66 +191,70 @@ bool World::loadSkybox(const std::string& skyboxFilename, const std::string& sky
 
 // Releases all the associated resources
 void World::destroy() {
+	if (m_background_music != nullptr) {
+		Mix_FreeMusic(m_background_music);
+	}
+
+	if (m_mouse_click != nullptr) {
+		Mix_FreeChunk(m_mouse_click);
+	}
+
+	// cleans up all dynamically loaded library handles used by sdl mixer
 	Mix_CloseAudio();
+	Mix_Quit();
+
 	m_skybox.destroy();
 	glfwDestroyWindow(m_window);
+	glfwTerminate();
 }
 
 // Update our game world
-float total_time = 0.0f;
-
 bool World::update(double elapsed_ms) {
+	glfwPollEvents(); //Processes system messages, if this wasn't present the window would become unresponsive
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
 	camera.update(elapsed_ms);
-	total_time += elapsed_ms;
+	gameElapsedTime += elapsed_ms;
 
-	if (
-			selectedTileCoordinates.rowCoord >= 0 &&
-			(unsigned long) selectedTileCoordinates.rowCoord < level.getLevelTraversalCostMap().size() &&
-			selectedTileCoordinates.colCoord >= 0 &&
-			(unsigned long) selectedTileCoordinates.colCoord < level.getLevelTraversalCostMap()[0].size()
-			) {
+	if (selectedTileCoordinates.rowCoord >= 0 &&
+		(unsigned long) selectedTileCoordinates.rowCoord < level.getLevelTraversalCostMap().size() &&
+		selectedTileCoordinates.colCoord >= 0 &&
+		(unsigned long) selectedTileCoordinates.colCoord < level.getLevelTraversalCostMap()[0].size()) {
 
-		level.tileCursor->setPosition({ selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord });
+		level.tileCursor->setPosition({selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord});
 	}
 
-    for (const auto& emitter : level.emitters) {
-        emitter->update(elapsed_ms);
-    }
+	for (const auto& emitter : level.emitters) {
+		emitter->update(elapsed_ms);
+	}
 
-
-	
-
-	AiManager::update(elapsed_ms);
+	AI::Manager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
 	AttackManager::update(elapsed_ms);
-    BuildingManager::update(elapsed_ms);
-  
+	BuildingManager::update(elapsed_ms);
+
 	Model::collisionDetector.findCollisions(elapsed_ms);
 	for (const auto& tile : level.tiles) {
 		tile->update(elapsed_ms);
 	}
-	for (const auto& entity : playerUnits) {
+	for (const auto& entity : Global::playerUnits) {
 		entity->animate(elapsed_ms);
 	}
-	if (m_dist(m_rng) < 0.005) {
-		int row = m_dist(m_rng)*levelWidth;
-		int col = m_dist(m_rng)*levelHeight;
-		if (level.getLevelTraversalCostMap()[col][row].movementCost < 50.0f) {
-			glm::vec3 pos = glm::vec3(row, 0, col);
-			float unitRand = m_dist(m_rng);
-			if (unitRand < 0.33) {
-				level.placeEntity(Model::MeshType::ENEMY_SPIKE_UNIT, pos, GamePieceOwner::AI);
-			}
-			else if (unitRand < 0.66) {
-				level.placeEntity(Model::MeshType::ENEMY_RANGED_LINE_UNIT, pos, GamePieceOwner::AI);
-			}
-			else {
-				level.placeEntity(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, pos, GamePieceOwner::AI);
-			}
-		}
-	}
+//	if (m_dist(m_rng) < 0.005) {
+//		int row = m_dist(m_rng) * Global::levelWidth;
+//		int col = m_dist(m_rng) * Global::levelHeight;
+//		if (level.getLevelTraversalCostMap()[col][row].movementCost < 50.0f) {
+//			glm::vec3 pos = glm::vec3(row, 0, col);
+//			float unitRand = m_dist(m_rng);
+//			if (unitRand < 0.33) {
+//				level.placeEntity(Model::MeshType::ENEMY_SPIKE_UNIT, pos, GamePieceOwner::AI);
+//			} else if (unitRand < 0.66) {
+//				level.placeEntity(Model::MeshType::ENEMY_RANGED_LINE_UNIT, pos, GamePieceOwner::AI);
+//			} else {
+//				level.placeEntity(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, pos, GamePieceOwner::AI);
+//			}
+//		}
+//	}
 	return true;
 }
 
@@ -280,23 +280,18 @@ void World::draw() {
 	glm::mat4 view = camera.getViewMatrix();
 	glm::mat4 projectionView = projection * view;
 
-	for (auto renderer : Model::meshRenderers) {
-		renderer->render(projectionView);
+	for (const auto& renderer : Model::meshRenderers) {
+		renderer->render(projectionView, view);
 	}
 
-
-	// make skybox rotate by 0.001 * pi/4 radians around y axis, every frame
-//	float y_rotation = 0.005 * glm::quarter_pi<float>();
-//	m_skybox.setRotation(glm::vec3(0.0, y_rotation, 0.0));
-//	m_skybox.applyTransformations();
 	m_skybox.getCameraPosition(camera.position);
 	m_skybox.draw(projection * view * m_skybox.getModelMatrix());
 
-	for (const auto &emitter : level.emitters) {
+	for (const auto& emitter : level.emitters) {
 		emitter->render(projectionView, camera.position);
 	}
 	// Presenting
-	glfwSwapBuffers(m_window);
+//	glfwSwapBuffers(m_window);
 }
 
 void World::move_cursor_up() {
@@ -319,12 +314,16 @@ void World::move_cursor_right() {
 	printf("Selected tile: %d, %d\n", selectedTileCoordinates.rowCoord, selectedTileCoordinates.colCoord);
 }
 
-// Should the game be over ?
-bool World::is_over() const {
-	return glfwWindowShouldClose(m_window) || escapePressed;
+void World::play_mouse_click_sound() {
+	Mix_PlayChannel(-1, m_mouse_click, 0);
 }
 
-void World::updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<int> targetKeys) {
+// Should the game be over ?
+bool World::is_over() {
+	return glfwWindowShouldClose(m_window);
+}
+
+void World::updateBoolFromKey(int action, int key, bool& toUpdate, const std::vector<int>& targetKeys) {
 	for (auto targetKey : targetKeys) {
 		if (key == targetKey) {
 			if (action == GLFW_PRESS) {
@@ -338,14 +337,16 @@ void World::updateBoolFromKey(int action, int key, bool& toUpdate, std::vector<i
 }
 
 // On key callback
-void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
+void World::on_key(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	// Core controls
 	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
-		escapePressed = true;
+		Global::gameState = GameState::QUIT;
+	} else if (action == GLFW_PRESS && key == GLFW_KEY_P) {
+		Global::gameState = GameState::PAUSED;
 	}
 
 	// File saving
-	if (action == GLFW_RELEASE && key == GLFW_KEY_P) {
+	if (action == GLFW_RELEASE && key == GLFW_KEY_O) {
 		level.save("savedLevel.txt");
 	}
 
@@ -385,25 +386,20 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod) {
 	}
 }
 
-void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
-	camera.pan((int) xpos, (int) ypos);
 
-	int windowWidth;
-	int windowHeight;
-	glfwGetWindowSize(window, &windowWidth, &windowHeight);
-
+std::pair<bool, glm::vec3> World::getTileCoordFromWindowCoords(double xpos, double ypos) {
 	int framebufferWidth, framebufferHeight;
 	glfwGetFramebufferSize(m_window, &framebufferWidth, &framebufferHeight);
 
-	int computedFbX = (float) xpos / (float) windowWidth * (float) framebufferWidth;
-	int computedFbY = (float) ypos / (float) windowHeight * (float) framebufferHeight;
+	double computedFbX = (xpos / Global::windowWidth) * framebufferWidth;
+	double computedFbY = (ypos / Global::windowHeight) * framebufferHeight;
 
 	glm::vec2 windowCoordinates{computedFbX, computedFbY};
 	glm::vec2 viewport{framebufferWidth, framebufferHeight};
 	glm::vec4 clipCoordinates{windowCoordinates / viewport * 2.0f - glm::vec2{1.0f}, -1.0f, 1.0f};
 	clipCoordinates[1] *= -1.0;
-	glm::mat4 clipWorldMatrix{
-			glm::inverse(camera.getProjectionMatrix(windowWidth, windowHeight) * camera.getViewMatrix())};
+	glm::mat4 clipWorldMatrix{glm::inverse(camera.getProjectionMatrix(Global::windowWidth,
+																	  Global::windowHeight) * camera.getViewMatrix())};
 	glm::vec4 unprojectedWorldCoordinates{clipWorldMatrix * clipCoordinates};
 	glm::vec3 worldCoordinates{glm::vec3{unprojectedWorldCoordinates} / unprojectedWorldCoordinates.w};
 
@@ -414,10 +410,20 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
 	float planeDotDirection = glm::dot(planeNormalVector, directionVector);
 	float t = glm::dot(planeNormalVector, (planePoint - camera.position)) / planeDotDirection;
 
-	if (t > 0) {
-		glm::vec3 pointInWorld = camera.position + (t * directionVector);
-		selectedTileCoordinates.rowCoord = (int) round(pointInWorld.z);
-		selectedTileCoordinates.colCoord = (int) round(pointInWorld.x);
+	glm::vec3 pointInWorld = camera.position + (t * directionVector);
+
+	return {(!isnan(t) && t > 0), pointInWorld};
+}
+
+void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos) {
+	camera.pan(xpos, ypos);
+
+	std::pair<bool, glm::vec3> result = World::getTileCoordFromWindowCoords(xpos, ypos);
+	if (result.first) { //if t>0
+		selectedTileCoordinates.colCoord = int(result.second.x + 0.5);
+		selectedTileCoordinates.rowCoord = int(result.second.z + 0.5);
+	} else {
+		printf("bad tile selector calculation: x: %lf z: %lf\n", xpos, ypos);
 	}
 }
 
@@ -425,38 +431,57 @@ void World::on_mouse_scroll(GLFWwindow* window, double xoffset, double yoffset) 
 	camera.mouseScroll = glm::vec2(xoffset, yoffset);
 }
 
-//returns w x h
-std::pair<int, int> World::getWindowSize(){
-	int windowWidth;
-	int windowHeight;
-	glfwGetWindowSize(m_window, &windowWidth, &windowHeight);
-	return {windowWidth, windowHeight};
-};
-
-void World::on_mouse_button(GLFWwindow * window, int button, int action, int mods)
-{
-	glm::vec3 coords = { selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord };
-	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-		if (coords.x < 0 || coords.x + 1 > levelWidth)
-			return;
-		if (coords.z < 0 || coords.z + 1 > levelHeight)
-			return;
-		level.placeTile(Model::MeshType::GUN_TURRET, coords);
-		logger(LogLevel::INFO) << "Right click detected " << '\n';
-	}
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		if (m_dist(m_rng) < 0.5) {
-			level.placeEntity(Model::MeshType::FRIENDLY_RANGED_UNIT, coords, GamePieceOwner::PLAYER);
-		}
-		else {
-			level.placeEntity(Model::MeshType::FRIENDLY_FIRE_UNIT, coords, GamePieceOwner::PLAYER);
-		}
-		logger(LogLevel::INFO) << "Left click detected " << '\n';
-	}
-	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
-		for (const auto& entity : playerUnits) {
-			entity->rigidBody.setVelocity((coords - entity->rigidBody.getPosition())/5000.0f);
-		}
-	}
+void World::on_window_resize(GLFWwindow* window, int width, int height) {
+	Global::windowWidth = static_cast<size_t>(width);
+	Global::windowHeight = static_cast<size_t>(height);
 }
 
+bool withinLevelBounds(glm::vec3 coords) {
+	return (coords.x >= 0 && coords.x < Global::levelWidth) ||
+		   (coords.z >= 0 && coords.z < Global::levelHeight);
+}
+
+void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods) {
+	// single click select units
+	double xpos, ypos;
+	glfwGetCursorPos(window, &xpos, &ypos);
+	std::pair<bool, glm::vec3> targetLocation = World::getTileCoordFromWindowCoords(xpos, ypos);
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
+			std::cout << "clicked " << targetLocation.second.x << " " << targetLocation.second.z << "\n";
+			UnitManager::selectUnit(targetLocation.second);
+		}
+	};
+
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
+		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
+			UnitManager::attackTargetLocationWithSelectedUnits(targetLocation.second);
+		}
+	}
+
+
+//	glm::vec3 coords = {selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord};
+//	if (coords.x < 0 || coords.x + 1 > Global::levelWidth ||
+//		coords.z < 0 || coords.z + 1 > Global::levelHeight)
+//		return;
+//	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+//
+//		level.placeTile(Model::MeshType::GUN_TURRET, coords);
+//		logger(LogLevel::INFO) << "Right click detected " << '\n';
+//	}
+//	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+//
+//
+//		if (m_dist(m_rng) < 0.5) {
+//			Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, coords, GamePieceOwner::PLAYER);
+//		} else {
+//			Unit::spawn(Model::MeshType::FRIENDLY_FIRE_UNIT, coords, GamePieceOwner::PLAYER);
+//		}
+//		logger(LogLevel::INFO) << "Left click detected " << '\n';
+//	}
+//	if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS) {
+//		for (const auto& entity : Global::playerUnits) {
+//			entity->rigidBody.setVelocity((coords - entity->rigidBody.getPosition()) / 5000.0f);
+//		}
+//	}
+}

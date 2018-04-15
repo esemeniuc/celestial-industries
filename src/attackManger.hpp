@@ -3,6 +3,7 @@
 //
 #pragma once
 
+#include <unordered_map>
 #include "global.hpp"
 
 namespace AttackManager {
@@ -54,7 +55,7 @@ namespace AttackManager {
 					unitTargetMap.erase(it++);    // or "it = m.erase(it)" since C++11
 				}
 				else {
-					it->first->moveTo(it->second->getPosition().x, it->second->getPosition().z);
+					it->first->moveTo(UnitState::ATTACK, it->second->getPosition().x, it->second->getPosition().z);
 					++it;
 				}
 			}
@@ -64,13 +65,13 @@ namespace AttackManager {
     void update(double elapsed_ms) {
 		attackingEntities.clear();
 
-		initiateAttacks(playerUnits, aiUnits, elapsed_ms);
-		initiateAttacks(aiUnits, playerUnits, elapsed_ms);
-		initiateAttacks(aiUnits, buildingMap, elapsed_ms);
+		initiateAttacks(Global::playerUnits, Global::aiUnits, elapsed_ms);
+		initiateAttacks(Global::aiUnits, Global::playerUnits, elapsed_ms);
+		initiateAttacks(Global::aiUnits, Global::buildingMap, elapsed_ms);
 
-		removeDeadEntities(playerUnits);
-		removeDeadEntities(aiUnits);
-		removeDeadEntities(buildingMap);
+		removeDeadEntities(Global::playerUnits);
+		removeDeadEntities(Global::aiUnits);
+		removeDeadEntities(Global::buildingMap);
 
 		executeTargetAttacks(elapsed_ms);
 

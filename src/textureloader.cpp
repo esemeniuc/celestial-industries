@@ -43,7 +43,7 @@ bool Texture::is_valid()const
 	return id != 0;
 }
 
-bool Texture::load_side_texture(GLuint texture, GLenum side, const std::string texture_image_path)
+bool Texture::load_side_texture(GLuint texture, GLenum side, const std::string& texture_image_path)
 {
 	// load image data from file
 	if (texture_image_path.empty()) return false;
