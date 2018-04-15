@@ -1,0 +1,32 @@
+# Made using Asset Forge (1.3)
+
+:models
+Buildings/block_columns[(0, 0.1, 0);(0.0, 270.0, 0.0);(3.0, 1.5, 3.0);block_columns_21;customMaterial9+customMaterial9]
+Buildings/roof_flat_largeCenter[(0, 0, 2.24E-08);(0.0, 0.0, 0.0);(3.0, 1.0, 3.0);roof_flat_largeCenter_31;customMaterial9+roof]
+City/detail_solarPanel[(-0.7, 1.6, -1.1);(0.0, 180.0, 0.0);(1.0, 1.0, 1.0);detail_solarPanel_32;_defaultMat+satellite]
+City/detail_solarPanel[(-0.7, 1.6, -0.3);(0.0, 180.0, 0.0);(1.0, 1.0, 1.0);detail_solarPanel_33;_defaultMat+satellite]
+City/detail_solarPanel[(-0.7, 1.6, 0.5);(0.0, 180.0, 0.0);(1.0, 1.0, 1.0);detail_solarPanel_34;_defaultMat+satellite]
+City/detail_solarPanel[(0.7, 1.6, -1.1);(0.0, 180.0, 0.0);(1.0, 1.0, 1.0);detail_solarPanel_37;_defaultMat+satellite]
+City/detail_solarPanel[(0.7, 1.6, -0.3);(0.0, 180.0, 0.0);(1.0, 1.0, 1.0);detail_solarPanel_40;_defaultMat+satellite]
+City/road_block[(-0.6, 0.1, -1.3);(0.0, 90.0, 0.0);(1.0, 1.0, 1.0);road_block_43;roof]
+
+:materials
+border[RGBA(1.000, 0.518, 0.376, 1.000);]
+bricks[RGBA(0.886, 0.467, 0.341, 1.000);]
+tire[RGBA(0.589, 0.656, 0.830, 1.000);]
+_defaultMat[RGBA(1.000, 1.000, 1.000, 1.000);]
+satellite[RGBA(0.027, 0.400, 0.694, 1.000);hexagon]
+stone[RGBA(0.667, 0.663, 0.737, 1.000);simpleMaze]
+roofJade[RGBA(0.302, 0.561, 0.431, 1.000);]
+blueSteel[RGBA(0.700, 0.091, 0.059, 1.000);]
+orangeSteel[RGBA(1.000, 0.689, 0.000, 1.000);simpleMaze]
+glass[RGBA(0.298, 0.314, 0.365, 1.000);]
+lightRed[RGBA(0.949, 0.373, 0.335, 1.000);]
+customMaterial9[RGBA(0.286, 0.153, 0.290, 1.000);simpleMaze]
+lightStone[RGBA(0.812, 0.808, 0.855, 1.000);]
+roof[RGBA(0.886, 0.467, 0.341, 1.000);]
+darkStone[RGBA(0.431, 0.431, 0.478, 1.000);]
+
+:textures
+
+:extra
