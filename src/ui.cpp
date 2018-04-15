@@ -252,6 +252,16 @@ namespace Ui {
 										GamePieceOwner::PLAYER);
 					}
 
+					if (ImGui::Button("Command center")) {
+						Building::spawn(Model::COMMAND_CENTER, glm::vec3(12, 0, 12),
+							GamePieceOwner::PLAYER);
+					}
+
+					if (ImGui::Button("Factory")) {
+						Building::spawn(Model::FACTORY, glm::vec3(12, 0, 12),
+							GamePieceOwner::PLAYER);
+					}
+
 					if (ImGui::Button("Supply Depot")) {
 						Building::spawn(Model::MeshType::SUPPLY_DEPOT, glm::vec3(25, 0, 25),
 										GamePieceOwner::PLAYER);

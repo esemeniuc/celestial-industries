@@ -70,17 +70,27 @@ Building::spawn(Model::MeshType meshType, glm::vec3 spawnLocation, GamePieceOwne
 			e->unitComp.state = UnitState::NONE;
 			break;
 		}
-//		case (Model::PHOTON_TOWER): { //FIXME: should be command center
-//
-//			e->aiComp.totalHealth = 1500;
-//			e->aiComp.visionRange = 10;
-//			e->aiComp.type = GamePieceClass::BUILDING_NON_ATTACKING;
-//			e->aiComp.currentHealth = e->aiComp.totalHealth;
-//			e->aiComp.value = 400;
-//
-//			e->unitComp.state = UnitState::NONE;
-//			break;
-//		}
+		case (Model::FACTORY): {
+			Coord location(spawnLocation);
+			e->aiComp.totalHealth = 400;
+			e->aiComp.visionRange = 10;
+			e->aiComp.type = GamePieceClass::BUILDING_NON_ATTACKING;
+			e->aiComp.currentHealth = e->aiComp.totalHealth;
+			e->aiComp.value = 75;
+
+			e->unitComp.state = UnitState::NONE;
+			break;
+		}		
+		case (Model::COMMAND_CENTER): {
+			e->aiComp.totalHealth = 1500;
+			e->aiComp.visionRange = 10;
+			e->aiComp.type = GamePieceClass::BUILDING_NON_ATTACKING;
+			e->aiComp.currentHealth = e->aiComp.totalHealth;
+			e->aiComp.value = 400;
+
+			e->unitComp.state = UnitState::NONE;
+			break;
+		}
 		default:{
 			break;
 		}

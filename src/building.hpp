@@ -13,7 +13,8 @@ namespace Building {
 		SUPPLY_DEPOT,
 		REFINERY,
 		GUN_TURRET,
-		COMMAND_CENTER
+		COMMAND_CENTER,
+		FACTORY
 	};
 
 	std::shared_ptr<Entity> spawn(Model::MeshType meshType, glm::vec3 spawnLocation, GamePieceOwner owner);
