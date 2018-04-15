@@ -189,12 +189,11 @@ namespace AI {
 		}
 
 		void cleanupCompletedScoutTargets() {
-			//TODO: Fixme as doesnt compile since switch to float
-//			for (const auto& aiUnit: Global::aiUnits) {
-//				if (!aiUnit->hasMoveTarget()) {
-//					Global::scoutingTargetsInProgress.erase(aiUnit->currentDestination);
-//				}
-//			}
+			for (const auto& aiUnit: Global::aiUnits) {
+				if (!aiUnit->hasMoveTarget()) {
+					Global::scoutingTargetsInProgress.erase(Coord(aiUnit->currentDestination));
+				}
+			}
 		}
 
 		void update(double elapsed_ms) {
@@ -225,7 +224,7 @@ namespace AI {
 				Coord loc = findBestScoutLocation();
 				std::shared_ptr<Entity> bestUnit = getBestScoutUnit(loc);
 				if (bestUnit) { //if not null
-					bestUnit->moveTo(UnitState::SCOUT, {loc.colCoord, 0,loc.rowCoord}); //fixme to use float stuff
+					bestUnit->moveTo(UnitState::SCOUT, {loc.colCoord, 0, loc.rowCoord});
 					Global::scoutingTargetsInProgress.insert(loc);
 				}
 			}
