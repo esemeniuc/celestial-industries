@@ -40,6 +40,17 @@ namespace AI {
 			return sqrtf((rowDiff * rowDiff) + (colDiff * colDiff));
 		}
 
+		bool isGoalOrCheaper(int nextCol, int nextRow, int goalCol, int goalRow,
+							 const std::vector<std::vector<AStarNode>>& graph) {
+			return (nextCol == goalCol && nextRow == goalRow) ||
+				   graph[nextRow][nextCol].movementCost < Config::OBSTACLE_COST;
+		}
+
+		bool withinLevelBounds(int col, int row) {
+			return (col >= 0 && col < Global::levelWidth) &&
+				   (row >= 0 && row < Global::levelHeight);
+		}
+
 		std::vector<AStarNode>
 		getNeighbors(const std::vector<std::vector<AStarNode>>& graph, const AStarNode& currentPos,
 					 const AStarNode& goal) {
@@ -59,71 +70,30 @@ namespace AI {
 				throw "ENTITY PATHING FROM OUT OF LEVEL";
 			}
 
-//			// check if we can move forward a column
-//			if ((col < numOfColumns - 1) &&
-//				(((row == goalRow) && (col + 1 == goalCol)) ||
-//				 graph[row][col + 1].movementCost < Config::OBSTACLE_COST)) {
-//				neighbors.push_back(graph[row][col + 1]);
-//			}
-//
-//			// check if we can move backward a column
-//			// costOfBackwardMove = std::get<2>(graph[row][col - 1]);
-//			if ((col > 0) &&
-//				(((row == goalRow) && (col - 1 == goalCol)) ||
-//				 graph[row][col - 1].movementCost < Config::OBSTACLE_COST)) {
-//				neighbors.push_back(graph[row][col - 1]);
-//			}
-//
-//			// check if we can move up a row
-//			// costOfUpMove = std::get<2>(graph[row][col + 1]);
-//			if ((row > 0) &&
-//				(((row - 1 == goalRow) && (col == goalCol)) ||
-//				 graph[row - 1][col].movementCost < Config::OBSTACLE_COST)) {
-//				neighbors.push_back(graph[row - 1][col]);
-//			}
-//
-//			// check if we can move down a row
-//			// costOfDownMove = std::get<2>(graph[row][col + 1]);
-//			if ((row < numOfRows - 1) &&
-//				(((row + 1 == goalRow) && (col == goalCol)) ||
-//				 graph[row + 1][col].movementCost < Config::OBSTACLE_COST)) {
-//				neighbors.push_back(graph[row + 1][col]);
-//			}
+			int nextRow, nextCol;
 
-			if (col < 0 || col >= numOfColumns || row < 0 || col >= numOfRows) {
-				logger(LogLevel::ERR) << "ENTITY PATHING FROM OUT OF LEVEL \n";
-				throw "ENTITY PATHING FROM OUT OF LEVEL";
-			}
+			//in delta x, delta z or (col,row) format
+			constexpr std::array<std::pair<int, int>, 8> directions = {
+					{{0, 1}, //down
+							{0, -1}, //up
+							{1, 0}, //right
+							{-1, 0}, //left
+
+							{1, 1}, //bottom right
+							{-1, 1}, //bottom left
+							{1, -1}, //top right
+							{-1, -1} //top left
+
+					}};
 
 			// check if we can move forward a column
-			if ((col != numOfColumns - 1) &&
-				(((row == goalRow) && (col + 1 == goalCol)) ||
-				 graph[row][col + 1].movementCost < Config::OBSTACLE_COST)) {
-				neighbors.push_back(graph[row][col + 1]);
-			}
 
-			// check if we can move backward a column
-			// costOfBackwardMove = std::get<2>(graph[row][col - 1]);
-			if ((col != 0) &&
-				(((row == goalRow) && (col - 1 == goalCol)) ||
-				 graph[row][col - 1].movementCost < Config::OBSTACLE_COST)) {
-				neighbors.push_back(graph[row][col - 1]);
-			}
-
-			// check if we can move up a row
-			// costOfUpMove = std::get<2>(graph[row][col + 1]);
-			if ((row != 0) &&
-				(((row - 1 == goalRow) && (col == goalCol)) ||
-				 graph[row - 1][col].movementCost < Config::OBSTACLE_COST)) {
-				neighbors.push_back(graph[row - 1][col]);
-			}
-
-			// check if we can move down a row
-			// costOfDownMove = std::get<2>(graph[row][col + 1]);
-			if ((row != numOfRows - 1) &&
-				(((row + 1 == goalRow) && (col == goalCol)) ||
-				 graph[row + 1][col].movementCost < Config::OBSTACLE_COST)) {
-				neighbors.push_back(graph[row + 1][col]);
+			for (const auto& dir : directions) {
+				nextCol = currentPos.colCoord + dir.first, nextRow = currentPos.rowCoord + dir.second;
+				if (withinLevelBounds(nextCol, nextRow) &&
+					isGoalOrCheaper(nextCol, nextRow, goalCol, goalRow, graph)) {
+					neighbors.push_back(graph[nextRow][nextCol]);
+				}
 			}
 
 			return neighbors;
@@ -140,11 +110,11 @@ namespace AI {
 			/* hash table that helps us keep track of how we reached a tile node
 			using a key of its predecessor node in the path*/
 			std::unordered_map<AStarNode, AStarNode, aStarHasher> came_from;
-			came_from.reserve(Global::levelArray.size() * Global::levelArray.front().size());
+			came_from.reserve(Global::levelWidth * Global::levelHeight);
 
 			// cost associated with a path up to a certain node
 			std::unordered_map<AStarNode, double, aStarHasher> cost_so_far;
-			cost_so_far.reserve(Global::levelArray.size() * Global::levelArray.front().size());
+			cost_so_far.reserve(Global::levelWidth * Global::levelHeight);
 
 			// check which tiles the given positions lie in
 			// TODO: check coordinate signs ( -Z as opposed to +Z for tile positions)
@@ -170,7 +140,7 @@ namespace AI {
 				frontier.pop();
 
 				if (current == goalNode) {
-					auto path = reconstruct_path(came_from, startNode, goalNode,start, goal);
+					auto path = reconstruct_path(came_from, startNode, goalNode, start, goal);
 					logger(LogLevel::INFO) << "Found path with length " << path.size() << " \n";
 					return {true, path}; //true for bool because we found a path
 				}
