@@ -20,7 +20,7 @@ public:
 	Tile(Model::MeshType mesh);
 	Model::MeshType type;
 	void update(double ms);
-	void moveTo(UnitState unitState, int x, int z) override; // Buildings dont path to places
+	void moveTo(UnitState unitState, int x, int z, bool queueMove=false) override; // Buildings dont path to places
 	virtual void removeSelf();
 private:
 	//void setCost(float);

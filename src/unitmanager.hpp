@@ -26,6 +26,8 @@ namespace UnitManager {
 
 	void sortSelectedUnits(); //use this for displaying selected units (want to group them nicely)
 
-	void attackTargetLocationWithSelectedUnits(const glm::vec3& targetLocation);
+	void attackTargetLocationWithSelectedUnits(const glm::vec3& targetLocation, bool queueCommand);
+
+	glm::vec3 spiralOffset(int n);
 }
 
