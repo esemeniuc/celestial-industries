@@ -19,6 +19,7 @@ public:
 	Renderable geometryRenderer;
 	AiComp aiComp;
 	UnitComp unitComp;
+	bool hasDestination = false;
 	std::deque<glm::vec3> destinations;
 	glm::vec3 currentDestination;
 	float collisionCooldown = 0;
@@ -31,7 +32,6 @@ public:
 	glm::vec3 targetPosition = {0.0f, 0.0f, 0.0f};
 	glm::vec3 nextPosition;
 	float attackingCooldown;
-	bool hasDestination = false;
 
 	// constructors
 	Entity();
