@@ -1,6 +1,9 @@
 #include "renderer.hpp"
 #include <glm/ext.hpp>
 
+// used to define directional light for use in the shader
+const glm::vec3 Renderer::directionalLight = glm::vec3(0.49, 0.79, 0.49);
+
 Renderer::Renderer(
     std::shared_ptr<Shader> initShader,
     std::vector<SubObjectSource> subObjectSources
@@ -12,8 +15,6 @@ Renderer::Renderer(
     }
 
     instanceDataAttribute = glGetUniformBlockIndex(shader->program, "InstancesData");
-
-
     glGenBuffers(1, &instancesDataBuffer);
     glBindBuffer(GL_UNIFORM_BUFFER, instancesDataBuffer);
     glBindBufferBase(GL_UNIFORM_BUFFER, 2, instancesDataBuffer);
@@ -32,12 +33,13 @@ SubObject Renderer::loadSubObject(SubObjectSource source)
     viewProjectionUniform = glGetUniformLocation(shader->program, "vp");
     modelIndexUniform = glGetUniformLocation(shader->program, "modelIndex");
     materialUniformBlock = glGetUniformBlockIndex(shader->program, "MaterialInfo");
+	viewMatrixUniform = glGetUniformLocation(shader->program, "viewMatrix");
+	directionalLightUniform = glGetUniformLocation(shader->program, "directionalLight");	
 
     // Getting attribute locations
     positionAttribute = glGetAttribLocation(shader->program, "in_position");
     texcoordAttribute = glGetAttribLocation(shader->program, "in_texcoord");
     normalAttribute = glGetAttribLocation(shader->program, "in_normal");
-
 
     OBJ::Data obj;
     std::string path = pathBuilder({ "data", "models" });
@@ -66,8 +68,10 @@ SubObject Renderer::loadSubObject(SubObjectSource source)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, group.indices.size() * sizeof(unsigned int), group.indices.data(), GL_STATIC_DRAW);
 
-        if (gl_has_errors())
-            throw "Encountered GL error while making subobject";
+		if (gl_has_errors()) {
+			logger(LogLevel::ERR) << "Encountered GL error while making subobject " << '\n';
+			throw "Encountered GL error while making subobject";
+		}
 
         mesh.numIndices = group.indices.size();
         mesh.material = group.material;
@@ -142,7 +146,7 @@ glm::mat4 Renderer::collapseMatrixVector(std::vector<glm::mat4> v)
     return result;
 }
 
-void Renderer::render(glm::mat4 viewProjection)
+void Renderer::render(glm::mat4 &viewProjection, glm::mat4 &view)
 {
     // Setting shaders
     glUseProgram(shader->program);
@@ -153,6 +157,8 @@ void Renderer::render(glm::mat4 viewProjection)
     glBufferData(GL_UNIFORM_BUFFER, sizeof(ShaderInstancesData), &instancesData, GL_DYNAMIC_DRAW);
 
     glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, &viewProjection[0][0]);
+	glUniformMatrix4fv(viewMatrixUniform, 1, GL_FALSE, &view[0][0]);
+	glUniform3fv(directionalLightUniform, 1, &directionalLight[0]);
 
     for (size_t i = 0; i < subObjects.size(); i++) {
         for (const Mesh& mesh : subObjects[i].meshes) {

@@ -101,7 +101,7 @@ bool World::init() {
 
 	// Load shader for default meshSources
 	objShader = std::make_shared<Shader>();
-	if (!objShader->load_from_file(shader_path("objrenderable.vs.glsl"), shader_path("objrenderable.fs.glsl"))) {
+	if (!objShader->load_from_file(shader_path("celShader.vs.glsl"), shader_path("celShader.fs.glsl"))) {
 		logger(LogLevel::ERR) << "Failed to load obj shader!" << '\n';
 		return false;
 	}
@@ -283,7 +283,7 @@ void World::draw() {
 	glm::mat4 projectionView = projection * view;
 
 	for (const auto& renderer : Model::meshRenderers) {
-		renderer->render(projectionView);
+		renderer->render(projectionView, view);
 	}
 
 	m_skybox.getCameraPosition(camera.position);
