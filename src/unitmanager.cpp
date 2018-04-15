@@ -191,7 +191,7 @@ namespace UnitManager {
 				n++;
 				glm::vec3 specificPosition = position + spiralOffset(n);
 			}
-			unit->moveTo(UnitState::ATTACK_MOVE, specificPosition.x, specificPosition.z, queueCommand);
+			unit->moveTo(UnitState::ATTACK_MOVE, specificPosition, queueCommand);
 			n++;
 		}
 	}

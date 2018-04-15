@@ -21,8 +21,8 @@ namespace AI {
 		/* generate hash key which is fairly unique for each tile*/
 		struct aStarHasher {
 			std::size_t operator()(const AStarNode& in) const noexcept {
-				size_t result = std::hash<int>{}(in.rowCoord);
-				hash_combine(result, std::hash<int>{}(in.colCoord));
+				size_t result = std::hash<float>{}(in.rowCoord);
+				hash_combine(result, std::hash<float>{}(in.colCoord));
 				return result;
 			}
 		};
@@ -33,13 +33,14 @@ namespace AI {
 		float l2_norm(const AStarNode& startNode, const AStarNode& goal);
 
 		// find list of adjacent tile nodes which constitute possible moves from the position we're currently at
-		std::vector<AStarNode> getNeighbors(const std::vector<std::vector<AStarNode>>& graph, AStarNode& currentPos,
-											AStarNode& goal);
+		std::vector<AStarNode> getNeighbors(const std::vector<std::vector<AStarNode>>& graph,
+											const AStarNode& currentPos, const AStarNode& goal);
 
 		//main pathfinding algorithm
-		std::pair<bool, std::vector<Coord>> findPath(int tileSize, int startX, int startZ, int goalX, int goalZ);
+		std::pair<bool, std::vector<glm::vec3>>
+		findPath(float startX, float startZ, float goalX, float goalZ, int tileSize = 1);
 
-		std::vector<Coord> reconstruct_path(const std::unordered_map<AStarNode, AStarNode, aStarHasher>& came_from,
-											const AStarNode& start, const AStarNode& goal);
+		std::vector<glm::vec3> reconstruct_path(const std::unordered_map<AStarNode, AStarNode, aStarHasher>& came_from,
+												const AStarNode& start, const AStarNode& goal);
 	}
 }

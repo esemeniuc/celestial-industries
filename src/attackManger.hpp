@@ -54,7 +54,7 @@ namespace AttackManager {
         if (targetTime == 0) {
             for (std::pair<std::shared_ptr<Entity>, std::shared_ptr<Entity>> pair : unitTargetMap) {
 
-                pair.first->moveTo(UnitState::ATTACK_MOVE, (int)pair.second->getPosition().x, (int)pair.second->getPosition().z);
+                pair.first->moveTo(UnitState::ATTACK_MOVE, {pair.second->getPosition().x, 0,pair.second->getPosition().z});
                 if (pair.second->aiComp.currentHealth <= 0) {
                     unitTargetMap.erase(pair.first);
                 }

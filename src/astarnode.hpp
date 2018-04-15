@@ -19,8 +19,8 @@ struct AStarNode {
 			  float _rowCoord,
 			  float _movementCost,
 			  float _fScore,
-			  Model::MeshType _type) : rowCoord(roundf(_rowCoord)),
-									   colCoord(roundf(_colCoord)),
+			  Model::MeshType _type) : rowCoord(_rowCoord),
+									   colCoord(_colCoord),
 									   movementCost(_movementCost),
 									   fScore(_fScore), //don't need to round this since its not part of the == check
 									   type(_type) {}

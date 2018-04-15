@@ -39,6 +39,7 @@ public:
 	Entity(Model::MeshType geometry);
 
 	virtual ~Entity();
+
 	// functions
 	virtual void animate(float ms);
 
@@ -95,16 +96,16 @@ public:
 
 	glm::vec3 getPosition() const;
 
-	void setTargetPath(const std::vector<Coord>& targetPath, int x, int z);
+	void setTargetPath(const std::vector<glm::vec3>& targetPath);
 
 	bool hasMoveTarget();
 
-	virtual void moveTo(UnitState unitState, int x, int z, bool queueMove=false);
+	virtual void moveTo(UnitState unitState, const glm::vec3& moveToTarget, bool queueMove = false);
 
 	void cleanUpTargetPath();
 
 	void computeNextMoveLocation(double elapsed_time);
-	
+
 	virtual void move(double elapsed_time);
 
 	std::pair<int, double> getInterpolationPercentage();
@@ -125,7 +126,8 @@ public:
 	unsigned int turretIndex;
 	float turretAngle;
 
-	PivotingGunEntity(Model::MeshType geometry, unsigned int turretIndex) : Entity(geometry), turretIndex(turretIndex) {};
+	PivotingGunEntity(Model::MeshType geometry, unsigned int turretIndex) : Entity(geometry),
+																			turretIndex(turretIndex) {};
 
 	void animate(float ms) override;
 };
