@@ -31,6 +31,7 @@ public:
 	glm::vec3 targetPosition = {0.0f, 0.0f, 0.0f};
 	glm::vec3 nextPosition;
 	float attackingCooldown;
+	bool hasDestination = false;
 
 	// constructors
 	Entity();

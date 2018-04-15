@@ -140,6 +140,7 @@ void Entity::moveTo(UnitState unitState, const glm::vec3& moveToTarget, bool que
 		destinations.clear(); // Clear the queue
 		cleanUpTargetPath();
 	}
+	hasDestination = true;
 	destinations.push_back(moveToTarget);
 }
 
@@ -184,15 +185,16 @@ void Entity::move(double elapsed_time) {
 		}
 		return;
 	}
-	bool hasCollision = !rigidBody.getAllCollisions().empty();
 
+	bool hasCollision = !rigidBody.getAllCollisions().empty();
 	if (!hasPhysics || !hasCollision || collisionCooldown > 0) {
 		setPositionFast(0, nextPosition); //for rendering
 		rigidBody.setPosition(nextPosition); //for phys
 		if (collisionCooldown > 0)collisionCooldown -= elapsed_time;
 	} else {
 		CollisionDetection::CollisionInfo collision = rigidBody.getFirstCollision();
-		if (!destinations.empty()) {
+//		if (!destinations.empty()) {
+		if (hasDestination) {
 			glm::vec3 vecFromOther = getPosition() - collision.otherPos;
 			glm::vec3 bounceDir = glm::cross(vecFromOther, {0, 1, 0});
 			glm::vec3 destination = getPosition() + vecFromOther;
