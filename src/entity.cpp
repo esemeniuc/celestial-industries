@@ -236,11 +236,11 @@ glm::vec3 Entity::getPosition() const {
 }
 
 bool Entity::canSee(const std::shared_ptr<Entity>& entity) const {
-	return glm::length(glm::vec2(entity->getPosition() - this->getPosition())) <= aiComp.visionRange;
+	return glm::distance(entity->getPosition(), this->getPosition()) <= aiComp.visionRange;
 }
 
 bool Entity::inAttackRange(const std::shared_ptr<Entity>& entity) const {
-	return glm::length(glm::vec2(entity->getPosition() - this->getPosition())) <= unitComp.attackRange;
+	return glm::distance(entity->getPosition(), this->getPosition()) <= unitComp.attackRange;
 }
 
 bool Entity::operator==(const Entity& rhs) const {

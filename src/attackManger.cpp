@@ -16,7 +16,7 @@ namespace AttackManager {
         unitTargetMap.insert( {unit1, unit2} );
     }
 
-    void initiateAttacks(std::vector<std::shared_ptr<Entity>> entities1, std::vector<std::shared_ptr<Entity>> entities2, double elapsed_ms) {
+    void initiateAttacks(std::vector<std::shared_ptr<Entity>>& entities1, std::vector<std::shared_ptr<Entity>>& entities2, double elapsed_ms) {
         for (std::shared_ptr<Entity> entity1 : entities1) {
             for (std::shared_ptr<Entity> entity2 : entities2) {
                 if (entity1->inAttackRange(entity2)) {
@@ -33,7 +33,7 @@ namespace AttackManager {
         return (entity->aiComp.currentHealth <= 0);
     }
 
-    void removeDeadEntities(std::vector<std::shared_ptr<Entity>> entities) {
+    void removeDeadEntities(std::vector<std::shared_ptr<Entity>>& entities) {
         std::remove_if(entities.begin(), entities.end(), isDead);
     }
 
