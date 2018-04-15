@@ -134,21 +134,23 @@ void Entity::setTargetPath(const std::vector<glm::vec3>& targetPath) {
 }
 
 //expects the caller to set the unit state before calling this
-void Entity::moveTo(UnitState unitState,const glm::vec3& moveToTarget, bool queueMove) {
+void Entity::moveTo(UnitState unitState, const glm::vec3& moveToTarget, bool queueMove) {
 	this->unitComp.state = unitState;
 	if (!queueMove) {
 		destinations.clear(); // Clear the queue
 		cleanUpTargetPath();
 	}
 	destinations.push_back(moveToTarget);
-	hasDestination = true;
+	printf("current: %f %f\n", getPosition().x, getPosition().z);
+	printf("moveto: %f %f\n", moveToTarget.x, moveToTarget.z);
+
 }
 
 //returns a pathIndex and a 0.00 - 0.99 value to interpolate between steps in a path
-std::pair<int, double> Entity::getInterpolationPercentage() {
-	double intermediateVal = (unitComp.targetPathStartTimestamp / 1000) * unitComp.movementSpeed;
+std::pair<int, float> Entity::getInterpolationPercentage() {
+	float intermediateVal = (unitComp.targetPathStartTimestamp / 1000) * unitComp.movementSpeed;
 	int pathIndex = (int) intermediateVal;
-	double interpolationPercent = clamp<double>(0, intermediateVal - pathIndex, 1);
+	float interpolationPercent = clamp<float>(0, intermediateVal - pathIndex, 1);
 	return {pathIndex, interpolationPercent};
 }
 
@@ -163,46 +165,43 @@ void Entity::computeNextMoveLocation(double elapsed_time) {
 	}
 
 	unitComp.targetPathStartTimestamp += elapsed_time;
-	std::pair<int, double> index = getInterpolationPercentage(); //first is index into path, second is interp amount (0 to 1)
-	glm::vec3 newPos;
+	std::pair<int, float> index = getInterpolationPercentage(); //first is index into path, second is interp amount (0 to 1)
 	if (index.first < (int) unitComp.targetPath.size() - 1) {
-		Coord curr = unitComp.targetPath[index.first];
-		Coord next = unitComp.targetPath[index.first + 1];
+		glm::vec3 curr = unitComp.targetPath[index.first];
+		glm::vec3 next = unitComp.targetPath[index.first + 1];
 
-		double dRow = next.rowCoord - curr.rowCoord;
-		double dCol = next.colCoord - curr.colCoord;
-
-		double destCol = curr.colCoord + (dCol * index.second);
-		double destRow = curr.rowCoord + (dRow * index.second);
-
-		newPos = {destCol, 0, destRow};
+		nextPosition = glm::mix(curr, next, index.second);
 	} else { //move to the last coord in the path
-		newPos = unitComp.targetPath.back();
+		nextPosition = unitComp.targetPath.back();
 		cleanUpTargetPath();
 	}
-	nextPosition = newPos;
 	rigidBody.setVelocity(nextPosition - rigidBody.getPosition());
 }
 
 void Entity::move(double elapsed_time) {
 	if (!hasMoveTarget()) {
 		if (!destinations.empty()) {
-			glm::vec3 destination = destinations.front();
-			currentDestination = destination;
+			currentDestination = destinations.front(); //get the next dest
 			destinations.pop_front();
-			setTargetPath(AI::aStar::findPath(this->getPosition(), destination).second);
-			unitComp.targetPath.insert(unitComp.targetPath.begin(), getPosition());
+			const std::vector<glm::vec3>& path = AI::aStar::findPath(this->getPosition(), currentDestination).second;
+			for (auto elem: path) {
+				printf("[%.3f %.3f] ", elem.x, elem.z);
+			}
+			printf("\n");
+			setTargetPath(path);
 		}
 		return;
 	}
 	bool hasCollision = !rigidBody.getAllCollisions().empty();
+
+	printf("next: %f %f\n", nextPosition.x, nextPosition.z);
 	if (!hasPhysics || !hasCollision || collisionCooldown > 0) {
 		setPositionFast(0, nextPosition); //for rendering
 		rigidBody.setPosition(nextPosition); //for phys
 		if (collisionCooldown > 0)collisionCooldown -= elapsed_time;
 	} else {
 		CollisionDetection::CollisionInfo collision = rigidBody.getFirstCollision();
-		if (hasDestination) {
+		if (!destinations.empty()) {
 			glm::vec3 vecFromOther = getPosition() - collision.otherPos;
 			glm::vec3 bounceDir = glm::cross(vecFromOther, {0, 1, 0});
 			glm::vec3 destination = getPosition() + vecFromOther;

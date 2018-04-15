@@ -156,7 +156,7 @@ bool World::init() {
 //	temp3->moveTo(UnitState::MOVE, targetx, targetz);
 
 	startx = 20, startz = 20;
-	auto temp4 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	auto temp4 = Unit::spawn(Model::MeshType::BALL, {20.5, 0, 15.5}, GamePieceOwner::PLAYER);
 
 	// Example use of targeting units.
 //	AttackManager::registerTargetUnit(temp2, temp1);
