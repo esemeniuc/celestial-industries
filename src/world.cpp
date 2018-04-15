@@ -7,7 +7,6 @@
 #include "aimanager.hpp"
 #include "unit.hpp"
 #include "attackManger.hpp"
-#include "buildingmanager.hpp"
 #include "ui.hpp"
 
 namespace World {
@@ -249,7 +248,6 @@ bool World::update(double elapsed_ms) {
 	AI::Manager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
 	AttackManager::update(elapsed_ms);
-	BuildingManager::update(elapsed_ms);
 
 	for (const auto& tile : level.tiles) {
 		tile->update(elapsed_ms);
