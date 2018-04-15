@@ -16,7 +16,11 @@ script:
 #- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run -it --volume `pwd`:/home/ci/ cwaffles/ci-build /bin/sh -c "mkdir build && cd build && cmake .. && make -j4 && cd .. && build/test_suite"; fi
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run -it --volume `pwd`:/home/ci/ cwaffles/ci-build /bin/sh -c "mkdir build && cd build && cmake .. && make -j4"; fi
 #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir build && cd build && cmake .. && make -j4 && cd .. && build/test_suite; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir build && cd build && cmake .. && make -j4; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+ echo export 'LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib"' >> ~/.bash_profile;
+ echo export 'CPPFLAGS="-I/usr/local/opt/llvm/include"' >> ~/.bash_profile;
+ echo export 'PATH="/usr/local/opt/llvm/bin:$PATH"' >> ~/.bash_profile;
+ mkdir build && cd build && cmake .. && make -j4; fi
 
 deploy:
   provider: releases
