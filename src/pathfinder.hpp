@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <queue>
 #include <unordered_map>
+#include <array>
 #include "level.hpp"
 
 namespace AI {
