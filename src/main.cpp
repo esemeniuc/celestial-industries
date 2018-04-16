@@ -9,7 +9,7 @@
 
 using Clock = std::chrono::high_resolution_clock;
 
-void gameLoop() {
+void runMainGameLoop() {
 	auto t = Clock::now();
 	// variable timestep loop.. can be improved (:
 	while (!World::is_over() && Global::gameState == GameState::PLAY) {
@@ -64,15 +64,20 @@ int main(int argc, char* argv[]) {
 		switch (Global::gameState) {
 			case GameState::START_MENU: {
 				logger(LogLevel::DEBUG) << "gamestate = menu\n";
-				AudioManager::playLaunchMenuMusic();
+				AudioManager::startLaunchMenuMusic();
 				Ui::imguiDrawLaunchMenu(); //once this finishes we draw the world
-				AudioManager::pauseLaunchMenuMusic();
+				AudioManager::stopCurrentSong();
 				break;
 			}
 			case GameState::PLAY: {
-
 				logger(LogLevel::DEBUG) << "gamestate = play\n";
-				gameLoop();
+				if (Mix_PausedMusic()) {
+					AudioManager::resumeGameMusic();
+				} else{
+					AudioManager::startMainGameMusic();
+				}
+				runMainGameLoop();
+				AudioManager::pauseGameMusic();
 				break;
 			}
 			case GameState::PAUSED: {

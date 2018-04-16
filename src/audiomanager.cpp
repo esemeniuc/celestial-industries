@@ -11,6 +11,8 @@
 namespace AudioManager {
 // music and audio
 	Mix_Music* menuMusic;
+	Mix_Music* currentSong;
+	std::vector<Mix_Music*> mainGameMusic;
 	Mix_Chunk* m_mouse_click;
 	Mix_Chunk* m_error_sound;
 
@@ -25,13 +27,43 @@ namespace AudioManager {
 		Mix_PlayChannel(-1, m_error_sound, 0);
 	}
 
-	void playLaunchMenuMusic() {
+	void startLaunchMenuMusic() {
+		currentSong = menuMusic;
 		Mix_PlayMusic(menuMusic, -1); // Plays background music indefinitely
 	}
 
-	void pauseLaunchMenuMusic() {
+	void pauseGameMusic() {
 		Mix_PauseMusic();
 	}
+
+	void resumeGameMusic() {
+		Mix_ResumeMusic();
+	}
+
+	void stopCurrentSong() {
+		Mix_HookMusicFinished(NULL); //don't automatically play another song
+		Mix_HaltMusic();
+	}
+
+	Mix_Music* getRandomSong() {
+		auto randIt = mainGameMusic.begin();
+		std::advance(randIt, std::rand() % mainGameMusic.size());
+		return *randIt;
+	}
+
+	void startMainGameMusic() {
+		auto cycleThruSongs = []() {
+			logger(LogLevel::DEBUG) << "song finished, playing next song\n";
+			currentSong = getRandomSong();
+			Mix_FadeInMusic(currentSong, 1, 2000);
+		};
+
+		Mix_VolumeMusic(MIX_MAX_VOLUME/4); //25% volume for game music
+		Mix_HookMusicFinished(cycleThruSongs);
+		currentSong = getRandomSong();
+		Mix_FadeInMusic(currentSong, 1, 2000); //fade it gradually
+	}
+
 
 	void loadUnitSounds() {
 		auto loadAndCheck = [](Model::MeshType meshType, const char* filePath) {
@@ -46,6 +78,23 @@ namespace AudioManager {
 		loadAndCheck(Model::MeshType::FRIENDLY_RANGED_UNIT, "attack/howdahPistol.ogg");
 		loadAndCheck(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT,
 					 "attack/laser.ogg");//FIXME: should have a diff animation other than lasers
+
+	}
+
+	void loadSongs() {
+		const char* songs[] = {"Bog-Creatures-On-the-Move_Looping.ogg",
+							   "Spells-a-Brewin_Looping.ogg",
+							   "Fantasy_Game_Background_Looping.ogg"};
+
+		for (auto song : songs) {
+			char path[100] = audio_path("gameplayMusic/");
+			Mix_Music* temp = Mix_LoadMUS(strcat(path, song));
+			if (temp == nullptr) {
+				logger(LogLevel::ERR) << "Failed to load audio file: " << song << '\n';
+			} else {
+				mainGameMusic.push_back(temp);
+			}
+		}
 
 	}
 
@@ -87,6 +136,7 @@ namespace AudioManager {
 		}
 
 		loadUnitSounds();
+		loadSongs();
 
 		return true;
 	}

@@ -13,6 +13,8 @@ namespace AudioManager {
 
 // Audio and music
 	extern Mix_Music* menuMusic;
+	extern Mix_Music* currentSong;
+	extern std::vector<Mix_Music*> mainGameMusic;
 	extern Mix_Chunk* m_mouse_click;
 	extern Mix_Chunk* m_error_sound;
 
@@ -22,9 +24,17 @@ namespace AudioManager {
 
 	void play_error_sound();
 
-	void playLaunchMenuMusic();
+	void startLaunchMenuMusic();
 
-	void pauseLaunchMenuMusic();
+	void startLaunchMenuMusic();
+
+	void startMainGameMusic();
+
+	void pauseGameMusic();
+
+	void resumeGameMusic();
+
+	void stopCurrentSong();
 
 	void playAttackSound(Model::MeshType meshType);
 
