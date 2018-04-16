@@ -8,8 +8,9 @@ class Weapon {
 public:
 	Renderable geometryRenderer;
 	double timeSinceStart;
+	double lifespan;
 	bool isDeleted;
-	Weapon(Model::MeshType type, glm::vec3 start, glm::vec3 end);
+	Weapon(Model::MeshType type, glm::vec3 start, glm::vec3 end, double lifespan);
 	virtual void update(double ms);
 	void softDelete();
 	glm::vec3 start;
@@ -18,12 +19,11 @@ public:
 
 class BeamWeapon : public Weapon {
 public:
-	double lifespan;
-
 	BeamWeapon(Model::MeshType type, glm::vec3 start, glm::vec3 end, double lifespan);
 	void update(double ms) override;
 };
 
 class ProjectileWeapon : public Weapon {
-
+public:
+	ProjectileWeapon(Model::MeshType type, glm::vec3 start, glm::vec3 end, double lifespan);
 };

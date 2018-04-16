@@ -35,6 +35,7 @@ namespace Model {
 			HROAD,
 			VROAD,
 			BEAM,
+			BULLET,
 			MESHTYPES_COUNT //see https://stackoverflow.com/a/2102615
 		};
 

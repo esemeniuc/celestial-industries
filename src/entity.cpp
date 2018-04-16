@@ -3,6 +3,7 @@
 #include "entity.hpp"
 #include "pathfinder.hpp"  //for astar stuff
 #include "coord.hpp"
+#include "global.hpp"
 
 Entity::Entity() : meshType(Model::MeshType::BALL), geometryRenderer(Model::meshRenderers[Model::MeshType::BALL]) {}
 
@@ -267,21 +268,27 @@ void Entity::attack(const std::shared_ptr<Entity>& entityToAttack, double elapse
 }
 
 void PivotingGunEntity::animate(float ms) {
-	if (attackingCooldown >= 0)attackingCooldown -= ms;
 	glm::vec3 dir;
 	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
 		targetPosition = target->getPosition();
 		dir = glm::normalize(targetPosition - getPosition());
+		if (attackingCooldown >= 0)attackingCooldown -= ms;
 		if (attackingCooldown < 0) {
-			float lifespan = 1000.0f;
-			attackingCooldown += lifespan;
-			BeamWeapon(Model::MeshType::BEAM, getPosition() + glm::vec3(0, 0.5, 0), targetPosition, lifespan);
+			glm::vec3 start = getPosition();
+			glm::vec3 end = target->getPosition();
+			attackingCooldown = 1000.0f / unitComp.attackSpeed;
+			float speed = unitComp.attackRange / attackingCooldown;
+			float distance = glm::length(end - start);
+			float lifespan = distance / speed;
+			Global::weapons.push_back(
+				std::make_shared<ProjectileWeapon>(weaponMesh, start + offset, end + glm::vec3(0, 0.5, 0), lifespan)
+			);
 		}
 	}
 	else {
-		dir = { 0,0,1 };
+		dir = glm::normalize(getPosition()+glm::vec3(1.0f,0.0f,0.0f));;
 	}
-	setRotationXZ(1, dir);
+	setRotationXZ(turretIndex, dir);
 }
 
 void PivotingGunEntity::attack(const std::shared_ptr<Entity>& entityToAttack, double elapsed_ms) {
@@ -301,4 +308,26 @@ void PivotingGunEntity::attack(const std::shared_ptr<Entity>& entityToAttack, do
 	if (entityToAttack->aiComp.currentHealth <= 0) {
 		unitComp.state = UnitState::IDLE;
 	}
+}
+
+void BeamFiringGunEntity::animate(float ms)
+{
+	glm::vec3 dir;
+	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
+		targetPosition = target->getPosition();
+		dir = glm::normalize(targetPosition - getPosition());
+		if (attackingCooldown >= 0)attackingCooldown -= ms;
+		if (attackingCooldown < 0) {
+			glm::vec3 start = getPosition();
+			glm::vec3 end = target->getPosition();
+			attackingCooldown = 1000.0f / unitComp.attackSpeed;
+			Global::weapons.push_back(
+				std::make_shared<BeamWeapon>(weaponMesh, start + offset, end + glm::vec3(0,0.5,0), attackingCooldown/1.5f)
+			);
+		}
+	}
+	else {
+		dir = glm::normalize(getPosition() + glm::vec3(1.0f, 0.0f, 0.0f));;
+	}
+	setRotationXZ(turretIndex, dir);
 }

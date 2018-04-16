@@ -144,11 +144,6 @@ bool World::init() {
 	//display a path
 	int startx = 25, startz = 11;
 	int targetx = 10, targetz = 10;
-	auto pivot1 = std::make_shared<PivotingGunEntity>(Model::MeshType::FRIENDLY_RANGED_UNIT, 2);
-	pivot1->target = level.tileCursor;
-	pivot1->setPosition({ startx + 1, 0, startz });
-	pivot1->aiComp.owner = GamePieceOwner::PLAYER;
-	Global::playerUnits.push_back(pivot1);
 	auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {startx, 0, startz}, GamePieceOwner::PLAYER);
 //	temp1->moveTo(UnitState::MOVE, targetx, targetz);
 
@@ -157,13 +152,11 @@ bool World::init() {
 //	temp2->moveTo(targetx, targetz);
 
 	startx = 39, startz = 1;
-	auto temp3 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	auto temp3 = Unit::spawn(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, {startx, 0, startz}, GamePieceOwner::PLAYER);
 //	temp3->moveTo(UnitState::MOVE, targetx, targetz);
 
 	startx = 20, startz = 20;
 	auto temp4 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::AI);
-
-	auto weap1 = BeamWeapon(Model::MeshType::BEAM, { 0,0,0 }, { 0,3,0 }, 1000.0);
 
 	// Example use of targeting units.
 //	AttackManager::registerTargetUnit(temp2, temp1);

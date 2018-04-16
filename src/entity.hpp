@@ -31,7 +31,7 @@ public:
 	bool isDeleted = false;
 	RigidBody rigidBody;
 
-	std::shared_ptr<Entity> target;
+	std::shared_ptr<Entity> target = nullptr;
 	glm::vec3 targetPosition = {0.0f, 0.0f, 0.0f};
 	glm::vec3 nextPosition;
 	float attackingCooldown = 0.0f;
@@ -122,11 +122,22 @@ protected:
 class PivotingGunEntity : public Entity {
 public:
 	unsigned int turretIndex;
-	glm::vec3 turretVector;
-	float turretAngle;
-
-	PivotingGunEntity(Model::MeshType geometry, unsigned int turretIndex) : Entity(geometry), turretIndex(turretIndex) {};
+	Model::MeshType weaponMesh;
+	glm::vec3 offset;
+	PivotingGunEntity(Model::MeshType geometry, unsigned int turretIndex, Model::MeshType weaponMesh, glm::vec3 offset) : Entity(geometry), turretIndex(turretIndex), weaponMesh(weaponMesh), offset(offset) {};
 
 	void animate(float ms) override;
 	void attack(const std::shared_ptr<Entity>& entityToAttack, double elapsed_ms) override;
+};
+
+class BeamFiringGunEntity : public PivotingGunEntity {
+public:
+	void animate(float ms) override;
+	BeamFiringGunEntity(Model::MeshType geometry, unsigned int turretIndex, Model::MeshType weaponMesh, glm::vec3 offset) : PivotingGunEntity(geometry, turretIndex, weaponMesh, offset) {};
+};
+
+class ProjectileFiringGunEntity : public PivotingGunEntity {
+public:
+	ProjectileFiringGunEntity(Model::MeshType geometry, unsigned int turretIndex, Model::MeshType weaponMesh, glm::vec3 offset) : PivotingGunEntity(geometry, turretIndex, weaponMesh, offset) {};
+	// Projectiles are actually the default
 };
