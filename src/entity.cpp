@@ -3,6 +3,7 @@
 #include "entity.hpp"
 #include "pathfinder.hpp"  //for astar stuff
 #include "coord.hpp"
+#include "logger.hpp"
 
 Entity::Entity() : meshType(Model::MeshType::BALL), geometryRenderer(Model::meshRenderers[Model::MeshType::BALL]) {}
 
@@ -140,7 +141,14 @@ void Entity::moveTo(UnitState unitState, int x, int z, bool queueMove) {
 	if (!queueMove)
 		destinations.clear(); // Clear the queue
 	destinations.emplace_back(x, 0, z);
-	hasDestination = true;
+    hasDestination = true;
+}
+
+void Entity::stopMoving() {
+	this->unitComp.state = UnitState::IDLE;
+	destinations.clear();
+	hasDestination = false;
+	unitComp.targetPath.clear();
 }
 
 //returns a pathIndex and a 0.00 - 0.99 value to interpolate between steps in a path
@@ -259,7 +267,7 @@ void Entity::takeAttack(const std::shared_ptr<Entity>& attackingEntity, double e
 }
 
 void Entity::attack(const std::shared_ptr<Entity>& entityToAttack) {
-	if (unitComp.state == UnitState::ATTACK) {
+	if (unitComp.state == UnitState::ATTACK || unitComp.state == UnitState::ATTACK_MOVE) {
 		// Already attacking something else, nothing to do, return.
 		return;
 	}

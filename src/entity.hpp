@@ -70,6 +70,8 @@ public:
 
 	void setPosition(int modelIndex, glm::vec3);
 
+	void stopMoving();
+
 	void setModelMatrix(int modelIndex, glm::mat4 mat);
 
 	void setModelMatrix(int modelIndex, glm::vec3 translation = {0, 0, 0}, float angle = 0,
