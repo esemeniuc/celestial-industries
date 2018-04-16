@@ -250,8 +250,10 @@ void PivotingGunEntity::animate(float ms) {
 	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
 		targetPosition = target->getPosition();
 		dir = glm::normalize(targetPosition - getPosition());
-		if (attackingCooldown >= 0)attackingCooldown -= ms;
-		if (attackingCooldown < 0) {
+		if (attackingCooldown >= 0) {
+			attackingCooldown -= ms;
+		} else {
+			// Cooldown over, time for PEW PEW PEW
 			glm::vec3 start = getPosition();
 			glm::vec3 end = target->getPosition();
 			attackingCooldown = 1000.0f / unitComp.attackSpeed;
