@@ -76,10 +76,8 @@ void Entity::rotate(float amount, glm::vec3 axis) {
 }
 
 void Entity::setRotationXZ(int modelIndex, glm::vec3 dir) {
-	//rotate(modelIndex, amount - angle, { 0.0f, 1.0f, 0.0f });
 	glm::mat4 rotationMatrix = glm::orientation(dir, { 0,0, -1 });
 	setModelMatrix(modelIndex, rotationMatrix);
-	//angle = amount;
 }
 
 void Entity::scale(glm::vec3 scale) {
@@ -183,7 +181,6 @@ void Entity::move(double elapsed_time) {
 		if (collisionCooldown > 0)collisionCooldown -= elapsed_time;
 	} else {
 		CollisionDetection::CollisionInfo collision = rigidBody.getFirstCollision();
-//		if (!destinations.empty()) {
 		if (hasDestination) {
 			glm::vec3 vecFromOther = getPosition() - collision.otherPos;
 			glm::vec3 bounceDir = glm::cross(vecFromOther, {0, 1, 0});
@@ -192,11 +189,6 @@ void Entity::move(double elapsed_time) {
 			destinations.emplace_front(destination);
 			currentDestination = destination;
 			unitComp.targetPath.clear();
-			//translate((bounceDir) / 10.0f);
-			//setTargetPath(AI::aStar::findPath(1, this->getPositionInt().colCoord, this->getPositionInt().rowCoord, destination.x,
-			//	destination.z).second, destination.x, destination.z); //might need fixing with respect to int start positions
-
-			//unitComp.targetPath.insert(unitComp.targetPath.begin(), { getPositionInt().colCoord, getPositionInt().rowCoord });
 			collisionCooldown = 10.0f;
 		}
 	}
