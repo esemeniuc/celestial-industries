@@ -32,6 +32,8 @@ namespace Config {
 	// Note: this must be equal to the value in the shader, otherwise weird things will eventually happen probably
     const unsigned int MAX_TOTAL_SUBOBJECTS_PER_RENDERER = 1000; // If you change this and not the shader you are a bad person
 
+	const bool showFPSCounter = true;
+
 	//game tunable constants
 	constexpr const int OBSTACLE_COST = 10000;
 	constexpr const int DEFAULT_TRAVERSABLE_COST = 0; //straight movement costs 10, diagonal costs 14, see pathfinder.hpp

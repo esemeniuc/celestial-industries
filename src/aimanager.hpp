@@ -68,10 +68,10 @@ namespace AI {
 		};
 
 		//in x,z format
-		constexpr std::array<std::pair<int, int>, 4> adj = {{{0, 1}, //down
-														  {0, -1}, //up
-														  {1, 0}, //right
-														  {-1, 0} //left
+		constexpr std::array<std::pair<int, int>, 4> adj = {{{0, 3}, //down
+														  {0, -3}, //up
+														  {3, 0}, //right
+														  {-3, 0} //left
 												  }};
 
 		void init(size_t levelHeight, size_t levelWidth);

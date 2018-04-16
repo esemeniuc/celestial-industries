@@ -300,7 +300,7 @@ namespace Ui {
 				}
 				case SpawnWindowState::SPAWN_ECONOMIC_BUILDINGS : {
 
-					highlightBuildingButtonHelper(COMMAND_CENTER,"Command Center");
+					highlightBuildingButtonHelper(COMMAND_CENTER, "Command Center");
 					highlightBuildingButtonHelper(REFINERY, "Refinery");
 					highlightBuildingButtonHelper(FACTORY, "Factory");
 					highlightBuildingButtonHelper(SUPPLY_DEPOT, "Supply Depot");
@@ -315,6 +315,26 @@ namespace Ui {
 				}
 			}
 
+			ImGui::End();
+		}
+
+		if (Config::showFPSCounter) {
+			const float DISTANCE = 10.0f;
+			ImVec2 window_pos = ImVec2(DISTANCE, DISTANCE);
+			ImVec2 window_pos_pivot = ImVec2(0.0f, 0.0f);
+			ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+			ImGui::SetNextWindowSize(ImVec2(110, 50));
+			ImGui::SetNextWindowBgAlpha(0.3f); // Transparent background
+			ImGui::Begin("FPS counter", nullptr, ImGuiWindowFlags_NoSavedSettings |
+												 ImGuiWindowFlags_NoResize |
+												 ImGuiWindowFlags_NoCollapse |
+												 ImGuiWindowFlags_NoMove |
+												 ImGuiWindowFlags_NoTitleBar |
+												 ImGuiWindowFlags_AlwaysAutoResize |
+												 ImGuiWindowFlags_NoFocusOnAppearing |
+												 ImGuiWindowFlags_NoNav);
+
+			ImGui::Text("FPS:\t\t%.f\nDelay: %.f", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
 			ImGui::End();
 		}
 

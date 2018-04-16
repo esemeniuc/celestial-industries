@@ -7,7 +7,7 @@
 
 namespace AI {
 	namespace Manager {
-		const double AI_VISIBLE_THRESHOLD = 0.5; //scout only if we've seen less than this value
+		const double AI_VISIBLE_THRESHOLD = 0.4; //scout only if we've seen less than this value
 		const int AI_RUN_THRESHOLD = 500; //run every 500ms
 		const int UNSEEN_RADIUS_THRESHOLD = 6;
 		const int FOG_OF_WAR_TIME_THRESHOLD = 10;
@@ -206,6 +206,9 @@ namespace AI {
 			}
 		}
 
+
+#include <chrono>
+
 		void update(double elapsed_ms) {
 			lastRunTimestamp += elapsed_ms;
 
@@ -213,9 +216,9 @@ namespace AI {
 				lastRunTimestamp = 0; //reset as we past the threshold
 			} else {
 				return; //run only after we exceed the threshold
-			}
-			aiManagerRunIterations++;
+			}			std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
+			aiManagerRunIterations++;
 			cleanupCompletedScoutTargets();
 			updateValueOfEntities();
 			updateUnitsSeen();
@@ -252,6 +255,11 @@ namespace AI {
 				logger(LogLevel::DEBUG) << "spawned at: " << spawnLocation << '\n';
 
 			}
+			std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+			std::cout << "Time difference = "
+					  << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "mu sec\n";
+
 		}
 	}
 }
