@@ -70,29 +70,26 @@ namespace AI {
 				throw "ENTITY PATHING FROM OUT OF LEVEL";
 			}
 
-			for (const auto& dir : straightDirections) {
+			//see https://stackoverflow.com/a/7627218
+			auto addNeighbours = [=, &neighbors](std::pair<int, int> dir, int movementCost) {
 				int nextCol = currentPos.colCoord + dir.first, nextRow = currentPos.rowCoord + dir.second;
 				if (withinLevelBounds(nextCol, nextRow) &&
 					isGoalOrNotObstacle(nextCol, nextRow, goalCol, goalRow, movementCostGraph)) {
 
 					neighbors.emplace_back(nextCol,
 										   nextRow,
-										   movementCostGraph[nextRow][nextCol] + STRAIGHT_MOVEMENT_COST,
+										   movementCostGraph[nextRow][nextCol] + movementCost,
 										   0 /*fscore get set later*/,
 										   Global::levelArray[nextRow][nextCol]);
 				}
+			};
+
+			for (const auto& dir : straightDirections) {
+				addNeighbours(dir, STRAIGHT_MOVEMENT_COST);
 			}
 
 			for (const auto& dir : diagonalDirections) {
-				int nextCol = currentPos.colCoord + dir.first, nextRow = currentPos.rowCoord + dir.second;
-				if (withinLevelBounds(nextCol, nextRow) &&
-					isGoalOrNotObstacle(nextCol, nextRow, goalCol, goalRow, movementCostGraph)) {
-					neighbors.emplace_back(nextCol,
-										   nextRow,
-										   movementCostGraph[nextRow][nextCol] + DIAGONAL_MOVEMENT_COST,
-										   0 /*fscore get set later*/,
-										   Global::levelArray[nextRow][nextCol]);
-				}
+				addNeighbours(dir, STRAIGHT_MOVEMENT_COST);
 			}
 
 			return neighbors;

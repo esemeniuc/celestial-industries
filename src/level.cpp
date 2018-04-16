@@ -93,12 +93,6 @@ void Level::update(float ms)
 	Global::levelWithUnitsTraversalCostMap = Global::levelTraversalCostMap;
 }
 
-//AStarNode Level::nodeFromCost(int row, int col, Model::MeshType type) {
-//	int cost = tileToCost[type];
-//	// TODO: Why are we giving this stuff doubles instead of ints?
-//	return AStarNode(col, row, cost.first, cost.second, type);
-//}
-
 std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& levelTextFile) {
 	std::ifstream level(levelTextFile);
 	std::string line;
