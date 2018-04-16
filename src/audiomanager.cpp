@@ -42,8 +42,8 @@ namespace AudioManager {
 			}
 		};
 
-		loadAndCheck(Model::MeshType::GUN_TURRET, "attack/howdahPistol.ogg");
-		loadAndCheck(Model::MeshType::FRIENDLY_RANGED_UNIT, "attack/gunTurret.ogg");
+		loadAndCheck(Model::MeshType::GUN_TURRET, "attack/gunTurret.ogg");
+		loadAndCheck(Model::MeshType::FRIENDLY_RANGED_UNIT, "attack/howdahPistol.ogg");
 		loadAndCheck(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT,
 					 "attack/laser.ogg");//FIXME: should have a diff animation other than lasers
 
