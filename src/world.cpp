@@ -114,7 +114,7 @@ bool World::init() {
 	level.particleShader = particleShader;
 
 	std::shared_ptr<Texture> particleTexture = std::make_shared<Texture>();
-	particleTexture->load_from_file(textures_path("turtle.png"));
+	particleTexture->load_from_file(textures_path("oil.jpg"));
 	if (!particleTexture->is_valid()) {
 		throw "Particle texture failed to load!";
 	}

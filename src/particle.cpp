@@ -170,8 +170,10 @@ namespace Particles {
         glBindTexture(GL_TEXTURE_2D, texture->id);
 
         // The "6" here refers to the number of vertex indices to draw, which are laid out in
-        // the "vertexIndices[6]" variable in the ParticleEmitter constructor.
+        // the "vertexIndices[6]" variable in the ParticleEmitter constructor.		
+		glDisable(GL_CULL_FACE);
         glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, PARTICLES_PER_EMITTER);
+		glEnable(GL_CULL_FACE);
 
         glDisable(GL_BLEND);
     }
