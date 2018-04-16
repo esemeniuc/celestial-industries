@@ -139,7 +139,6 @@ bool World::init() {
 
 	UnitManager::init(Global::levelHeight, Global::levelWidth);
 	AI::Manager::init(Global::levelHeight, Global::levelWidth);
-	Global::aStarCostMap = level.getLevelTraversalCostMap();
 
 	//display a path
 	auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
@@ -226,9 +225,9 @@ bool World::update(double elapsed_ms) {
 	gameElapsedTime += elapsed_ms;
 
 	if (selectedTileCoordinates.rowCoord >= 0 &&
-		(unsigned long) selectedTileCoordinates.rowCoord < level.getLevelTraversalCostMap().size() &&
+		(size_t) selectedTileCoordinates.rowCoord < Global::levelHeight &&
 		selectedTileCoordinates.colCoord >= 0 &&
-		(unsigned long) selectedTileCoordinates.colCoord < level.getLevelTraversalCostMap()[0].size()) {
+		(size_t) selectedTileCoordinates.colCoord < Global::levelWidth) {
 
 		level.tileCursor->setPosition({selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord});
 	}

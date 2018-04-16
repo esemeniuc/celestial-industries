@@ -9,18 +9,22 @@
 namespace AI {
 	namespace aStar {
 		//in delta x, delta z or (col,row) format
-		constexpr std::array<std::pair<int, int>, 8> directions = {
-				{{0, 1}, //down
+		constexpr std::array<std::pair<int, int>, 4> straightDirections = {{
+				{0, 1}, //down
 				{0, -1}, //up
 				{1, 0}, //right
 				{-1, 0}, //left
+				}};
 
+		constexpr std::array<std::pair<int, int>, 4> diagonalDirections = {{
 				{1, 1}, //bottom right
 				{-1, 1}, //bottom left
 				{1, -1}, //top right
-				{-1, -1} //top left
-
+				{-1, -1}, //top left
 				}};
+
+		const int STRAIGHT_MOVEMENT_COST = 10;
+		const int DIAGONAL_MOVEMENT_COST = 14;
 
 		bool isTraversable(int x, int z);
 
@@ -29,7 +33,7 @@ namespace AI {
 		struct aStarComparator {
 			// lambda expression
 			bool operator()(const AStarNode& a, const AStarNode& b) {
-				return a.fScore > b.fScore;
+				return a.fScore > b.fScore; //use > for min priority queue
 			}
 		};
 
@@ -43,9 +47,9 @@ namespace AI {
 		};
 
 		// L1 norm (manhattan distance), will be used as a heuristic for A*
-		float l1_norm(const AStarNode& a, const AStarNode& b);
+		double l1_norm(const AStarNode& a, const AStarNode& b);
 
-		float l2_norm(const AStarNode& startNode, const AStarNode& goal);
+		double l2_norm(const AStarNode& startNode, const AStarNode& goal);
 
 		// find list of adjacent tile nodes which constitute possible moves from the position we're currently at
 		std::vector<AStarNode> getNeighbors(const std::vector<std::vector<AStarNode>>& graph,
