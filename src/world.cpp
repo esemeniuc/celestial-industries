@@ -234,7 +234,6 @@ bool World::update(double elapsed_ms) {
 	}
 
 	Global::playerResources += Global::playerResourcesPerSec * (elapsed_ms/1000);
-	logger(LogLevel::DEBUG) << Global::playerResourcesPerSec * (elapsed_ms / 1000) << "\n";
 
 	for (const auto& emitter : Global::emitters) {
 		emitter->update(elapsed_ms);
