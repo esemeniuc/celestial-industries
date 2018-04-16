@@ -17,7 +17,6 @@
 #define SDL_MAIN_HANDLED
 
 #include <SDL.h>
-#include <SDL_mixer.h>
 
 // glm
 #include "glm/mat4x4.hpp"
@@ -48,11 +47,6 @@ namespace World {
 	extern Level level;
 	extern Skybox m_skybox;
 
-	// Audio and music
-	extern Mix_Music* m_background_music;
-	extern Mix_Chunk* m_mouse_click;
-	extern Mix_Chunk* m_error_sound;
-
 	// Particle things
 	extern std::shared_ptr<Shader> particleShader;
 
@@ -79,17 +73,15 @@ namespace World {
 	bool is_over();
 
 	//funcs
-	std::pair<bool, glm::vec3> getTileCoordFromWindowCoords(double xpos, double ypos);
-
-	void updateBoolFromKey(int action, int key, bool& toUpdate, const std::vector<int>& targetKeys);
-
-	void play_mouse_click_sound();
-
-	void play_error_sound();
+	//init stuff
+	bool initMeshTypes(const std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>>& sources);
 
 	bool loadSkybox(const std::string& skyboxFilename, const std::string& skyboxTextureFolder);
 
-	bool initMeshTypes(const std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>>& sources);
+	//other
+	std::pair<bool, glm::vec3> getTileCoordFromWindowCoords(double xpos, double ypos);
+
+	void updateBoolFromKey(int action, int key, bool& toUpdate, const std::vector<int>& targetKeys);
 
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow* window, int key, int scancode, int action, int mods);

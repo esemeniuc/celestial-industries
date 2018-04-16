@@ -3,6 +3,7 @@
 #include "world.hpp"
 #include "ui.hpp"
 #include "global.hpp" //for gamestate
+#include "audiomanager.hpp"
 
 #include <chrono>
 
@@ -41,6 +42,11 @@ int main(int argc, char* argv[]) {
 	Ui::imguiSetup();
 	World::m_window = Ui::getWindow();
 
+	if (!AudioManager::init()) {
+		logger(LogLevel::ERR) << "Audio manager init failed\n";
+		return EXIT_FAILURE;
+	}
+
 	// Initializing world (after renderer.init().. sorry)
 	if (!World::init()) {
 		// Time to read the error message
@@ -58,10 +64,14 @@ int main(int argc, char* argv[]) {
 		switch (Global::gameState) {
 			case GameState::START_MENU: {
 				logger(LogLevel::DEBUG) << "gamestate = menu\n";
+				// Playing background music indefinitely
+				AudioManager::playLaunchMenuMusic();
 				Ui::imguiDrawLaunchMenu(); //once this finishes we draw the world
+				AudioManager::pauseLaunchMenuMusic();
 				break;
 			}
 			case GameState::PLAY: {
+
 				logger(LogLevel::DEBUG) << "gamestate = play\n";
 				gameLoop();
 				break;

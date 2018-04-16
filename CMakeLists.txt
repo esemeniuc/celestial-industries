@@ -57,6 +57,7 @@ set(PROJ_SOURCES
 #		ext/imgui/imgui_demo.cpp
 		src/aicomp.cpp
 		src/aimanager.cpp
+		src/audiomanager.cpp
 		src/attackManger.cpp
 		src/buildingmanager.cpp
 		src/camera.cpp

@@ -9,6 +9,7 @@
 #include "attackManger.hpp"
 #include "buildingmanager.hpp"
 #include "ui.hpp"
+#include "audiomanager.hpp"
 
 namespace World {
 	GLFWwindow* m_window;
@@ -34,14 +35,8 @@ namespace World {
 	std::default_random_engine m_rng = std::default_random_engine(std::random_device()());
 	std::uniform_real_distribution<float> m_dist; // default 0..1
 
-	// music and audio
-	Mix_Music* m_background_music;
-	Mix_Chunk* m_mouse_click;
-	Mix_Chunk* m_error_sound;
-
 	double gameElapsedTime = 0.0;
 }
-
 
 // World initialization
 bool World::init() {
@@ -57,41 +52,6 @@ bool World::init() {
 	glfwSetWindowSizeCallback(m_window, on_window_resize);
 
 	//-------------------------------------------------------------------------
-
-	// Loading music and sounds
-	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-		logger(LogLevel::ERR) << "Failed to initialize SDL Audio\n";
-		return false;
-	}
-
-	// load support for the OGG audio format
-	int flags = MIX_INIT_OGG;
-	int initted = Mix_Init(flags);
-	if ((initted & flags) != flags) { // Bitwise & intentional; follows SDL docs
-		logger(LogLevel::ERR) << "Mix_Init: Failed to init required ogg support!\n";
-		logger(LogLevel::ERR) << "Mix_Init: " << Mix_GetError() << '\n';
-	}
-
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
-		logger(LogLevel::ERR) << "Failed to open audio device";
-		return false;
-	}
-
-	m_background_music = Mix_LoadMUS(audio_path("game_sound_track.ogg"));
-	// LoadWAV is actaully capable of loading other audio formats as well, the name is not accurate
-	// https://www.libsdl.org/projects/SDL_mixer/docs/SDL_mixer_19.html#SEC19
-	m_mouse_click = Mix_LoadWAV(audio_path("click3.ogg"));
-
-	m_error_sound = Mix_LoadWAV(audio_path("switch23.ogg"));
-
-	if (m_background_music == nullptr) {
-		logger(LogLevel::ERR) << "Failed to load sounds, make sure the data directory is present";
-		return false;
-	}
-
-	// Playing background music indefinitely
-	Mix_PlayMusic(m_background_music, -1);
-	logger(LogLevel::DEBUG) << "Loaded music";
 
 	// setup skybox
 	if (!loadSkybox("skybox.obj", "skybox")) {
@@ -156,6 +116,8 @@ bool World::init() {
 	return true;
 }
 
+
+
 bool World::initMeshTypes(const std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>>& sources) {
 	// All the models come from the same place
 	std::string path = pathBuilder({"data", "models"});
@@ -195,21 +157,6 @@ bool World::loadSkybox(const std::string& skyboxFilename, const std::string& sky
 
 // Releases all the associated resources
 void World::destroy() {
-	if (m_background_music != nullptr) {
-		Mix_FreeMusic(m_background_music);
-	}
-
-	if (m_mouse_click != nullptr) {
-		Mix_FreeChunk(m_mouse_click);
-	}
-
-	if (m_error_sound != nullptr) {
-		Mix_FreeChunk(m_error_sound);
-	}
-
-	// cleans up all dynamically loaded library handles used by sdl mixer
-	Mix_CloseAudio();
-	Mix_Quit();
 
 	m_skybox.destroy();
 	glfwDestroyWindow(m_window);
@@ -221,7 +168,7 @@ bool World::update(double elapsed_ms) {
 	glfwPollEvents(); //Processes system messages, if this wasn't present the window would become unresponsive
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
-	camera.update((float)elapsed_ms);
+	camera.update((float) elapsed_ms);
 	gameElapsedTime += elapsed_ms;
 
 	if (selectedTileCoordinates.rowCoord >= 0 &&
@@ -232,7 +179,7 @@ bool World::update(double elapsed_ms) {
 		level.tileCursor->setPosition({selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord});
 	}
 
-	Global::playerResources += Global::playerResourcesPerSec * (elapsed_ms/1000);
+	Global::playerResources += Global::playerResourcesPerSec * (elapsed_ms / 1000);
 
 	for (const auto& emitter : Global::emitters) {
 		emitter->update(elapsed_ms);
@@ -292,14 +239,6 @@ void World::draw() {
 //	glfwSwapBuffers(m_window);
 }
 
-void World::play_mouse_click_sound() {
-	Mix_PlayChannel(-1, m_mouse_click, 0);
-}
-
-void World::play_error_sound()
-{
-	Mix_PlayChannel(-1, m_error_sound, 0);
-}
 
 // Should the game be over ?
 bool World::is_over() {
@@ -339,16 +278,16 @@ void World::on_key(GLFWwindow* window, int key, int scancode, int action, int mo
 			// { Var to update, { Keys that will update it } }
 
 			// Camera controls:
-			{camera.move_forward,  {GLFW_KEY_W, GLFW_KEY_UP}},
-			{camera.move_backward, {GLFW_KEY_S, GLFW_KEY_DOWN}},
-			{camera.move_right,    {GLFW_KEY_D, GLFW_KEY_RIGHT}},
-			{camera.move_left,     {GLFW_KEY_A, GLFW_KEY_LEFT}},
+			{camera.move_forward,  {GLFW_KEY_W,           GLFW_KEY_UP}},
+			{camera.move_backward, {GLFW_KEY_S,           GLFW_KEY_DOWN}},
+			{camera.move_right,    {GLFW_KEY_D,           GLFW_KEY_RIGHT}},
+			{camera.move_left,     {GLFW_KEY_A,           GLFW_KEY_LEFT}},
 			{camera.rotate_right,  {GLFW_KEY_E}},
 			{camera.rotate_left,   {GLFW_KEY_Q}},
 			{camera.z_held,        {GLFW_KEY_Z}},
 
 			// Shift
-			{shiftBeingHeld,	   {GLFW_KEY_RIGHT_SHIFT, GLFW_KEY_LEFT_SHIFT}},
+			{shiftBeingHeld,       {GLFW_KEY_RIGHT_SHIFT, GLFW_KEY_LEFT_SHIFT}},
 	};
 
 	for (auto stickyKey : stickyKeys) {
@@ -415,64 +354,72 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
 	std::pair<bool, glm::vec3> targetLocation = World::getTileCoordFromWindowCoords(xpos, ypos);
-	glm::vec3 coords = { selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord };
+	glm::vec3 coords = {selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord};
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
-			std::cout << "clicked " << targetLocation.second.x << " " << targetLocation.second.z << "\n";
+			logger(LogLevel::DEBUG) << "clicked " << targetLocation.second.x << " " << targetLocation.second.z << "\n";
 			UnitManager::selectUnit(targetLocation.second);
 		}
 
-		std::vector<Model::MeshType> trees = { Model::MeshType::REDTREE, Model::MeshType::TREE, Model::MeshType::YELLOWTREE };
+		std::vector<Model::MeshType> trees = {Model::MeshType::REDTREE, Model::MeshType::TREE,
+											  Model::MeshType::YELLOWTREE};
 		if (withinLevelBounds(coords)) {
 			switch (Ui::selectedBuilding) {
-			case Ui::BuildingSelected::REFINERY: {
-				const int refinerySize = 3;
-				int numFriendlyTiles = level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, refinerySize, refinerySize);
-				int numGeysers = level.numTilesOfTypeInArea(Model::MeshType::GEYSER, coords, refinerySize, refinerySize);
-				if (numFriendlyTiles > 0 || numGeysers == 0) {
-					play_error_sound();
+				case Ui::BuildingSelected::REFINERY: {
+					const int refinerySize = 3;
+					int numFriendlyTiles = level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, refinerySize,
+																	   refinerySize);
+					int numGeysers = level.numTilesOfTypeInArea(Model::MeshType::GEYSER, coords, refinerySize,
+																refinerySize);
+					if (numFriendlyTiles > 0 || numGeysers == 0) {
+						AudioManager::play_error_sound();
+						break;
+					}
+					level.placeTile(Model::MeshType::REFINERY, coords, GamePieceOwner::PLAYER, refinerySize,
+									refinerySize, numGeysers);
 					break;
 				}
-				level.placeTile(Model::MeshType::REFINERY, coords, GamePieceOwner::PLAYER, refinerySize, refinerySize, numGeysers);
-				break;
-			}
-			case Ui::BuildingSelected::SUPPLY_DEPOT:
-				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 || level.unpathableTilesInArea(coords)) {
-					play_error_sound();
+				case Ui::BuildingSelected::SUPPLY_DEPOT:
+					if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 ||
+						level.unpathableTilesInArea(coords)) {
+						AudioManager::play_error_sound();
+						break;
+					}
+					level.placeTile(Model::MeshType::SUPPLY_DEPOT, coords);
+					break;
+				case Ui::BuildingSelected::COMMAND_CENTER: {
+					const int width = 3;
+					const int height = 2;
+					if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, width, height) > 0 ||
+						level.unpathableTilesInArea(coords, width, height)) {
+						AudioManager::play_error_sound();
+						break;
+					}
+					level.placeTile(Model::MeshType::COMMAND_CENTER, coords, GamePieceOwner::PLAYER, width, height);
 					break;
 				}
-				level.placeTile(Model::MeshType::SUPPLY_DEPOT, coords);
-				break;
-			case Ui::BuildingSelected::COMMAND_CENTER: {
-				const int width = 3;
-				const int height = 2;
-				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, width, height) > 0 || level.unpathableTilesInArea(coords, width, height)) {
-					play_error_sound();
+				case Ui::BuildingSelected::FACTORY: {
+					const int width = 3;
+					const int height = 2;
+					if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, width, height) > 0 ||
+						level.unpathableTilesInArea(coords, width, height)) {
+						AudioManager::play_error_sound();
+						break;
+					}
+					level.placeTile(Model::MeshType::FACTORY, coords, GamePieceOwner::PLAYER, width, height);
 					break;
 				}
-				level.placeTile(Model::MeshType::COMMAND_CENTER, coords, GamePieceOwner::PLAYER, width, height);
-				break;
-			}
-			case Ui::BuildingSelected::FACTORY: {
-				const int width = 3;
-				const int height = 2;
-				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, width, height) > 0 || level.unpathableTilesInArea(coords, width, height)) {
-					play_error_sound();
+				case Ui::BuildingSelected::GUN_TURRET:
+					if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 ||
+						level.unpathableTilesInArea(coords)) {
+						AudioManager::play_error_sound();
+						break;
+					}
+					level.placeTile(Model::MeshType::GUN_TURRET, coords);
 					break;
-				}
-				level.placeTile(Model::MeshType::FACTORY, coords, GamePieceOwner::PLAYER, width, height);
-				break;
-			}
-			case Ui::BuildingSelected::GUN_TURRET:
-				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 || level.unpathableTilesInArea(coords)) {
-					play_error_sound();
+				case Ui::BuildingSelected::NONE:
+				default:
 					break;
-				}
-				level.placeTile(Model::MeshType::GUN_TURRET, coords);
-				break;
-			case Ui::BuildingSelected::NONE:
-			default:
-				break;
 			}
 		}
 	};

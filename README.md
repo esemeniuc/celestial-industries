@@ -32,7 +32,7 @@ Requires g++ 6.x/clang++ 4.x or newer
 
 #### Dependency Installation on Ubuntu
 ```bash
-apt-get install -y cmake g++ libsdl2-dev libsdl2-mixer-dev libglfw3-dev
+apt-get install -y cmake g++ libsdl2-dev libsdl2-mixer-dev libglfw3-dev libogg
 ```
 
 #### Compiling

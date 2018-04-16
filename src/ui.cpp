@@ -9,6 +9,7 @@
 #include "config.hpp" //for font file path
 #include "entityinfo.hpp" //for entity string lookups
 #include "unitmanager.hpp" //for unit selection info
+#include "audiomanager.hpp" //for button clicks
 
 #include "IconsFontAwesome5.h" //for game icons
 
@@ -701,7 +702,7 @@ namespace Ui {
 		if (action == GLFW_PRESS && button >= 0 && button < 3) {
 			g_MouseJustPressed[button] = true;
 			// play mouse click sound
-			World::play_mouse_click_sound();
+			AudioManager::play_mouse_click_sound();
 		}
 
 		//make sure to call the world mouse callback only game world and not ui
