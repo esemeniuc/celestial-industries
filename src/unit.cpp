@@ -65,7 +65,9 @@ std::shared_ptr<Entity> Unit::spawn(Model::MeshType type, glm::vec3 spawnLocatio
 std::shared_ptr<Entity> Unit::entityFromMeshType(Model::MeshType type) {
 	switch (type) {
 		case Model::MeshType::FRIENDLY_RANGED_UNIT:
-			return std::make_shared<PivotingGunEntity>(type, 2);
+			return std::make_shared<ProjectileFiringGunEntity>(type, 2, Model::MeshType::BULLET, glm::vec3(0,0.5,0));
+		case Model::MeshType::ENEMY_RANGED_RADIUS_UNIT:
+			return std::make_shared<BeamFiringGunEntity>(type, 1, Model::MeshType::BEAM, glm::vec3(0, 0.8, 0));
 		default:
 			return std::make_shared<Entity>(type);
 	}

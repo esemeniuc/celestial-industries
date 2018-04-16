@@ -142,13 +142,13 @@ bool World::init() {
 	Global::aStarCostMap = level.getLevelTraversalCostMap();
 
 	//display a path
-	auto temp1 = Unit::spawn(Model::MeshType::BALL, {25, 0, 11}, GamePieceOwner::PLAYER);
+	auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
 
-	auto temp2 = Unit::spawn(Model::MeshType::BALL, {39, 0, 19}, GamePieceOwner::PLAYER);
+	auto temp2 = Unit::spawn(Model::MeshType::BALL, {39, 0, 19}, GamePieceOwner::AI);
 
-	auto temp3 = Unit::spawn(Model::MeshType::BALL, {39, 0, 1}, GamePieceOwner::PLAYER);
+	auto temp3 = Unit::spawn(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, {39, 0, 1}, GamePieceOwner::PLAYER);
 
-	auto temp4 = Unit::spawn(Model::MeshType::BALL, {20.5, 0, 15.5}, GamePieceOwner::PLAYER);
+	auto temp4 = Unit::spawn(Model::MeshType::BALL, {20.5, 0, 15.5}, GamePieceOwner::AI);
 
 	// Example use of targeting units.
 //	AttackManager::registerTargetUnit(temp2, temp1);
@@ -250,6 +250,9 @@ bool World::update(double elapsed_ms) {
 	}
 	for (const auto& entity : Global::playerUnits) {
 		entity->animate(elapsed_ms);
+	}
+	for (const auto& weapon : Global::weapons) {
+		weapon->update(elapsed_ms);
 	}
 	return true;
 }
@@ -427,7 +430,6 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 				const int refinerySize = 3;
 				int numFriendlyTiles = level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, refinerySize, refinerySize);
 				int numGeysers = level.numTilesOfTypeInArea(Model::MeshType::GEYSER, coords, refinerySize, refinerySize);
-				bool unpathableTiles = level.unpathableTilesInArea(coords, refinerySize, refinerySize);
 				if (numFriendlyTiles > 0 || numGeysers == 0) {
 					play_error_sound();
 					break;

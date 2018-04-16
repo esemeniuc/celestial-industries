@@ -77,6 +77,38 @@ void GunTowerTile::explode(glm::vec3 dir)
     timeCounter = 0.0f;
 }
 
+void GunTowerTile::animate(float ms)
+{
+	glm::vec3 dir;
+	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
+		targetPosition = target->getPosition();
+		dir = glm::normalize(targetPosition - getPosition());
+	}
+	else {
+		dir = { 0,0,-1 };
+	}
+	setRotationXZ(1, dir);
+}
+
+void GunTowerTile::attack(const std::shared_ptr<Entity>& entityToAttack, double elapsed_ms)
+{
+	if (unitComp.state == UnitState::ATTACK) {
+		// Already attacking something else, nothing to do, return.
+		return;
+	}
+
+	if (aiComp.type != GamePieceClass::UNIT_OFFENSIVE) return;
+
+	unitComp.state = UnitState::ATTACK;
+	entityToAttack->takeAttack(*this, elapsed_ms);
+	target = entityToAttack;
+	// Check to see if attack is done.
+	// Set state to non-attacking state if attack is done (other entity is killed)
+	if (entityToAttack->aiComp.currentHealth <= 0) {
+		unitComp.state = UnitState::IDLE;
+	}
+}
+
 Tile::Tile(Model::MeshType mesh) : Entity(mesh) {
 	hasPhysics = false;
 	type = mesh;
@@ -86,11 +118,6 @@ void Tile::update(double ms)
 {
 	// Because its called move on entities  -_-
 	move(ms);
-}
-
-void RefineryTile::move(double ms)
-{
-	Global::playerResources += static_cast<int>(ms) / 1000 * resourceCollectionRate;
 }
 
 void RefineryTile::removeSelf()

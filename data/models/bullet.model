@@ -1,0 +1,13 @@
+# Made using Asset Forge (1.3)
+
+:models
+Aircraft/engine_plane[(-1.86E-08, -0.3, 0.25);(0.0, 180.0, 0.0);(0.4, 0.4, 0.3);engine_plane_0;_defaultMat+blueSteel+black]
+
+:materials
+_defaultMat[RGBA(0.410, 0.382, 0.382, 1.000);subtlePlanks]
+blueSteel[RGBA(0.905, 0.633, 0.000, 1.000);simplePolygons]
+black[RGBA(0.267, 0.267, 0.267, 1.000);]
+
+:textures
+
+:extra

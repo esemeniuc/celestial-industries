@@ -6,7 +6,6 @@
 #include "collisiondetector.hpp"
 
 namespace Model {
-
 	enum MeshType { //avoid enum class to avoid casting to integers
 		NONE = -1, //for pathfinding.cpp, it needs a meshtype in aStarNode
 
@@ -49,6 +48,10 @@ namespace Model {
 		FRIENDLY_FIRE_UNIT,
 		FRIENDLY_RANGED_UNIT,
 
+		// weapons
+		BEAM,
+		BULLET,
+
 		//other
 		TILE_CURSOR,
 
@@ -60,5 +63,4 @@ namespace Model {
 	extern CollisionDetector collisionDetector;
 
 	Renderable createRenderable(MeshType type);
-
 }
