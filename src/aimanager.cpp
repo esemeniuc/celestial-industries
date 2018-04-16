@@ -3,6 +3,7 @@
 //
 
 #include "aimanager.hpp"
+#include "unit.hpp"
 
 namespace AI {
 	namespace Manager {
@@ -14,14 +15,19 @@ namespace AI {
 		int playerUnitValue = 0;
 		int aiUnitValue = 0;
 		int playerBuildingValue = 0;
-		int aiBuildingValue = 0;
 		double percentVisible = 0;
 		double lastRunTimestamp = AI_RUN_THRESHOLD;
-		int aiSpawnX, aiSpawnZ;
+		std::vector<Coord> aiSpawn;
 
 		void init(size_t levelHeight, size_t levelWidth) {
-			aiSpawnX = levelWidth - 1;//FIXME: a hack to make ai always spawn from far right of the map
-			aiSpawnZ = levelHeight / 2;
+			for (size_t z = 0; z < Global::levelArray.size(); z++) {
+				for (size_t x = 0; x < Global::levelArray[z].size(); x++) {
+					if (Global::levelArray[z][x] == Model::MeshType::ENEMY_PORTAL) {
+						aiSpawn.emplace_back(x, z);
+					}
+				}
+			}
+
 		}
 
 		void updateVisibilityMap() {
@@ -42,7 +48,6 @@ namespace AI {
 		void updateValueOfEntities() {
 			aiUnitValue = 0;
 			playerUnitValue = 0;
-			aiBuildingValue = 0;
 			playerBuildingValue = 0;
 			for (auto& unit : Global::playerUnits) {
 				playerUnitValue += unit->aiComp.value;
@@ -53,11 +58,9 @@ namespace AI {
 			}
 
 			for (auto& building : Global::buildingMap) {
-				if (building->aiComp.owner == GamePieceOwner::AI) {
-					aiBuildingValue += building->aiComp.value;
-				} else if (building->aiComp.owner == GamePieceOwner::PLAYER) {
-					playerBuildingValue += building->aiComp.value;
-				}
+
+				playerBuildingValue += building->aiComp.value;
+
 			}
 		}
 
@@ -78,6 +81,12 @@ namespace AI {
 			return false;
 		}
 
+		Coord& getRandomSpawnLocation() {
+			std::vector<Coord>::iterator randIt = aiSpawn.begin();
+			std::advance(randIt, std::rand() % aiSpawn.size());
+			return *randIt;
+		}
+
 		Coord findBestScoutLocation() {
 			std::vector<std::vector<bool>> visited(Global::levelHeight, std::vector<bool>(Global::levelWidth));
 			std::vector<std::vector<std::pair<int, int>>> parent(
@@ -87,11 +96,12 @@ namespace AI {
 													  Coord::getInvalidCoord().rowCoord}));
 			//traverse tree with bfs
 			int currentUnixTime = static_cast<int>(getUnixTime());
-			std::pair<int, int> root(aiSpawnX, aiSpawnZ);
-			parent[aiSpawnZ][aiSpawnX] = root;
-			visited[aiSpawnZ][aiSpawnX] = true;
+			Coord spawn = getRandomSpawnLocation();
+			std::pair<int, int> root(spawn.colCoord, spawn.rowCoord);
+			parent[spawn.rowCoord][spawn.colCoord] = root;
+			visited[spawn.rowCoord][spawn.colCoord] = true;
 			std::priority_queue<bfsState> queue;
-			queue.push({aiSpawnX, aiSpawnZ, 0, 0});
+			queue.push({spawn.colCoord, spawn.rowCoord, 0, 0});
 			while (!queue.empty()) {
 				bfsState u = queue.top();
 				queue.pop();
@@ -191,7 +201,7 @@ namespace AI {
 		void cleanupCompletedScoutTargets() {
 			for (const auto& aiUnit: Global::aiUnits) {
 				if (!aiUnit->hasMoveTarget()) {
-					Global::scoutingTargetsInProgress.erase(aiUnit->unitComp.targetDest);
+					Global::scoutingTargetsInProgress.erase(Coord(aiUnit->currentDestination));
 				}
 			}
 		}
@@ -224,9 +234,23 @@ namespace AI {
 				Coord loc = findBestScoutLocation();
 				std::shared_ptr<Entity> bestUnit = getBestScoutUnit(loc);
 				if (bestUnit) { //if not null
-					bestUnit->moveTo(UnitState::SCOUT, loc.colCoord, loc.rowCoord);
+					bestUnit->moveTo(UnitState::SCOUT, {loc.colCoord, 0, loc.rowCoord});
 					Global::scoutingTargetsInProgress.insert(loc);
 				}
+			}
+
+			//simple ai spawning strategy
+			//if ai has less units than players, then spawn an ai unit
+			int playerValue = playerUnitValue + playerBuildingValue;
+			logger(LogLevel::DEBUG) << "playerValue: " << playerValue << ", aiValue: " << aiUnitValue << '\n';
+			if (playerValue > aiUnitValue) {
+				//spawns a unit once per 500 ms (since thats how often this runs)
+				Coord spawnLocation = getRandomSpawnLocation();
+				Unit::spawn(Model::MeshType::ENEMY_RANGED_LINE_UNIT,
+							{spawnLocation.colCoord, 0, spawnLocation.rowCoord},
+							GamePieceOwner::AI);
+				logger(LogLevel::DEBUG) << "spawned at: " << spawnLocation << '\n';
+
 			}
 		}
 	}

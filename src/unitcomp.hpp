@@ -24,13 +24,8 @@ public:
 	//mutable values
 	int currentEnergyLevel;
 	UnitState state;
-	std::vector<Coord> targetPath;
-	Coord targetDest;
+	std::vector<glm::vec3> targetPath;
 	double targetPathStartTimestamp = 0; //needed to get delta time
-
-	glm::vec3 velocity;
-	glm::vec3 nextPos;
-
 
 	UnitComp() : initialEnergyLevel(50),
 				 attackDamage(1),

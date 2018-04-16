@@ -4,11 +4,10 @@ namespace Global {
 	size_t levelWidth = 0; //gets overwritten in world.init()
 	size_t levelHeight = 0;
 
-	int playerResources = 0;
-	float playerResourcesFloat = 0;
-	int playerResourcesPerSec = 0;
+	double playerResources = 400;
+	double playerResourcesPerSec = 0;
 	int playerCurrentSupply = 0;
-	int playerMaxSupply = 0;
+	int playerMaxSupply = 10;
 
 	GameState gameState = GameState::START_MENU;
 

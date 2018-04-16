@@ -42,6 +42,7 @@ public:
 	Entity(Model::MeshType geometry);
 
 	virtual ~Entity();
+
 	// functions
 	virtual void animate(float ms);
 
@@ -94,19 +95,19 @@ public:
 
 	glm::vec3 getPosition() const;
 
-	void setTargetPath(const std::vector<Coord>& targetPath, int x, int z);
+	void setTargetPath(const std::vector<glm::vec3>& targetPath);
 
 	bool hasMoveTarget();
 
-	virtual void moveTo(UnitState unitState, int x, int z, bool queueMove=false);
+	virtual void moveTo(UnitState unitState, const glm::vec3& moveToTarget, bool queueMove = false);
 
 	void cleanUpTargetPath();
 
 	void computeNextMoveLocation(double elapsed_time);
-	
+
 	virtual void move(double elapsed_time);
 
-	std::pair<int, double> getInterpolationPercentage();
+	std::pair<int, float> getInterpolationPercentage();
 
 	bool canSee(const std::shared_ptr<Entity>& other) const;
 

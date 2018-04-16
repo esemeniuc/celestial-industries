@@ -114,7 +114,7 @@ bool World::init() {
 	level.particleShader = particleShader;
 
 	std::shared_ptr<Texture> particleTexture = std::make_shared<Texture>();
-	particleTexture->load_from_file(textures_path("turtle.png"));
+	particleTexture->load_from_file(textures_path("oil.jpg"));
 	if (!particleTexture->is_valid()) {
 		throw "Particle texture failed to load!";
 	}
@@ -142,21 +142,13 @@ bool World::init() {
 	Global::aStarCostMap = level.getLevelTraversalCostMap();
 
 	//display a path
-	int startx = 25, startz = 11;
-	int targetx = 10, targetz = 10;
-	auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {startx, 0, startz}, GamePieceOwner::PLAYER);
-//	temp1->moveTo(UnitState::MOVE, targetx, targetz);
+	auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
 
-	startx = 39, startz = 19;
-	auto temp2 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::AI);
-//	temp2->moveTo(targetx, targetz);
+	auto temp2 = Unit::spawn(Model::MeshType::BALL, {39, 0, 19}, GamePieceOwner::AI);
 
-	startx = 39, startz = 1;
-	auto temp3 = Unit::spawn(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, {startx, 0, startz}, GamePieceOwner::PLAYER);
-//	temp3->moveTo(UnitState::MOVE, targetx, targetz);
+	auto temp3 = Unit::spawn(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, {39, 0, 1}, GamePieceOwner::PLAYER);
 
-	startx = 20, startz = 20;
-	auto temp4 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::AI);
+	auto temp4 = Unit::spawn(Model::MeshType::BALL, {20.5, 0, 15.5}, GamePieceOwner::AI);
 
 	// Example use of targeting units.
 //	AttackManager::registerTargetUnit(temp2, temp1);
@@ -240,6 +232,8 @@ bool World::update(double elapsed_ms) {
 
 		level.tileCursor->setPosition({selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord});
 	}
+
+	Global::playerResources += Global::playerResourcesPerSec * (elapsed_ms/1000);
 
 	for (const auto& emitter : Global::emitters) {
 		emitter->update(elapsed_ms);
@@ -440,7 +434,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 					play_error_sound();
 					break;
 				}
-				level.placeTile(Model::MeshType::REFINERY, coords, GamePieceOwner::PLAYER, 3, 3, numGeysers);
+				level.placeTile(Model::MeshType::REFINERY, coords, GamePieceOwner::PLAYER, refinerySize, refinerySize, numGeysers);
 				break;
 			}
 			case Ui::BuildingSelected::SUPPLY_DEPOT:
@@ -450,6 +444,26 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 				}
 				level.placeTile(Model::MeshType::SUPPLY_DEPOT, coords);
 				break;
+			case Ui::BuildingSelected::COMMAND_CENTER: {
+				const int width = 3;
+				const int height = 2;
+				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, width, height) > 0 || level.unpathableTilesInArea(coords, width, height)) {
+					play_error_sound();
+					break;
+				}
+				level.placeTile(Model::MeshType::COMMAND_CENTER, coords, GamePieceOwner::PLAYER, width, height);
+				break;
+			}
+			case Ui::BuildingSelected::FACTORY: {
+				const int width = 3;
+				const int height = 2;
+				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, width, height) > 0 || level.unpathableTilesInArea(coords, width, height)) {
+					play_error_sound();
+					break;
+				}
+				level.placeTile(Model::MeshType::FACTORY, coords, GamePieceOwner::PLAYER, width, height);
+				break;
+			}
 			case Ui::BuildingSelected::GUN_TURRET:
 				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 || level.unpathableTilesInArea(coords)) {
 					play_error_sound();

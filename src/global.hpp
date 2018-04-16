@@ -6,7 +6,8 @@
 #include "entity.hpp"
 #include "weapons.hpp"
 #include "gamestate.hpp"
-#include "level.hpp" //for AStarNode
+#include "particle.hpp"
+#include "astarnode.hpp"
 
 namespace Global {
 
@@ -18,9 +19,8 @@ namespace Global {
 
 	extern GameState gameState;
 
-	extern int playerResources;
-	extern float playerResourcesFloat;
-	extern int playerResourcesPerSec;
+	extern double playerResources;
+	extern double playerResourcesPerSec;
 	extern int playerCurrentSupply;
 	extern int playerMaxSupply;
 
