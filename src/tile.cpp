@@ -111,11 +111,11 @@ GeyserTile::GeyserTile(std::shared_ptr<Shader> particleShader, std::shared_ptr<T
 	emitter = std::make_shared<Particles::ParticleEmitter>(
 		position, // emitter position
 		glm::vec3{ 0,1,0 }, // emitter direction
-		0.8f,    // spread
-		0.5f,    // particle width
-		0.5f,    // particle height
+		1.0f,    // spread
+		0.07f,   // particle width
+		0.07f,   // particle height
 		2.0f,    // lifespan
-		5.0f,    // speed
+		20.0f,   // speed
 		particleShader,
 		particleTexture
 		);

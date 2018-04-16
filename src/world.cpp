@@ -114,7 +114,7 @@ bool World::init() {
 	level.particleShader = particleShader;
 
 	std::shared_ptr<Texture> particleTexture = std::make_shared<Texture>();
-	particleTexture->load_from_file(textures_path("turtle.png"));
+	particleTexture->load_from_file(textures_path("oil.jpg"));
 	if (!particleTexture->is_valid()) {
 		throw "Particle texture failed to load!";
 	}
@@ -232,6 +232,8 @@ bool World::update(double elapsed_ms) {
 
 		level.tileCursor->setPosition({selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord});
 	}
+
+	Global::playerResources += Global::playerResourcesPerSec * (elapsed_ms/1000);
 
 	for (const auto& emitter : Global::emitters) {
 		emitter->update(elapsed_ms);
@@ -426,7 +428,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 				int numFriendlyTiles = level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, refinerySize, refinerySize);
 				int numGeysers = level.numTilesOfTypeInArea(Model::MeshType::GEYSER, coords, refinerySize, refinerySize);
 				bool unpathableTiles = level.unpathableTilesInArea(coords, refinerySize, refinerySize);
-				if (numFriendlyTiles > 0 || numGeysers == 0 || unpathableTiles) {
+				if (numFriendlyTiles > 0 || numGeysers == 0) {
 					play_error_sound();
 					break;
 				}

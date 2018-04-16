@@ -124,7 +124,7 @@ namespace AI {
 
 				if (current == goalNode) {
 					auto path = reconstruct_path(came_from, startNode, goalNode, start, goal);
-					logger(LogLevel::INFO) << "Found path with length " << path.size() << " \n";
+					// logger(LogLevel::INFO) << "Found path with length " << path.size() << " \n";
 					return {true, path}; //true for bool because we found a path
 				}
 

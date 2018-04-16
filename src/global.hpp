@@ -18,8 +18,8 @@ namespace Global {
 
 	extern GameState gameState;
 
-	extern int playerResources;
-	extern int playerResourcesPerSec;
+	extern double playerResources;
+	extern double playerResourcesPerSec;
 	extern int playerCurrentSupply;
 	extern int playerMaxSupply;
 

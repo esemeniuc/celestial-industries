@@ -177,8 +177,8 @@ namespace Ui {
 											   ImGuiWindowFlags_NoFocusOnAppearing |
 											   ImGuiWindowFlags_NoNav);
 
-			ImGui::Text(ICON_FA_HAND_HOLDING_USD " Resources:     %8d", Global::playerResources);
-			ImGui::Text(" " ICON_FA_DOLLAR_SIGN "  Resource Rate: %8d", Global::playerResourcesPerSec);
+			ImGui::Text(ICON_FA_HAND_HOLDING_USD " Resources:     %.lf", Global::playerResources);
+			ImGui::Text(" " ICON_FA_DOLLAR_SIGN "  Resource Rate: %.lf", Global::playerResourcesPerSec);
 			ImGui::Text(ICON_FA_WAREHOUSE " Supply:        %8d/%d", Global::playerCurrentSupply,
 						Global::playerMaxSupply);
 			ImGui::End();
