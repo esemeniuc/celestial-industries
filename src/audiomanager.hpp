@@ -5,6 +5,8 @@
 #pragma once
 
 #include <SDL_mixer.h>
+#include "model.hpp" //for mesh type
+
 
 namespace AudioManager {
 
@@ -19,8 +21,12 @@ namespace AudioManager {
 	void play_mouse_click_sound();
 
 	void play_error_sound();
+
 	void playLaunchMenuMusic();
+
 	void pauseLaunchMenuMusic();
+
+	void playAttackSound(Model::MeshType meshType);
 
 	void shutdown();
 

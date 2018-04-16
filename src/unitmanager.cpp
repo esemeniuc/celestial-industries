@@ -81,20 +81,6 @@ namespace UnitManager {
 		}
 	}
 
-	bool
-	isWithinBounds(const std::shared_ptr<Entity>& entity, const glm::vec3& startCorner, const glm::vec3& endCorner) {
-		float colMin = std::min(startCorner.x, endCorner.x);
-		float colMax = std::max(startCorner.x, endCorner.x);
-		float rowMin = std::min(startCorner.z, endCorner.z);
-		float rowMax = std::max(startCorner.z, endCorner.z);
-
-		return entity->getPosition().x >= colMin &&
-			   entity->getPosition().x <= colMax &&
-			   entity->getPosition().z >= rowMin &&
-			   entity->getPosition().z <= rowMax;
-	}
-
-
 	//geometry stuff from UBC CPSC 490 code archive. this is used by selectUnitsInTrapezoid() since
 	//we rectangle select creates trapezoids in the game world
 	//this helps check if a unit is in the trapezoid
@@ -162,7 +148,7 @@ namespace UnitManager {
 		//add enemy units if just a point click
 		if (bestUnit.first < Config::POINT_CLICK_DISTANCE_THRESHOLD) {
 			selectedUnits.push_back(bestUnit.second);
-			std::cout << "selected: " << UnitManager::selectedUnits.size() << "\t target: " <<
+			logger(LogLevel::DEBUG) << "selected: " << UnitManager::selectedUnits.size() << "\t target: " <<
 					  bestUnit.second->getPosition().x << ' ' << bestUnit.second->getPosition().z << "\tactual loc: " <<
 					  targetLocation.x << ' ' << targetLocation.z << ' ' << '\n';
 		}

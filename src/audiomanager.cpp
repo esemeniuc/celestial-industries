@@ -2,14 +2,20 @@
 // Created by eric on 4/16/18.
 //
 
-#include "world.hpp"
 #include "audiomanager.hpp"
+#include "config.hpp" //for audio path
+
+#include <SDL.h> //for sdl_init
+
 
 namespace AudioManager {
 // music and audio
 	Mix_Music* menuMusic;
 	Mix_Chunk* m_mouse_click;
 	Mix_Chunk* m_error_sound;
+
+	std::array<Mix_Chunk*, Model::MeshType::MESHTYPES_COUNT> attackSounds{}; //init to null
+	std::array<Mix_Chunk*, Model::MeshType::MESHTYPES_COUNT> deathSounds{};
 
 	void play_mouse_click_sound() {
 		Mix_PlayChannel(-1, m_mouse_click, 0);
@@ -20,11 +26,31 @@ namespace AudioManager {
 	}
 
 	void playLaunchMenuMusic() {
-		Mix_PlayMusic(menuMusic, -1);
+		Mix_PlayMusic(menuMusic, -1); // Plays background music indefinitely
 	}
 
 	void pauseLaunchMenuMusic() {
 		Mix_PauseMusic();
+	}
+
+	void loadUnitSounds() {
+		auto loadAndCheck = [](Model::MeshType meshType, const char* filePath) {
+			char path[100] = audio_path("");
+			attackSounds[meshType] = Mix_LoadWAV(strcat(path, filePath));
+			if (attackSounds[meshType] == nullptr) {
+				logger(LogLevel::ERR) << "Failed to load audio file: " << filePath << '\n';
+			}
+		};
+
+		loadAndCheck(Model::MeshType::GUN_TURRET, "attack/howdahPistol.ogg");
+		loadAndCheck(Model::MeshType::FRIENDLY_RANGED_UNIT, "attack/gunTurret.ogg");
+		loadAndCheck(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT,
+					 "attack/laser.ogg");//FIXME: should have a diff animation other than lasers
+
+	}
+
+	void playAttackSound(Model::MeshType meshType) {
+		Mix_PlayChannel(-1, attackSounds[meshType], 0);
 	}
 
 	bool init() {
@@ -60,6 +86,8 @@ namespace AudioManager {
 			return false;
 		}
 
+		loadUnitSounds();
+
 		return true;
 	}
 
@@ -76,6 +104,17 @@ namespace AudioManager {
 			Mix_FreeChunk(m_error_sound);
 		}
 
+		for (auto sound : attackSounds) {
+			if (sound != nullptr) {
+				Mix_FreeChunk(sound);
+			}
+		}
+
+		for (auto sound : deathSounds) {
+			if (sound != nullptr) {
+				Mix_FreeChunk(sound);
+			}
+		}
 		// cleans up all dynamically loaded library handles used by sdl mixer
 		Mix_CloseAudio();
 		Mix_Quit();

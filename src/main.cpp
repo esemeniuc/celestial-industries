@@ -1,9 +1,9 @@
 // internal
 #include "common.hpp"
-#include "world.hpp"
-#include "ui.hpp"
+#include "world.hpp" //need a game world to run
+#include "ui.hpp" //load up the game menu
 #include "global.hpp" //for gamestate
-#include "audiomanager.hpp"
+#include "audiomanager.hpp" //for menu music
 
 #include <chrono>
 
@@ -64,7 +64,6 @@ int main(int argc, char* argv[]) {
 		switch (Global::gameState) {
 			case GameState::START_MENU: {
 				logger(LogLevel::DEBUG) << "gamestate = menu\n";
-				// Playing background music indefinitely
 				AudioManager::playLaunchMenuMusic();
 				Ui::imguiDrawLaunchMenu(); //once this finishes we draw the world
 				AudioManager::pauseLaunchMenuMusic();

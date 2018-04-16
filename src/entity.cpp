@@ -4,6 +4,7 @@
 #include "pathfinder.hpp"  //for astar stuff
 #include "coord.hpp"
 #include "global.hpp"
+#include "audiomanager.hpp" //for attack sounds
 
 Entity::Entity() : meshType(Model::MeshType::BALL), geometryRenderer(Model::meshRenderers[Model::MeshType::BALL]) {}
 
@@ -254,6 +255,7 @@ void PivotingGunEntity::animate(float ms) {
 			attackingCooldown -= ms;
 		} else {
 			// Cooldown over, time for PEW PEW PEW
+			AudioManager::playAttackSound(this->meshType);
 			glm::vec3 start = getPosition();
 			glm::vec3 end = target->getPosition();
 			attackingCooldown = 1000.0f / unitComp.attackSpeed;
@@ -298,6 +300,7 @@ void BeamFiringGunEntity::animate(float ms)
 		dir = glm::normalize(targetPosition - getPosition());
 		if (attackingCooldown >= 0)attackingCooldown -= ms;
 		if (attackingCooldown < 0) {
+			AudioManager::playAttackSound(this->meshType);
 			glm::vec3 start = getPosition();
 			glm::vec3 end = target->getPosition();
 			attackingCooldown = 1000.0f / unitComp.attackSpeed;
