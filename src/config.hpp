@@ -34,7 +34,7 @@ namespace Config {
 
 	//game tunable constants
 	constexpr const int OBSTACLE_COST = 10000;
-	constexpr const int DEFAULT_TRAVERSABLE_COST = 0; //straight movement costs 10, diagonal costs 14, see config.hpp
+	constexpr const int DEFAULT_TRAVERSABLE_COST = 0; //straight movement costs 10, diagonal costs 14, see pathfinder.hpp
 	constexpr const int POINT_CLICK_DISTANCE_THRESHOLD = 1;
 	constexpr const int RIGHT_CLICK_ATTACK_WITHIN_RANGE_THRESHOLD = 1;
 
