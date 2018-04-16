@@ -57,17 +57,17 @@ int main(int argc, char* argv[]) {
 		}
 		switch (Global::gameState) {
 			case GameState::START_MENU: {
-				printf("menu\n");
+				logger(LogLevel::DEBUG) << "gamestate = menu\n";
 				Ui::imguiDrawLaunchMenu(); //once this finishes we draw the world
 				break;
 			}
 			case GameState::PLAY: {
-				printf("play\n");
+				logger(LogLevel::DEBUG) << "gamestate = play\n";
 				gameLoop();
 				break;
 			}
 			case GameState::PAUSED: {
-				//draw game pause menu
+				logger(LogLevel::DEBUG) << "gamestate = paused\n";
 				Ui::imguiDrawPauseMenu(); //once this finishes we draw the world
 				break;
 			}

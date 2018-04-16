@@ -46,7 +46,7 @@ void GunTowerTile::move(double ms)
     }
 }
 
-void Tile::moveTo(UnitState unitState, int x, int z, bool queueMove)
+void Tile::moveTo(UnitState unitState, const glm::vec3& moveToTarget, bool queueMove)
 {
 	// Do nothing
 }

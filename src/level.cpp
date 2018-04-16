@@ -5,6 +5,7 @@
 #include "particle.hpp"
 #include "coord.hpp"
 
+//int is used as movement cost, float is used as fscore
 std::map<Model::MeshType, std::pair<int, float>> Level::tileToCost{
 		{Model::MeshType::HROAD,      {Config::OBSTACLE_COST,            INF}},
 		{Model::MeshType::SAND_1,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
@@ -37,6 +38,7 @@ std::map<char, Model::MeshType> Level::charToType{
 		{'H',  Model::MeshType::HROAD},
 		{'V',  Model::MeshType::VROAD},
 		{'P',  Model::MeshType::GEYSER},
+		{'O',  Model::MeshType::ENEMY_PORTAL},
 		{'X',  Model::MeshType::GUN_TURRET}
 };
 
@@ -94,7 +96,7 @@ void Level::update(float ms)
 AStarNode Level::nodeFromCost(int row, int col, Model::MeshType type) {
 	std::pair<int, float> cost = tileToCost[type];
 	// TODO: Why are we giving this stuff doubles instead of ints?
-	return AStarNode(col, row, cost.first, cost.second, (short)type);
+	return AStarNode(col, row, cost.first, cost.second, type);
 }
 
 std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& levelTextFile) {
