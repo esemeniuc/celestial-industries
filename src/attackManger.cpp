@@ -12,11 +12,12 @@ namespace AttackManager {
     double targetTime = 0;
     int TARGET_UPDATE_INTERVAL_MS = 1000;
 
-    void registerTargetUnit(std::shared_ptr<Entity> unit1, std::shared_ptr<Entity> unit2) {
+    void registerTargetUnit(std::shared_ptr<Entity>& unit1, std::shared_ptr<Entity>& unit2) {
         unitTargetMap.insert( {unit1, unit2} );
     }
 
-    void initiateAttacks(std::vector<std::shared_ptr<Entity>>& entities1, std::vector<std::shared_ptr<Entity>>& entities2, double elapsed_ms) {
+    void executeAutoAttacks(std::vector<std::shared_ptr<Entity>> &entities1,
+                            std::vector<std::shared_ptr<Entity>> &entities2, double elapsed_ms) {
         for (std::shared_ptr<Entity>& entity1 : entities1) {
             for (std::shared_ptr<Entity>& entity2 : entities2) {
                 if (entity1->inAttackRange(entity2)) {
@@ -38,7 +39,7 @@ namespace AttackManager {
     }
 
     void executeTargetAttacks(double elapsed_ms) {
-        // Target Path is updated every second (1000ms)
+        // Target Path is updated every second (1000ms).
         if (targetTime < TARGET_UPDATE_INTERVAL_MS) {
             targetTime += elapsed_ms;
         }
@@ -47,10 +48,18 @@ namespace AttackManager {
         if (targetTime == 0) {
             for (auto it = unitTargetMap.cbegin(); it != unitTargetMap.cend();) {
                 if (it->second->aiComp.currentHealth <= 0) {
-                    unitTargetMap.erase(it++);    // or "it = m.erase(it)" since C++11
+                    unitTargetMap.erase(it++);
                 }
                 else {
-                    it->first->moveTo(UnitState::ATTACK, it->second->getPosition().x, it->second->getPosition().z);
+                    if (it->first->inAttackRange(it->second)) {
+                        // In attack range. Set UnitState to IDLE (done in stopMoving) so that attack manager is
+                        // aware that this entity is free to initiate attacks to AI unit.
+                        it->first->stopMoving();
+                    } else {
+                        // Not in attack range yet. Move to get in MIN attack range.
+                        // Set UnitState to ATTACK_MOVE indicating to the attack manager not to redirect this unit to do anything else.
+                        it->first->moveTo(UnitState::ATTACK_MOVE, it->second->getPosition().x, it->second->getPosition().z, false);
+                    }
                     ++it;
                 }
             }
@@ -60,17 +69,17 @@ namespace AttackManager {
     void update(double elapsed_ms) {
         attackingEntities.clear();
 
-        initiateAttacks(Global::playerUnits, Global::aiUnits, elapsed_ms);
-        initiateAttacks(Global::aiUnits, Global::playerUnits, elapsed_ms);
-        initiateAttacks(Global::aiUnits, Global::buildingMap, elapsed_ms);
+        executeTargetAttacks(elapsed_ms);
+
+        executeAutoAttacks(Global::playerUnits, Global::aiUnits, elapsed_ms);
+        executeAutoAttacks(Global::aiUnits, Global::playerUnits, elapsed_ms);
+        executeAutoAttacks(Global::aiUnits, Global::buildingMap, elapsed_ms);
 
         removeDeadEntities(Global::playerUnits);
         removeDeadEntities(Global::aiUnits);
         removeDeadEntities(Global::buildingMap);
 
-        executeTargetAttacks(elapsed_ms);
-
-        // Set the attacking entities' state back to IDLE so that next frame they are avaliable to attack again.
+        // Set the attacking entities' state back to IDLE so that next frame they are available to attack again.
         for (std::shared_ptr<Entity>& entity : attackingEntities) {
             entity->unitComp.state = UnitState::IDLE;
         }
