@@ -144,19 +144,26 @@ bool World::init() {
 	//display a path
 	int startx = 25, startz = 11;
 	int targetx = 10, targetz = 10;
-	auto temp1 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	auto pivot1 = std::make_shared<PivotingGunEntity>(Model::MeshType::FRIENDLY_RANGED_UNIT, 2);
+	pivot1->target = level.tileCursor;
+	pivot1->setPosition({ startx + 1, 0, startz });
+	pivot1->aiComp.owner = GamePieceOwner::PLAYER;
+	Global::playerUnits.push_back(pivot1);
+	auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {startx, 0, startz}, GamePieceOwner::PLAYER);
 //	temp1->moveTo(UnitState::MOVE, targetx, targetz);
 
 	startx = 39, startz = 19;
-	auto temp2 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	auto temp2 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::AI);
 //	temp2->moveTo(targetx, targetz);
 
 	startx = 39, startz = 1;
-	auto temp3 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	auto temp3 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {startx, 0, startz}, GamePieceOwner::PLAYER);
 //	temp3->moveTo(UnitState::MOVE, targetx, targetz);
 
 	startx = 20, startz = 20;
-	auto temp4 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	auto temp4 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::AI);
+
+	auto weap1 = BeamWeapon(Model::MeshType::BEAM, { 0,0,0 }, { 0,3,0 }, 1000.0);
 
 	// Example use of targeting units.
 //	AttackManager::registerTargetUnit(temp2, temp1);
@@ -256,6 +263,9 @@ bool World::update(double elapsed_ms) {
 	}
 	for (const auto& entity : Global::playerUnits) {
 		entity->animate(elapsed_ms);
+	}
+	for (const auto& weapon : Global::weapons) {
+		weapon->update(elapsed_ms);
 	}
 	return true;
 }
@@ -433,8 +443,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 				const int refinerySize = 3;
 				int numFriendlyTiles = level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, refinerySize, refinerySize);
 				int numGeysers = level.numTilesOfTypeInArea(Model::MeshType::GEYSER, coords, refinerySize, refinerySize);
-				bool unpathableTiles = level.unpathableTilesInArea(coords, refinerySize, refinerySize);
-				if (numFriendlyTiles > 0 || numGeysers == 0 || unpathableTiles) {
+				if (numFriendlyTiles > 0 || numGeysers == 0) {
 					play_error_sound();
 					break;
 				}

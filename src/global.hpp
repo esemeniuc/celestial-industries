@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <vector>
 #include "entity.hpp"
+#include "weapons.hpp"
 #include "gamestate.hpp"
 #include "level.hpp" //for AStarNode
 
@@ -18,6 +19,7 @@ namespace Global {
 	extern GameState gameState;
 
 	extern int playerResources;
+	extern float playerResourcesFloat;
 	extern int playerResourcesPerSec;
 	extern int playerCurrentSupply;
 	extern int playerMaxSupply;
@@ -44,4 +46,6 @@ namespace Global {
 	extern std::vector<std::vector<AStarNode>> aStarCostMap; //ai should be able to see the level traversal costs
 
 	extern std::vector<std::shared_ptr<Particles::ParticleEmitter>> emitters;
+
+	extern std::vector<std::shared_ptr<Weapon>> weapons;
 }

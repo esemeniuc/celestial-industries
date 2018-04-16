@@ -47,6 +47,8 @@ public:
     void move(double ms) override;
     void explode(glm::vec3 dir);
 
+	void animate(float ms) override;
+	void attack(const std::shared_ptr<Entity>& entityToAttack, double elapsed_ms) override;
 };
 
 class RefineryTile : public Tile {

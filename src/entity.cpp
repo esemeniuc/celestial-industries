@@ -74,21 +74,11 @@ void Entity::rotate(float amount, glm::vec3 axis) {
 	this->rigidBody.setRotation(this->rigidBody.getRotation(axis) + amount, axis);
 }
 
-void Entity::rotateXZ(float amount) {
-	angle += amount;
-	rotate(amount, {0.0f, 1.0f, 0.0f});
-}
-
-void Entity::setRotationXZ(float amount) {
-	rotate(amount - angle, {0.0f, 1.0f, 0.0f});
-	angle = amount;
-}
-
-void Entity::setRotationXZ(int modelIndex, float amount) {
+void Entity::setRotationXZ(int modelIndex, glm::vec3 dir) {
 	//rotate(modelIndex, amount - angle, { 0.0f, 1.0f, 0.0f });
-	setModelMatrix(modelIndex, glm::rotate(glm::mat4(1.0f), amount, {0.0f, 1.0f, 0.0f}));
-	angle = amount;
-
+	glm::mat4 rotationMatrix = glm::orientation(dir, { 0,0, -1 });
+	setModelMatrix(modelIndex, rotationMatrix);
+	//angle = amount;
 }
 
 void Entity::scale(glm::vec3 scale) {
@@ -276,46 +266,39 @@ void Entity::attack(const std::shared_ptr<Entity>& entityToAttack, double elapse
 	}
 }
 
-float vectorAngleXZ(glm::vec3 v) {
-	// https://stackoverflow.com/questions/6247153/angle-from-2d-unit-vector
-	//if (v.x == 0) {
-	//	if (v.z > 0)
-	//		return 90.0f;
-	//	if (v.z == 0)
-	//		return 0.0f;
-	//	return 270.0f;
-	//}
-	//if (v.z == 0) {
-	//	if (v.x >= 0)
-	//		return 0.0f;
-	//	return 180.0f;
-	//}
-	//float angle = atanf(v.z / v.x)*(180.0f/ M_PI);
-	//if (v.x < 0 && v.z < 0)
-	//	return 180.0f + angle;
-	//if (v.x < 0)
-	//	return 180.0f + angle;
-	//if (v.z < 0)
-	//	return 360.0f + angle;
-	glm::vec3 xUnit = glm::vec3(1.0f, 0.0f, 0.0f);
-	v = glm::normalize(v);
-	return glm::acos(glm::dot(v, xUnit)) * (180.0f / M_PI);
-}
-
-
 void PivotingGunEntity::animate(float ms) {
-	attackingCooldown -= ms;
-	if (unitComp.currentEnergyLevel <= 0)softDelete();
-	// Face the turret to the entity we're attacking
+	if (attackingCooldown >= 0)attackingCooldown -= ms;
+	glm::vec3 dir;
 	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
 		targetPosition = target->getPosition();
+		dir = glm::normalize(targetPosition - getPosition());
+		if (attackingCooldown < 0) {
+			float lifespan = 1000.0f;
+			attackingCooldown += lifespan;
+			BeamWeapon(Model::MeshType::BEAM, getPosition() + glm::vec3(0, 0.5, 0), targetPosition, lifespan);
+		}
 	}
-	glm::vec3 dir = glm::normalize(targetPosition - getPosition());
-	float turretAngle = vectorAngleXZ(dir);
-	float turretAngle2 = std::atan2(dir.z, dir.x);
-	float angleInDegrees = 180 - turretAngle2 * 180.0f / M_PI;
-	glm::vec3 xUnit = glm::vec3(1.0f, 0.0f, 0.0f);
-	glm::vec3 crossProduct = glm::cross(dir, xUnit);
-	float crossProductDegrees = crossProduct.y * 180.0f / M_PI;
-	setRotationXZ(turretIndex, turretAngle);
+	else {
+		dir = { 0,0,1 };
+	}
+	setRotationXZ(1, dir);
+}
+
+void PivotingGunEntity::attack(const std::shared_ptr<Entity>& entityToAttack, double elapsed_ms) {
+
+	if (unitComp.state == UnitState::ATTACK) {
+		// Already attacking something else, nothing to do, return.
+		return;
+	}
+
+	if (aiComp.type != GamePieceClass::UNIT_OFFENSIVE) return;
+
+	unitComp.state = UnitState::ATTACK;
+	entityToAttack->takeAttack(*this, elapsed_ms);
+	target = entityToAttack;
+	// Check to see if attack is done.
+	// Set state to non-attacking state if attack is done (other entity is killed)
+	if (entityToAttack->aiComp.currentHealth <= 0) {
+		unitComp.state = UnitState::IDLE;
+	}
 }

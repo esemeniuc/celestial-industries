@@ -34,6 +34,7 @@ namespace Model {
 			GRASS,
 			HROAD,
 			VROAD,
+			BEAM,
 			MESHTYPES_COUNT //see https://stackoverflow.com/a/2102615
 		};
 

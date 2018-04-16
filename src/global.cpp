@@ -5,6 +5,7 @@ namespace Global {
 	size_t levelHeight = 0;
 
 	int playerResources = 0;
+	float playerResourcesFloat = 0;
 	int playerResourcesPerSec = 0;
 	int playerCurrentSupply = 0;
 	int playerMaxSupply = 0;
@@ -36,4 +37,6 @@ namespace Global {
 	std::vector<std::vector<AStarNode>> aStarCostMap;
 
 	std::vector<std::shared_ptr<Particles::ParticleEmitter>> emitters;
+
+	std::vector<std::shared_ptr<Weapon>> weapons;
 }
