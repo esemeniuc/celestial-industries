@@ -515,6 +515,7 @@
     <ClCompile Include="..\ext\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\src\aicomp.cpp" />
     <ClCompile Include="..\src\aimanager.cpp" />
+    <ClCompile Include="..\src\audiomanager.cpp" />
     <ClCompile Include="..\src\collisiondetection.cpp" />
     <ClCompile Include="..\src\collisiondetector.cpp" />
     <ClCompile Include="..\src\collisionResolver.cpp" />
@@ -548,6 +549,7 @@
     <ClInclude Include="..\ext\gl3w\GL\glcorearb.h" />
     <ClInclude Include="..\src\aicomp.hpp" />
     <ClInclude Include="..\src\aimanager.hpp" />
+    <ClInclude Include="..\src\audiomanager.hpp" />
     <ClInclude Include="..\src\camera.hpp" />
     <ClInclude Include="..\src\collisiondetection.hpp" />
     <ClInclude Include="..\src\collisiondetector.hpp" />

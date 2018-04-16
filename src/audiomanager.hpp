@@ -5,6 +5,7 @@
 #pragma once
 
 #include <SDL_mixer.h>
+#include <array>
 #include "model.hpp" //for mesh type
 
 
