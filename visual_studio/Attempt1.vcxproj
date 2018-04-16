@@ -541,6 +541,7 @@
     <ClCompile Include="..\src\ui.cpp" />
     <ClCompile Include="..\src\unit.cpp" />
     <ClCompile Include="..\src\unitmanager.cpp" />
+    <ClCompile Include="..\src\weapons.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ext\gl3w\GL\gl3w.h" />
@@ -574,6 +575,7 @@
     <ClInclude Include="..\src\unit.hpp" />
     <ClInclude Include="..\src\unitcomp.hpp" />
     <ClInclude Include="..\src\unitmanager.hpp" />
+    <ClInclude Include="..\src\weapons.hpp" />
     <ClInclude Include="..\src\world.hpp" />
   </ItemGroup>
   <ItemGroup>
