@@ -140,7 +140,7 @@ namespace AI {
 						// if not, the [] operator will insert a new entry
 						cost_so_far[next] = gScore;
 						// calculate f-score based on g-score and heuristic
-						next.fScore = gScore + l1_norm(next, goalNode);
+						next.fScore = gScore + l2_norm(next, goalNode);
 						// add neighbor to open list of nodes to explore
 						frontier.push(next);
 						// update predecessor of next node to our current node

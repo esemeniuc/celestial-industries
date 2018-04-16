@@ -133,7 +133,6 @@ void Entity::setTargetPath(const std::vector<glm::vec3>& targetPath) {
 	unitComp.targetPath = targetPath;
 }
 
-//expects the caller to set the unit state before calling this
 void Entity::moveTo(UnitState unitState, const glm::vec3& moveToTarget, bool queueMove) {
 	this->unitComp.state = unitState;
 	if (!queueMove) {

@@ -25,7 +25,7 @@ class AiComp {
 
 public:
 	//members
-	int totalHealth = 100;
+	float totalHealth = 100;
 	int visionRange = 5;
 	GamePieceOwner owner = GamePieceOwner::NONE;
 	GamePieceClass type = GamePieceClass::NONE;
@@ -40,7 +40,7 @@ public:
 			  visionRange(visionRange),
 			  owner(owner),
 			  type(type),
-			  currentHealth((float) initialHealth),
+			  currentHealth(initialHealth),
 			  value(value) {}
 
 	AiComp(const int initialHealth, const int visionRange, GamePieceOwner owner, GamePieceClass type,

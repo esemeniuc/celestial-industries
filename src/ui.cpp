@@ -95,6 +95,7 @@ namespace Ui {
 				{Model::MeshType::FRIENDLY_RANGED_UNIT,     textures_path("letterPlaceholders/letter_R.png")}
 		};
 
+		//note: if we get weird graphical artifacts, look into the loader here
 		static Texture tempTextureLoader; //make static since destructor will free the texture and corrupt it
 
 		//for the game logo
@@ -227,7 +228,7 @@ namespace Ui {
 				ImGui::SameLine();
 				ImGui::BeginGroup();
 				ImGui::Text("Unit: %s\n", EntityInfo::nameLookupTable[unit->meshType]);
-				ImGui::Text("Health: %.f/%d\n", unit->aiComp.currentHealth, unit->aiComp.totalHealth);
+				ImGui::Text("Health: %.f/%.f\n", unit->aiComp.currentHealth, unit->aiComp.totalHealth);
 				ImGui::Text("Damage: %d\n", unit->unitComp.attackDamage);
 				ImGui::Text("Attack Range: %d\n", unit->unitComp.attackRange);
 				ImGui::Text("Attack Speed: %d\n", unit->unitComp.attackSpeed);
@@ -261,7 +262,7 @@ namespace Ui {
 														ImGuiWindowFlags_NoCollapse |
 														ImGuiWindowFlags_NoMove);
 
-			auto highlightBuildingHelper = [](BuildingSelected type, const char* buttonString) {
+			auto highlightBuildingButtonHelper = [](BuildingSelected type, const char* buttonString) {
 				if (selectedBuilding == type) {
 					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 255, 0, 255));
 					ImGui::Button(buttonString);
@@ -286,7 +287,7 @@ namespace Ui {
 				}
 				case SpawnWindowState::SPAWN_DEFENSIVE_BUILDINGS : {
 
-					highlightBuildingHelper(GUN_TURRET, "Gun Turret");
+					highlightBuildingButtonHelper(GUN_TURRET, "Gun Turret");
 
 					//back button alignment
 					ImGui::SetCursorPos(ImVec2(spawnWindowWidth - ImGui::GetFontSize() * 5,
@@ -299,10 +300,10 @@ namespace Ui {
 				}
 				case SpawnWindowState::SPAWN_ECONOMIC_BUILDINGS : {
 
-					highlightBuildingHelper(COMMAND_CENTER,"Command Center");
-					highlightBuildingHelper(REFINERY, "Refinery");
-					highlightBuildingHelper(FACTORY, "Factory");
-					highlightBuildingHelper(SUPPLY_DEPOT, "Supply Depot");
+					highlightBuildingButtonHelper(COMMAND_CENTER,"Command Center");
+					highlightBuildingButtonHelper(REFINERY, "Refinery");
+					highlightBuildingButtonHelper(FACTORY, "Factory");
+					highlightBuildingButtonHelper(SUPPLY_DEPOT, "Supply Depot");
 
 					ImGui::SetCursorPos(ImVec2(spawnWindowWidth - ImGui::GetFontSize() * 5,
 											   uiHeight - ImGui::GetFontSize() * 3));
