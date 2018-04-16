@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <vector>
 #include "entity.hpp"
+#include "weapons.hpp"
 #include "gamestate.hpp"
 #include "particle.hpp"
 #include "astarnode.hpp"
@@ -45,4 +46,6 @@ namespace Global {
 	extern std::vector<std::vector<AStarNode>> aStarCostMap; //ai should be able to see the level traversal costs
 
 	extern std::vector<std::shared_ptr<Particles::ParticleEmitter>> emitters;
+
+	extern std::vector<std::shared_ptr<Weapon>> weapons;
 }

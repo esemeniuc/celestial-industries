@@ -36,4 +36,6 @@ namespace Global {
 	std::vector<std::vector<AStarNode>> aStarCostMap;
 
 	std::vector<std::shared_ptr<Particles::ParticleEmitter>> emitters;
+
+	std::vector<std::shared_ptr<Weapon>> weapons;
 }

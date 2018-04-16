@@ -43,8 +43,14 @@ namespace Model {
 		{ Model::MeshType::FRIENDLY_FIRE_UNIT,		{ { "friendlyFireUnit.obj",				-1 } } },
 		{ Model::MeshType::FRIENDLY_RANGED_UNIT,	{ { "friendlyRangedUnitBase.obj",		-1 },{ "friendlyRangedUnitPillar.obj", 0 } ,{ "friendlyRangedUnitTop.obj", 1 } } },
 
+		// weapons
+
+		{ Model::MeshType::BEAM,					{ { "beam.obj",							-1 } } },
+		{ Model::MeshType::BULLET,					{ { "bullet.obj",						-1 } } },
+
 		//other
 		{ Model::MeshType::TILE_CURSOR,				{ { "tileSelector.obj",					-1 } } },
+
 
 	};
 
