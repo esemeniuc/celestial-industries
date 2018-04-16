@@ -67,6 +67,7 @@ set(PROJ_SOURCES
 		src/config.hpp
 		src/common.cpp
 		src/entity.cpp
+		src/entityinfo.cpp
 		src/global.cpp
 		src/global.hpp
 		src/level.cpp
@@ -85,8 +86,10 @@ set(PROJ_SOURCES
 		src/unitcomp.cpp
 		src/unitmanager.cpp
 		src/unit.cpp
+		src/ui.cpp
+		src/weapons.cpp
 		src/aicore.cpp
-		src/ui.cpp src/gamestate.hpp src/entityinfo.cpp src/entityinfo.hpp)
+		)
 
 add_library(libproj ${PROJ_SOURCES})
 target_compile_options(libproj PUBLIC ${CUSTOM_COMPILE_FLAGS})

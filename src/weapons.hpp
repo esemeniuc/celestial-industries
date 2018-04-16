@@ -10,7 +10,9 @@ public:
 	double timeSinceStart;
 	double lifespan;
 	bool isDeleted;
+
 	Weapon(Model::MeshType type, glm::vec3 start, glm::vec3 end, double lifespan);
+	virtual ~Weapon();
 	virtual void update(double ms);
 	void softDelete();
 	glm::vec3 start;

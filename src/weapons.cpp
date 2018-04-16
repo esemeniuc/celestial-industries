@@ -34,6 +34,8 @@ void Weapon::softDelete()
 	isDeleted = true;
 }
 
+virtual Weapon::~Weapon() = default;
+
 BeamWeapon::BeamWeapon(Model::MeshType type, glm::vec3 start, glm::vec3 end, double lifespan) : Weapon(type, start, end, lifespan) {}
 
 void BeamWeapon::update(double ms)
