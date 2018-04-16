@@ -6,6 +6,7 @@
 
 #include <GL/gl3w.h> //make sure this comes before any other opengl stuff, use for GLFWwindow, GLFWcursor
 #include "GLFW/glfw3.h" //for GLuint
+#include "model.hpp" //for Model::MeshType::MESHTYPES_COUNT
 #include "imgui.h"
 
 namespace Ui {
@@ -44,6 +45,10 @@ namespace Ui {
 	static ImTextureID gameLogo;
 	static ImVec2 gameLogoSize;
 
+	//for drawing the selected entity sprites
+	static ImTextureID entitySprite[Model::MeshType::MESHTYPES_COUNT];
+	static ImVec2 entitySpriteSize[Model::MeshType::MESHTYPES_COUNT];
+
 	// andy's stuff
 	enum BuildingSelected {
 		NONE,
@@ -63,9 +68,11 @@ namespace Ui {
 
 	void imguiSetup(); //load imgui bits
 
+	void imguiLoadUnitSprites(); //gets the wireframe-like selected unit icons
+
 	void imguiDrawLaunchMenu(); //game launch menu
 
-	void imguiDrawPauseMenu(); //game launch menu
+	void imguiDrawPauseMenu(); //game pause menu
 
 	void imguiGenerateScreenObjects(); //main ui
 

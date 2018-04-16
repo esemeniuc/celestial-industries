@@ -12,7 +12,7 @@ TGGTTGGTGGGTT   .............................TWWWWTTTTTTTTTTTTWWWWWWWWWWWWWWWWWW
 TGGGTGTGYGGG   ..............................TWWWWWWWWWWWWWWWWWWWWWWWWWWWWTTTTTTTTTT
 TGTGGGTTGTTG  .........P.....................TWWWWWWWWWWWWWWWWWWWWWTTTTTTTTGGGGGGGGT
 TTGRGTGGGGT   ...............................TWWWWWWGWWWWWWWWTTTTTTTGGGGGGGGGGGGGGGT
-TGGRRTGTGGG  ...............................TTWWWWWWWWTTTTTTTTGGGGGGRGGYGGGGGGGGGGGT
+TGGRRTGTGGG  ...............................TTWWWWWWWWTTTTTTTTGGGGGGRGGYGGGGGGGOGGGT
 TTGTRRTTGT  ............YYRR................TWWWWTTTTTTGGGGGGGGGGGGGGGGGGGGGGGGGGGGT
 TTGTTRTGT  .............YRRR...............TTWWWWTTGGGGGGRGGGGGGGGGRRRRRRRGGGGGGGGGT
 TTGTGGTTT .............YYR................TTWWWWTTGG GGGGYGGGRRRRRRGGGGGGRRRGGGGGGGT
@@ -73,12 +73,12 @@ T '''RRYY'''''GHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHGT,,,,,,RYY,,,
 T '''RGY''''''GVVVGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGT,,,,,,,YY,,,,,,T
 T '''RYY''''''GVVVGTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT,,,,,,,Y,,,,,,,T
 T '''RYR''''''GVVVG                         ,,,,,,             ,,,,,,,,,,,',,,,,,,,T
-T '''RGR''''''GVVVG                         ,,,,,,     YYGYRY  ,,,,,,,,,,,R,,,,,,,,T
+T '''RGR''''''GVVVG                         ,,,,,,     YYGYRY  ,,,,,,,,,,,R,,,,O,,,T
 T '''RR'''''''GVVVG     RRRR       TTWWWWTT ,,,,,,     YYRYRY  ,,,,,,,,,,,R,,,,,,,,T
 T ''''''''''''GVVVG     RRRR        TWWWWWTT,,,,,,     YYRYYY  ,,,,,,,,,R,,,,,,,,,,T
 T ''''''''''''GVVVG   YYGGRR        TTWWWWWT,,,,,,      YYRGRY ,,,,,,,,R,,,,,,,,,,,T
 T ''''''''''''GVVVG    YGGR          TWWWWWT,,,,,,        YGY  ,,,,,,,,,,,,,,,,,,,,T
 T ''''''''''''GVVVG    YGG            TWWWWWT ,,,,             ,,,,,,,,,,,,,,,,,,,,T
-T ''''''''''''GVVVG                    TWWWWTTT,,,             ,,,,,,,,,,,,,,,,,,,,T
+T ''''''''''''GVVVG                    TWWWWTTT,,,             ,,,,,,,,,,,,,,,,,O,,T
 T ''''''''''''GVVVG                     TWWWWWT,,,             ,,,,,,,,,,,,,,,,,,,,T
 TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
