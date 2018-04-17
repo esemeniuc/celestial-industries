@@ -465,11 +465,12 @@ namespace Ui {
 
 				ImGui::NewLine();
 				ImGui::Text("P\t\t\t\t\t\tPause game\n");
-				ImGui::Text("Esc\t\t\t\t\tQuit game\n");
+				ImGui::Text("Esc\t\t\t\t\tPause game\n");
 
 				ImGui::NewLine();
 				ImGui::Text("Left click/drag\t\tSelect Units\n");
 				ImGui::Text("Right click\t\t\t\t\tMove/Attack\n");
+				ImGui::Text("Mouse scroll\t\tZoom in/out\n");
 
 				ImGui::NewLine();
 				if (ImGui::Button("Close")) {
@@ -520,10 +521,6 @@ namespace Ui {
 				}
 
 				ImGui::End();
-			}
-
-			if (ImGui::GetIO().KeysDown[GLFW_KEY_ESCAPE]) {
-				Global::gameState = GameState::PLAY;
 			}
 
 			// Rendering
@@ -705,6 +702,10 @@ namespace Ui {
 			AudioManager::play_mouse_click_sound();
 		}
 
+		if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_2) {
+			selectedBuilding = BuildingSelected::NONE; //right click cancels building selection
+		}
+
 		//make sure to call the world mouse callback only game world and not ui
 		if (ImGui::GetIO().MousePos.y < Global::windowHeight - uiHeight) {
 			World::on_mouse_button(window, button, action, mods); //use callback in the game area
@@ -737,6 +738,10 @@ namespace Ui {
 
 		if (Global::gameState == GameState::PLAY) { //only allow world key call backs when playing
 			World::on_key(window, key, scancode, action, mods);
+		} else if (Global::gameState == GameState::PAUSED &&
+				   action == GLFW_RELEASE
+				   && key == GLFW_KEY_ESCAPE) {
+			Global::gameState = GameState::PLAY;
 		}
 	}
 

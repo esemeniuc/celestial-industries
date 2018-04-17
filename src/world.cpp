@@ -103,11 +103,11 @@ bool World::init() {
 	//display a path
 	auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
 
-	auto temp2 = Unit::spawn(Model::MeshType::BALL, {39, 0, 19}, GamePieceOwner::AI);
+//	auto temp2 = Unit::spawn(Model::MeshType::BALL, {39, 0, 19}, GamePieceOwner::AI);
 
 	auto temp3 = Unit::spawn(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, {39, 0, 1}, GamePieceOwner::PLAYER);
 
-	auto temp4 = Unit::spawn(Model::MeshType::BALL, {20.5, 0, 15.5}, GamePieceOwner::AI);
+//	auto temp4 = Unit::spawn(Model::MeshType::BALL, {20.5, 0, 15.5}, GamePieceOwner::AI);
 
 	// Example use of targeting units.
 //	AttackManager::registerTargetUnit(temp2, temp1);
@@ -185,8 +185,8 @@ bool World::update(double elapsed_ms) {
 		emitter->update(elapsed_ms);
 	}
 
-	Global::levelWithUnitsTraversalCostMap = Global::levelTraversalCostMap;
-	AI::Manager::update(elapsed_ms);
+	World::level.update(elapsed_ms);
+//	AI::Manager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
 	AttackManager::update(elapsed_ms);
 	BuildingManager::update(elapsed_ms);
@@ -261,9 +261,8 @@ void World::updateBoolFromKey(int action, int key, bool& toUpdate, const std::ve
 // On key callback
 void World::on_key(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	// Core controls
-	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
-		Global::gameState = GameState::QUIT;
-	} else if (action == GLFW_PRESS && key == GLFW_KEY_P) {
+	if (action == GLFW_RELEASE &&
+		(key == GLFW_KEY_ESCAPE || key == GLFW_KEY_P)) {
 		Global::gameState = GameState::PAUSED;
 	}
 
