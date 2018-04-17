@@ -38,8 +38,8 @@ namespace Global {
 	extern std::vector<std::shared_ptr<Entity>> buildingMap;
 
 	extern std::vector<std::vector<Model::MeshType>> levelArray; //the tiles that make up the level
-	extern std::vector<std::vector<AStarNode>> levelTraversalCostMap; //costs for going over each tile
-	extern std::vector<std::vector<AStarNode>> levelWithUnitsTraversalCostMap;
+	extern std::vector<std::vector<int>> levelTraversalCostMap; //costs for going over each tile
+	extern std::vector<std::vector<int>> levelWithUnitsTraversalCostMap;
 
 	extern std::unordered_set<Coord, CoordHasher> scoutingTargetsInProgress; //ai uses this to avoid double scouting a position
 

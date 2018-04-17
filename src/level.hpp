@@ -61,7 +61,7 @@ public:
 	void setupAiCompForTile(std::shared_ptr<Tile> tile, GamePieceOwner owner);
 
 	// Indexable using MeshType enum
-	static std::map<Model::MeshType, std::pair<int, float>> tileToCost;
+	static std::map<Model::MeshType, int> tileToCost;
 
 	static std::map<char, Model::MeshType> charToType;
 

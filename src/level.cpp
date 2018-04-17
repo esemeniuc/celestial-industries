@@ -6,21 +6,21 @@
 #include "coord.hpp"
 
 //int is used as movement cost, float is used as fscore
-std::map<Model::MeshType, std::pair<int, float>> Level::tileToCost{
-		{Model::MeshType::HROAD,      {Config::OBSTACLE_COST,            INF}},
-		{Model::MeshType::SAND_1,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-		{Model::MeshType::SAND_2,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-		{Model::MeshType::SAND_3,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-		{Model::MeshType::SAND_4,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-		{Model::MeshType::SAND_5,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-		{Model::MeshType::TREE,       {Config::OBSTACLE_COST,            INF}},
-		{Model::MeshType::YELLOWTREE, {Config::OBSTACLE_COST,            INF}},
-		{Model::MeshType::REDTREE,    {Config::OBSTACLE_COST,            INF}},
-		{Model::MeshType::WATER,      {Config::OBSTACLE_COST,            INF}},
-		{Model::MeshType::GRASS,      {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-		{Model::MeshType::HROAD,      {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-		{Model::MeshType::VROAD,      {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-		{Model::MeshType::GEYSER,     {Config::OBSTACLE_COST,            INF}}
+std::map<Model::MeshType, int> Level::tileToCost{
+		{Model::MeshType::HROAD,      Config::OBSTACLE_COST           },
+		{Model::MeshType::SAND_1,     Config::DEFAULT_TRAVERSABLE_COST},
+		{Model::MeshType::SAND_2,     Config::DEFAULT_TRAVERSABLE_COST},
+		{Model::MeshType::SAND_3,     Config::DEFAULT_TRAVERSABLE_COST},
+		{Model::MeshType::SAND_4,     Config::DEFAULT_TRAVERSABLE_COST},
+		{Model::MeshType::SAND_5,     Config::DEFAULT_TRAVERSABLE_COST},
+		{Model::MeshType::TREE,       Config::OBSTACLE_COST           },
+		{Model::MeshType::YELLOWTREE, Config::OBSTACLE_COST           },
+		{Model::MeshType::REDTREE,    Config::OBSTACLE_COST           },
+		{Model::MeshType::WATER,      Config::OBSTACLE_COST           },
+		{Model::MeshType::GRASS,      Config::DEFAULT_TRAVERSABLE_COST},
+		{Model::MeshType::HROAD,      Config::DEFAULT_TRAVERSABLE_COST},
+		{Model::MeshType::VROAD,      Config::DEFAULT_TRAVERSABLE_COST},
+		{Model::MeshType::GEYSER,     Config::OBSTACLE_COST           }
 };
 
 std::map<char, Model::MeshType> Level::charToType{
@@ -75,9 +75,9 @@ void Level::save(std::string filename)
 		logger(LogLevel::ERR) << "Failed to save level with name " << filename;
 		throw "Failed to open file for writing";
 	}
-	for (const auto& row : Global::levelTraversalCostMap) {
+	for (const auto& row : Global::levelArray) {
 		for (const auto& cell : row) {
-			fs << typeToChar[cell.type];
+			fs << typeToChar[cell];
 		}
 		fs << '\n';
 	}
@@ -93,18 +93,12 @@ void Level::update(float ms)
 	Global::levelWithUnitsTraversalCostMap = Global::levelTraversalCostMap;
 }
 
-AStarNode Level::nodeFromCost(int row, int col, Model::MeshType type) {
-	std::pair<int, float> cost = tileToCost[type];
-	// TODO: Why are we giving this stuff doubles instead of ints?
-	return AStarNode(col, row, cost.first, cost.second, type);
-}
-
 std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& levelTextFile) {
 	std::ifstream level(levelTextFile);
 	std::string line;
 	std::vector<std::vector<Model::MeshType>> levelData;
 	std::vector<Model::MeshType> row;
-	std::vector<AStarNode> tileData;
+	std::vector<int> tileData;
 
 	if (!level.is_open()) {
 		logger(LogLevel::ERR) << "Failed to open level data file '" << levelTextFile << "'\n";
@@ -120,11 +114,11 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 			if (charToType.find(tile) == charToType.end()) {
 				// Not in map
 				row.push_back(Model::MeshType::SAND_2);
-				tileData.push_back(nodeFromCost(rowNumber, colNumber, Model::MeshType::SAND_2));
+				tileData.push_back(tileToCost[Model::MeshType::SAND_2]);
 			}
 			else {
 				row.push_back(charToType[tile]);
-				tileData.push_back(nodeFromCost(rowNumber, colNumber, charToType[tile]));
+				tileData.push_back(tileToCost[charToType[tile]]);
 			}
 			colNumber++;
 		}
@@ -136,9 +130,6 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 	return levelData;
 }
 
-std::vector<std::vector<AStarNode>> Level::getLevelTraversalCostMap() {
-	return Global::levelTraversalCostMap;
-}
 
 inline bool tilesOverlap(glm::vec3 locA, glm::vec3 sizeA, glm::vec3 locB, glm::vec3 sizeB) {
 	int aLowerCornerX = locA.x;
@@ -194,7 +185,7 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 	// Update AI info
 	for (unsigned int x = location.x; x < location.x + width; x++) {
 		for (unsigned int y = location.z; y < location.z + height; y++) {
-			Global::levelTraversalCostMap[y][x] = nodeFromCost(x,y, type);
+			Global::levelTraversalCostMap[y][x] = tileToCost[type];
 		}
 	}
 
@@ -235,8 +226,8 @@ bool Level::unpathableTilesInArea(glm::vec3 location, unsigned int height, unsig
 	glm::vec3 size = { width, 0, height };
 	for (auto& tile : tiles) {
 		if (!tile->isDeleted && tilesOverlap(tile->position, tile->size, location, size)) {
-			std::pair<int, float> cost = tileToCost[tile->type];
-			if (cost.first == Config::OBSTACLE_COST)return true;
+			int cost = tileToCost[tile->type];
+			if (cost == Config::OBSTACLE_COST)return true;
 		}
 	}
 	return false;

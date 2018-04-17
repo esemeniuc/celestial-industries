@@ -6,7 +6,7 @@ namespace AI {
 
 		//returns true if a spot can be traversed upon
 		bool isTraversable(int x, int z) {
-			return Global::levelWithUnitsTraversalCostMap[z][x].movementCost < Config::OBSTACLE_COST;
+			return Global::levelWithUnitsTraversalCostMap[z][x] < Config::OBSTACLE_COST;
 		}
 
 		std::vector<glm::vec3> reconstruct_path(const std::unordered_map<AStarNode, AStarNode, aStarHasher>& came_from,
@@ -28,34 +28,34 @@ namespace AI {
 
 		/* using L1 Norm (Manhattan norm) for stairstep like movement, for diagonal movement
 		we can consider either L-Infinity or L2 norm, leaving it for later*/
-		float l1_norm(const AStarNode& startNode, const AStarNode& goal) {
+		double l1_norm(const AStarNode& startNode, const AStarNode& goal) {
 			int rowDiff = std::abs(startNode.rowCoord - goal.rowCoord);
 			int colDiff = std::abs(startNode.colCoord - goal.colCoord);
 			return rowDiff + colDiff;
 		}
 
-		float l2_norm(const AStarNode& startNode, const AStarNode& goal) {
+		double l2_norm(const AStarNode& startNode, const AStarNode& goal) {
 			int rowDiff = startNode.rowCoord - goal.rowCoord;
 			int colDiff = startNode.colCoord - goal.colCoord;
-			return sqrtf((rowDiff * rowDiff) + (colDiff * colDiff));
+			return sqrt((rowDiff * rowDiff) + (colDiff * colDiff));
 		}
 
-		bool isGoalOrCheaper(int nextCol, int nextRow, int goalCol, int goalRow,
-							 const std::vector<std::vector<AStarNode>>& graph) {
+		bool isGoalOrNotObstacle(int nextCol, int nextRow, int goalCol, int goalRow,
+								 const std::vector<std::vector<int>>& movementCostGraph) {
 			return (nextCol == goalCol && nextRow == goalRow) ||
-				   graph[nextRow][nextCol].movementCost < Config::OBSTACLE_COST;
+				   movementCostGraph[nextRow][nextCol] < Config::OBSTACLE_COST;
 		}
 
 		bool withinLevelBounds(int col, int row) {
-			return (col >= 0 && col < (int)Global::levelWidth) &&
-				   (row >= 0 && row < (int)Global::levelHeight);
+			return (col >= 0 && col < (int) Global::levelWidth) &&
+				   (row >= 0 && row < (int) Global::levelHeight);
 		}
 
 		std::vector<AStarNode>
-		getNeighbors(const std::vector<std::vector<AStarNode>>& graph, const AStarNode& currentPos,
+		getNeighbors(const std::vector<std::vector<int>>& movementCostGraph, const AStarNode& currentPos,
 					 const AStarNode& goal) {
-			int numOfRows = (int) graph.size();
-			int numOfColumns = (int) graph.front().size();
+			int numOfRows = (int) movementCostGraph.size();
+			int numOfColumns = (int) movementCostGraph.front().size();
 			int row = currentPos.rowCoord;
 			int col = currentPos.colCoord;
 			int goalRow = goal.rowCoord;
@@ -70,13 +70,26 @@ namespace AI {
 				throw "ENTITY PATHING FROM OUT OF LEVEL";
 			}
 
-			int nextRow, nextCol;
-			for (const auto& dir : directions) {
-				nextCol = currentPos.colCoord + dir.first, nextRow = currentPos.rowCoord + dir.second;
+			//see https://stackoverflow.com/a/7627218
+			auto addNeighbours = [=, &neighbors](std::pair<int, int> dir, int movementCost) {
+				int nextCol = currentPos.colCoord + dir.first, nextRow = currentPos.rowCoord + dir.second;
 				if (withinLevelBounds(nextCol, nextRow) &&
-					isGoalOrCheaper(nextCol, nextRow, goalCol, goalRow, graph)) {
-					neighbors.push_back(graph[nextRow][nextCol]);
+					isGoalOrNotObstacle(nextCol, nextRow, goalCol, goalRow, movementCostGraph)) {
+
+					neighbors.emplace_back(nextCol,
+										   nextRow,
+										   movementCostGraph[nextRow][nextCol] + movementCost,
+										   0 /*fscore get set later*/,
+										   Global::levelArray[nextRow][nextCol]);
 				}
+			};
+
+			for (const auto& dir : straightDirections) {
+				addNeighbours(dir, STRAIGHT_MOVEMENT_COST);
+			}
+
+			for (const auto& dir : diagonalDirections) {
+				addNeighbours(dir, STRAIGHT_MOVEMENT_COST);
 			}
 
 			return neighbors;
@@ -128,11 +141,11 @@ namespace AI {
 					return {true, path}; //true for bool because we found a path
 				}
 
-				std::vector<AStarNode> neighbors = getNeighbors(Global::aStarCostMap, current, goalNode);
+				std::vector<AStarNode> neighbors = getNeighbors(Global::levelTraversalCostMap, current, goalNode);
 				for (auto& next : neighbors) {
 					// total movement cost to next node: path cost of current node + cost of taking
 					// a step from current to next node
-					float gScore = float(cost_so_far[current] + next.movementCost);
+					double gScore = cost_so_far[current] + next.movementCost;
 					// if a neighbor node was not explored before, or we found a new path to it
 					// that has a lower cost
 					if (cost_so_far.count(next) == 0 || gScore < cost_so_far[next]) {
@@ -140,7 +153,7 @@ namespace AI {
 						// if not, the [] operator will insert a new entry
 						cost_so_far[next] = gScore;
 						// calculate f-score based on g-score and heuristic
-						next.fScore = gScore + l2_norm(next, goalNode);
+						next.fScore = float(gScore + l2_norm(next, goalNode));
 						// add neighbor to open list of nodes to explore
 						frontier.push(next);
 						// update predecessor of next node to our current node

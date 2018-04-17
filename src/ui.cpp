@@ -433,7 +433,7 @@ namespace Ui {
 								   " the omnipresent megacorporation that runs human civilization, and have been"
 								   " tasked with overseeing a robotic colony development team. You are offered a promotion"
 								   " if you can get the colony to produce [Amount(s)] of [Resource(s)] per"
-								   " [Time unit], at which point you’d get to supervise a much cooler planet.");
+								   " [Time unit], at which point you'd get to supervise a much cooler planet.");
 
 				ImGui::NewLine();
 				ImGui::Text("Movement Keys:\n");

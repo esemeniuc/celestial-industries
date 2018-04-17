@@ -58,14 +58,14 @@ namespace UnitManager {
 			playerUnit->unitComp.update();
 			playerUnit->computeNextMoveLocation(elapsed_ms);
 			Global::levelWithUnitsTraversalCostMap[(int) (playerUnit->getPosition().z + 0.5)][(int) (
-					playerUnit->getPosition().x + 0.5)].movementCost = Config::OBSTACLE_COST;
+					playerUnit->getPosition().x + 0.5)] = Config::OBSTACLE_COST;
 		}
 
 		for (auto& aiUnit : Global::aiUnits) {
 			aiUnit->unitComp.update();
 			aiUnit->computeNextMoveLocation(elapsed_ms);
 			Global::levelWithUnitsTraversalCostMap[(int) (aiUnit->getPosition().z + 0.5)][(int) (
-					aiUnit->getPosition().x + 0.5)].movementCost = Config::OBSTACLE_COST;
+					aiUnit->getPosition().x + 0.5)] = Config::OBSTACLE_COST;
 		}
 
 		Model::collisionDetector.findCollisions(elapsed_ms);
