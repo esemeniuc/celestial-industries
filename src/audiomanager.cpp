@@ -175,6 +175,12 @@ namespace AudioManager {
 			Mix_FreeChunk(m_error_sound);
 		}
 
+		for (auto sound : mainGameMusic) {
+			if (sound != nullptr) {
+				Mix_FreeMusic(sound);
+			}
+		}
+
 		for (auto sound : buildingPlacementSound) {
 			if (sound != nullptr) {
 				Mix_FreeChunk(sound);
