@@ -355,6 +355,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 	std::pair<bool, glm::vec3> targetLocation = World::getTileCoordFromWindowCoords(xpos, ypos);
 	glm::vec3 coords = {selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord};
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		// selecting something from the world with a selection rectangle
 		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
 			logger(LogLevel::DEBUG) << "clicked " << targetLocation.second.x << " " << targetLocation.second.z << "\n";
 			UnitManager::selectUnit(targetLocation.second);
@@ -362,6 +363,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 
 		std::vector<Model::MeshType> trees = {Model::MeshType::REDTREE, Model::MeshType::TREE,
 											  Model::MeshType::YELLOWTREE};
+		// selecting a tile in the world
 		if (withinLevelBounds(coords)) {
 			switch (Ui::selectedBuilding) {
 				case Ui::BuildingSelected::REFINERY: {
@@ -423,6 +425,8 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 					break;
 				case Ui::BuildingSelected::NONE:
 				default:
+					// clicked in the world without having something to build selected
+					BuildingManager::selectBuilding(coords);
 					break;
 			}
 		}

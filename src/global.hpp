@@ -24,7 +24,8 @@ namespace Global {
 	extern int playerCurrentSupply;
 	extern int playerMaxSupply;
 
-	extern std::vector<std::shared_ptr<Entity>> selectedEntities; //highlighted by the mouse
+	extern std::vector<std::shared_ptr<Entity>> selectedEntities; // highlighted by the mouse
+	extern Model::MeshType selectedBuildingType; // highlighted by mouse; should be mutually exclusive with selectedEntities
 
 	extern std::vector<std::shared_ptr<Entity>> playerUnits;
 	extern std::vector<std::shared_ptr<Entity>> aiUnits;
