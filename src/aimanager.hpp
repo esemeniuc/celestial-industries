@@ -68,6 +68,7 @@ namespace AI {
 		};
 
 		//in x,z format
+		//use 3 since it speeds up the bfs tranversal on large maps
 		constexpr std::array<std::pair<int, int>, 4> adj = {{{0, 3}, //down
 														  {0, -3}, //up
 														  {3, 0}, //right

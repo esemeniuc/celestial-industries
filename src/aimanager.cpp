@@ -207,8 +207,6 @@ namespace AI {
 		}
 
 
-#include <chrono>
-
 		void update(double elapsed_ms) {
 			lastRunTimestamp += elapsed_ms;
 
@@ -216,8 +214,8 @@ namespace AI {
 				lastRunTimestamp = 0; //reset as we past the threshold
 			} else {
 				return; //run only after we exceed the threshold
-			}			std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-
+			}
+			
 			aiManagerRunIterations++;
 			cleanupCompletedScoutTargets();
 			updateValueOfEntities();
@@ -255,11 +253,6 @@ namespace AI {
 				logger(LogLevel::DEBUG) << "spawned at: " << spawnLocation << '\n';
 
 			}
-			std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-//			std::cout << "Time difference = "
-//					  << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "mu sec\n";
-
 		}
 	}
 }
