@@ -377,6 +377,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 					}
 					level.placeTile(Model::MeshType::REFINERY, coords, GamePieceOwner::PLAYER, refinerySize,
 									refinerySize, numGeysers);
+					AudioManager::playPlaceBuildingSound();
 					break;
 				}
 				case Ui::BuildingSelected::SUPPLY_DEPOT:
@@ -386,6 +387,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 						break;
 					}
 					level.placeTile(Model::MeshType::SUPPLY_DEPOT, coords);
+					AudioManager::playPlaceBuildingSound();
 					break;
 				case Ui::BuildingSelected::COMMAND_CENTER: {
 					const int width = 3;
@@ -396,6 +398,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 						break;
 					}
 					level.placeTile(Model::MeshType::COMMAND_CENTER, coords, GamePieceOwner::PLAYER, width, height);
+					AudioManager::playPlaceBuildingSound();
 					break;
 				}
 				case Ui::BuildingSelected::FACTORY: {
@@ -407,6 +410,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 						break;
 					}
 					level.placeTile(Model::MeshType::FACTORY, coords, GamePieceOwner::PLAYER, width, height);
+					AudioManager::playPlaceBuildingSound();
 					break;
 				}
 				case Ui::BuildingSelected::GUN_TURRET:
@@ -416,6 +420,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 						break;
 					}
 					level.placeTile(Model::MeshType::GUN_TURRET, coords);
+					AudioManager::playPlaceBuildingSound();
 					break;
 				case Ui::BuildingSelected::NONE:
 				default:

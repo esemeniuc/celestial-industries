@@ -9,12 +9,15 @@
 
 
 namespace AudioManager {
-// music and audio
+	//audio
+	Mix_Chunk* m_mouse_click;
+	Mix_Chunk* m_error_sound;
+	std::array<Mix_Chunk*, 2> buildingPlacementSound;
+
+	// music
 	Mix_Music* menuMusic;
 	Mix_Music* currentSong;
 	std::vector<Mix_Music*> mainGameMusic;
-	Mix_Chunk* m_mouse_click;
-	Mix_Chunk* m_error_sound;
 
 	std::array<Mix_Chunk*, Model::MeshType::MESHTYPES_COUNT> attackSounds{}; //init to null
 	std::array<Mix_Chunk*, Model::MeshType::MESHTYPES_COUNT> deathSounds{};
@@ -25,6 +28,12 @@ namespace AudioManager {
 
 	void play_error_sound() {
 		Mix_PlayChannel(-1, m_error_sound, 0);
+	}
+
+	void playPlaceBuildingSound() {
+		int randomNum = int(std::rand() % buildingPlacementSound.size());
+
+		Mix_PlayChannel(-1, buildingPlacementSound[randomNum], 0);
 	}
 
 	void startLaunchMenuMusic() {
@@ -58,30 +67,44 @@ namespace AudioManager {
 			Mix_FadeInMusic(currentSong, 1, 2000);
 		};
 
-		Mix_VolumeMusic(MIX_MAX_VOLUME/4); //25% volume for game music
+		Mix_VolumeMusic(MIX_MAX_VOLUME / 4); //25% volume for game music
 		Mix_HookMusicFinished(cycleThruSongs);
 		currentSong = getRandomSong();
 		Mix_FadeInMusic(currentSong, 1, 2000); //fade it gradually
 	}
 
 
-	void loadUnitSounds() {
-		auto loadAndCheck = [](Model::MeshType meshType, const char* filePath) {
+	bool loadUnitSounds() {
+		auto loadAndCheck = [](Model::MeshType meshType, const char* filePath) -> bool {
 			char path[100] = audio_path("");
 			attackSounds[meshType] = Mix_LoadWAV(strcat(path, filePath));
 			if (attackSounds[meshType] == nullptr) {
 				logger(LogLevel::ERR) << "Failed to load audio file: " << filePath << '\n';
+				return false;
 			}
+			return true;
 		};
 
-		loadAndCheck(Model::MeshType::GUN_TURRET, "attack/gunTurret.ogg");
-		loadAndCheck(Model::MeshType::FRIENDLY_RANGED_UNIT, "attack/howdahPistol.ogg");
-		loadAndCheck(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT,
-					 "attack/laser.ogg");//FIXME: should have a diff animation other than lasers
-
+		return loadAndCheck(Model::MeshType::GUN_TURRET, "attack/gunTurret.ogg") &&
+			   loadAndCheck(Model::MeshType::FRIENDLY_RANGED_UNIT, "attack/howdahPistol.ogg") &&
+			   loadAndCheck(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT,
+							"attack/laser.ogg");//FIXME: should have a diff animation other than lasers
 	}
 
-	void loadSongs() {
+	bool loadBuildingPlacementSounds() {
+		buildingPlacementSound[0] = Mix_LoadWAV(audio_path("building/placeBuilding1.ogg"));
+		buildingPlacementSound[1] = Mix_LoadWAV(audio_path("building/placeBuilding2.ogg"));
+		if (buildingPlacementSound[0] == nullptr ||
+			buildingPlacementSound[1] == nullptr) {
+			logger(LogLevel::ERR) << "Failed to load building placement sound\n";
+			return false;
+		}
+
+
+		return true;
+	}
+
+	bool loadSongs() {
 		const char* songs[] = {"Bog-Creatures-On-the-Move_Looping.ogg",
 							   "Spells-a-Brewin_Looping.ogg",
 							   "Fantasy_Game_Background_Looping.ogg"};
@@ -91,11 +114,12 @@ namespace AudioManager {
 			Mix_Music* temp = Mix_LoadMUS(strcat(path, song));
 			if (temp == nullptr) {
 				logger(LogLevel::ERR) << "Failed to load audio file: " << song << '\n';
+				return false;
 			} else {
 				mainGameMusic.push_back(temp);
 			}
 		}
-
+		return true;
 	}
 
 	void playAttackSound(Model::MeshType meshType) {
@@ -135,10 +159,7 @@ namespace AudioManager {
 			return false;
 		}
 
-		loadUnitSounds();
-		loadSongs();
-
-		return true;
+		return loadUnitSounds() && loadSongs() && loadBuildingPlacementSounds();
 	}
 
 	void shutdown() {
@@ -152,6 +173,12 @@ namespace AudioManager {
 
 		if (m_error_sound != nullptr) {
 			Mix_FreeChunk(m_error_sound);
+		}
+
+		for (auto sound : buildingPlacementSound) {
+			if (sound != nullptr) {
+				Mix_FreeChunk(sound);
+			}
 		}
 
 		for (auto sound : attackSounds) {
