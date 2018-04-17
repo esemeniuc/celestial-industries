@@ -141,8 +141,8 @@ namespace AudioManager {
 			logger(LogLevel::ERR) << "Mix_Init: " << Mix_GetError() << '\n';
 		}
 
-// open 44.1KHz, signed 16bit, system byte order,
-// stereo audio, using 2048 byte chunks
+		// open 44.1KHz, signed 16bit, system byte order,
+		// stereo audio, using 2048 byte chunks
 		if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
 			logger(LogLevel::ERR) << "Failed to open audio device";
 			return false;

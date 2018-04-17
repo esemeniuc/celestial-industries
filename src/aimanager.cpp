@@ -216,7 +216,7 @@ namespace AI {
 				return; //run only after we exceed the threshold
 			}
 
-			aiManagerRunIterations++;
+			++aiManagerRunIterations;
 			cleanupCompletedScoutTargets();
 			updateValueOfEntities();
 			updateUnitsSeen();
