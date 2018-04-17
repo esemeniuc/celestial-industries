@@ -192,6 +192,7 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 	std::shared_ptr<Tile> newTile = tileFromMeshType(type, extraArg);
 	newTile->setPosition(location);
 	newTile->position = location;
+	newTile->size = size;
 	setupAiCompForTile(newTile, owner);
 	tiles.push_back(newTile);
 	return newTile;
