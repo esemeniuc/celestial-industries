@@ -89,7 +89,7 @@ namespace AI {
 			}
 
 			for (const auto& dir : diagonalDirections) {
-				addNeighbours(dir, STRAIGHT_MOVEMENT_COST);
+				addNeighbours(dir, DIAGONAL_MOVEMENT_COST);
 			}
 
 			return neighbors;
