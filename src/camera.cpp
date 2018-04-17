@@ -18,7 +18,7 @@ void Camera::update(float ms) {
 	glm::vec3 cameraVector2 = glm::vec3(sin(angle.x), 0, cos(angle.x));
 	verticalVector = glm::cross(horizontalVector, direction);
 
-	if (!z_held) {
+	if (z_held) {
 		if (mouseScroll.y > 0) {
 			angle.y = std::min((float) M_PI / 2, angle.y + mouseScroll.y * zoomSpeed / 15.0f);
 		}

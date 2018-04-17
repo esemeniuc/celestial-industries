@@ -29,7 +29,7 @@ namespace AttackManager {
         }
 
         for (std::shared_ptr<Entity> entity1 : Global::aiUnits) {
-            for (std::shared_ptr<Entity> entity2 : Global::buildingMap) {
+            for (std::shared_ptr<Entity> entity2 : Global::buildingList) {
                 if (entity1->inAttackRange(entity2)) {
                     // Entity1 attacks entity2 for elapsed_ms amount of time.
                     entity1->attack(entity2, elapsed_ms);

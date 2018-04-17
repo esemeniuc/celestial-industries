@@ -79,7 +79,7 @@ namespace AI {
 					neighbors.emplace_back(nextCol,
 										   nextRow,
 										   movementCostGraph[nextRow][nextCol] + movementCost,
-										   0 /*fscore get set later*/,
+										   0 /*fscore gets set later*/,
 										   Global::levelArray[nextRow][nextCol]);
 				}
 			};
@@ -89,7 +89,17 @@ namespace AI {
 			}
 
 			for (const auto& dir : diagonalDirections) {
-				addNeighbours(dir, DIAGONAL_MOVEMENT_COST);
+				//dont go thru diagonal corners
+				if (isGoalOrNotObstacle(currentPos.colCoord + dir.first, //check straight neighbours
+										currentPos.rowCoord,
+										goalCol, goalRow,
+										movementCostGraph) &&
+					isGoalOrNotObstacle(currentPos.colCoord,
+										currentPos.rowCoord + dir.second,
+										goalCol, goalRow,
+										movementCostGraph)) {
+					addNeighbours(dir, DIAGONAL_MOVEMENT_COST);
+				}
 			}
 
 			return neighbors;

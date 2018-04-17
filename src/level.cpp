@@ -5,7 +5,7 @@
 #include "particle.hpp"
 #include "coord.hpp"
 
-//int is used as movement cost, float is used as fscore
+//int is used as movement cost
 std::map<Model::MeshType, int> Level::tileToCost{
 		{Model::MeshType::HROAD,      Config::OBSTACLE_COST           },
 		{Model::MeshType::SAND_1,     Config::DEFAULT_TRAVERSABLE_COST},
@@ -46,7 +46,7 @@ std::map<char, Model::MeshType> Level::charToType{
 bool Level::init(const std::vector<std::shared_ptr<Renderer>>& meshRenderers) {
 	// So that re initializing will be the same as first initialization
 	tiles.clear();
-	
+
 	for (size_t i = 0; i < Global::levelArray.size(); i++) {
 		std::vector<Model::MeshType> row = Global::levelArray[i];
 		for (size_t j = 0; j < row.size(); j++) {
@@ -155,6 +155,20 @@ inline bool tilesOverlap(glm::vec3 locA, glm::vec3 sizeA, glm::vec3 locB, glm::v
 	return true;
 }
 
+void printLevelCostMap() {
+	for (const auto& row: Global::levelTraversalCostMap) {
+		for (const auto& cellCost : row) {
+			if(cellCost > Config::DEFAULT_TRAVERSABLE_COST)	{
+				printf("#");
+			}
+			else {
+				printf(" ");
+			}
+		}
+		printf("\n");
+	}
+}
+
 // extraArg is used to pass in any extra int info that a tile might need - this is specifically intended to pass along counts of tiles being replaced to the constructor of the new tile
 // for stuff like refineries
 std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location, GamePieceOwner owner, unsigned int width, unsigned int height, int extraArg, Model::MeshType replacingMesh)
@@ -174,7 +188,7 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 			for (int x = minX; x < maxX; x++) {
 				for (int z = maxZ; z > minZ; z--) {
 					if (!tilesOverlap({ x,0,z }, { 1,0,1 }, location, size)) {
-						placeTile(replacingMesh, { x, 0, z }, GamePieceOwner::NONE);
+						placeTile(replacingMesh, { x, 0, z }, GamePieceOwner::NONE); //FIXME: recursive? also never get called
 					}
 				}
 			}
@@ -182,10 +196,11 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 		}
 	}
 
-	// Update AI info
-	for (unsigned int x = location.x; x < location.x + width; x++) {
-		for (unsigned int y = location.z; y < location.z + height; y++) {
-			Global::levelTraversalCostMap[y][x] = tileToCost[type];
+	// Update level cost map
+	Coord locationInt(location); //rounding the floats
+	for (int z = locationInt.rowCoord - height +1; z <= locationInt.rowCoord ; z++) { //not sure why off by 1
+		for (int x = locationInt.colCoord; x < locationInt.colCoord + width; x++) {
+			Global::levelTraversalCostMap[z][x] = Config::OBSTACLE_COST; //cant walk thru buildings
 		}
 	}
 
@@ -303,7 +318,7 @@ void Level::setupAiCompForTile(std::shared_ptr<Tile> tile, GamePieceOwner owner)
 			tile->aiComp.type = GamePieceClass::BUILDING_NON_ATTACKING;
 			tile->aiComp.currentHealth = tile->aiComp.totalHealth;
 			tile->aiComp.value = 75;
-			
+
 			tile->unitComp.state = UnitState::NONE;
 			break;
 		}
@@ -313,7 +328,7 @@ void Level::setupAiCompForTile(std::shared_ptr<Tile> tile, GamePieceOwner owner)
 			tile->aiComp.type = GamePieceClass::BUILDING_NON_ATTACKING;
 			tile->aiComp.currentHealth = tile->aiComp.totalHealth;
 			tile->aiComp.value = 400;
-								   
+
 			tile->unitComp.state = UnitState::NONE;
 			break;
 		}

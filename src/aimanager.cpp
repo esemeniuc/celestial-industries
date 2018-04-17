@@ -57,7 +57,7 @@ namespace AI {
 				aiUnitValue += unit->aiComp.value;
 			}
 
-			for (auto& building : Global::buildingMap) {
+			for (auto& building : Global::buildingList) {
 
 				playerBuildingValue += building->aiComp.value;
 

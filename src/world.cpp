@@ -185,7 +185,7 @@ bool World::update(double elapsed_ms) {
 		emitter->update(elapsed_ms);
 	}
 
-	Global::levelWithUnitsTraversalCostMap = Global::levelTraversalCostMap;
+	World::level.update(elapsed_ms);
 	AI::Manager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
 	AttackManager::update(elapsed_ms);
@@ -261,9 +261,8 @@ void World::updateBoolFromKey(int action, int key, bool& toUpdate, const std::ve
 // On key callback
 void World::on_key(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	// Core controls
-	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
-		Global::gameState = GameState::QUIT;
-	} else if (action == GLFW_PRESS && key == GLFW_KEY_P) {
+	if (action == GLFW_RELEASE &&
+		(key == GLFW_KEY_ESCAPE || key == GLFW_KEY_P)) {
 		Global::gameState = GameState::PAUSED;
 	}
 
