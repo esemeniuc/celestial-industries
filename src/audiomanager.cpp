@@ -18,8 +18,8 @@ namespace AudioManager {
 	Mix_Music* menuMusic;
 	Mix_Music* currentSong;
 	std::vector<Mix_Music*> mainGameMusic;
-	Mix_Music* winSound;
-	Mix_Music* loseSound;
+	Mix_Chunk* winSound;
+	Mix_Chunk* loseSound;
 
 	std::array<Mix_Chunk*, Model::MeshType::MESHTYPES_COUNT> attackSounds{}; //init to null
 	std::array<Mix_Chunk*, Model::MeshType::MESHTYPES_COUNT> deathSounds{};
@@ -39,14 +39,12 @@ namespace AudioManager {
 	}
 
 	void playWinSound() {
-		currentSong = winSound;
-		std::cout << "win\n";
-		Mix_PlayMusic(winSound, 1);
+		Mix_PlayChannel(-1, winSound, 0);
+
 	}
 
 	void playLoseSound() {
-		currentSong = loseSound;
-		Mix_PlayMusic(loseSound, 1);
+		Mix_PlayChannel(-1, loseSound, 0);
 	}
 
 	void startLaunchMenuMusic() {
@@ -160,8 +158,8 @@ namespace AudioManager {
 		}
 
 		menuMusic = Mix_LoadMUS(audio_path("launchMenu/game_sound_track.ogg"));
-		winSound = Mix_LoadMUS(audio_path("youwin.ogg"));
-		loseSound = Mix_LoadMUS(audio_path("youlose.ogg"));
+		winSound = Mix_LoadWAV(audio_path("youwin.ogg"));
+		loseSound = Mix_LoadWAV(audio_path("youlose.ogg"));
 
 		// LoadWAV is actually capable of loading other audio formats as well, the name is not accurate
 		// https://www.libsdl.org/projects/SDL_mixer/docs/SDL_mixer_19.html#SEC19
@@ -186,10 +184,10 @@ namespace AudioManager {
 		}
 
 		if (winSound != nullptr) {
-			Mix_FreeMusic(winSound);
+			Mix_FreeChunk(winSound);
 		}
 		if (loseSound != nullptr) {
-			Mix_FreeMusic(loseSound);
+			Mix_FreeChunk(loseSound);
 		}
 
 		if (m_mouse_click != nullptr) {
