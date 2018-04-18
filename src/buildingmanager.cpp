@@ -9,10 +9,8 @@ namespace BuildingManager {
 		Global::buildingList.reserve(levelHeight * levelWidth);
 	}
 
-	bool isDead(std::shared_ptr<Entity>& unit)
-	{
-		if (unit->aiComp.currentHealth <= 0)
-		{
+	bool isDead(std::shared_ptr<Entity>& unit) {
+		if (unit->aiComp.currentHealth <= 0) {
 			unit->softDelete();
 		}
 		return unit->aiComp.currentHealth <= 0;
@@ -20,7 +18,8 @@ namespace BuildingManager {
 
 	void removeDead() {
 		// std::cout << "buildings before: " << building.size() << '\n';
-		Global::buildingList.erase(std::remove_if(Global::buildingList.begin(), Global::buildingList.end(), isDead), Global::buildingList.end());
+		Global::buildingList.erase(std::remove_if(Global::buildingList.begin(), Global::buildingList.end(), isDead),
+								   Global::buildingList.end());
 		// std::cout << "buildings after: " << playerUnits.size() << '\n';
 	}
 
@@ -33,10 +32,13 @@ namespace BuildingManager {
 		}
 	}
 
-	void selectBuilding(const glm::vec3 & targetLocation)
-	{
+	void selectBuilding(const glm::vec3& targetLocation) {
 		std::shared_ptr<Tile> selectedTile = World::level.getTileAt(targetLocation);
-		if (selectedTile->meshType == Model::MeshType::FACTORY) {
+		if (selectedTile->meshType == Model::MeshType::FACTORY ||
+			selectedTile->meshType == Model::MeshType::SUPPLY_DEPOT ||
+			selectedTile->meshType == Model::MeshType::REFINERY ||
+			selectedTile->meshType == Model::MeshType::PHOTON_TOWER ||
+			selectedTile->meshType == Model::MeshType::COMMAND_CENTER) {
 			Global::selectedBuilding = selectedTile;
 		} else {
 			Global::selectedBuilding = nullptr;

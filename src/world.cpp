@@ -100,7 +100,8 @@ bool World::init() {
 	UnitManager::init(Global::levelHeight, Global::levelWidth);
 	AI::Manager::init(Global::levelHeight, Global::levelWidth);
 
-	//display a path
+	level.placeTile(Model::MeshType::COMMAND_CENTER, {4, 0, 40}, GamePieceOwner::PLAYER, 3, 3); //command center is 3x3
+
 	auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
 
 	auto temp2 = Unit::spawn(Model::MeshType::BALL, {39, 0, 19}, GamePieceOwner::AI);
