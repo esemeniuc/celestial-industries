@@ -404,7 +404,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 				}
 				case Ui::BuildingSelected::FACTORY: {
 					const int width = 3;
-					const int height = 3;
+					const int height = 4;
 					if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, width, height) > 0 ||
 						level.unpathableTilesInArea(coords, width, height)) {
 						AudioManager::play_error_sound();

@@ -8,6 +8,8 @@
 #include "gamestate.hpp"
 #include "particle.hpp"
 #include "astarnode.hpp"
+#include "model.hpp"
+#include "tile.hpp"
 
 namespace Global {
 
@@ -25,7 +27,7 @@ namespace Global {
 	extern int playerMaxSupply;
 
 	extern std::vector<std::shared_ptr<Entity>> selectedEntities; // highlighted by the mouse
-	extern Model::MeshType selectedBuildingType; // highlighted by mouse; should be mutually exclusive with selectedEntities
+	extern std::shared_ptr<Tile> selectedBuilding; // highlighted by mouse; should be mutually exclusive with selectedEntities
 
 	extern std::vector<std::shared_ptr<Entity>> playerUnits;
 	extern std::vector<std::shared_ptr<Entity>> aiUnits;

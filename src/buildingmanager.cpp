@@ -1,6 +1,7 @@
 #include "buildingmanager.hpp"
 #include "global.hpp"
 #include "model.hpp"
+#include "world.hpp"
 
 namespace BuildingManager {
 
@@ -34,11 +35,11 @@ namespace BuildingManager {
 
 	void selectBuilding(const glm::vec3 & targetLocation)
 	{
-		//Global::selectedBuildingType = Model::MeshType::NONE;
-
-		if (Global::levelArray[targetLocation.x][targetLocation.y] == Model::MeshType::FACTORY) {
-			//Global::selectedBuildingType = Model::MeshType::FACTORY;
-			logger(LogLevel::INFO) << "Factory selected!\n";
+		std::shared_ptr<Tile> selectedTile = World::level.getTileAt(targetLocation);
+		if (selectedTile->meshType == Model::MeshType::FACTORY) {
+			Global::selectedBuilding = selectedTile;
+		} else {
+			Global::selectedBuilding = nullptr;
 		};
 	}
 

@@ -213,6 +213,17 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 	return newTile;
 }
 
+std::shared_ptr<Tile> Level::getTileAt(glm::vec3 location)
+{
+	glm::vec3 size = { 1, 0, 1 };
+	for (auto& tile : tiles) {
+		if (!tile->isDeleted && tilesOverlap(tile->position, tile->size, location, size)) {
+			return tile;
+		}
+	}
+	return nullptr;
+}
+
 int Level::numTilesOfTypeInArea(Model::MeshType type, glm::vec3 location, unsigned int height, unsigned int width)
 {
 	int total = 0;

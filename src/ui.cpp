@@ -84,7 +84,8 @@ namespace Ui {
 				{Model::MeshType::MINING_TOWER,             textures_path("letterPlaceholders/letter_M.png")},
 				{Model::MeshType::PHOTON_TOWER,             textures_path("letterPlaceholders/letter_P.png")},
 				{Model::MeshType::SUPPLY_DEPOT,             textures_path("letterPlaceholders/letter_S.png")},
-				{Model::MeshType::GUN_TURRET,               textures_path("letterPlaceholders/letter_G.png")},
+				{Model::MeshType::GUN_TURRET,               textures_path("letterPlaceholders/letter_G.png") },
+				{Model::MeshType::FACTORY,                  textures_path("letterPlaceholders/letter_F.png") },
 
 				{Model::MeshType::GEYSER,                   textures_path("letterPlaceholders/letter_G.png")},
 
@@ -250,6 +251,20 @@ namespace Ui {
 						ImGui::SameLine();//if we reach dont reach a new new line
 					}
 				}
+			}
+			else if (Global::selectedBuilding != nullptr && Global::selectedBuilding->meshType == Model::MeshType::FACTORY) {
+				float portraitSize = uiHeight - 16; //in px
+				ImGui::Image(entitySprite[Model::MeshType::FACTORY], ImVec2(portraitSize, portraitSize));
+				ImGui::SameLine();
+				ImGui::BeginGroup();
+				ImGui::Text("Factory");
+				if (ImGui::Button("Spawn Ranged Unit")) {
+					Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, Global::selectedBuilding->getPosition() + glm::vec3{ 1 }, GamePieceOwner::PLAYER);
+				}
+				if (ImGui::Button("Spawn Flamer Unit")) {
+					Unit::spawn(Model::MeshType::FRIENDLY_FIRE_UNIT, Global::selectedBuilding->getPosition() + glm::vec3{ 1 }, GamePieceOwner::PLAYER);
+				}
+				ImGui::EndGroup();
 			}
 
 			ImGui::End();
