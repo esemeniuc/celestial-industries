@@ -42,7 +42,7 @@ void initUnitFromMeshType(const std::shared_ptr<Entity>& e, Model::MeshType type
 			e->unitComp.state = UnitState::IDLE;
 			break;
 		default:
-			throw "Un initializeable unit encountered in initUnitFromMeshType";
+			throw "Uninitializable unit encountered in initUnitFromMeshType";
 	}
 
 	e->aiComp.owner = owner;
@@ -59,6 +59,10 @@ std::shared_ptr<Entity> Unit::spawn(Model::MeshType type, glm::vec3 spawnLocatio
 	std::shared_ptr<Entity> entity = entityFromMeshType(type);
 	entity->setPosition(spawnLocation);
 	initUnitFromMeshType(entity, type, owner);
+	if(owner == GamePieceOwner::PLAYER)
+	{
+		Global::playerCurrentSupply++;
+	}
 	return entity;
 }
 

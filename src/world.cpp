@@ -117,7 +117,6 @@ bool World::init() {
 }
 
 
-
 bool World::initMeshTypes(const std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>>& sources) {
 	// All the models come from the same place
 	std::string path = pathBuilder({"data", "models"});
@@ -242,7 +241,15 @@ void World::draw() {
 
 // Should the game be over ?
 bool World::is_over() {
-	return glfwWindowShouldClose(m_window);
+
+	int commandCenterCount = 0;
+	for (const auto& tile : level.tiles) {
+			if (tile->meshType == Model::MeshType::COMMAND_CENTER) {
+				commandCenterCount++;
+		}
+	}
+
+	return bool(glfwWindowShouldClose(m_window) || commandCenterCount < 1 || Global::playerResourcesPerSec >= Config::GAME_WIN_MINIMUM_RESOURCES_PER_SEC);
 }
 
 void World::updateBoolFromKey(int action, int key, bool& toUpdate, const std::vector<int>& targetKeys) {

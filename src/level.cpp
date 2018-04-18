@@ -39,7 +39,8 @@ std::map<char, Model::MeshType> Level::charToType{
 		{'V',  Model::MeshType::VROAD},
 		{'P',  Model::MeshType::GEYSER},
 		{'O',  Model::MeshType::ENEMY_PORTAL},
-		{'X',  Model::MeshType::GUN_TURRET}
+		{'X',  Model::MeshType::GUN_TURRET},
+		{'C',  Model::MeshType::COMMAND_CENTER}
 };
 
 
