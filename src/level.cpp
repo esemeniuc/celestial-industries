@@ -210,6 +210,7 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 	newTile->size = size;
 	setupAiCompForTile(newTile, owner);
 	tiles.push_back(newTile);
+	Global::buildingTileList.push_back(newTile);
 	return newTile;
 }
 

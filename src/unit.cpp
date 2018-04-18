@@ -23,16 +23,31 @@ void initUnitFromMeshType(const std::shared_ptr<Entity>& e, Model::MeshType type
 			e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
 			e->unitComp.state = UnitState::IDLE;
 			break;
-		case Model::MeshType::FRIENDLY_RANGED_UNIT:
-		case Model::MeshType::ENEMY_RANGED_RADIUS_UNIT:{
-			e->aiComp.totalHealth = 125;
+		case Model::MeshType::FRIENDLY_RANGED_UNIT:{
+			e->aiComp.totalHealth = 225;
 			e->aiComp.visionRange = 8;
 			e->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
 			e->aiComp.currentHealth = e->aiComp.totalHealth;
 			e->aiComp.value = 50;
 
 			e->unitComp.initialEnergyLevel = 50;
-			e->unitComp.attackDamage = 6;
+			e->unitComp.attackDamage = 10;
+			e->unitComp.attackRange = 5;
+			e->unitComp.attackSpeed = 5;
+			e->unitComp.movementSpeed = 3;
+			e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
+			e->unitComp.state = UnitState::IDLE;
+			break;
+		}
+		case Model::MeshType::ENEMY_RANGED_RADIUS_UNIT:{
+			e->aiComp.totalHealth = 225;
+			e->aiComp.visionRange = 8;
+			e->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
+			e->aiComp.currentHealth = e->aiComp.totalHealth;
+			e->aiComp.value = 50;
+
+			e->unitComp.initialEnergyLevel = 50;
+			e->unitComp.attackDamage = 1;
 			e->unitComp.attackRange = 5;
 			e->unitComp.attackSpeed = 5;
 			e->unitComp.movementSpeed = 3;

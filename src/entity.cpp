@@ -237,6 +237,7 @@ void Entity::takeAttack(const Entity& attackingEntity, double elapsed_ms) {
 }
 
 void Entity::attack(const std::shared_ptr<Entity>& entityToAttack,  double elapsed_ms) {
+	this->target = nullptr;
 	if (unitComp.state == UnitState::ATTACK || unitComp.state == UnitState::ATTACK_MOVE) {
 		// Already attacking something else, nothing to do, return.
 		return;
@@ -244,18 +245,21 @@ void Entity::attack(const std::shared_ptr<Entity>& entityToAttack,  double elaps
 
 	if (aiComp.type != GamePieceClass::UNIT_OFFENSIVE) return;
 
+	target = entityToAttack;
     entityToAttack->takeAttack(*this, elapsed_ms);
 	unitComp.state = UnitState::ATTACK;
 
 	// Check to see if attack is done.
 	// Set state to non-attacking state if attack is done (other entity is killed)
 	if (entityToAttack->aiComp.currentHealth <= 0) {
+		this->target = nullptr;
 		unitComp.state = UnitState::IDLE;
 	}
 }
 
 void PivotingGunEntity::animate(float ms) {
 	glm::vec3 dir;
+
 	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
 		targetPosition = target->getPosition();
 		dir = glm::normalize(targetPosition - getPosition());
@@ -296,6 +300,7 @@ void PivotingGunEntity::attack(const std::shared_ptr<Entity>& entityToAttack, do
 	// Check to see if attack is done.
 	// Set state to non-attacking state if attack is done (other entity is killed)
 	if (entityToAttack->aiComp.currentHealth <= 0) {
+		target = nullptr;
 		unitComp.state = UnitState::IDLE;
 	}
 }

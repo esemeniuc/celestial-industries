@@ -8,6 +8,7 @@
 #include "gamestate.hpp"
 #include "particle.hpp"
 #include "astarnode.hpp"
+#include "tile.hpp"
 
 namespace Global {
 
@@ -36,6 +37,7 @@ namespace Global {
 	extern std::vector<std::vector<int>> playerVisibilityMap; //stores the last seen time of each cell by player
 
 	extern std::vector<std::shared_ptr<Entity>> buildingList;
+	extern std::vector<std::shared_ptr<Tile>> buildingTileList;
 
 	extern std::vector<std::vector<Model::MeshType>> levelArray; //the tiles that make up the level (no buildings or units!)
 	extern std::vector<std::vector<int>> levelTraversalCostMap; //costs for going over each tile incl buildings (no units!)

@@ -100,14 +100,14 @@ bool World::init() {
 	AI::Manager::init(Global::levelHeight, Global::levelWidth);
 
 	//display a path
-	auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
-	auto temp11 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {23, 0, 12}, GamePieceOwner::PLAYER);
+	//auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
+	//auto temp11 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {23, 0, 12}, GamePieceOwner::PLAYER);
 
 	auto temp2 = Unit::spawn(Model::MeshType::BALL, {39, 0, 19}, GamePieceOwner::AI);
 
-	auto temp3 = Unit::spawn(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, {39, 0, 1}, GamePieceOwner::AI);
+	auto temp3 = Unit::spawn(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, {30, 0, 1}, GamePieceOwner::AI);
 
-	auto temp4 = Unit::spawn(Model::MeshType::BALL, {20.5, 0, 15.5}, GamePieceOwner::AI);
+	auto temp4 = Unit::spawn(Model::MeshType::BALL, {0.5, 0, 15.5}, GamePieceOwner::AI);
 
 	// Example use of targeting units.
 	// AttackManager::registerTargetUnit(temp1, temp4);
@@ -187,8 +187,8 @@ bool World::update(double elapsed_ms) {
 
 	World::level.update(elapsed_ms);
 	AI::Manager::update(elapsed_ms);
-	UnitManager::update(elapsed_ms);
 	AttackManager::update(elapsed_ms);
+	UnitManager::update(elapsed_ms);
 
 	for (const auto& tile : level.tiles) {
 		tile->update(elapsed_ms);

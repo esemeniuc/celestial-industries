@@ -30,6 +30,19 @@ namespace AttackManager {
         }
     }
 
+    void executeAutoAttacksForBuildings(std::vector<std::shared_ptr<Entity>> &entities1,
+                            std::vector<std::shared_ptr<Tile>> &entities2, double elapsed_ms) {
+        for (std::shared_ptr<Entity>& entity1 : entities1) {
+            for (std::shared_ptr<Tile>& entity2 : entities2) {
+                if (entity1->inAttackRange(entity2)) {
+                    // Entity1 attacks entity2 for elapsed_ms amount of time.
+                    entity1->attack(entity2, elapsed_ms);
+                    attackingEntities.push_back(entity1);
+                }
+            }
+        }
+    }
+
     bool isDead(const std::shared_ptr<Entity>& entity) {
         return (entity->aiComp.currentHealth <= 0);
     }
@@ -48,6 +61,8 @@ namespace AttackManager {
         if (targetTime == 0) {
             for (auto it = unitTargetMap.cbegin(); it != unitTargetMap.cend();) {
                 if (it->second->aiComp.currentHealth <= 0) {
+                    it->first->target = nullptr;
+                    it->first->stopMoving();
                     unitTargetMap.erase(it++);
                 }
                 else {
@@ -73,9 +88,9 @@ namespace AttackManager {
 
         executeAutoAttacks(Global::playerUnits, Global::aiUnits, elapsed_ms);
         executeAutoAttacks(Global::aiUnits, Global::playerUnits, elapsed_ms);
-        executeAutoAttacks(Global::aiUnits, Global::buildingList, elapsed_ms);
+        executeAutoAttacksForBuildings(Global::aiUnits, Global::buildingTileList, elapsed_ms);
 
-        removeDeadEntities(Global::buildingList);
+        //removeDeadEntities(Global::buildingTileList);
 
         // Set the attacking entities' state back to IDLE so that next frame they are available to attack again.
         for (std::shared_ptr<Entity>& entity : attackingEntities) {
