@@ -40,7 +40,7 @@ namespace Config {
 	constexpr const int POINT_CLICK_DISTANCE_THRESHOLD = 1;
 	constexpr const int RIGHT_CLICK_ATTACK_WITHIN_RANGE_THRESHOLD = 1;
 
-	constexpr const int GAME_WIN_MINIMUM_RESOURCES_PER_SEC = 50;
+	constexpr const int GAME_WIN_MINIMUM_RESOURCES_PER_SEC = 80;
 
 	//file paths
 	constexpr const char* FONTAWESOME_FILE_PATH = font_path("fa-solid-900.ttf");
