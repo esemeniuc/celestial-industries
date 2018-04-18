@@ -84,7 +84,7 @@ namespace Ui {
 				{Model::MeshType::MINING_TOWER,             textures_path("letterPlaceholders/letter_M.png")},
 				{Model::MeshType::PHOTON_TOWER,             textures_path("photonTower.png")},
 				{Model::MeshType::SUPPLY_DEPOT,             textures_path("supply_depot.png")},
-				{Model::MeshType::GUN_TURRET,               textures_path("letterPlaceholders/letter_G.png") },
+				{Model::MeshType::GUN_TURRET,               textures_path("letterPlaceholders/letter_G.png")},
 				{Model::MeshType::FACTORY,                  textures_path("factory.png")},
 				{Model::MeshType::COMMAND_CENTER,           textures_path("command_center.png")},
 
@@ -115,15 +115,15 @@ namespace Ui {
 			throw "failed to load win texture!";
 		}
 		winImage = reinterpret_cast<void*>(tempTextureLoader.id);
-		winImageSize = ImVec2(tempTextureLoader.width/3, tempTextureLoader.height/3);
-		
+		winImageSize = ImVec2(tempTextureLoader.width / 3, tempTextureLoader.height / 3);
+
 		//lose image
 		tempTextureLoader.load_from_file(textures_path("lose.png"));
 		if (!tempTextureLoader.is_valid()) {
 			throw "failed to load lose texture!";
 		}
 		loseImage = reinterpret_cast<void*>(tempTextureLoader.id);
-		loseImageSize = ImVec2(tempTextureLoader.width/3, tempTextureLoader.height/3);
+		loseImageSize = ImVec2(tempTextureLoader.width / 3, tempTextureLoader.height / 3);
 
 		//for 2d sprites
 		for (const auto& elem : texturePaths) {
@@ -240,9 +240,9 @@ namespace Ui {
 				}
 			}
 
-			if (UnitManager::selectedUnits.size() == 1) {
+			if (UnitManager::selectedUnits.size() == 1) { //single unit stats
 				std::shared_ptr<Entity> unit = UnitManager::selectedUnits.front();
-				float portraitSize = uiHeight - 16; //in px
+				const float portraitSize = uiHeight - 16; //in px
 				ImGui::Image(entitySprite[unit->meshType], ImVec2(portraitSize, portraitSize));
 				ImGui::SameLine();
 				ImGui::BeginGroup();
@@ -254,7 +254,7 @@ namespace Ui {
 				ImGui::Text("Allegiance: %s\n", EntityInfo::gamePieceOwnerLookupTable[unit->aiComp.owner]);
 				ImGui::Text("Type: %s\n", EntityInfo::gamePieceClassLookupTable[unit->aiComp.type]);
 				ImGui::EndGroup();
-			} else if (UnitManager::selectedUnits.size() > 1) {
+			} else if (UnitManager::selectedUnits.size() > 1) { //show many tiled units
 				UnitManager::sortSelectedUnits(); //group them up
 				int entityInfoPaneWidth = static_cast<int>(Global::windowWidth) - spawnWindowWidth;
 				const int portraitSize = 32; //use 32 for smallish icons
@@ -268,20 +268,35 @@ namespace Ui {
 						ImGui::SameLine();//if we reach dont reach a new new line
 					}
 				}
-			}
-			else if (Global::selectedBuilding != nullptr && Global::selectedBuilding->meshType == Model::MeshType::FACTORY) {
-				float portraitSize = uiHeight - 16; //in px
-				ImGui::Image(entitySprite[Model::MeshType::FACTORY], ImVec2(portraitSize, portraitSize));
-				ImGui::SameLine();
-				ImGui::BeginGroup();
-				ImGui::Text("Factory");
-				if (ImGui::Button("Spawn Ranged Unit")) {
-					Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, Global::selectedBuilding->getPosition() + glm::vec3{ 1 }, GamePieceOwner::PLAYER);
+			} else if (Global::selectedBuilding != nullptr) { //building is selected case
+
+				if (Global::selectedBuilding->meshType == Model::MeshType::FACTORY) { //spawn units at the factory
+					const float portraitSize = uiHeight - 16; //in px
+					ImGui::Image(entitySprite[Model::MeshType::FACTORY], ImVec2(portraitSize, portraitSize));
+					ImGui::SameLine();
+					ImGui::BeginGroup();
+					ImGui::Text("Factory");
+					if (ImGui::Button("Spawn Ranged Unit")) {
+						Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT,
+									Global::selectedBuilding->getPosition() + glm::vec3{1}, GamePieceOwner::PLAYER);
+					}
+					if (ImGui::Button("Spawn Flamer Unit")) {
+						Unit::spawn(Model::MeshType::FRIENDLY_FIRE_UNIT,
+									Global::selectedBuilding->getPosition() + glm::vec3{1}, GamePieceOwner::PLAYER);
+					}
+					ImGui::EndGroup();
+				} else { //display single building stats
+					std::shared_ptr<Entity> unit = Global::selectedBuilding;
+					const float portraitSize = uiHeight - 16; //in px
+					ImGui::Image(entitySprite[unit->meshType], ImVec2(portraitSize, portraitSize));
+					ImGui::SameLine();
+					ImGui::BeginGroup();
+					ImGui::Text("Building: %s\n", EntityInfo::nameLookupTable[unit->meshType]);
+					ImGui::Text("Health: %.f/%.f\n", unit->aiComp.currentHealth, unit->aiComp.totalHealth);
+					ImGui::Text("Type: %s\n", EntityInfo::gamePieceClassLookupTable[unit->aiComp.type]);
+					ImGui::EndGroup();
 				}
-				if (ImGui::Button("Spawn Flamer Unit")) {
-					Unit::spawn(Model::MeshType::FRIENDLY_FIRE_UNIT, Global::selectedBuilding->getPosition() + glm::vec3{ 1 }, GamePieceOwner::PLAYER);
-				}
-				ImGui::EndGroup();
+
 			}
 
 			ImGui::End();
