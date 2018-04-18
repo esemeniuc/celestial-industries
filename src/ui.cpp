@@ -536,7 +536,7 @@ namespace Ui {
 	}
 
 	void imguiDrawWinScreen() {
-		while (Global::gameState == GameState::PAUSED && !glfwWindowShouldClose(Ui::getWindow())) {
+		while (Global::gameState == GameState::WIN && !glfwWindowShouldClose(Ui::getWindow())) {
 			glfwPollEvents();
 			ImGui_ImplGlfwGL3_NewFrame();
 
@@ -549,11 +549,7 @@ namespace Ui {
 													ImGuiWindowFlags_NoTitleBar |
 													ImGuiWindowFlags_AlwaysAutoResize |
 													ImGuiWindowFlags_NoNav);
-				ImGui::Text(ICON_FA_PAUSE_CIRCLE " Game Paused\n\n\n");
-				ImGui::Text("Continue playing?");
-				if (ImGui::Button(ICON_FA_PLAY_CIRCLE " Resume")) {
-					Global::gameState = GameState::PLAY;
-				}
+				ImGui::Text(ICON_FA_TROPHY " You win!");
 
 				if (ImGui::Button(ICON_FA_TIMES_CIRCLE " Quit")) {
 					Global::gameState = GameState::QUIT;
@@ -575,7 +571,7 @@ namespace Ui {
 	}
 
 	void imguiDrawLoseScreen() {
-		while (Global::gameState == GameState::PAUSED && !glfwWindowShouldClose(Ui::getWindow())) {
+		while (Global::gameState == GameState::LOSE && !glfwWindowShouldClose(Ui::getWindow())) {
 			glfwPollEvents();
 			ImGui_ImplGlfwGL3_NewFrame();
 
@@ -588,11 +584,7 @@ namespace Ui {
 													 ImGuiWindowFlags_NoTitleBar |
 													 ImGuiWindowFlags_AlwaysAutoResize |
 													 ImGuiWindowFlags_NoNav);
-				ImGui::Text(ICON_FA_PAUSE_CIRCLE " Game Paused\n\n\n");
-				ImGui::Text("Continue playing?");
-				if (ImGui::Button(ICON_FA_PLAY_CIRCLE " Resume")) {
-					Global::gameState = GameState::PLAY;
-				}
+				ImGui::Text(ICON_FA_FROWN " You lost!");
 
 				if (ImGui::Button(ICON_FA_TIMES_CIRCLE " Quit")) {
 					Global::gameState = GameState::QUIT;

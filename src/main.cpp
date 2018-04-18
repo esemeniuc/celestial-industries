@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
 				logger(LogLevel::DEBUG) << "gamestate = play\n";
 				if (Mix_PausedMusic()) {
 					AudioManager::resumeGameMusic();
-				} else{
+				} else {
 					AudioManager::startMainGameMusic();
 				}
 				runMainGameLoop();
@@ -83,6 +83,16 @@ int main(int argc, char* argv[]) {
 			case GameState::PAUSED: {
 				logger(LogLevel::DEBUG) << "gamestate = paused\n";
 				Ui::imguiDrawPauseMenu(); //once this finishes we draw the world
+				break;
+			}
+			case GameState::WIN: {
+				logger(LogLevel::DEBUG) << "gamestate = win\n";
+				Ui::imguiDrawWinScreen();
+				break;
+			}
+			case GameState::LOSE: {
+				logger(LogLevel::DEBUG) << "gamestate = lose\n";
+				Ui::imguiDrawLoseScreen();
 				break;
 			}
 			case GameState::QUIT: {
