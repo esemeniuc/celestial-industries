@@ -277,7 +277,7 @@ namespace Ui {
 				ImGui::Text("Building: %s\n", EntityInfo::nameLookupTable[unit->meshType]);
 				ImGui::Text("Health: %.f/%.f\n", unit->aiComp.currentHealth, unit->aiComp.totalHealth);
 				ImGui::Text("Type: %s\n", EntityInfo::gamePieceClassLookupTable[unit->aiComp.type]);
-
+				ImGui::NewLine();
 				if (Global::selectedBuilding->meshType == Model::MeshType::FACTORY) { //spawn units at the factory
 					if (ImGui::Button("Spawn Ranged Unit")) {
 						Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT,

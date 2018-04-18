@@ -32,9 +32,11 @@ namespace AttackManager {
 
     void executeAutoAttacksForBuildings(std::vector<std::shared_ptr<Entity>> &entities1,
                             std::vector<std::shared_ptr<Tile>> &entities2, double elapsed_ms) {
+
         for (std::shared_ptr<Entity>& entity1 : entities1) {
             for (std::shared_ptr<Tile>& entity2 : entities2) {
                 if (entity1->inAttackRange(entity2)) {
+                    //std::cout << "its runign \n";
                     // Entity1 attacks entity2 for elapsed_ms amount of time.
                     entity1->attack(entity2, elapsed_ms);
                     attackingEntities.push_back(entity1);

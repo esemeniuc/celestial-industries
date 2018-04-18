@@ -8,7 +8,7 @@
 namespace AI {
 	namespace Manager {
 		const double AI_VISIBLE_THRESHOLD = 0.4; //scout only if we've seen less than this value
-		const int AI_RUN_THRESHOLD = 500; //run every 500ms
+		const int AI_RUN_THRESHOLD = 1600; //run every 500ms
 		const int UNSEEN_RADIUS_THRESHOLD = 6;
 		const int FOG_OF_WAR_TIME_THRESHOLD = 10;
 		int aiManagerRunIterations = 0;

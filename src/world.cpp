@@ -105,9 +105,9 @@ bool World::init() {
 	//auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
 	//auto temp11 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {23, 0, 12}, GamePieceOwner::PLAYER);
 
-	auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
+	//auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
 
-	auto temp2 = Unit::spawn(Model::MeshType::BALL, {39, 0, 19}, GamePieceOwner::AI);
+	auto temp2 = Unit::spawn(Model::MeshType::BALL, {25, 0, 4}, GamePieceOwner::AI);
 
 	auto temp3 = Unit::spawn(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, {30, 0, 1}, GamePieceOwner::AI);
 
@@ -197,6 +197,9 @@ void World::update(double elapsed_ms) {
 		tile->update(elapsed_ms);
 	}
 	for (const auto& entity : Global::playerUnits) {
+		entity->animate(elapsed_ms);
+	}
+	for (const auto& entity : Global::aiUnits) {
 		entity->animate(elapsed_ms);
 	}
 	for (const auto& weapon : Global::weapons) {

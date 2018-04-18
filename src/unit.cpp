@@ -45,7 +45,6 @@ void initUnitFromMeshType(const std::shared_ptr<Entity>& e, Model::MeshType type
 			e->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
 			e->aiComp.currentHealth = e->aiComp.totalHealth;
 			e->aiComp.value = 50;
-
 			e->unitComp.initialEnergyLevel = 50;
 			e->unitComp.attackDamage = 1;
 			e->unitComp.attackRange = 5;
@@ -55,7 +54,21 @@ void initUnitFromMeshType(const std::shared_ptr<Entity>& e, Model::MeshType type
 			e->unitComp.state = UnitState::IDLE;
 			break;
 		}
-		case Model::MeshType::BALL:
+		case Model::MeshType::BALL:{
+            e->aiComp.totalHealth = 100;
+            e->aiComp.visionRange = 8;
+            e->aiComp.type = GamePieceClass::UNIT_OFFENSIVE;
+            e->aiComp.currentHealth = e->aiComp.totalHealth;
+            e->aiComp.value = 50;
+            e->unitComp.initialEnergyLevel = 50;
+            e->unitComp.attackDamage = 1;
+            e->unitComp.attackRange = 5;
+            e->unitComp.attackSpeed = 5;
+            e->unitComp.movementSpeed = 3;
+            e->unitComp.currentEnergyLevel = e->unitComp.initialEnergyLevel;
+            e->unitComp.state = UnitState::IDLE;
+            break;
+        }
 		case Model::MeshType::ENEMY_RANGED_LINE_UNIT:
 			e->aiComp.totalHealth = 45;
 			e->aiComp.visionRange = 8;
@@ -64,7 +77,7 @@ void initUnitFromMeshType(const std::shared_ptr<Entity>& e, Model::MeshType type
 			e->aiComp.value = 50;
 
 			e->unitComp.initialEnergyLevel = 50;
-			e->unitComp.attackDamage = 6;
+			e->unitComp.attackDamage = 100;
 			e->unitComp.attackRange = 5;
 			e->unitComp.attackSpeed = 5;
 			e->unitComp.movementSpeed = 3;

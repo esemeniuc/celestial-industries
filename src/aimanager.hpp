@@ -69,10 +69,10 @@ namespace AI {
 
 		//in x,z format
 		//use 3 since it speeds up the bfs tranversal on large maps
-		constexpr std::array<std::pair<int, int>, 4> adj = {{{0, 3}, //down
-														  {0, -3}, //up
-														  {3, 0}, //right
-														  {-3, 0} //left
+		constexpr std::array<std::pair<int, int>, 4> adj = {{{0, 10}, //down
+														  {0, -10}, //up
+														  {10, 0}, //right
+														  {-10, 0} //left
 												  }};
 
 		void init(size_t levelHeight, size_t levelWidth);

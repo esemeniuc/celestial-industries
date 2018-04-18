@@ -260,7 +260,7 @@ void Entity::attack(const std::shared_ptr<Entity>& entityToAttack,  double elaps
 void PivotingGunEntity::animate(float ms) {
 	glm::vec3 dir;
 
-	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
+	if (target && this->inAttackRange(target)) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
 		targetPosition = target->getPosition();
 		dir = glm::normalize(targetPosition - getPosition());
 		if (attackingCooldown >= 0) {
@@ -308,7 +308,7 @@ void PivotingGunEntity::attack(const std::shared_ptr<Entity>& entityToAttack, do
 void BeamFiringGunEntity::animate(float ms)
 {
 	glm::vec3 dir;
-	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
+	if (target && this->inAttackRange(target)) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
 		targetPosition = target->getPosition();
 		dir = glm::normalize(targetPosition - getPosition());
 		if (attackingCooldown >= 0)attackingCooldown -= ms;
