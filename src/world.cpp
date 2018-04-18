@@ -163,7 +163,7 @@ void World::destroy() {
 }
 
 // Update our game world
-bool World::update(double elapsed_ms) {
+void World::update(double elapsed_ms) {
 	glfwPollEvents(); //Processes system messages, if this wasn't present the window would become unresponsive
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
@@ -199,7 +199,30 @@ bool World::update(double elapsed_ms) {
 	for (const auto& weapon : Global::weapons) {
 		weapon->update(elapsed_ms);
 	}
-	return true;
+
+	//check game end conditions
+
+	if (isGameLose()) {
+		Global::gameState = GameState::LOSE;
+	} else if (isGameWin()) {
+		Global::gameState = GameState::WIN;
+	}
+
+}
+
+bool World::isGameWin() {
+	return Global::playerResourcesPerSec >= Config::GAME_WIN_MINIMUM_RESOURCES_PER_SEC;
+}
+
+bool World::isGameLose() {
+	int commandCenterCount = 0;
+	for (const auto& tile : World::level.tiles) {
+		if (tile->meshType == Model::MeshType::COMMAND_CENTER) {
+			commandCenterCount++;
+		}
+	}
+
+	return (commandCenterCount < 1);
 }
 
 // Render our game world
@@ -238,18 +261,8 @@ void World::draw() {
 //	glfwSwapBuffers(m_window);
 }
 
-
-// Should the game be over ?
-bool World::is_over() {
-
-	int commandCenterCount = 0;
-	for (const auto& tile : level.tiles) {
-			if (tile->meshType == Model::MeshType::COMMAND_CENTER) {
-				commandCenterCount++;
-		}
-	}
-
-	return bool(glfwWindowShouldClose(m_window) || commandCenterCount < 1 || Global::playerResourcesPerSec >= Config::GAME_WIN_MINIMUM_RESOURCES_PER_SEC);
+bool World::gameCloseDetected() {
+	return bool(glfwWindowShouldClose(m_window));
 }
 
 void World::updateBoolFromKey(int action, int key, bool& toUpdate, const std::vector<int>& targetKeys) {

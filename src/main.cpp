@@ -12,7 +12,7 @@ using Clock = std::chrono::high_resolution_clock;
 void runMainGameLoop() {
 	auto t = Clock::now();
 	// variable timestep loop.. can be improved (:
-	while (!World::is_over() && Global::gameState == GameState::PLAY) {
+	while (!World::gameCloseDetected() && Global::gameState == GameState::PLAY) {
 		// Calculating elapsed times in milliseconds from the previous iteration
 		auto now = Clock::now();
 		double elapsed_milliSec = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(

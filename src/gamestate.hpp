@@ -6,5 +6,7 @@ enum class GameState {
 	START_MENU,
 	PAUSED,
 	PLAY,
+	WIN,
+	LOSE,
 	QUIT
 };

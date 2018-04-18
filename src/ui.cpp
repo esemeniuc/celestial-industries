@@ -535,6 +535,84 @@ namespace Ui {
 		}
 	}
 
+	void imguiDrawWinScreen() {
+		while (Global::gameState == GameState::PAUSED && !glfwWindowShouldClose(Ui::getWindow())) {
+			glfwPollEvents();
+			ImGui_ImplGlfwGL3_NewFrame();
+
+			{ //draw menu
+				ImGui::SetNextWindowPosCenter();
+				ImGui::Begin("Win Screen", nullptr, ImGuiWindowFlags_NoSavedSettings |
+													ImGuiWindowFlags_NoResize |
+													ImGuiWindowFlags_NoCollapse |
+													ImGuiWindowFlags_NoMove |
+													ImGuiWindowFlags_NoTitleBar |
+													ImGuiWindowFlags_AlwaysAutoResize |
+													ImGuiWindowFlags_NoNav);
+				ImGui::Text(ICON_FA_PAUSE_CIRCLE " Game Paused\n\n\n");
+				ImGui::Text("Continue playing?");
+				if (ImGui::Button(ICON_FA_PLAY_CIRCLE " Resume")) {
+					Global::gameState = GameState::PLAY;
+				}
+
+				if (ImGui::Button(ICON_FA_TIMES_CIRCLE " Quit")) {
+					Global::gameState = GameState::QUIT;
+				}
+
+				ImGui::End();
+			}
+
+			// Rendering
+			int display_w, display_h;
+			glfwGetFramebufferSize(g_Window, &display_w, &display_h);
+			glViewport(0, 0, display_w, display_h);
+			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+			glClear(GL_COLOR_BUFFER_BIT);
+			ImGui::Render();
+			ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+			glfwSwapBuffers(g_Window);
+		}
+	}
+
+	void imguiDrawLoseScreen() {
+		while (Global::gameState == GameState::PAUSED && !glfwWindowShouldClose(Ui::getWindow())) {
+			glfwPollEvents();
+			ImGui_ImplGlfwGL3_NewFrame();
+
+			{ //draw menu
+				ImGui::SetNextWindowPosCenter();
+				ImGui::Begin("Lose Screen", nullptr, ImGuiWindowFlags_NoSavedSettings |
+													 ImGuiWindowFlags_NoResize |
+													 ImGuiWindowFlags_NoCollapse |
+													 ImGuiWindowFlags_NoMove |
+													 ImGuiWindowFlags_NoTitleBar |
+													 ImGuiWindowFlags_AlwaysAutoResize |
+													 ImGuiWindowFlags_NoNav);
+				ImGui::Text(ICON_FA_PAUSE_CIRCLE " Game Paused\n\n\n");
+				ImGui::Text("Continue playing?");
+				if (ImGui::Button(ICON_FA_PLAY_CIRCLE " Resume")) {
+					Global::gameState = GameState::PLAY;
+				}
+
+				if (ImGui::Button(ICON_FA_TIMES_CIRCLE " Quit")) {
+					Global::gameState = GameState::QUIT;
+				}
+
+				ImGui::End();
+			}
+
+			// Rendering
+			int display_w, display_h;
+			glfwGetFramebufferSize(g_Window, &display_w, &display_h);
+			glViewport(0, 0, display_w, display_h);
+			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+			glClear(GL_COLOR_BUFFER_BIT);
+			ImGui::Render();
+			ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+			glfwSwapBuffers(g_Window);
+		}
+	}
+
 
 	GLFWwindow* getWindow() {
 		return g_Window;
