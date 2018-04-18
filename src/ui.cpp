@@ -269,13 +269,16 @@ namespace Ui {
 					}
 				}
 			} else if (Global::selectedBuilding != nullptr) { //building is selected case
+				std::shared_ptr<Entity> unit = Global::selectedBuilding;
+				const float portraitSize = uiHeight - 16; //in px
+				ImGui::Image(entitySprite[unit->meshType], ImVec2(portraitSize, portraitSize));
+				ImGui::SameLine();
+				ImGui::BeginGroup();
+				ImGui::Text("Building: %s\n", EntityInfo::nameLookupTable[unit->meshType]);
+				ImGui::Text("Health: %.f/%.f\n", unit->aiComp.currentHealth, unit->aiComp.totalHealth);
+				ImGui::Text("Type: %s\n", EntityInfo::gamePieceClassLookupTable[unit->aiComp.type]);
 
 				if (Global::selectedBuilding->meshType == Model::MeshType::FACTORY) { //spawn units at the factory
-					const float portraitSize = uiHeight - 16; //in px
-					ImGui::Image(entitySprite[Model::MeshType::FACTORY], ImVec2(portraitSize, portraitSize));
-					ImGui::SameLine();
-					ImGui::BeginGroup();
-					ImGui::Text("Factory");
 					if (ImGui::Button("Spawn Ranged Unit")) {
 						Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT,
 									Global::selectedBuilding->getPosition() + glm::vec3{1}, GamePieceOwner::PLAYER);
@@ -284,21 +287,9 @@ namespace Ui {
 						Unit::spawn(Model::MeshType::FRIENDLY_FIRE_UNIT,
 									Global::selectedBuilding->getPosition() + glm::vec3{1}, GamePieceOwner::PLAYER);
 					}
-					ImGui::EndGroup();
-				} else { //display single building stats
-					std::shared_ptr<Entity> unit = Global::selectedBuilding;
-					const float portraitSize = uiHeight - 16; //in px
-					ImGui::Image(entitySprite[unit->meshType], ImVec2(portraitSize, portraitSize));
-					ImGui::SameLine();
-					ImGui::BeginGroup();
-					ImGui::Text("Building: %s\n", EntityInfo::nameLookupTable[unit->meshType]);
-					ImGui::Text("Health: %.f/%.f\n", unit->aiComp.currentHealth, unit->aiComp.totalHealth);
-					ImGui::Text("Type: %s\n", EntityInfo::gamePieceClassLookupTable[unit->aiComp.type]);
-					ImGui::EndGroup();
 				}
-
+				ImGui::EndGroup();
 			}
-
 			ImGui::End();
 		}
 
