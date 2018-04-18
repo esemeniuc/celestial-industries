@@ -6,7 +6,7 @@
 #include "particle.hpp"
 #include "aimanager.hpp"
 #include "unit.hpp"
-#include "attackManger.hpp"
+#include "attackManager.hpp"
 #include "ui.hpp"
 #include "audiomanager.hpp"
 
@@ -101,15 +101,16 @@ bool World::init() {
 
 	//display a path
 	auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
+	auto temp11 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {23, 0, 12}, GamePieceOwner::PLAYER);
 
 	auto temp2 = Unit::spawn(Model::MeshType::BALL, {39, 0, 19}, GamePieceOwner::AI);
 
-	auto temp3 = Unit::spawn(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, {39, 0, 1}, GamePieceOwner::PLAYER);
+	auto temp3 = Unit::spawn(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, {39, 0, 1}, GamePieceOwner::AI);
 
 	auto temp4 = Unit::spawn(Model::MeshType::BALL, {20.5, 0, 15.5}, GamePieceOwner::AI);
 
 	// Example use of targeting units.
-//	AttackManager::registerTargetUnit(temp2, temp1);
+	// AttackManager::registerTargetUnit(temp1, temp4);
 
 	//don't set selectedTileCoords at launch because glfwGetCursorPos() returns weird stuff
 	return true;

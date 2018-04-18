@@ -3,8 +3,9 @@
 //
 
 #include <unordered_map>
+#include <algorithm>
 #include "global.hpp"
-#include "attackManger.hpp"
+#include "attackManager.hpp"
 
 namespace AttackManager {
     std::unordered_map<std::shared_ptr<Entity>, std::shared_ptr<Entity>> unitTargetMap;
