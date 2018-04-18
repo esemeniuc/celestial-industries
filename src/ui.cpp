@@ -107,6 +107,22 @@ namespace Ui {
 		gameLogo = reinterpret_cast<void*>(tempTextureLoader.id);
 		gameLogoSize = ImVec2(tempTextureLoader.width, tempTextureLoader.height);
 
+		//win image
+		tempTextureLoader.load_from_file(textures_path("win.jpg"));
+		if (!tempTextureLoader.is_valid()) {
+			throw "failed to load win texture!";
+		}
+		winImage = reinterpret_cast<void*>(tempTextureLoader.id);
+		winImageSize = ImVec2(tempTextureLoader.width/3, tempTextureLoader.height/3);
+		
+		//lose image
+		tempTextureLoader.load_from_file(textures_path("lose.png"));
+		if (!tempTextureLoader.is_valid()) {
+			throw "failed to load lose texture!";
+		}
+		loseImage = reinterpret_cast<void*>(tempTextureLoader.id);
+		loseImageSize = ImVec2(tempTextureLoader.width/3, tempTextureLoader.height/3);
+
 		//for 2d sprites
 		for (const auto& elem : texturePaths) {
 			tempTextureLoader.load_from_file(elem.second);
@@ -515,6 +531,83 @@ namespace Ui {
 				if (ImGui::Button(ICON_FA_PLAY_CIRCLE " Resume")) {
 					Global::gameState = GameState::PLAY;
 				}
+
+				if (ImGui::Button(ICON_FA_TIMES_CIRCLE " Quit")) {
+					Global::gameState = GameState::QUIT;
+				}
+
+				ImGui::End();
+			}
+
+			// Rendering
+			int display_w, display_h;
+			glfwGetFramebufferSize(g_Window, &display_w, &display_h);
+			glViewport(0, 0, display_w, display_h);
+			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+			glClear(GL_COLOR_BUFFER_BIT);
+			ImGui::Render();
+			ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+			glfwSwapBuffers(g_Window);
+		}
+	}
+
+	void imguiDrawWinScreen() {
+		while (Global::gameState == GameState::WIN && !glfwWindowShouldClose(Ui::getWindow())) {
+			glfwPollEvents();
+			ImGui_ImplGlfwGL3_NewFrame();
+
+			{ //draw menu
+				ImGui::SetNextWindowPosCenter();
+				ImGui::Begin("Win Screen", nullptr, ImGuiWindowFlags_NoSavedSettings |
+													ImGuiWindowFlags_NoResize |
+													ImGuiWindowFlags_NoCollapse |
+													ImGuiWindowFlags_NoMove |
+													ImGuiWindowFlags_NoTitleBar |
+													ImGuiWindowFlags_AlwaysAutoResize |
+													ImGuiWindowFlags_NoNav);
+				ImGui::Text(ICON_FA_TROPHY " You win!");
+				ImGui::Text("You've been promoted to Assistant manager, gj mate.");
+
+				ImGui::Image(winImage, winImageSize);
+				ImGui::NewLine();
+
+				if (ImGui::Button(ICON_FA_TIMES_CIRCLE " Quit")) {
+					Global::gameState = GameState::QUIT;
+				}
+
+				ImGui::End();
+			}
+
+			// Rendering
+			int display_w, display_h;
+			glfwGetFramebufferSize(g_Window, &display_w, &display_h);
+			glViewport(0, 0, display_w, display_h);
+			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+			glClear(GL_COLOR_BUFFER_BIT);
+			ImGui::Render();
+			ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+			glfwSwapBuffers(g_Window);
+		}
+	}
+
+	void imguiDrawLoseScreen() {
+		while (Global::gameState == GameState::LOSE && !glfwWindowShouldClose(Ui::getWindow())) {
+			glfwPollEvents();
+			ImGui_ImplGlfwGL3_NewFrame();
+
+			{ //draw menu
+				ImGui::SetNextWindowPosCenter();
+				ImGui::Begin("Lose Screen", nullptr, ImGuiWindowFlags_NoSavedSettings |
+													 ImGuiWindowFlags_NoResize |
+													 ImGuiWindowFlags_NoCollapse |
+													 ImGuiWindowFlags_NoMove |
+													 ImGuiWindowFlags_NoTitleBar |
+													 ImGuiWindowFlags_AlwaysAutoResize |
+													 ImGuiWindowFlags_NoNav);
+				ImGui::Text(ICON_FA_FROWN " You lost!");
+
+				ImGui::Image(loseImage, loseImageSize);
+				ImGui::NewLine();
 
 				if (ImGui::Button(ICON_FA_TIMES_CIRCLE " Quit")) {
 					Global::gameState = GameState::QUIT;
