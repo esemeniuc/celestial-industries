@@ -56,6 +56,7 @@ public:
     void render(glm::mat4 &viewProjection, glm::mat4 &viewMatrix);
     void updateModelMatrixStack(unsigned int modelIndex, bool updateHierarchically=true);
     glm::mat4 getModelMatrix(unsigned int id, unsigned int modelIndex);
+	glm::vec3 applyMatricesToVec(glm::vec3 v, unsigned int id, unsigned int modelIndex);
 private:
 	std::vector<int> graveyardIdStack;
     // TODO: replace with uniform buffers

@@ -206,6 +206,11 @@ glm::mat4 Renderer::getModelMatrix(unsigned int id, unsigned int modelIndex)
     return instancesData.modelMatrices[id*instancesData.stride + modelIndex];
 }
 
+glm::vec3 Renderer::applyMatricesToVec(glm::vec3 v, unsigned int id, unsigned int modelIndex)
+{
+	return instancesData.modelMatrices[id*instancesData.stride + modelIndex]*glm::vec4(v, 1.0);
+}
+
 Renderable::Renderable() {}
 
 Renderable::Renderable(std::shared_ptr<Renderer> initParent)

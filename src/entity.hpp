@@ -2,6 +2,8 @@
 
 // glm
 #include "glm/glm.hpp"
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/rotate_vector.hpp"
 
 // custom headers
 
@@ -11,6 +13,7 @@
 #include "rigidBody.hpp"
 #include "unitcomp.hpp"
 #include <deque>
+#include "weapons.hpp"
 
 class Entity {
 public:
@@ -28,10 +31,10 @@ public:
 	bool isDeleted = false;
 	RigidBody rigidBody;
 
-	std::shared_ptr<Entity> target;
+	std::shared_ptr<Entity> target = nullptr;
 	glm::vec3 targetPosition = {0.0f, 0.0f, 0.0f};
 	glm::vec3 nextPosition;
-	float attackingCooldown;
+	float attackingCooldown = 0.0f;
 
 	// constructors
 	Entity();
@@ -39,6 +42,7 @@ public:
 	Entity(Model::MeshType geometry);
 
 	virtual ~Entity();
+
 	// functions
 	virtual void animate(float ms);
 
@@ -55,9 +59,9 @@ public:
 
 	Coord getPositionInt();
 
-	void attack(const std::shared_ptr<Entity>& entityToAttack);
+	virtual void attack(const std::shared_ptr<Entity>& entityToAttack,  double elapsed_ms);
 
-	void takeAttack(const std::shared_ptr<Entity>& attackingEntity, double elapsed_ms);
+	void takeAttack(const Entity& attackingEntity, double elapsed_ms);
 
 	virtual void setPosition(glm::vec3 position);
 
@@ -85,11 +89,7 @@ public:
 	// Please do not use
 	void rotate(float amount, glm::vec3 axis);
 
-	void rotateXZ(float amount);
-
-	void setRotationXZ(float amount);
-
-	void setRotationXZ(int modelIndex, float amount);
+	void setRotationXZ(int modelIndex, glm::vec3 dir);
 
 	void scale(glm::vec3 scale);
 
@@ -97,19 +97,19 @@ public:
 
 	glm::vec3 getPosition() const;
 
-	void setTargetPath(const std::vector<Coord>& targetPath, int x, int z);
+	void setTargetPath(const std::vector<glm::vec3>& targetPath);
 
 	bool hasMoveTarget();
 
-	virtual void moveTo(UnitState unitState, int x, int z, bool queueMove=false);
+	virtual void moveTo(UnitState unitState, const glm::vec3& moveToTarget, bool queueMove = false);
 
 	void cleanUpTargetPath();
 
 	void computeNextMoveLocation(double elapsed_time);
-	
+
 	virtual void move(double elapsed_time);
 
-	std::pair<int, double> getInterpolationPercentage();
+	std::pair<int, float> getInterpolationPercentage();
 
 	bool canSee(const std::shared_ptr<Entity>& other) const;
 
@@ -125,9 +125,22 @@ protected:
 class PivotingGunEntity : public Entity {
 public:
 	unsigned int turretIndex;
-	float turretAngle;
-
-	PivotingGunEntity(Model::MeshType geometry, unsigned int turretIndex) : Entity(geometry), turretIndex(turretIndex) {};
+	Model::MeshType weaponMesh;
+	glm::vec3 offset;
+	PivotingGunEntity(Model::MeshType geometry, unsigned int turretIndex, Model::MeshType weaponMesh, glm::vec3 offset) : Entity(geometry), turretIndex(turretIndex), weaponMesh(weaponMesh), offset(offset) {};
 
 	void animate(float ms) override;
+	void attack(const std::shared_ptr<Entity>& entityToAttack,  double elapsed_ms) override;
+};
+
+class BeamFiringGunEntity : public PivotingGunEntity {
+public:
+	void animate(float ms) override;
+	BeamFiringGunEntity(Model::MeshType geometry, unsigned int turretIndex, Model::MeshType weaponMesh, glm::vec3 offset) : PivotingGunEntity(geometry, turretIndex, weaponMesh, offset) {};
+};
+
+class ProjectileFiringGunEntity : public PivotingGunEntity {
+public:
+	ProjectileFiringGunEntity(Model::MeshType geometry, unsigned int turretIndex, Model::MeshType weaponMesh, glm::vec3 offset) : PivotingGunEntity(geometry, turretIndex, weaponMesh, offset) {};
+	// Projectiles are actually the default
 };

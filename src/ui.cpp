@@ -7,10 +7,11 @@
 #include "unit.hpp" //for spawning
 #include "world.hpp" //for key callbacks
 #include "config.hpp" //for font file path
+#include "entityinfo.hpp" //for entity string lookups
 #include "unitmanager.hpp" //for unit selection info
+#include "audiomanager.hpp" //for button clicks
 
 #include "IconsFontAwesome5.h" //for game icons
-#include "entityinfo.hpp"
 
 ImVec2 operator+(const ImVec2& a, const ImVec2& b) {
 	return {a.x + b.x, a.y + b.y};
@@ -71,14 +72,51 @@ namespace Ui {
 		io.Fonts->AddFontFromFileTTF(Config::FONTAWESOME_FILE_PATH, 16.0f, &icons_config, icons_ranges);
 		// use FONT_ICON_FILE_NAME_FAR if you want regular instead of solid
 
-		// load game logo texture
-		static Texture logoTexture; //make static since destructor will free the texture
-		logoTexture.load_from_file(textures_path("Celestial-Industries.png"));
-		if (!logoTexture.is_valid()) {
+		// load our 2d textures for ui
+		imguiLoadUnitSprites();
+	}
+
+	void imguiLoadUnitSprites() {
+		//load in the entity wireframe like sprites
+		std::vector<std::pair<Model::MeshType, const char*>> texturePaths = {
+				//level tile textures
+				{Model::MeshType::REFINERY,                 textures_path("letterPlaceholders/letter_R.png")},
+				{Model::MeshType::MINING_TOWER,             textures_path("letterPlaceholders/letter_M.png")},
+				{Model::MeshType::PHOTON_TOWER,             textures_path("letterPlaceholders/letter_P.png")},
+				{Model::MeshType::SUPPLY_DEPOT,             textures_path("letterPlaceholders/letter_S.png")},
+				{Model::MeshType::GUN_TURRET,               textures_path("letterPlaceholders/letter_G.png")},
+
+				{Model::MeshType::GEYSER,                   textures_path("letterPlaceholders/letter_G.png")},
+
+				{Model::MeshType::BALL,                     textures_path("letterPlaceholders/letter_B.png")},
+				{Model::MeshType::ENEMY_SPIKE_UNIT,         textures_path("letterPlaceholders/letter_S.png")},
+				{Model::MeshType::ENEMY_RANGED_LINE_UNIT,   textures_path("letterPlaceholders/letter_L.png")},
+				{Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, textures_path("letterPlaceholders/letter_R.png")},
+				{Model::MeshType::FRIENDLY_FIRE_UNIT,       textures_path("letterPlaceholders/letter_F.png")},
+				{Model::MeshType::FRIENDLY_RANGED_UNIT,     textures_path("letterPlaceholders/letter_R.png")}
+		};
+
+		//note: if we get weird graphical artifacts, look into the loader here
+		static Texture tempTextureLoader; //make static since destructor will free the texture and corrupt it
+
+		//for the game logo
+		tempTextureLoader.load_from_file(textures_path("Celestial-Industries.png"));
+		if (!tempTextureLoader.is_valid()) {
 			throw "failed to load logo texture!";
 		}
-		gameLogo = reinterpret_cast<void*>(logoTexture.id);
-		gameLogoSize = ImVec2(logoTexture.width, logoTexture.height);
+		gameLogo = reinterpret_cast<void*>(tempTextureLoader.id);
+		gameLogoSize = ImVec2(tempTextureLoader.width, tempTextureLoader.height);
+
+		//for 2d sprites
+		for (const auto& elem : texturePaths) {
+			tempTextureLoader.load_from_file(elem.second);
+			if (!tempTextureLoader.is_valid()) {
+				throw std::runtime_error(
+						std::string("failed to load logo texture with path ") + std::string(elem.second));
+			}
+			entitySprite[elem.first] = reinterpret_cast<void*>(tempTextureLoader.id);
+			entitySpriteSize[elem.first] = ImVec2(tempTextureLoader.width, tempTextureLoader.height);
+		}
 	}
 
 	void imguiGenerateScreenObjects() {
@@ -140,8 +178,8 @@ namespace Ui {
 											   ImGuiWindowFlags_NoFocusOnAppearing |
 											   ImGuiWindowFlags_NoNav);
 
-			ImGui::Text(ICON_FA_HAND_HOLDING_USD " Resources:     %8d", Global::playerResources);
-			ImGui::Text(" " ICON_FA_DOLLAR_SIGN "  Resource Rate: %8d", Global::playerResourcesPerSec);
+			ImGui::Text(ICON_FA_HAND_HOLDING_USD " Resources:     %.lf", Global::playerResources);
+			ImGui::Text(" " ICON_FA_DOLLAR_SIGN "  Resource Rate: %.lf", Global::playerResourcesPerSec);
 			ImGui::Text(ICON_FA_WAREHOUSE " Supply:        %8d/%d", Global::playerCurrentSupply,
 						Global::playerMaxSupply);
 			ImGui::End();
@@ -158,10 +196,12 @@ namespace Ui {
 
 			//need this for display of selected units
 			if (ImGui::IsMouseDragging()) { //update selected units only when dragging (otherwise get keyboard panning updates this)
-				ImVec2 topRight = ImVec2(topLeft.x + unitSelectionSize.x, topLeft.y); //not calculated during selection
+				ImVec2 topRight = ImVec2(topLeft.x + unitSelectionSize.x,
+										 topLeft.y); //not calculated during selection
 				ImVec2 bottomLeft = ImVec2(topLeft.x, topLeft.y + unitSelectionSize.y);
 
-				std::pair<bool, glm::vec3> topLeftTileCoord = World::getTileCoordFromWindowCoords(topLeft.x, topLeft.y);
+				std::pair<bool, glm::vec3> topLeftTileCoord = World::getTileCoordFromWindowCoords(topLeft.x,
+																								  topLeft.y);
 				std::pair<bool, glm::vec3> bottomRightTileCoord = World::getTileCoordFromWindowCoords(bottomRight.x,
 																									  bottomRight.y);
 
@@ -184,19 +224,33 @@ namespace Ui {
 
 			if (UnitManager::selectedUnits.size() == 1) {
 				std::shared_ptr<Entity> unit = UnitManager::selectedUnits.front();
+				float portraitSize = uiHeight - 16; //in px
+				ImGui::Image(entitySprite[unit->meshType], ImVec2(portraitSize, portraitSize));
+				ImGui::SameLine();
+				ImGui::BeginGroup();
 				ImGui::Text("Unit: %s\n", EntityInfo::nameLookupTable[unit->meshType]);
-				ImGui::Text("Health: %.f/%d\n", unit->aiComp.currentHealth, unit->aiComp.totalHealth);
+				ImGui::Text("Health: %.f/%.f\n", unit->aiComp.currentHealth, unit->aiComp.totalHealth);
 				ImGui::Text("Damage: %d\n", unit->unitComp.attackDamage);
 				ImGui::Text("Attack Range: %d\n", unit->unitComp.attackRange);
 				ImGui::Text("Attack Speed: %d\n", unit->unitComp.attackSpeed);
-				ImGui::Text("Owner: %d\n", unit->aiComp.owner);
-				ImGui::Text("Type: %d:", unit->aiComp.type);
+				ImGui::Text("Allegiance: %s\n", EntityInfo::gamePieceOwnerLookupTable[unit->aiComp.owner]);
+				ImGui::Text("Type: %s\n", EntityInfo::gamePieceClassLookupTable[unit->aiComp.type]);
+				ImGui::EndGroup();
 			} else if (UnitManager::selectedUnits.size() > 1) {
+				UnitManager::sortSelectedUnits(); //group them up
+				int entityInfoPaneWidth = static_cast<int>(Global::windowWidth) - spawnWindowWidth;
+				const int portraitSize = 32; //use 32 for smallish icons
+				const int paddingSize = int(ImGui::GetStyle().ItemSpacing.x + 0.5);
+				const int maxPortraits = entityInfoPaneWidth / (portraitSize + paddingSize);
+				int currentIndex = 0;
 				for (const auto& unit : UnitManager::selectedUnits) {
-//draw something
+					ImGui::Image(entitySprite[unit->meshType], ImVec2(portraitSize, portraitSize));
+					currentIndex++; //must be before if statement otherwise it'll look weird
+					if (currentIndex % maxPortraits != 0) {
+						ImGui::SameLine();//if we reach dont reach a new new line
+					}
 				}
 			}
-
 
 			ImGui::End();
 		}
@@ -208,6 +262,18 @@ namespace Ui {
 														ImGuiWindowFlags_NoResize |
 														ImGuiWindowFlags_NoCollapse |
 														ImGuiWindowFlags_NoMove);
+
+			auto highlightBuildingButtonHelper = [](BuildingSelected type, const char* buttonString) {
+				if (selectedBuilding == type) {
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 255, 0, 255));
+					ImGui::Button(buttonString);
+					ImGui::PopStyleColor();
+				} else {
+					if (ImGui::Button(buttonString)) {
+						selectedBuilding = type;
+					}
+				}
+			};
 
 			switch (spawnWindowState) {
 				case SpawnWindowState::SPAWN_SELECTOR: {
@@ -222,9 +288,7 @@ namespace Ui {
 				}
 				case SpawnWindowState::SPAWN_DEFENSIVE_BUILDINGS : {
 
-					if (ImGui::Button("Gun Turret")) {
-						selectedBuilding = GUN_TURRET;
-					}
+					highlightBuildingButtonHelper(GUN_TURRET, "Gun Turret");
 
 					//back button alignment
 					ImGui::SetCursorPos(ImVec2(spawnWindowWidth - ImGui::GetFontSize() * 5,
@@ -237,18 +301,10 @@ namespace Ui {
 				}
 				case SpawnWindowState::SPAWN_ECONOMIC_BUILDINGS : {
 
-//					if (ImGui::Button("Command Center")) {
-//						Building::spawn(Model::, glm::vec3(35, 0, 35),
-//										GamePieceOwner::PLAYER);
-//					}
-
-					if (ImGui::Button("Refinery")) {
-						selectedBuilding = REFINERY;
-					}
-
-					if (ImGui::Button("Supply Depot")) {
-						selectedBuilding = SUPPLY_DEPOT;
-					}
+					highlightBuildingButtonHelper(COMMAND_CENTER, "Command Center");
+					highlightBuildingButtonHelper(REFINERY, "Refinery");
+					highlightBuildingButtonHelper(FACTORY, "Factory");
+					highlightBuildingButtonHelper(SUPPLY_DEPOT, "Supply Depot");
 
 					ImGui::SetCursorPos(ImVec2(spawnWindowWidth - ImGui::GetFontSize() * 5,
 											   uiHeight - ImGui::GetFontSize() * 3));
@@ -260,6 +316,26 @@ namespace Ui {
 				}
 			}
 
+			ImGui::End();
+		}
+
+		if (Config::showFPSCounter) {
+			const float DISTANCE = 10.0f;
+			ImVec2 window_pos = ImVec2(DISTANCE, DISTANCE);
+			ImVec2 window_pos_pivot = ImVec2(0.0f, 0.0f);
+			ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+			ImGui::SetNextWindowSize(ImVec2(110, 50));
+			ImGui::SetNextWindowBgAlpha(0.3f); // Transparent background
+			ImGui::Begin("FPS counter", nullptr, ImGuiWindowFlags_NoSavedSettings |
+												 ImGuiWindowFlags_NoResize |
+												 ImGuiWindowFlags_NoCollapse |
+												 ImGuiWindowFlags_NoMove |
+												 ImGuiWindowFlags_NoTitleBar |
+												 ImGuiWindowFlags_AlwaysAutoResize |
+												 ImGuiWindowFlags_NoFocusOnAppearing |
+												 ImGuiWindowFlags_NoNav);
+
+			ImGui::Text("FPS:\t\t%.f\nDelay: %.f", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
 			ImGui::End();
 		}
 
@@ -310,7 +386,8 @@ namespace Ui {
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 		glfwWindowHint(GLFW_RESIZABLE, 1);
-		g_Window = glfwCreateWindow(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT, Config::WINDOW_TITLE,
+		g_Window = glfwCreateWindow(Config::INITIAL_WINDOW_WIDTH, Config::INITIAL_WINDOW_HEIGHT,
+									Config::WINDOW_TITLE,
 									nullptr, nullptr);
 		if (g_Window == nullptr)
 			return false;
@@ -377,7 +454,7 @@ namespace Ui {
 								   " the omnipresent megacorporation that runs human civilization, and have been"
 								   " tasked with overseeing a robotic colony development team. You are offered a promotion"
 								   " if you can get the colony to produce [Amount(s)] of [Resource(s)] per"
-								   " [Time unit], at which point you’d get to supervise a much cooler planet.");
+								   " [Time unit], at which point you'd get to supervise a much cooler planet.");
 
 				ImGui::NewLine();
 				ImGui::Text("Movement Keys:\n");
@@ -388,11 +465,12 @@ namespace Ui {
 
 				ImGui::NewLine();
 				ImGui::Text("P\t\t\t\t\t\tPause game\n");
-				ImGui::Text("Esc\t\t\t\t\tQuit game\n");
+				ImGui::Text("Esc\t\t\t\t\tPause game\n");
 
 				ImGui::NewLine();
 				ImGui::Text("Left click/drag\t\tSelect Units\n");
 				ImGui::Text("Right click\t\t\t\t\tMove/Attack\n");
+				ImGui::Text("Mouse scroll\t\tZoom in/out\n");
 
 				ImGui::NewLine();
 				if (ImGui::Button("Close")) {
@@ -443,10 +521,6 @@ namespace Ui {
 				}
 
 				ImGui::End();
-			}
-
-			if (ImGui::GetIO().KeysDown[GLFW_KEY_ESCAPE]) {
-				Global::gameState = GameState::PLAY;
 			}
 
 			// Rendering
@@ -576,7 +650,8 @@ namespace Ui {
 				} else {
 					glBindTexture(GL_TEXTURE_2D, (GLuint) (intptr_t) pcmd->TextureId);
 					glScissor((int) pcmd->ClipRect.x, (int) (fb_height - pcmd->ClipRect.w),
-							  (int) (pcmd->ClipRect.z - pcmd->ClipRect.x), (int) (pcmd->ClipRect.w - pcmd->ClipRect.y));
+							  (int) (pcmd->ClipRect.z - pcmd->ClipRect.x),
+							  (int) (pcmd->ClipRect.w - pcmd->ClipRect.y));
 					glDrawElements(GL_TRIANGLES, (GLsizei) pcmd->ElemCount,
 								   sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, idx_buffer_offset);
 				}
@@ -624,13 +699,15 @@ namespace Ui {
 		if (action == GLFW_PRESS && button >= 0 && button < 3) {
 			g_MouseJustPressed[button] = true;
 			// play mouse click sound
-			World::play_mouse_click_sound();
+			AudioManager::play_mouse_click_sound();
 		}
 
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
+		if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_2) {
+			selectedBuilding = BuildingSelected::NONE; //right click cancels building selection
+		}
+
 		//make sure to call the world mouse callback only game world and not ui
-		if (ypos < Global::windowHeight - uiHeight) {
+		if (ImGui::GetIO().MousePos.y < Global::windowHeight - uiHeight) {
 			World::on_mouse_button(window, button, action, mods); //use callback in the game area
 		}
 	}
@@ -640,7 +717,9 @@ namespace Ui {
 		io.MouseWheelH += (float) xoffset;
 		io.MouseWheel += (float) yoffset;
 
-		World::on_mouse_scroll(window, xoffset, yoffset);
+		if (ImGui::GetIO().MousePos.y < Global::windowHeight - uiHeight) {
+			World::on_mouse_scroll(window, xoffset, yoffset);
+		}
 	}
 
 	void ImGui_ImplGlfw_KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -659,6 +738,10 @@ namespace Ui {
 
 		if (Global::gameState == GameState::PLAY) { //only allow world key call backs when playing
 			World::on_key(window, key, scancode, action, mods);
+		} else if (Global::gameState == GameState::PAUSED &&
+				   action == GLFW_RELEASE
+				   && key == GLFW_KEY_ESCAPE) {
+			Global::gameState = GameState::PLAY;
 		}
 	}
 
@@ -873,7 +956,8 @@ namespace Ui {
 		glfwGetWindowSize(g_Window, &w, &h);
 		glfwGetFramebufferSize(g_Window, &display_w, &display_h);
 		io.DisplaySize = ImVec2((float) w, (float) h);
-		io.DisplayFramebufferScale = ImVec2(w > 0 ? ((float) display_w / w) : 0, h > 0 ? ((float) display_h / h) : 0);
+		io.DisplayFramebufferScale = ImVec2(w > 0 ? ((float) display_w / w) : 0,
+											h > 0 ? ((float) display_h / h) : 0);
 
 		// Setup time step
 		double current_time = glfwGetTime();
@@ -909,7 +993,8 @@ namespace Ui {
 				glfwSetInputMode(g_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 			} else {
 				glfwSetCursor(g_Window,
-							  g_MouseCursors[cursor] ? g_MouseCursors[cursor] : g_MouseCursors[ImGuiMouseCursor_Arrow]);
+							  g_MouseCursors[cursor] ? g_MouseCursors[cursor]
+													 : g_MouseCursors[ImGuiMouseCursor_Arrow]);
 				glfwSetInputMode(g_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			}
 		}

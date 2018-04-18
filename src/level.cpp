@@ -5,21 +5,22 @@
 #include "particle.hpp"
 #include "coord.hpp"
 
-std::map<Model::MeshType, std::pair<int, float>> Level::tileToCost{
-		{Model::MeshType::HROAD,      {Config::OBSTACLE_COST,            INF}},
-		{Model::MeshType::SAND_1,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-		{Model::MeshType::SAND_2,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-		{Model::MeshType::SAND_3,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-		{Model::MeshType::SAND_4,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-		{Model::MeshType::SAND_5,     {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-		{Model::MeshType::TREE,       {Config::OBSTACLE_COST,            INF}},
-		{Model::MeshType::YELLOWTREE, {Config::OBSTACLE_COST,            INF}},
-		{Model::MeshType::REDTREE,    {Config::OBSTACLE_COST,            INF}},
-		{Model::MeshType::WATER,      {Config::OBSTACLE_COST,            INF}},
-		{Model::MeshType::GRASS,      {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-		{Model::MeshType::HROAD,      {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-		{Model::MeshType::VROAD,      {Config::DEFAULT_TRAVERSABLE_COST, INF}},
-		{Model::MeshType::GEYSER,     {Config::OBSTACLE_COST,            INF}}
+//int is used as movement cost
+std::map<Model::MeshType, int> Level::tileToCost{
+		{Model::MeshType::HROAD,      Config::OBSTACLE_COST           },
+		{Model::MeshType::SAND_1,     Config::DEFAULT_TRAVERSABLE_COST},
+		{Model::MeshType::SAND_2,     Config::DEFAULT_TRAVERSABLE_COST},
+		{Model::MeshType::SAND_3,     Config::DEFAULT_TRAVERSABLE_COST},
+		{Model::MeshType::SAND_4,     Config::DEFAULT_TRAVERSABLE_COST},
+		{Model::MeshType::SAND_5,     Config::DEFAULT_TRAVERSABLE_COST},
+		{Model::MeshType::TREE,       Config::OBSTACLE_COST           },
+		{Model::MeshType::YELLOWTREE, Config::OBSTACLE_COST           },
+		{Model::MeshType::REDTREE,    Config::OBSTACLE_COST           },
+		{Model::MeshType::WATER,      Config::OBSTACLE_COST           },
+		{Model::MeshType::GRASS,      Config::DEFAULT_TRAVERSABLE_COST},
+		{Model::MeshType::HROAD,      Config::DEFAULT_TRAVERSABLE_COST},
+		{Model::MeshType::VROAD,      Config::DEFAULT_TRAVERSABLE_COST},
+		{Model::MeshType::GEYSER,     Config::OBSTACLE_COST           }
 };
 
 std::map<char, Model::MeshType> Level::charToType{
@@ -37,6 +38,7 @@ std::map<char, Model::MeshType> Level::charToType{
 		{'H',  Model::MeshType::HROAD},
 		{'V',  Model::MeshType::VROAD},
 		{'P',  Model::MeshType::GEYSER},
+		{'O',  Model::MeshType::ENEMY_PORTAL},
 		{'X',  Model::MeshType::GUN_TURRET}
 };
 
@@ -44,7 +46,7 @@ std::map<char, Model::MeshType> Level::charToType{
 bool Level::init(const std::vector<std::shared_ptr<Renderer>>& meshRenderers) {
 	// So that re initializing will be the same as first initialization
 	tiles.clear();
-	
+
 	for (size_t i = 0; i < Global::levelArray.size(); i++) {
 		std::vector<Model::MeshType> row = Global::levelArray[i];
 		for (size_t j = 0; j < row.size(); j++) {
@@ -73,9 +75,9 @@ void Level::save(std::string filename)
 		logger(LogLevel::ERR) << "Failed to save level with name " << filename;
 		throw "Failed to open file for writing";
 	}
-	for (const auto& row : Global::levelTraversalCostMap) {
+	for (const auto& row : Global::levelArray) {
 		for (const auto& cell : row) {
-			fs << typeToChar[cell.type];
+			fs << typeToChar[cell];
 		}
 		fs << '\n';
 	}
@@ -91,18 +93,12 @@ void Level::update(float ms)
 	Global::levelWithUnitsTraversalCostMap = Global::levelTraversalCostMap;
 }
 
-AStarNode Level::nodeFromCost(int row, int col, Model::MeshType type) {
-	std::pair<int, float> cost = tileToCost[type];
-	// TODO: Why are we giving this stuff doubles instead of ints?
-	return AStarNode(col, row, cost.first, cost.second, (short)type);
-}
-
 std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& levelTextFile) {
 	std::ifstream level(levelTextFile);
 	std::string line;
 	std::vector<std::vector<Model::MeshType>> levelData;
 	std::vector<Model::MeshType> row;
-	std::vector<AStarNode> tileData;
+	std::vector<int> tileData;
 
 	if (!level.is_open()) {
 		logger(LogLevel::ERR) << "Failed to open level data file '" << levelTextFile << "'\n";
@@ -118,11 +114,11 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 			if (charToType.find(tile) == charToType.end()) {
 				// Not in map
 				row.push_back(Model::MeshType::SAND_2);
-				tileData.push_back(nodeFromCost(rowNumber, colNumber, Model::MeshType::SAND_2));
+				tileData.push_back(tileToCost[Model::MeshType::SAND_2]);
 			}
 			else {
 				row.push_back(charToType[tile]);
-				tileData.push_back(nodeFromCost(rowNumber, colNumber, charToType[tile]));
+				tileData.push_back(tileToCost[charToType[tile]]);
 			}
 			colNumber++;
 		}
@@ -134,9 +130,6 @@ std::vector<std::vector<Model::MeshType>> Level::levelLoader(const std::string& 
 	return levelData;
 }
 
-std::vector<std::vector<AStarNode>> Level::getLevelTraversalCostMap() {
-	return Global::levelTraversalCostMap;
-}
 
 inline bool tilesOverlap(glm::vec3 locA, glm::vec3 sizeA, glm::vec3 locB, glm::vec3 sizeB) {
 	int aLowerCornerX = locA.x;
@@ -162,6 +155,20 @@ inline bool tilesOverlap(glm::vec3 locA, glm::vec3 sizeA, glm::vec3 locB, glm::v
 	return true;
 }
 
+void printLevelCostMap() {
+	for (const auto& row: Global::levelTraversalCostMap) {
+		for (const auto& cellCost : row) {
+			if(cellCost > Config::DEFAULT_TRAVERSABLE_COST)	{
+				printf("#");
+			}
+			else {
+				printf(" ");
+			}
+		}
+		printf("\n");
+	}
+}
+
 // extraArg is used to pass in any extra int info that a tile might need - this is specifically intended to pass along counts of tiles being replaced to the constructor of the new tile
 // for stuff like refineries
 std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location, GamePieceOwner owner, unsigned int width, unsigned int height, int extraArg, Model::MeshType replacingMesh)
@@ -181,7 +188,7 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 			for (int x = minX; x < maxX; x++) {
 				for (int z = maxZ; z > minZ; z--) {
 					if (!tilesOverlap({ x,0,z }, { 1,0,1 }, location, size)) {
-						placeTile(replacingMesh, { x, 0, z }, GamePieceOwner::NONE);
+						placeTile(replacingMesh, { x, 0, z }, GamePieceOwner::NONE); //FIXME: recursive? also never get called
 					}
 				}
 			}
@@ -189,16 +196,18 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 		}
 	}
 
-	// Update AI info
-	for (unsigned int x = location.x; x < location.x + width; x++) {
-		for (unsigned int y = location.z; y < location.z + height; y++) {
-			Global::levelTraversalCostMap[y][x] = nodeFromCost(x,y, type);
+	// Update level cost map
+	Coord locationInt(location); //rounding the floats
+	for (int z = locationInt.rowCoord - height +1; z <= locationInt.rowCoord ; z++) { //not sure why off by 1
+		for (int x = locationInt.colCoord; x < locationInt.colCoord + width; x++) {
+			Global::levelTraversalCostMap[z][x] = Config::OBSTACLE_COST; //cant walk thru buildings
 		}
 	}
 
 	std::shared_ptr<Tile> newTile = tileFromMeshType(type, extraArg);
 	newTile->setPosition(location);
 	newTile->position = location;
+	newTile->size = size;
 	setupAiCompForTile(newTile, owner);
 	tiles.push_back(newTile);
 	return newTile;
@@ -233,8 +242,8 @@ bool Level::unpathableTilesInArea(glm::vec3 location, unsigned int height, unsig
 	glm::vec3 size = { width, 0, height };
 	for (auto& tile : tiles) {
 		if (!tile->isDeleted && tilesOverlap(tile->position, tile->size, location, size)) {
-			std::pair<int, float> cost = tileToCost[tile->type];
-			if (cost.first == Config::OBSTACLE_COST)return true;
+			int cost = tileToCost[tile->type];
+			if (cost == Config::OBSTACLE_COST)return true;
 		}
 	}
 	return false;
@@ -301,6 +310,27 @@ void Level::setupAiCompForTile(std::shared_ptr<Tile> tile, GamePieceOwner owner)
 			tile->aiComp.currentHealth = tile->aiComp.totalHealth;
 			tile->aiComp.value = 75;
 			tile->unitComp.state = UnitState::NONE;
+			break;
+		}
+		case (Model::FACTORY): {
+			tile->aiComp.totalHealth = 400;
+			tile->aiComp.visionRange = 10;
+			tile->aiComp.type = GamePieceClass::BUILDING_NON_ATTACKING;
+			tile->aiComp.currentHealth = tile->aiComp.totalHealth;
+			tile->aiComp.value = 75;
+
+			tile->unitComp.state = UnitState::NONE;
+			break;
+		}
+		case (Model::COMMAND_CENTER): {
+			tile->aiComp.totalHealth = 1500;
+			tile->aiComp.visionRange = 10;
+			tile->aiComp.type = GamePieceClass::BUILDING_NON_ATTACKING;
+			tile->aiComp.currentHealth = tile->aiComp.totalHealth;
+			tile->aiComp.value = 400;
+
+			tile->unitComp.state = UnitState::NONE;
+			break;
 		}
 		default:
 			break;

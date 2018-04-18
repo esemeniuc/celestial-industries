@@ -3,10 +3,11 @@
 //
 
 #include "aimanager.hpp"
+#include "unit.hpp"
 
 namespace AI {
 	namespace Manager {
-		const double AI_VISIBLE_THRESHOLD = 0.5; //scout only if we've seen less than this value
+		const double AI_VISIBLE_THRESHOLD = 0.4; //scout only if we've seen less than this value
 		const int AI_RUN_THRESHOLD = 500; //run every 500ms
 		const int UNSEEN_RADIUS_THRESHOLD = 6;
 		const int FOG_OF_WAR_TIME_THRESHOLD = 10;
@@ -14,14 +15,19 @@ namespace AI {
 		int playerUnitValue = 0;
 		int aiUnitValue = 0;
 		int playerBuildingValue = 0;
-		int aiBuildingValue = 0;
 		double percentVisible = 0;
 		double lastRunTimestamp = AI_RUN_THRESHOLD;
-		int aiSpawnX, aiSpawnZ;
+		std::vector<Coord> aiSpawn;
 
 		void init(size_t levelHeight, size_t levelWidth) {
-			aiSpawnX = levelWidth - 1;//FIXME: a hack to make ai always spawn from far right of the map
-			aiSpawnZ = levelHeight / 2;
+			for (size_t z = 0; z < Global::levelArray.size(); z++) {
+				for (size_t x = 0; x < Global::levelArray[z].size(); x++) {
+					if (Global::levelArray[z][x] == Model::MeshType::ENEMY_PORTAL) {
+						aiSpawn.emplace_back(x, z);
+					}
+				}
+			}
+
 		}
 
 		void updateVisibilityMap() {
@@ -42,7 +48,6 @@ namespace AI {
 		void updateValueOfEntities() {
 			aiUnitValue = 0;
 			playerUnitValue = 0;
-			aiBuildingValue = 0;
 			playerBuildingValue = 0;
 			for (auto& unit : Global::playerUnits) {
 				playerUnitValue += unit->aiComp.value;
@@ -52,12 +57,10 @@ namespace AI {
 				aiUnitValue += unit->aiComp.value;
 			}
 
-			for (auto& building : Global::buildingMap) {
-				if (building->aiComp.owner == GamePieceOwner::AI) {
-					aiBuildingValue += building->aiComp.value;
-				} else if (building->aiComp.owner == GamePieceOwner::PLAYER) {
-					playerBuildingValue += building->aiComp.value;
-				}
+			for (auto& building : Global::buildingList) {
+
+				playerBuildingValue += building->aiComp.value;
+
 			}
 		}
 
@@ -78,6 +81,12 @@ namespace AI {
 			return false;
 		}
 
+		Coord& getRandomSpawnLocation() {
+			std::vector<Coord>::iterator randIt = aiSpawn.begin();
+			std::advance(randIt, std::rand() % aiSpawn.size());
+			return *randIt;
+		}
+
 		Coord findBestScoutLocation() {
 			std::vector<std::vector<bool>> visited(Global::levelHeight, std::vector<bool>(Global::levelWidth));
 			std::vector<std::vector<std::pair<int, int>>> parent(
@@ -87,11 +96,12 @@ namespace AI {
 													  Coord::getInvalidCoord().rowCoord}));
 			//traverse tree with bfs
 			int currentUnixTime = static_cast<int>(getUnixTime());
-			std::pair<int, int> root(aiSpawnX, aiSpawnZ);
-			parent[aiSpawnZ][aiSpawnX] = root;
-			visited[aiSpawnZ][aiSpawnX] = true;
+			Coord spawn = getRandomSpawnLocation();
+			std::pair<int, int> root(spawn.colCoord, spawn.rowCoord);
+			parent[spawn.rowCoord][spawn.colCoord] = root;
+			visited[spawn.rowCoord][spawn.colCoord] = true;
 			std::priority_queue<bfsState> queue;
-			queue.push({aiSpawnX, aiSpawnZ, 0, 0});
+			queue.push({spawn.colCoord, spawn.rowCoord, 0, 0});
 			while (!queue.empty()) {
 				bfsState u = queue.top();
 				queue.pop();
@@ -191,10 +201,11 @@ namespace AI {
 		void cleanupCompletedScoutTargets() {
 			for (const auto& aiUnit: Global::aiUnits) {
 				if (!aiUnit->hasMoveTarget()) {
-					Global::scoutingTargetsInProgress.erase(aiUnit->unitComp.targetDest);
+					Global::scoutingTargetsInProgress.erase(Coord(aiUnit->currentDestination));
 				}
 			}
 		}
+
 
 		void update(double elapsed_ms) {
 			lastRunTimestamp += elapsed_ms;
@@ -204,8 +215,8 @@ namespace AI {
 			} else {
 				return; //run only after we exceed the threshold
 			}
-			aiManagerRunIterations++;
 
+			++aiManagerRunIterations;
 			cleanupCompletedScoutTargets();
 			updateValueOfEntities();
 			updateUnitsSeen();
@@ -224,9 +235,23 @@ namespace AI {
 				Coord loc = findBestScoutLocation();
 				std::shared_ptr<Entity> bestUnit = getBestScoutUnit(loc);
 				if (bestUnit) { //if not null
-					bestUnit->moveTo(UnitState::SCOUT, loc.colCoord, loc.rowCoord);
+					bestUnit->moveTo(UnitState::SCOUT, {loc.colCoord, 0, loc.rowCoord});
 					Global::scoutingTargetsInProgress.insert(loc);
 				}
+			}
+
+			//simple ai spawning strategy
+			//if ai has less units than players, then spawn an ai unit
+			int playerValue = playerUnitValue + playerBuildingValue;
+			logger(LogLevel::DEBUG) << "playerValue: " << playerValue << ", aiValue: " << aiUnitValue << '\n';
+			if (playerValue > aiUnitValue) {
+				//spawns a unit once per 500 ms (since thats how often this runs)
+				Coord spawnLocation = getRandomSpawnLocation();
+				Unit::spawn(Model::MeshType::ENEMY_RANGED_LINE_UNIT,
+							{spawnLocation.colCoord, 0, spawnLocation.rowCoord},
+							GamePieceOwner::AI);
+				logger(LogLevel::DEBUG) << "spawned at: " << spawnLocation << '\n';
+
 			}
 		}
 	}

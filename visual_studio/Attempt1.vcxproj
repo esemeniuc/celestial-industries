@@ -515,6 +515,7 @@
     <ClCompile Include="..\ext\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\src\aicomp.cpp" />
     <ClCompile Include="..\src\aimanager.cpp" />
+    <ClCompile Include="..\src\audiomanager.cpp" />
     <ClCompile Include="..\src\collisiondetection.cpp" />
     <ClCompile Include="..\src\collisiondetector.cpp" />
     <ClCompile Include="..\src\collisionResolver.cpp" />
@@ -541,12 +542,14 @@
     <ClCompile Include="..\src\ui.cpp" />
     <ClCompile Include="..\src\unit.cpp" />
     <ClCompile Include="..\src\unitmanager.cpp" />
+    <ClCompile Include="..\src\weapons.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ext\gl3w\GL\gl3w.h" />
     <ClInclude Include="..\ext\gl3w\GL\glcorearb.h" />
     <ClInclude Include="..\src\aicomp.hpp" />
     <ClInclude Include="..\src\aimanager.hpp" />
+    <ClInclude Include="..\src\audiomanager.hpp" />
     <ClInclude Include="..\src\camera.hpp" />
     <ClInclude Include="..\src\collisiondetection.hpp" />
     <ClInclude Include="..\src\collisiondetector.hpp" />
@@ -574,6 +577,7 @@
     <ClInclude Include="..\src\unit.hpp" />
     <ClInclude Include="..\src\unitcomp.hpp" />
     <ClInclude Include="..\src\unitmanager.hpp" />
+    <ClInclude Include="..\src\weapons.hpp" />
     <ClInclude Include="..\src\world.hpp" />
   </ItemGroup>
   <ItemGroup>

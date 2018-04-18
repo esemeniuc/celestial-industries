@@ -32,11 +32,13 @@ namespace Config {
 	// Note: this must be equal to the value in the shader, otherwise weird things will eventually happen probably
     const unsigned int MAX_TOTAL_SUBOBJECTS_PER_RENDERER = 1000; // If you change this and not the shader you are a bad person
 
+	const bool showFPSCounter = true;
+
 	//game tunable constants
-	constexpr const int OBSTACLE_COST = 1000;
-	constexpr const int DEFAULT_TRAVERSABLE_COST = 10;
+	constexpr const int OBSTACLE_COST = 10000;
+	constexpr const int DEFAULT_TRAVERSABLE_COST = 0; //straight movement costs 10, diagonal costs 14, see pathfinder.hpp
 	constexpr const int POINT_CLICK_DISTANCE_THRESHOLD = 1;
-	constexpr const int RIGHT_CLICK_ATTACK_WITHIN_RANGE_THRESHOLD = 0;
+	constexpr const int RIGHT_CLICK_ATTACK_WITHIN_RANGE_THRESHOLD = 1;
 
 	//file paths
 	constexpr const char* FONTAWESOME_FILE_PATH = font_path("fa-solid-900.ttf");

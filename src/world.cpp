@@ -8,6 +8,7 @@
 #include "unit.hpp"
 #include "attackManger.hpp"
 #include "ui.hpp"
+#include "audiomanager.hpp"
 
 namespace World {
 	GLFWwindow* m_window;
@@ -33,14 +34,8 @@ namespace World {
 	std::default_random_engine m_rng = std::default_random_engine(std::random_device()());
 	std::uniform_real_distribution<float> m_dist; // default 0..1
 
-	// music and audio
-	Mix_Music* m_background_music;
-	Mix_Chunk* m_mouse_click;
-	Mix_Chunk* m_error_sound;
-
 	double gameElapsedTime = 0.0;
 }
-
 
 // World initialization
 bool World::init() {
@@ -56,41 +51,6 @@ bool World::init() {
 	glfwSetWindowSizeCallback(m_window, on_window_resize);
 
 	//-------------------------------------------------------------------------
-
-	// Loading music and sounds
-	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-		logger(LogLevel::ERR) << "Failed to initialize SDL Audio\n";
-		return false;
-	}
-
-	// load support for the OGG audio format
-	int flags = MIX_INIT_OGG;
-	int initted = Mix_Init(flags);
-	if ((initted & flags) != flags) { // Bitwise & intentional; follows SDL docs
-		logger(LogLevel::ERR) << "Mix_Init: Failed to init required ogg support!\n";
-		logger(LogLevel::ERR) << "Mix_Init: " << Mix_GetError() << '\n';
-	}
-
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
-		logger(LogLevel::ERR) << "Failed to open audio device";
-		return false;
-	}
-
-	m_background_music = Mix_LoadMUS(audio_path("game_sound_track.ogg"));
-	// LoadWAV is actaully capable of loading other audio formats as well, the name is not accurate
-	// https://www.libsdl.org/projects/SDL_mixer/docs/SDL_mixer_19.html#SEC19
-	m_mouse_click = Mix_LoadWAV(audio_path("click3.ogg"));
-
-	m_error_sound = Mix_LoadWAV(audio_path("switch23.ogg"));
-
-	if (m_background_music == nullptr) {
-		logger(LogLevel::ERR) << "Failed to load sounds, make sure the data directory is present";
-		return false;
-	}
-
-	// Playing background music indefinitely
-	Mix_PlayMusic(m_background_music, -1);
-	logger(LogLevel::DEBUG) << "Loaded music";
 
 	// setup skybox
 	if (!loadSkybox("skybox.obj", "skybox")) {
@@ -113,7 +73,7 @@ bool World::init() {
 	level.particleShader = particleShader;
 
 	std::shared_ptr<Texture> particleTexture = std::make_shared<Texture>();
-	particleTexture->load_from_file(textures_path("turtle.png"));
+	particleTexture->load_from_file(textures_path("oil.jpg"));
 	if (!particleTexture->is_valid()) {
 		throw "Particle texture failed to load!";
 	}
@@ -138,24 +98,15 @@ bool World::init() {
 
 	UnitManager::init(Global::levelHeight, Global::levelWidth);
 	AI::Manager::init(Global::levelHeight, Global::levelWidth);
-	Global::aStarCostMap = level.getLevelTraversalCostMap();
 
 	//display a path
-	int startx = 25, startz = 11;
-	int targetx = 10, targetz = 10;
-	auto temp1 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
-//	temp1->moveTo(UnitState::MOVE, targetx, targetz);
+	auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
 
-	startx = 39, startz = 19;
-	auto temp2 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
-//	temp2->moveTo(targetx, targetz);
+	auto temp2 = Unit::spawn(Model::MeshType::BALL, {39, 0, 19}, GamePieceOwner::AI);
 
-	startx = 39, startz = 1;
-	auto temp3 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
-//	temp3->moveTo(UnitState::MOVE, targetx, targetz);
+	auto temp3 = Unit::spawn(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, {39, 0, 1}, GamePieceOwner::PLAYER);
 
-	startx = 20, startz = 20;
-	auto temp4 = Unit::spawn(Model::MeshType::BALL, {startx, 0, startz}, GamePieceOwner::PLAYER);
+	auto temp4 = Unit::spawn(Model::MeshType::BALL, {20.5, 0, 15.5}, GamePieceOwner::AI);
 
 	// Example use of targeting units.
 //	AttackManager::registerTargetUnit(temp2, temp1);
@@ -163,6 +114,8 @@ bool World::init() {
 	//don't set selectedTileCoords at launch because glfwGetCursorPos() returns weird stuff
 	return true;
 }
+
+
 
 bool World::initMeshTypes(const std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>>& sources) {
 	// All the models come from the same place
@@ -203,21 +156,6 @@ bool World::loadSkybox(const std::string& skyboxFilename, const std::string& sky
 
 // Releases all the associated resources
 void World::destroy() {
-	if (m_background_music != nullptr) {
-		Mix_FreeMusic(m_background_music);
-	}
-
-	if (m_mouse_click != nullptr) {
-		Mix_FreeChunk(m_mouse_click);
-	}
-
-	if (m_error_sound != nullptr) {
-		Mix_FreeChunk(m_error_sound);
-	}
-
-	// cleans up all dynamically loaded library handles used by sdl mixer
-	Mix_CloseAudio();
-	Mix_Quit();
 
 	m_skybox.destroy();
 	glfwDestroyWindow(m_window);
@@ -229,22 +167,24 @@ bool World::update(double elapsed_ms) {
 	glfwPollEvents(); //Processes system messages, if this wasn't present the window would become unresponsive
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
-	camera.update((float)elapsed_ms);
+	camera.update((float) elapsed_ms);
 	gameElapsedTime += elapsed_ms;
 
 	if (selectedTileCoordinates.rowCoord >= 0 &&
-		(unsigned long) selectedTileCoordinates.rowCoord < level.getLevelTraversalCostMap().size() &&
+		(size_t) selectedTileCoordinates.rowCoord < Global::levelHeight &&
 		selectedTileCoordinates.colCoord >= 0 &&
-		(unsigned long) selectedTileCoordinates.colCoord < level.getLevelTraversalCostMap()[0].size()) {
+		(size_t) selectedTileCoordinates.colCoord < Global::levelWidth) {
 
 		level.tileCursor->setPosition({selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord});
 	}
+
+	Global::playerResources += Global::playerResourcesPerSec * (elapsed_ms / 1000);
 
 	for (const auto& emitter : Global::emitters) {
 		emitter->update(elapsed_ms);
 	}
 
-	Global::levelWithUnitsTraversalCostMap = Global::levelTraversalCostMap;
+	World::level.update(elapsed_ms);
 	AI::Manager::update(elapsed_ms);
 	UnitManager::update(elapsed_ms);
 	AttackManager::update(elapsed_ms);
@@ -254,6 +194,9 @@ bool World::update(double elapsed_ms) {
 	}
 	for (const auto& entity : Global::playerUnits) {
 		entity->animate(elapsed_ms);
+	}
+	for (const auto& weapon : Global::weapons) {
+		weapon->update(elapsed_ms);
 	}
 	return true;
 }
@@ -294,14 +237,6 @@ void World::draw() {
 //	glfwSwapBuffers(m_window);
 }
 
-void World::play_mouse_click_sound() {
-	Mix_PlayChannel(-1, m_mouse_click, 0);
-}
-
-void World::play_error_sound()
-{
-	Mix_PlayChannel(-1, m_error_sound, 0);
-}
 
 // Should the game be over ?
 bool World::is_over() {
@@ -324,9 +259,8 @@ void World::updateBoolFromKey(int action, int key, bool& toUpdate, const std::ve
 // On key callback
 void World::on_key(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	// Core controls
-	if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
-		Global::gameState = GameState::QUIT;
-	} else if (action == GLFW_PRESS && key == GLFW_KEY_P) {
+	if (action == GLFW_RELEASE &&
+		(key == GLFW_KEY_ESCAPE || key == GLFW_KEY_P)) {
 		Global::gameState = GameState::PAUSED;
 	}
 
@@ -341,16 +275,16 @@ void World::on_key(GLFWwindow* window, int key, int scancode, int action, int mo
 			// { Var to update, { Keys that will update it } }
 
 			// Camera controls:
-			{camera.move_forward,  {GLFW_KEY_W, GLFW_KEY_UP}},
-			{camera.move_backward, {GLFW_KEY_S, GLFW_KEY_DOWN}},
-			{camera.move_right,    {GLFW_KEY_D, GLFW_KEY_RIGHT}},
-			{camera.move_left,     {GLFW_KEY_A, GLFW_KEY_LEFT}},
+			{camera.move_forward,  {GLFW_KEY_W,           GLFW_KEY_UP}},
+			{camera.move_backward, {GLFW_KEY_S,           GLFW_KEY_DOWN}},
+			{camera.move_right,    {GLFW_KEY_D,           GLFW_KEY_RIGHT}},
+			{camera.move_left,     {GLFW_KEY_A,           GLFW_KEY_LEFT}},
 			{camera.rotate_right,  {GLFW_KEY_E}},
 			{camera.rotate_left,   {GLFW_KEY_Q}},
 			{camera.z_held,        {GLFW_KEY_Z}},
 
 			// Shift
-			{shiftBeingHeld,	   {GLFW_KEY_RIGHT_SHIFT, GLFW_KEY_LEFT_SHIFT}},
+			{shiftBeingHeld,       {GLFW_KEY_RIGHT_SHIFT, GLFW_KEY_LEFT_SHIFT}},
 	};
 
 	for (auto stickyKey : stickyKeys) {
@@ -417,45 +351,77 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
 	std::pair<bool, glm::vec3> targetLocation = World::getTileCoordFromWindowCoords(xpos, ypos);
-	glm::vec3 coords = { selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord };
+	glm::vec3 coords = {selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord};
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
-			std::cout << "clicked " << targetLocation.second.x << " " << targetLocation.second.z << "\n";
+			logger(LogLevel::DEBUG) << "clicked " << targetLocation.second.x << " " << targetLocation.second.z << "\n";
 			UnitManager::selectUnit(targetLocation.second);
 		}
 
-		std::vector<Model::MeshType> trees = { Model::MeshType::REDTREE, Model::MeshType::TREE, Model::MeshType::YELLOWTREE };
+		std::vector<Model::MeshType> trees = {Model::MeshType::REDTREE, Model::MeshType::TREE,
+											  Model::MeshType::YELLOWTREE};
 		if (withinLevelBounds(coords)) {
 			switch (Ui::selectedBuilding) {
-			case Ui::BuildingSelected::REFINERY: {
-				const int refinerySize = 3;
-				int numFriendlyTiles = level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, refinerySize, refinerySize);
-				int numGeysers = level.numTilesOfTypeInArea(Model::MeshType::GEYSER, coords, refinerySize, refinerySize);
-				bool unpathableTiles = level.unpathableTilesInArea(coords, refinerySize, refinerySize);
-				if (numFriendlyTiles > 0 || numGeysers == 0 || unpathableTiles) {
-					play_error_sound();
+				case Ui::BuildingSelected::REFINERY: {
+					const int refinerySize = 3;
+					int numFriendlyTiles = level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, refinerySize,
+																	   refinerySize);
+					int numGeysers = level.numTilesOfTypeInArea(Model::MeshType::GEYSER, coords, refinerySize,
+																refinerySize);
+					if (numFriendlyTiles > 0 || numGeysers == 0) {
+						AudioManager::play_error_sound();
+						break;
+					}
+					level.placeTile(Model::MeshType::REFINERY, coords, GamePieceOwner::PLAYER, refinerySize,
+									refinerySize, numGeysers);
+					AudioManager::playPlaceBuildingSound();
 					break;
 				}
-				level.placeTile(Model::MeshType::REFINERY, coords, GamePieceOwner::PLAYER, 3, 3, numGeysers);
-				break;
-			}
-			case Ui::BuildingSelected::SUPPLY_DEPOT:
-				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 || level.unpathableTilesInArea(coords)) {
-					play_error_sound();
+				case Ui::BuildingSelected::SUPPLY_DEPOT:
+					if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 ||
+						level.unpathableTilesInArea(coords)) {
+						AudioManager::play_error_sound();
+						break;
+					}
+					level.placeTile(Model::MeshType::SUPPLY_DEPOT, coords);
+					AudioManager::playPlaceBuildingSound();
+					break;
+				case Ui::BuildingSelected::COMMAND_CENTER: {
+					const int width = 3;
+					const int height = 3;
+					if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, width, height) > 0 ||
+						level.unpathableTilesInArea(coords, width, height)) {
+						AudioManager::play_error_sound();
+						break;
+					}
+					level.placeTile(Model::MeshType::COMMAND_CENTER, coords, GamePieceOwner::PLAYER, width, height);
+					AudioManager::playPlaceBuildingSound();
 					break;
 				}
-				level.placeTile(Model::MeshType::SUPPLY_DEPOT, coords);
-				break;
-			case Ui::BuildingSelected::GUN_TURRET:
-				if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 || level.unpathableTilesInArea(coords)) {
-					play_error_sound();
+				case Ui::BuildingSelected::FACTORY: {
+					const int width = 3;
+					const int height = 3;
+					if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, width, height) > 0 ||
+						level.unpathableTilesInArea(coords, width, height)) {
+						AudioManager::play_error_sound();
+						break;
+					}
+					level.placeTile(Model::MeshType::FACTORY, coords, GamePieceOwner::PLAYER, width, height);
+					AudioManager::playPlaceBuildingSound();
 					break;
 				}
-				level.placeTile(Model::MeshType::GUN_TURRET, coords);
-				break;
-			case Ui::BuildingSelected::NONE:
-			default:
-				break;
+				case Ui::BuildingSelected::GUN_TURRET:
+					if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 ||
+						level.unpathableTilesInArea(coords)) {
+						AudioManager::play_error_sound();
+						break;
+					}
+					level.placeTile(Model::MeshType::GUN_TURRET, coords);
+					AudioManager::playPlaceBuildingSound();
+					break;
+				case Ui::BuildingSelected::NONE:
+				default:
+					break;
 			}
 		}
 	};

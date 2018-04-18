@@ -22,8 +22,7 @@ namespace AttackManager {
             for (std::shared_ptr<Entity>& entity2 : entities2) {
                 if (entity1->inAttackRange(entity2)) {
                     // Entity1 attacks entity2 for elapsed_ms amount of time.
-                    entity1->attack(entity2);
-                    entity2->takeAttack(entity1, elapsed_ms);
+                    entity1->attack(entity2, elapsed_ms);
                     attackingEntities.push_back(entity1);
                 }
             }
@@ -58,7 +57,7 @@ namespace AttackManager {
                     } else {
                         // Not in attack range yet. Move to get in MIN attack range.
                         // Set UnitState to ATTACK_MOVE indicating to the attack manager not to redirect this unit to do anything else.
-                        it->first->moveTo(UnitState::ATTACK_MOVE, it->second->getPosition().x, it->second->getPosition().z, false);
+                        it->first->moveTo(UnitState::ATTACK_MOVE, {it->second->getPosition().x, 0, it->second->getPosition().z}, false);
                     }
                     ++it;
                 }
@@ -73,11 +72,9 @@ namespace AttackManager {
 
         executeAutoAttacks(Global::playerUnits, Global::aiUnits, elapsed_ms);
         executeAutoAttacks(Global::aiUnits, Global::playerUnits, elapsed_ms);
-        executeAutoAttacks(Global::aiUnits, Global::buildingMap, elapsed_ms);
+        executeAutoAttacks(Global::aiUnits, Global::buildingList, elapsed_ms);
 
-        removeDeadEntities(Global::playerUnits);
-        removeDeadEntities(Global::aiUnits);
-        removeDeadEntities(Global::buildingMap);
+        removeDeadEntities(Global::buildingList);
 
         // Set the attacking entities' state back to IDLE so that next frame they are available to attack again.
         for (std::shared_ptr<Entity>& entity : attackingEntities) {

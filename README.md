@@ -1,5 +1,7 @@
 # cpsc436d
 
+![alt text](https://github.com/esemeniuc/celestial-industries/blob/master/data/textures/Celestial-Industries.png "Celestial Industries Logo")
+
 ## Project Info
 
 ### Info
@@ -16,27 +18,35 @@
 ### Dependencies
 - SDL2
 - SDL2_mixer
-- OpenGL 3.3
+- OpenGL 4.1
+- GLFW3
 
-### How to run
-- Git clone
-- Pull in submodule dependencies: `git submodule update --init --recursive`
-
-#### Installation on Ubuntu
+### How to Download
 ```bash
-apt-get install -y cmake g++ libsdl2-dev libsdl2-mixer-dev libglfw3-dev
+git clone https://github.com/esemeniuc/celestial-industries.git
+git submodule update --init --recursive
+```
+
+### Linux Instructions
+Requires g++ 6.x/clang++ 4.x or newer
+
+#### Dependency Installation on Ubuntu
+```bash
+apt-get install -y cmake g++ libsdl2-dev libsdl2-mixer-dev libglfw3-dev libogg libvorbis
 ```
 
 #### Compiling
 ```bash
-mkdir build
-cd build 
+mkdir build && cd build
 cmake ..
 make -j4
 ```
-#### Installation on Windows
 
-You should be able to simply open `visual_studio/Attempt 1.sln` and run it the same way you would any other Visual Studio project.
+#### Running the game
+From the git root, run
+```bash
+build/proj
+```
 
 #### Running tests
 Catch (from the git root)
@@ -48,6 +58,12 @@ CMake (from within the build folder)
 ```bash
 ctest
 ```
+
+### Windows Instructions
+
+#### Installation on Windows
+
+You should be able to simply open `visual_studio/Attempt 1.sln` and run it the same way you would any other Visual Studio project.
 
 ## Milestone 1
 

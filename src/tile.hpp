@@ -20,7 +20,7 @@ public:
 	Tile(Model::MeshType mesh);
 	Model::MeshType type;
 	void update(double ms);
-	void moveTo(UnitState unitState, int x, int z, bool queueMove=false) override; // Buildings dont path to places
+	void moveTo(UnitState unitState, const glm::vec3& moveToTarget, bool queueMove=false) override; // Buildings dont path to places
 	virtual void removeSelf();
 private:
 	//void setCost(float);
@@ -47,12 +47,13 @@ public:
     void move(double ms) override;
     void explode(glm::vec3 dir);
 
+	void animate(float ms) override;
+	void attack(const std::shared_ptr<Entity>& entityToAttack, double elapsed_ms) override;
 };
 
 class RefineryTile : public Tile {
 public:
 	unsigned int resourceCollectionRate;
-	void move(double ms) override;
 	void removeSelf() override;
 	RefineryTile(unsigned int numberOfGeysersReplaced);
 };

@@ -1,14 +1,15 @@
 // internal
 #include "common.hpp"
-#include "world.hpp"
-#include "ui.hpp"
+#include "world.hpp" //need a game world to run
+#include "ui.hpp" //load up the game menu
 #include "global.hpp" //for gamestate
+#include "audiomanager.hpp" //for menu music
 
 #include <chrono>
 
 using Clock = std::chrono::high_resolution_clock;
 
-void gameLoop() {
+void runMainGameLoop() {
 	auto t = Clock::now();
 	// variable timestep loop.. can be improved (:
 	while (!World::is_over() && Global::gameState == GameState::PLAY) {
@@ -41,6 +42,11 @@ int main(int argc, char* argv[]) {
 	Ui::imguiSetup();
 	World::m_window = Ui::getWindow();
 
+	if (!AudioManager::init()) {
+		logger(LogLevel::ERR) << "Audio manager init failed\n";
+		return EXIT_FAILURE;
+	}
+
 	// Initializing world (after renderer.init().. sorry)
 	if (!World::init()) {
 		// Time to read the error message
@@ -57,17 +63,25 @@ int main(int argc, char* argv[]) {
 		}
 		switch (Global::gameState) {
 			case GameState::START_MENU: {
-				printf("menu\n");
+				logger(LogLevel::DEBUG) << "gamestate = menu\n";
+				AudioManager::startLaunchMenuMusic();
 				Ui::imguiDrawLaunchMenu(); //once this finishes we draw the world
+				AudioManager::stopCurrentSong();
 				break;
 			}
 			case GameState::PLAY: {
-				printf("play\n");
-				gameLoop();
+				logger(LogLevel::DEBUG) << "gamestate = play\n";
+				if (Mix_PausedMusic()) {
+					AudioManager::resumeGameMusic();
+				} else{
+					AudioManager::startMainGameMusic();
+				}
+				runMainGameLoop();
+				AudioManager::pauseGameMusic();
 				break;
 			}
 			case GameState::PAUSED: {
-				//draw game pause menu
+				logger(LogLevel::DEBUG) << "gamestate = paused\n";
 				Ui::imguiDrawPauseMenu(); //once this finishes we draw the world
 				break;
 			}

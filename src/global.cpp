@@ -4,10 +4,10 @@ namespace Global {
 	size_t levelWidth = 0; //gets overwritten in world.init()
 	size_t levelHeight = 0;
 
-	int playerResources = 0;
-	int playerResourcesPerSec = 0;
+	double playerResources = 400;
+	double playerResourcesPerSec = 0;
 	int playerCurrentSupply = 0;
-	int playerMaxSupply = 0;
+	int playerMaxSupply = 10;
 
 	GameState gameState = GameState::START_MENU;
 
@@ -25,15 +25,15 @@ namespace Global {
 	std::vector<std::vector<int>> aiVisibilityMap; //stores the last seen time of each cell by ai
 	std::vector<std::vector<int>> playerVisibilityMap; //stores the last seen time of each cell by player
 
-	std::vector<std::shared_ptr<Entity>> buildingMap;
+	std::vector<std::shared_ptr<Entity>> buildingList;
 
 	std::vector<std::vector<Model::MeshType>> levelArray; //make global so we can have ai know what tiles are around
-	std::vector<std::vector<AStarNode>> levelTraversalCostMap;
-	std::vector<std::vector<AStarNode>> levelWithUnitsTraversalCostMap;
+	std::vector<std::vector<int>> levelTraversalCostMap;
+	std::vector<std::vector<int>> levelWithUnitsTraversalCostMap;
 
 	std::unordered_set<Coord, CoordHasher> scoutingTargetsInProgress;
 
-	std::vector<std::vector<AStarNode>> aStarCostMap;
-
 	std::vector<std::shared_ptr<Particles::ParticleEmitter>> emitters;
+
+	std::vector<std::shared_ptr<Weapon>> weapons;
 }

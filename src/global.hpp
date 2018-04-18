@@ -4,8 +4,10 @@
 #include <unordered_set>
 #include <vector>
 #include "entity.hpp"
+#include "weapons.hpp"
 #include "gamestate.hpp"
-#include "level.hpp" //for AStarNode
+#include "particle.hpp"
+#include "astarnode.hpp"
 
 namespace Global {
 
@@ -17,8 +19,8 @@ namespace Global {
 
 	extern GameState gameState;
 
-	extern int playerResources;
-	extern int playerResourcesPerSec;
+	extern double playerResources;
+	extern double playerResourcesPerSec;
 	extern int playerCurrentSupply;
 	extern int playerMaxSupply;
 
@@ -33,15 +35,17 @@ namespace Global {
 	extern std::vector<std::vector<int>> aiVisibilityMap; //stores the last seen time of each cell by ai
 	extern std::vector<std::vector<int>> playerVisibilityMap; //stores the last seen time of each cell by player
 
-	extern std::vector<std::shared_ptr<Entity>> buildingMap;
+	extern std::vector<std::shared_ptr<Entity>> buildingList;
 
-	extern std::vector<std::vector<Model::MeshType>> levelArray; //the tiles that make up the level
-	extern std::vector<std::vector<AStarNode>> levelTraversalCostMap; //costs for going over each tile
-	extern std::vector<std::vector<AStarNode>> levelWithUnitsTraversalCostMap;
+	extern std::vector<std::vector<Model::MeshType>> levelArray; //the tiles that make up the level (no buildings or units!)
+	extern std::vector<std::vector<int>> levelTraversalCostMap; //costs for going over each tile incl buildings (no units!)
+	extern std::vector<std::vector<int>> levelWithUnitsTraversalCostMap; //costs include buildings and units
 
 	extern std::unordered_set<Coord, CoordHasher> scoutingTargetsInProgress; //ai uses this to avoid double scouting a position
 
 	extern std::vector<std::vector<AStarNode>> aStarCostMap; //ai should be able to see the level traversal costs
 
 	extern std::vector<std::shared_ptr<Particles::ParticleEmitter>> emitters;
+
+	extern std::vector<std::shared_ptr<Weapon>> weapons;
 }
