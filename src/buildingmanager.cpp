@@ -42,5 +42,4 @@ namespace BuildingManager {
 			Global::selectedBuilding = nullptr;
 		};
 	}
-
 }
