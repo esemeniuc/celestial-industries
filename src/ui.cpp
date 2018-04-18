@@ -80,12 +80,13 @@ namespace Ui {
 		//load in the entity wireframe like sprites
 		std::vector<std::pair<Model::MeshType, const char*>> texturePaths = {
 				//level tile textures
-				{Model::MeshType::REFINERY,                 textures_path("letterPlaceholders/letter_R.png")},
+				{Model::MeshType::REFINERY,                 textures_path("refinery.png")},
 				{Model::MeshType::MINING_TOWER,             textures_path("letterPlaceholders/letter_M.png")},
-				{Model::MeshType::PHOTON_TOWER,             textures_path("letterPlaceholders/letter_P.png")},
-				{Model::MeshType::SUPPLY_DEPOT,             textures_path("letterPlaceholders/letter_S.png")},
+				{Model::MeshType::PHOTON_TOWER,             textures_path("photonTower.png")},
+				{Model::MeshType::SUPPLY_DEPOT,             textures_path("supply_depot.png")},
 				{Model::MeshType::GUN_TURRET,               textures_path("letterPlaceholders/letter_G.png") },
-				{Model::MeshType::FACTORY,                  textures_path("buildings/factory.png") },
+				{Model::MeshType::FACTORY,                  textures_path("factory.png")},
+				{Model::MeshType::COMMAND_CENTER,           textures_path("command_center.png")},
 
 				{Model::MeshType::GEYSER,                   textures_path("letterPlaceholders/letter_G.png")},
 
