@@ -39,7 +39,8 @@ std::map<char, Model::MeshType> Level::charToType{
 		{'V',  Model::MeshType::VROAD},
 		{'P',  Model::MeshType::GEYSER},
 		{'O',  Model::MeshType::ENEMY_PORTAL},
-		{'X',  Model::MeshType::GUN_TURRET}
+		{'X',  Model::MeshType::GUN_TURRET},
+		{'C',  Model::MeshType::COMMAND_CENTER}
 };
 
 
@@ -200,7 +201,8 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 	Coord locationInt(location); //rounding the floats
 	for (int z = locationInt.rowCoord - height +1; z <= locationInt.rowCoord ; z++) { //not sure why off by 1
 		for (int x = locationInt.colCoord; x < locationInt.colCoord + width; x++) {
-			Global::levelTraversalCostMap[z][x] = Config::OBSTACLE_COST; //cant walk thru buildings
+			// Can't walk thru buildings
+			Global::levelTraversalCostMap[z][x] = Config::OBSTACLE_COST;
 		}
 	}
 
@@ -212,6 +214,17 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 	tiles.push_back(newTile);
 	Global::buildingTileList.push_back(newTile);
 	return newTile;
+}
+
+std::shared_ptr<Tile> Level::getTileAt(glm::vec3 location)
+{
+	glm::vec3 size = { 1, 0, 1 };
+	for (auto& tile : tiles) {
+		if (!tile->isDeleted && tilesOverlap(tile->position, tile->size, location, size)) {
+			return tile;
+		}
+	}
+	return nullptr;
 }
 
 int Level::numTilesOfTypeInArea(Model::MeshType type, glm::vec3 location, unsigned int height, unsigned int width)

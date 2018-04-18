@@ -64,13 +64,17 @@ namespace World {
 	void destroy();
 
 	// Steps the game ahead by ms milliseconds
-	bool update(double ms);
+	void update(double ms);
 
 	// Renders our scene
 	void draw();
 
-	// Should the game be over ?
-	bool is_over();
+	// game termination stuff
+	bool gameCloseDetected();
+
+	bool isGameLose();
+
+	bool isGameWin();
 
 	//funcs
 	//init stuff

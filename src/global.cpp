@@ -15,6 +15,7 @@ namespace Global {
 	size_t windowHeight = Config::INITIAL_WINDOW_HEIGHT;
 
 	std::vector<std::shared_ptr<Entity>> selectedEntities; //highlighted by the mouse
+	std::shared_ptr<Tile> selectedBuilding; // highlighted by mouse; should be mutually exclusive with selectedEntities
 
 	std::vector<std::shared_ptr<Entity>> playerUnits;
 	std::vector<std::shared_ptr<Entity>> aiUnits;

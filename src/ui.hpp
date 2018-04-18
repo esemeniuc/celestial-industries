@@ -13,21 +13,21 @@ namespace Ui {
 	static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	// GLFW data
-	static GLFWwindow*  g_Window = NULL;
-	static double       g_Time = 0.0f;
-	static bool         g_MouseJustPressed[3] = { false, false, false };
-	static GLFWcursor*  g_MouseCursors[ImGuiMouseCursor_COUNT] = { 0 };
+	static GLFWwindow* g_Window = NULL;
+	static double g_Time = 0.0f;
+	static bool g_MouseJustPressed[3] = {false, false, false};
+	static GLFWcursor* g_MouseCursors[ImGuiMouseCursor_COUNT] = {0};
 
 	// OpenGL3 data
-	static char         g_GlslVersion[32] = "#version 150";
-	static GLuint       g_FontTexture = 0;
-	static GLuint       g_ShaderHandle = 0, g_VertHandle = 0, g_FragHandle = 0;
-	static int          g_AttribLocationTex = 0, g_AttribLocationProjMtx = 0;
-	static GLint       g_AttribLocationPosition = 0, g_AttribLocationUV = 0, g_AttribLocationColor = 0;
+	static char g_GlslVersion[32] = "#version 150";
+	static GLuint g_FontTexture = 0;
+	static GLuint g_ShaderHandle = 0, g_VertHandle = 0, g_FragHandle = 0;
+	static int g_AttribLocationTex = 0, g_AttribLocationProjMtx = 0;
+	static GLint g_AttribLocationPosition = 0, g_AttribLocationUV = 0, g_AttribLocationColor = 0;
 	static unsigned int g_VboHandle = 0, g_ElementsHandle = 0;
 
 	//eric's stuff
-	enum class SpawnWindowState{
+	enum class SpawnWindowState {
 		SPAWN_SELECTOR,
 		SPAWN_DEFENSIVE_BUILDINGS,
 		SPAWN_ECONOMIC_BUILDINGS
@@ -44,6 +44,12 @@ namespace Ui {
 	// UI logos and textures
 	static ImTextureID gameLogo;
 	static ImVec2 gameLogoSize;
+
+	static ImTextureID winImage;
+	static ImVec2 winImageSize;
+	
+	static ImTextureID loseImage;
+	static ImVec2 loseImageSize;
 
 	//for drawing the selected entity sprites
 	static ImTextureID entitySprite[Model::MeshType::MESHTYPES_COUNT];
@@ -74,6 +80,10 @@ namespace Ui {
 
 	void imguiDrawPauseMenu(); //game pause menu
 
+	void imguiDrawWinScreen();
+
+	void imguiDrawLoseScreen();
+
 	void imguiGenerateScreenObjects(); //main ui
 
 	void imguiShutdown(); //cleanup
@@ -82,7 +92,7 @@ namespace Ui {
 
 	bool ImGui_ImplGlfwGL3_Init(GLFWwindow* window, bool install_callbacks, const char* glsl_version);
 
-	void ImGui_ImplGlfw_CursorPosCallback(GLFWwindow *window, double xpos, double ypos);
+	void ImGui_ImplGlfw_CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
 
 	void ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow*, int button, int action, int /*mods*/);
 

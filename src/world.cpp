@@ -9,6 +9,7 @@
 #include "attackManager.hpp"
 #include "ui.hpp"
 #include "audiomanager.hpp"
+#include "buildingmanager.hpp"
 
 namespace World {
 	GLFWwindow* m_window;
@@ -99,9 +100,12 @@ bool World::init() {
 	UnitManager::init(Global::levelHeight, Global::levelWidth);
 	AI::Manager::init(Global::levelHeight, Global::levelWidth);
 
-	//display a path
+	level.placeTile(Model::MeshType::COMMAND_CENTER, {4, 0, 40}, GamePieceOwner::PLAYER, 3, 3); //command center is 3x3
+
 	//auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
 	//auto temp11 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {23, 0, 12}, GamePieceOwner::PLAYER);
+
+	auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
 
 	auto temp2 = Unit::spawn(Model::MeshType::BALL, {39, 0, 19}, GamePieceOwner::AI);
 
@@ -115,7 +119,6 @@ bool World::init() {
 	//don't set selectedTileCoords at launch because glfwGetCursorPos() returns weird stuff
 	return true;
 }
-
 
 
 bool World::initMeshTypes(const std::vector<std::pair<Model::MeshType, std::vector<SubObjectSource>>>& sources) {
@@ -164,7 +167,7 @@ void World::destroy() {
 }
 
 // Update our game world
-bool World::update(double elapsed_ms) {
+void World::update(double elapsed_ms) {
 	glfwPollEvents(); //Processes system messages, if this wasn't present the window would become unresponsive
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
@@ -199,7 +202,30 @@ bool World::update(double elapsed_ms) {
 	for (const auto& weapon : Global::weapons) {
 		weapon->update(elapsed_ms);
 	}
-	return true;
+
+	//check game end conditions
+
+	if (isGameLose()) {
+		Global::gameState = GameState::LOSE;
+	} else if (isGameWin()) {
+		Global::gameState = GameState::WIN;
+	}
+
+}
+
+bool World::isGameWin() {
+	return Global::playerResourcesPerSec >= Config::GAME_WIN_MINIMUM_RESOURCES_PER_SEC;
+}
+
+bool World::isGameLose() {
+	int commandCenterCount = 0;
+	for (const auto& tile : World::level.tiles) {
+		if (tile->meshType == Model::MeshType::COMMAND_CENTER) {
+			commandCenterCount++;
+		}
+	}
+
+	return (commandCenterCount < 1);
 }
 
 // Render our game world
@@ -238,10 +264,8 @@ void World::draw() {
 //	glfwSwapBuffers(m_window);
 }
 
-
-// Should the game be over ?
-bool World::is_over() {
-	return glfwWindowShouldClose(m_window);
+bool World::gameCloseDetected() {
+	return bool(glfwWindowShouldClose(m_window)); //returns true if the X or alt-f4/control-Q is used
 }
 
 void World::updateBoolFromKey(int action, int key, bool& toUpdate, const std::vector<int>& targetKeys) {
@@ -354,6 +378,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 	std::pair<bool, glm::vec3> targetLocation = World::getTileCoordFromWindowCoords(xpos, ypos);
 	glm::vec3 coords = {selectedTileCoordinates.colCoord, 0, selectedTileCoordinates.rowCoord};
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		// selecting something from the world with a selection rectangle
 		if (targetLocation.first && withinLevelBounds(targetLocation.second)) { //check for validity
 			logger(LogLevel::DEBUG) << "clicked " << targetLocation.second.x << " " << targetLocation.second.z << "\n";
 			UnitManager::selectUnit(targetLocation.second);
@@ -361,6 +386,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 
 		std::vector<Model::MeshType> trees = {Model::MeshType::REDTREE, Model::MeshType::TREE,
 											  Model::MeshType::YELLOWTREE};
+		// selecting a tile in the world
 		if (withinLevelBounds(coords)) {
 			switch (Ui::selectedBuilding) {
 				case Ui::BuildingSelected::REFINERY: {
@@ -401,7 +427,7 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 				}
 				case Ui::BuildingSelected::FACTORY: {
 					const int width = 3;
-					const int height = 3;
+					const int height = 4;
 					if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, width, height) > 0 ||
 						level.unpathableTilesInArea(coords, width, height)) {
 						AudioManager::play_error_sound();
@@ -422,6 +448,8 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 					break;
 				case Ui::BuildingSelected::NONE:
 				default:
+					// clicked in the world without having something to build selected
+					BuildingManager::selectBuilding(coords);
 					break;
 			}
 		}

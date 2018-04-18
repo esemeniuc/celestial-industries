@@ -59,6 +59,7 @@ set(PROJ_SOURCES
 		src/aimanager.cpp
 		src/audiomanager.cpp
         src/attackManager.cpp
+        src/buildingmanager.cpp
         src/camera.cpp
 		src/coord.cpp
 		src/collisiondetection.cpp
