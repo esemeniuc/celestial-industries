@@ -22,7 +22,7 @@ TGYTGTT   .............................TTWWWWTTT              GVVVGGGGGGGGGGGRGG
 TGGGTTT   .............................TWWWWWTTT              GVVVGT,,GGGGGGGRRGGGGT
 TGRGGT    .............................TWWWWTTT      YYGGR    GVVVGT,,,GGGGGGGGGGGGT
 TGRTGT    ................RR...........TWWWWTT       YYGGRR   GVVVGT,,,,GGGGGGGGGGGT
-TTRRGG    ....C.........RGG............TWWWWTT       YGYGRR   GVVVGT,,,,,,,GGGGGGGGT
+TTRRGG    ..............RGG............TWWWWTT       YGYGRR   GVVVGT,,,,,,,GGGGGGGGT
 TGTYGT     .............RRR............TWWWWTT   RR  YGYGR    GVVVGT,,,,,,,,GGYYGGGT
 TYYYGT     ............................TWWWWTT   RR  YYYYG    GVVVGT,,,,,,,,GGGGGGGT
 TTGTG     .............................TWWWWT    RR  YYGYYY   GVVVGT,,,P,,,,GGGGYGGT
