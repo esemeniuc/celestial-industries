@@ -588,7 +588,7 @@ namespace Ui {
 													ImGuiWindowFlags_AlwaysAutoResize |
 													ImGuiWindowFlags_NoNav);
 				ImGui::Text(ICON_FA_TROPHY " You win!");
-				ImGui::Text("You've been promoted to Assistant manager, gj mate.");
+				ImGui::Text("You've been promoted to \nAssistant manager, gj mate.");
 
 				ImGui::Image(winImage, winImageSize);
 				ImGui::NewLine();
