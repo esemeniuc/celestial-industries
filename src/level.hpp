@@ -50,6 +50,8 @@ public:
 			  unsigned int width = 1, unsigned int height = 1, int extraArg = 0,
 			  Model::MeshType replacingMesh = Model::MeshType::SAND_1);
 
+	std::shared_ptr<Tile> getTileAt(glm::vec3 location);
+
 	int numTilesOfTypeInArea(Model::MeshType type, glm::vec3 location, unsigned int height = 1, unsigned int width = 1);
 
 	int	numTilesOfOwnerInArea(GamePieceOwner owner, glm::vec3 location, unsigned int height = 1, unsigned int width = 1);

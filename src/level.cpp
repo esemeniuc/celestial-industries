@@ -201,7 +201,8 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 	Coord locationInt(location); //rounding the floats
 	for (int z = locationInt.rowCoord - height +1; z <= locationInt.rowCoord ; z++) { //not sure why off by 1
 		for (int x = locationInt.colCoord; x < locationInt.colCoord + width; x++) {
-			Global::levelTraversalCostMap[z][x] = Config::OBSTACLE_COST; //cant walk thru buildings
+			// Can't walk thru buildings
+			Global::levelTraversalCostMap[z][x] = Config::OBSTACLE_COST;
 		}
 	}
 
@@ -212,6 +213,17 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 	setupAiCompForTile(newTile, owner);
 	tiles.push_back(newTile);
 	return newTile;
+}
+
+std::shared_ptr<Tile> Level::getTileAt(glm::vec3 location)
+{
+	glm::vec3 size = { 1, 0, 1 };
+	for (auto& tile : tiles) {
+		if (!tile->isDeleted && tilesOverlap(tile->position, tile->size, location, size)) {
+			return tile;
+		}
+	}
+	return nullptr;
 }
 
 int Level::numTilesOfTypeInArea(Model::MeshType type, glm::vec3 location, unsigned int height, unsigned int width)
