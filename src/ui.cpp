@@ -339,10 +339,10 @@ namespace Ui {
 				}
 				case SpawnWindowState::SPAWN_ECONOMIC_BUILDINGS : {
 
-					highlightBuildingButtonHelper(COMMAND_CENTER, "Command Center");
-					highlightBuildingButtonHelper(REFINERY, "Refinery");
-					highlightBuildingButtonHelper(FACTORY, "Factory");
-					highlightBuildingButtonHelper(SUPPLY_DEPOT, "Supply Depot");
+					highlightBuildingButtonHelper(COMMAND_CENTER, "Command Center | 300");
+					highlightBuildingButtonHelper(REFINERY, "Refinery | 100");
+					highlightBuildingButtonHelper(FACTORY, "Factory | 100");
+					highlightBuildingButtonHelper(SUPPLY_DEPOT, "Supply Depot | 100");
 
 					ImGui::SetCursorPos(ImVec2(spawnWindowWidth - ImGui::GetFontSize() * 5,
 											   uiHeight - ImGui::GetFontSize() * 3));
