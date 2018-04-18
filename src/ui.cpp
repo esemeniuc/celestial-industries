@@ -85,7 +85,7 @@ namespace Ui {
 				{Model::MeshType::PHOTON_TOWER,             textures_path("letterPlaceholders/letter_P.png")},
 				{Model::MeshType::SUPPLY_DEPOT,             textures_path("letterPlaceholders/letter_S.png")},
 				{Model::MeshType::GUN_TURRET,               textures_path("letterPlaceholders/letter_G.png") },
-				{Model::MeshType::FACTORY,                  textures_path("letterPlaceholders/letter_F.png") },
+				{Model::MeshType::FACTORY,                  textures_path("buildings/factory.png") },
 
 				{Model::MeshType::GEYSER,                   textures_path("letterPlaceholders/letter_G.png")},
 

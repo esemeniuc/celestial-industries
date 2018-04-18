@@ -200,7 +200,13 @@ std::shared_ptr<Tile> Level::placeTile(Model::MeshType type, glm::vec3 location,
 	Coord locationInt(location); //rounding the floats
 	for (int z = locationInt.rowCoord - height +1; z <= locationInt.rowCoord ; z++) { //not sure why off by 1
 		for (int x = locationInt.colCoord; x < locationInt.colCoord + width; x++) {
-			Global::levelTraversalCostMap[z][x] = Config::OBSTACLE_COST; //cant walk thru buildings
+			// Can't walk thru buildings except for the spawning area on factories
+			if (type == Model::MeshType::FACTORY && z == 3) {
+				Global::levelTraversalCostMap[z][x] = Config::DEFAULT_TRAVERSABLE_COST;
+			}
+			else {
+				Global::levelTraversalCostMap[z][x] = Config::OBSTACLE_COST;
+			}
 		}
 	}
 
