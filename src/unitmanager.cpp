@@ -141,6 +141,21 @@ namespace UnitManager {
 		return {bestDist, closestUnitToTarget};
 	}
 
+	std::pair<float, std::shared_ptr<Entity>> getClosestBuildingToTarget(const glm::vec3& targetLocation) {
+		float bestDist = FLT_MAX;
+		std::shared_ptr<Entity> closestUnitToTarget;
+		for (const auto& building : Global::buildingTileList) {
+			float unitDist = glm::distance(building->getPosition(), targetLocation);
+			if (unitDist <= bestDist) {
+				bestDist = unitDist;
+				closestUnitToTarget = building;
+			}
+		}
+
+		return {bestDist, closestUnitToTarget};
+	}
+
+
 	void selectUnit(const glm::vec3& targetLocation) {
 		selectedUnits.clear();
 		std::pair<float, std::shared_ptr<Entity>> bestUnit = getClosestUnitToTarget(targetLocation);

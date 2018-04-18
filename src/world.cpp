@@ -6,10 +6,10 @@
 #include "particle.hpp"
 #include "aimanager.hpp"
 #include "unit.hpp"
-#include "attackManger.hpp"
-#include "buildingmanager.hpp"
+#include "attackManager.hpp"
 #include "ui.hpp"
 #include "audiomanager.hpp"
+#include "buildingmanager.hpp"
 
 namespace World {
 	GLFWwindow* m_window;
@@ -102,16 +102,19 @@ bool World::init() {
 
 	level.placeTile(Model::MeshType::COMMAND_CENTER, {4, 0, 40}, GamePieceOwner::PLAYER, 3, 3); //command center is 3x3
 
-	auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
+	//auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
+	//auto temp11 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {23, 0, 12}, GamePieceOwner::PLAYER);
 
-	auto temp2 = Unit::spawn(Model::MeshType::BALL, {39, 0, 19}, GamePieceOwner::AI);
+	//auto temp1 = Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT, {25, 0, 11}, GamePieceOwner::PLAYER);
 
-	auto temp3 = Unit::spawn(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, {39, 0, 1}, GamePieceOwner::PLAYER);
+	auto temp2 = Unit::spawn(Model::MeshType::BALL, {25, 0, 4}, GamePieceOwner::AI);
 
-	auto temp4 = Unit::spawn(Model::MeshType::BALL, {20.5, 0, 15.5}, GamePieceOwner::AI);
+	auto temp3 = Unit::spawn(Model::MeshType::ENEMY_RANGED_RADIUS_UNIT, {30, 0, 1}, GamePieceOwner::AI);
+
+	auto temp4 = Unit::spawn(Model::MeshType::BALL, {0.5, 0, 15.5}, GamePieceOwner::AI);
 
 	// Example use of targeting units.
-//	AttackManager::registerTargetUnit(temp2, temp1);
+	// AttackManager::registerTargetUnit(temp1, temp4);
 
 	//don't set selectedTileCoords at launch because glfwGetCursorPos() returns weird stuff
 	return true;
@@ -187,14 +190,16 @@ void World::update(double elapsed_ms) {
 
 	World::level.update(elapsed_ms);
 	AI::Manager::update(elapsed_ms);
-	UnitManager::update(elapsed_ms);
 	AttackManager::update(elapsed_ms);
-	BuildingManager::update(elapsed_ms);
+	UnitManager::update(elapsed_ms);
 
 	for (const auto& tile : level.tiles) {
 		tile->update(elapsed_ms);
 	}
 	for (const auto& entity : Global::playerUnits) {
+		entity->animate(elapsed_ms);
+	}
+	for (const auto& entity : Global::aiUnits) {
 		entity->animate(elapsed_ms);
 	}
 	for (const auto& weapon : Global::weapons) {
@@ -393,56 +398,61 @@ void World::on_mouse_button(GLFWwindow* window, int button, int action, int mods
 																	   refinerySize);
 					int numGeysers = level.numTilesOfTypeInArea(Model::MeshType::GEYSER, coords, refinerySize,
 																refinerySize);
-					if (numFriendlyTiles > 0 || numGeysers == 0) {
+					if (numFriendlyTiles > 0 || numGeysers == 0 || Global::playerResources < 100) {
 						AudioManager::play_error_sound();
 						break;
 					}
 					level.placeTile(Model::MeshType::REFINERY, coords, GamePieceOwner::PLAYER, refinerySize,
 									refinerySize, numGeysers);
 					AudioManager::playPlaceBuildingSound();
+					Global::playerResources -= 100;
 					break;
 				}
 				case Ui::BuildingSelected::SUPPLY_DEPOT:
 					if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 ||
-						level.unpathableTilesInArea(coords)) {
+						level.unpathableTilesInArea(coords)|| Global::playerResources < 100) {
 						AudioManager::play_error_sound();
 						break;
 					}
 					level.placeTile(Model::MeshType::SUPPLY_DEPOT, coords);
 					AudioManager::playPlaceBuildingSound();
+					Global::playerResources -= 100;
 					break;
 				case Ui::BuildingSelected::COMMAND_CENTER: {
 					const int width = 3;
 					const int height = 3;
 					if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, width, height) > 0 ||
-						level.unpathableTilesInArea(coords, width, height)) {
+						level.unpathableTilesInArea(coords, width, height)|| Global::playerResources < 300) {
 						AudioManager::play_error_sound();
 						break;
 					}
 					level.placeTile(Model::MeshType::COMMAND_CENTER, coords, GamePieceOwner::PLAYER, width, height);
 					AudioManager::playPlaceBuildingSound();
+					Global::playerResources -= 300;
 					break;
 				}
 				case Ui::BuildingSelected::FACTORY: {
 					const int width = 3;
 					const int height = 4;
 					if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords, width, height) > 0 ||
-						level.unpathableTilesInArea(coords, width, height)) {
+						level.unpathableTilesInArea(coords, width, height) || Global::playerResources < 100) {
 						AudioManager::play_error_sound();
 						break;
 					}
 					level.placeTile(Model::MeshType::FACTORY, coords, GamePieceOwner::PLAYER, width, height);
 					AudioManager::playPlaceBuildingSound();
+					Global::playerResources -= 100;
 					break;
 				}
 				case Ui::BuildingSelected::GUN_TURRET:
 					if (level.numTilesOfOwnerInArea(GamePieceOwner::PLAYER, coords) > 0 ||
-						level.unpathableTilesInArea(coords)) {
+						level.unpathableTilesInArea(coords) || Global::playerResources < 100) {
 						AudioManager::play_error_sound();
 						break;
 					}
 					level.placeTile(Model::MeshType::GUN_TURRET, coords);
 					AudioManager::playPlaceBuildingSound();
+					Global::playerResources -= 100;
 					break;
 				case Ui::BuildingSelected::NONE:
 				default:

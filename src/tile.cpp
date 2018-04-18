@@ -80,7 +80,7 @@ void GunTowerTile::explode(glm::vec3 dir)
 void GunTowerTile::animate(float ms)
 {
 	glm::vec3 dir;
-	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
+	if (target && this->inAttackRange(target)) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
 		targetPosition = target->getPosition();
 		dir = glm::normalize(targetPosition - getPosition());
 	}
@@ -105,6 +105,7 @@ void GunTowerTile::attack(const std::shared_ptr<Entity>& entityToAttack, double 
 	// Check to see if attack is done.
 	// Set state to non-attacking state if attack is done (other entity is killed)
 	if (entityToAttack->aiComp.currentHealth <= 0) {
+		target = nullptr;
 		unitComp.state = UnitState::IDLE;
 	}
 }

@@ -27,6 +27,7 @@ namespace Global {
 	std::vector<std::vector<int>> playerVisibilityMap; //stores the last seen time of each cell by player
 
 	std::vector<std::shared_ptr<Entity>> buildingList;
+	std::vector<std::shared_ptr<Tile>> buildingTileList;
 
 	std::vector<std::vector<Model::MeshType>> levelArray; //make global so we can have ai know what tiles are around
 	std::vector<std::vector<int>> levelTraversalCostMap;

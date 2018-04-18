@@ -124,13 +124,21 @@ void Entity::setTargetPath(const std::vector<glm::vec3>& targetPath) {
 }
 
 void Entity::moveTo(UnitState unitState, const glm::vec3& moveToTarget, bool queueMove) {
-	this->unitComp.state = unitState;
-	if (!queueMove) {
-		destinations.clear(); // Clear the queue
-		cleanUpTargetPath();
-	}
-	hasDestination = true;
-	destinations.push_back(moveToTarget);
+    this->unitComp.state = unitState;
+    if (!queueMove) {
+        destinations.clear(); // Clear the queue
+        cleanUpTargetPath();
+    }
+    hasDestination = true;
+    destinations.push_back(moveToTarget);
+}
+
+void Entity::stopMoving() {
+	this->unitComp.state = UnitState::IDLE;
+	destinations.clear();
+	hasDestination = false;
+	unitComp.targetPath.clear();
+    cleanUpTargetPath();
 }
 
 //returns a pathIndex and a 0.00 - 0.99 value to interpolate between steps in a path
@@ -228,27 +236,31 @@ void Entity::takeAttack(const Entity& attackingEntity, double elapsed_ms) {
 	aiComp.currentHealth -= damageToDoThisFrame;
 }
 
-void Entity::attack(const std::shared_ptr<Entity>& entityToAttack, double elapsed_ms) {
-	if (unitComp.state == UnitState::ATTACK) {
+void Entity::attack(const std::shared_ptr<Entity>& entityToAttack,  double elapsed_ms) {
+	this->target = nullptr;
+	if (unitComp.state == UnitState::ATTACK || unitComp.state == UnitState::ATTACK_MOVE) {
 		// Already attacking something else, nothing to do, return.
 		return;
 	}
 
 	if (aiComp.type != GamePieceClass::UNIT_OFFENSIVE) return;
 
+	target = entityToAttack;
+    entityToAttack->takeAttack(*this, elapsed_ms);
 	unitComp.state = UnitState::ATTACK;
-	entityToAttack->takeAttack(*this, elapsed_ms);
 
 	// Check to see if attack is done.
 	// Set state to non-attacking state if attack is done (other entity is killed)
 	if (entityToAttack->aiComp.currentHealth <= 0) {
+		this->target = nullptr;
 		unitComp.state = UnitState::IDLE;
 	}
 }
 
 void PivotingGunEntity::animate(float ms) {
 	glm::vec3 dir;
-	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
+
+	if (target && this->inAttackRange(target)) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
 		targetPosition = target->getPosition();
 		dir = glm::normalize(targetPosition - getPosition());
 		if (attackingCooldown >= 0) {
@@ -288,6 +300,7 @@ void PivotingGunEntity::attack(const std::shared_ptr<Entity>& entityToAttack, do
 	// Check to see if attack is done.
 	// Set state to non-attacking state if attack is done (other entity is killed)
 	if (entityToAttack->aiComp.currentHealth <= 0) {
+		target = nullptr;
 		unitComp.state = UnitState::IDLE;
 	}
 }
@@ -295,7 +308,7 @@ void PivotingGunEntity::attack(const std::shared_ptr<Entity>& entityToAttack, do
 void BeamFiringGunEntity::animate(float ms)
 {
 	glm::vec3 dir;
-	if (target) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
+	if (target && this->inAttackRange(target)) { // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
 		targetPosition = target->getPosition();
 		dir = glm::normalize(targetPosition - getPosition());
 		if (attackingCooldown >= 0)attackingCooldown -= ms;

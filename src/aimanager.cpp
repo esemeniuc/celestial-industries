@@ -8,7 +8,8 @@
 namespace AI {
 	namespace Manager {
 		const double AI_VISIBLE_THRESHOLD = 0.4; //scout only if we've seen less than this value
-		const int AI_RUN_THRESHOLD = 500; //run every 500ms
+		const int AI_RUN_THRESHOLD = 1600; //run every 1600ms
+		const int TIMED_SPAWN_THRESHOLD = 20000; //spawn a unit every 20s
 		const int UNSEEN_RADIUS_THRESHOLD = 6;
 		const int FOG_OF_WAR_TIME_THRESHOLD = 10;
 		int aiManagerRunIterations = 0;
@@ -17,6 +18,7 @@ namespace AI {
 		int playerBuildingValue = 0;
 		double percentVisible = 0;
 		double lastRunTimestamp = AI_RUN_THRESHOLD;
+		double timedSpawner = 0;
 		std::vector<Coord> aiSpawn;
 
 		void init(size_t levelHeight, size_t levelWidth) {
@@ -209,6 +211,7 @@ namespace AI {
 
 		void update(double elapsed_ms) {
 			lastRunTimestamp += elapsed_ms;
+			timedSpawner += elapsed_ms;
 
 			if (lastRunTimestamp > AI_RUN_THRESHOLD) {
 				lastRunTimestamp = 0; //reset as we past the threshold
@@ -244,8 +247,9 @@ namespace AI {
 			//if ai has less units than players, then spawn an ai unit
 			int playerValue = playerUnitValue + playerBuildingValue;
 			logger(LogLevel::DEBUG) << "playerValue: " << playerValue << ", aiValue: " << aiUnitValue << '\n';
-			if (playerValue > aiUnitValue) {
-				//spawns a unit once per 500 ms (since thats how often this runs)
+			if (playerValue > aiUnitValue || timedSpawner > TIMED_SPAWN_THRESHOLD) {
+				//spawns a unit once per 1600 ms if less value, or once ever THRESHOLD seconds
+				timedSpawner = 0;
 				Coord spawnLocation = getRandomSpawnLocation();
 				Unit::spawn(Model::MeshType::ENEMY_RANGED_LINE_UNIT,
 							{spawnLocation.colCoord, 0, spawnLocation.rowCoord},

@@ -59,7 +59,7 @@ public:
 
 	Coord getPositionInt();
 
-	virtual void attack(const std::shared_ptr<Entity>& entityToAttack, double elapsed_ms);
+	virtual void attack(const std::shared_ptr<Entity>& entityToAttack,  double elapsed_ms);
 
 	void takeAttack(const Entity& attackingEntity, double elapsed_ms);
 
@@ -73,6 +73,8 @@ public:
 	void scale(int modelIndex, glm::vec3 scale);
 
 	void setPosition(int modelIndex, glm::vec3);
+
+	void stopMoving();
 
 	void setModelMatrix(int modelIndex, glm::mat4 mat);
 
@@ -128,7 +130,7 @@ public:
 	PivotingGunEntity(Model::MeshType geometry, unsigned int turretIndex, Model::MeshType weaponMesh, glm::vec3 offset) : Entity(geometry), turretIndex(turretIndex), weaponMesh(weaponMesh), offset(offset) {};
 
 	void animate(float ms) override;
-	void attack(const std::shared_ptr<Entity>& entityToAttack, double elapsed_ms) override;
+	void attack(const std::shared_ptr<Entity>& entityToAttack,  double elapsed_ms) override;
 };
 
 class BeamFiringGunEntity : public PivotingGunEntity {

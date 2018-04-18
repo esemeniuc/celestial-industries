@@ -269,13 +269,16 @@ namespace Ui {
 					}
 				}
 			} else if (Global::selectedBuilding != nullptr) { //building is selected case
-
+				std::shared_ptr<Entity> unit = Global::selectedBuilding;
+				const float portraitSize = uiHeight - 16; //in px
+				ImGui::Image(entitySprite[unit->meshType], ImVec2(portraitSize, portraitSize));
+				ImGui::SameLine();
+				ImGui::BeginGroup();
+				ImGui::Text("Building: %s\n", EntityInfo::nameLookupTable[unit->meshType]);
+				ImGui::Text("Health: %.f/%.f\n", unit->aiComp.currentHealth, unit->aiComp.totalHealth);
+				ImGui::Text("Type: %s\n", EntityInfo::gamePieceClassLookupTable[unit->aiComp.type]);
+				ImGui::NewLine();
 				if (Global::selectedBuilding->meshType == Model::MeshType::FACTORY) { //spawn units at the factory
-					const float portraitSize = uiHeight - 16; //in px
-					ImGui::Image(entitySprite[Model::MeshType::FACTORY], ImVec2(portraitSize, portraitSize));
-					ImGui::SameLine();
-					ImGui::BeginGroup();
-					ImGui::Text("Factory");
 					if (ImGui::Button("Spawn Ranged Unit")) {
 						Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT,
 									Global::selectedBuilding->getPosition() + glm::vec3{1}, GamePieceOwner::PLAYER);
@@ -284,21 +287,9 @@ namespace Ui {
 						Unit::spawn(Model::MeshType::FRIENDLY_FIRE_UNIT,
 									Global::selectedBuilding->getPosition() + glm::vec3{1}, GamePieceOwner::PLAYER);
 					}
-					ImGui::EndGroup();
-				} else { //display single building stats
-					std::shared_ptr<Entity> unit = Global::selectedBuilding;
-					const float portraitSize = uiHeight - 16; //in px
-					ImGui::Image(entitySprite[unit->meshType], ImVec2(portraitSize, portraitSize));
-					ImGui::SameLine();
-					ImGui::BeginGroup();
-					ImGui::Text("Building: %s\n", EntityInfo::nameLookupTable[unit->meshType]);
-					ImGui::Text("Health: %.f/%.f\n", unit->aiComp.currentHealth, unit->aiComp.totalHealth);
-					ImGui::Text("Type: %s\n", EntityInfo::gamePieceClassLookupTable[unit->aiComp.type]);
-					ImGui::EndGroup();
 				}
-
+				ImGui::EndGroup();
 			}
-
 			ImGui::End();
 		}
 
@@ -348,10 +339,10 @@ namespace Ui {
 				}
 				case SpawnWindowState::SPAWN_ECONOMIC_BUILDINGS : {
 
-					highlightBuildingButtonHelper(COMMAND_CENTER, "Command Center");
-					highlightBuildingButtonHelper(REFINERY, "Refinery");
-					highlightBuildingButtonHelper(FACTORY, "Factory");
-					highlightBuildingButtonHelper(SUPPLY_DEPOT, "Supply Depot");
+					highlightBuildingButtonHelper(COMMAND_CENTER, "Command Center | 300");
+					highlightBuildingButtonHelper(REFINERY, "Refinery | 100");
+					highlightBuildingButtonHelper(FACTORY, "Factory | 100");
+					highlightBuildingButtonHelper(SUPPLY_DEPOT, "Supply Depot | 100");
 
 					ImGui::SetCursorPos(ImVec2(spawnWindowWidth - ImGui::GetFontSize() * 5,
 											   uiHeight - ImGui::GetFontSize() * 3));
@@ -597,7 +588,7 @@ namespace Ui {
 													ImGuiWindowFlags_AlwaysAutoResize |
 													ImGuiWindowFlags_NoNav);
 				ImGui::Text(ICON_FA_TROPHY " You win!");
-				ImGui::Text("You've been promoted to Assistant manager, gj mate.");
+				ImGui::Text("You've been promoted to \nAssistant manager, gj mate.");
 
 				ImGui::Image(winImage, winImageSize);
 				ImGui::NewLine();
