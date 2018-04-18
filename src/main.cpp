@@ -87,11 +87,15 @@ int main(int argc, char* argv[]) {
 			}
 			case GameState::WIN: {
 				logger(LogLevel::DEBUG) << "gamestate = win\n";
+				AudioManager::stopCurrentSong();
+				AudioManager::playWinSound();
 				Ui::imguiDrawWinScreen();
 				break;
 			}
 			case GameState::LOSE: {
 				logger(LogLevel::DEBUG) << "gamestate = lose\n";
+				AudioManager::stopCurrentSong();
+				AudioManager::playLoseSound();
 				Ui::imguiDrawLoseScreen();
 				break;
 			}

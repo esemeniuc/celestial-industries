@@ -41,6 +41,10 @@ namespace AudioManager {
 
 	void resumeGameMusic();
 
+	void playWinSound();
+
+	void playLoseSound();
+
 	void stopCurrentSong();
 
 	void shutdown();

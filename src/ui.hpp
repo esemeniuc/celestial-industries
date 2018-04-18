@@ -45,6 +45,12 @@ namespace Ui {
 	static ImTextureID gameLogo;
 	static ImVec2 gameLogoSize;
 
+	static ImTextureID winImage;
+	static ImVec2 winImageSize;
+	
+	static ImTextureID loseImage;
+	static ImVec2 loseImageSize;
+
 	//for drawing the selected entity sprites
 	static ImTextureID entitySprite[Model::MeshType::MESHTYPES_COUNT];
 	static ImVec2 entitySpriteSize[Model::MeshType::MESHTYPES_COUNT];

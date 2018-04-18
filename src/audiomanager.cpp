@@ -18,6 +18,8 @@ namespace AudioManager {
 	Mix_Music* menuMusic;
 	Mix_Music* currentSong;
 	std::vector<Mix_Music*> mainGameMusic;
+	Mix_Music* winSound;
+	Mix_Music* loseSound;
 
 	std::array<Mix_Chunk*, Model::MeshType::MESHTYPES_COUNT> attackSounds{}; //init to null
 	std::array<Mix_Chunk*, Model::MeshType::MESHTYPES_COUNT> deathSounds{};
@@ -34,6 +36,17 @@ namespace AudioManager {
 		int randomNum = int(std::rand() % buildingPlacementSound.size());
 
 		Mix_PlayChannel(-1, buildingPlacementSound[randomNum], 0);
+	}
+
+	void playWinSound() {
+		currentSong = winSound;
+		std::cout << "win\n";
+		Mix_PlayMusic(winSound, 1);
+	}
+
+	void playLoseSound() {
+		currentSong = loseSound;
+		Mix_PlayMusic(loseSound, 1);
 	}
 
 	void startLaunchMenuMusic() {
@@ -73,7 +86,6 @@ namespace AudioManager {
 		Mix_FadeInMusic(currentSong, 1, 2000); //fade it gradually
 	}
 
-
 	bool loadUnitSounds() {
 		auto loadAndCheck = [](Model::MeshType meshType, const char* filePath) -> bool {
 			char path[100] = audio_path("");
@@ -99,7 +111,6 @@ namespace AudioManager {
 			logger(LogLevel::ERR) << "Failed to load building placement sound\n";
 			return false;
 		}
-
 
 		return true;
 	}
@@ -149,12 +160,19 @@ namespace AudioManager {
 		}
 
 		menuMusic = Mix_LoadMUS(audio_path("launchMenu/game_sound_track.ogg"));
-		// LoadWAV is actaully capable of loading other audio formats as well, the name is not accurate
+		winSound = Mix_LoadMUS(audio_path("youwin.ogg"));
+		loseSound = Mix_LoadMUS(audio_path("youlose.ogg"));
+
+		// LoadWAV is actually capable of loading other audio formats as well, the name is not accurate
 		// https://www.libsdl.org/projects/SDL_mixer/docs/SDL_mixer_19.html#SEC19
 		m_mouse_click = Mix_LoadWAV(audio_path("buttons/click.ogg"));
 		m_error_sound = Mix_LoadWAV(audio_path("buttons/uiError.ogg"));
 
-		if (menuMusic == nullptr) {
+		if (menuMusic == nullptr ||
+			winSound == nullptr ||
+			loseSound == nullptr ||
+			m_error_sound == nullptr ||
+			m_mouse_click == nullptr) {
 			logger(LogLevel::ERR) << "Failed to load sounds, make sure the data directory is present";
 			return false;
 		}
@@ -165,6 +183,13 @@ namespace AudioManager {
 	void shutdown() {
 		if (menuMusic != nullptr) {
 			Mix_FreeMusic(menuMusic);
+		}
+
+		if (winSound != nullptr) {
+			Mix_FreeMusic(winSound);
+		}
+		if (loseSound != nullptr) {
+			Mix_FreeMusic(loseSound);
 		}
 
 		if (m_mouse_click != nullptr) {
@@ -202,6 +227,4 @@ namespace AudioManager {
 		Mix_CloseAudio();
 		Mix_Quit();
 	}
-
-
 }
