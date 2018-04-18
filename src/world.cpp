@@ -262,7 +262,7 @@ void World::draw() {
 }
 
 bool World::gameCloseDetected() {
-	return bool(glfwWindowShouldClose(m_window));
+	return bool(glfwWindowShouldClose(m_window)); //returns true if the X or alt-f4/control-Q is used
 }
 
 void World::updateBoolFromKey(int action, int key, bool& toUpdate, const std::vector<int>& targetKeys) {
