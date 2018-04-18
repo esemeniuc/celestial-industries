@@ -65,6 +65,9 @@ namespace AttackManager {
                 if (it->second->aiComp.currentHealth <= 0) {
                     it->first->target = nullptr;
                     it->first->stopMoving();
+					if (it->second->aiComp.owner == GamePieceOwner::PLAYER) {
+						--Global::playerCurrentSupply;
+					}
                     unitTargetMap.erase(it++);
                 }
                 else {

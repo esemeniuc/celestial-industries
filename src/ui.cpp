@@ -279,13 +279,19 @@ namespace Ui {
 				ImGui::Text("Type: %s\n", EntityInfo::gamePieceClassLookupTable[unit->aiComp.type]);
 				ImGui::NewLine();
 				if (Global::selectedBuilding->meshType == Model::MeshType::FACTORY) { //spawn units at the factory
-					if (ImGui::Button("Spawn Ranged Unit")) {
-						Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT,
-									Global::selectedBuilding->getPosition() + glm::vec3{1}, GamePieceOwner::PLAYER);
+					if (Global::playerCurrentSupply >= Global::playerMaxSupply) {
+						ImGui::Text("Building more units is not possible right now.\n");
+						ImGui::Text("You're at your max supply of %d / %d units!\n", Global::playerCurrentSupply, Global::playerMaxSupply);
 					}
-					if (ImGui::Button("Spawn Flamer Unit")) {
-						Unit::spawn(Model::MeshType::FRIENDLY_FIRE_UNIT,
-									Global::selectedBuilding->getPosition() + glm::vec3{1}, GamePieceOwner::PLAYER);
+					else {
+						if (ImGui::Button("Spawn Ranged Unit")) {
+							Unit::spawn(Model::MeshType::FRIENDLY_RANGED_UNIT,
+								Global::selectedBuilding->getPosition() + glm::vec3{ 1 }, GamePieceOwner::PLAYER);
+						}
+						if (ImGui::Button("Spawn Flamer Unit")) {
+							Unit::spawn(Model::MeshType::FRIENDLY_FIRE_UNIT,
+								Global::selectedBuilding->getPosition() + glm::vec3{ 1 }, GamePieceOwner::PLAYER);
+						}
 					}
 				}
 				ImGui::EndGroup();
