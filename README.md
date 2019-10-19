@@ -1,11 +1,10 @@
-# cpsc436d
+# Celestial Industries
 
-![alt text](https://github.com/esemeniuc/celestial-industries/blob/master/data/textures/Celestial-Industries.png "Celestial Industries Logo")
+![alt text](https://github.com/esemeniuc/celestial-industries/blob/master/data/celestial_industries.png "Celestial Industries Screenshot")
 
 ## Project Info
-
 ### Info
-
+Video presentation: [Here](https://github.com/esemeniuc/celestial-industries/blob/master/data/celestial_industries.mp4)
 #### Pitch
 - [OneDrive - DOCX](https://onedrive.live.com/view.aspx?resid=C3F0298314E4ECCD!284946&ithint=file%2cdocx&app=Word&authkey=!AJgdQbFssTUXqhU)
 
